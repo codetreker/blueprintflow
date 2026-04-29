@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-milestone-fourpiece
-description: Milestone 实施前的 4 个基线文档 + 代码一次合入一 PR。Phase plan 拆完 milestone 后触发。
+description: Milestone 实施前建立 4 件基线文档（spec/stance/acceptance/content-lock）。Phase plan 拆完 milestone 后触发。
 ---
 
 # Milestone 4 件套

@@ -1,56 +1,129 @@
-# Blueprintflow Skills Marketplace
+# Blueprintflow
 
-> 一套跑通的 multi-agent workflow skills (blueprintflow marketplace), 你可以直接安装到自己项目里用。
+**多 Agent 协作做产品的工作流方法论。**
 
-## 安装 (Claude Code)
+从模糊概念到可发布软件，6 角色 + Teamlead 协议推进。蓝图先 freeze 再开工，立场漂移 5 层防御，一 milestone 一 PR 闭环交付。
 
-```bash
-git clone https://github.com/<owner>/<repo>.git
-ln -s $(pwd)/<repo>/skills/* ~/.claude/skills/
+---
+
+## 隐喻：城市工程
+
+Blueprintflow 跟大型城市工程的协作模式同构——
+
+| 城市工程 | Blueprintflow |
+|---|---|
+| **总工程师**出蓝图 | Architect 出 spec brief + 蓝图引用 |
+| **甲方**拍立场 | PM 拍立场 + 反约束 |
+| **施工队**按图施工 | Dev 按 spec 落地，不改图 |
+| **质检**验收 | QA 跑 acceptance + 翻牌 |
+| **总包**协调，不砌墙 | Teamlead 派活 + 守门，不写代码 |
+
+核心思想：
+
+- **蓝图先 freeze 再开工** — 不能边建边改图，改图走 PR + 全员 review（= 工程变更单）
+- **按价值闭环分期** — Phase 0 地基 / Phase 1 主体 / Phase 2 装修，不按工种分期
+- **阶段性验收签字** — Phase 退出 4 联签 = 阶段验收报告
+- **质量门留痕** — 每个闸门有 commit SHA 锚点，可追溯
+- **甲方代表全程在场** — PM 立场反查 = 不让施工偏离需求
+
+## 设计思想
+
+### 立场驱动，不是需求驱动
+
+传统工作流从需求出发（PRD → 设计 → 开发）。Blueprintflow 从**立场**出发：
+
+> 立场 = 一句话主张 + 反约束（X 是，Y 不是）+ 关键场景 + v0/v1 边界
+
+写不出反约束的立场 = 立场不成立，不入蓝图。这保证了蓝图里每条规则都是可验证、可机器化检查的。
+
+### 5 层漂移防御
+
+产品开发最大的风险不是 bug，是**立场漂移**——做着做着偏离了初衷。Blueprintflow 用 5 层防线：
+
+1. **Spec grep 反查** — 每个 milestone 引蓝图 §X.Y 锚点
+2. **Acceptance 反查锚** — 验收模板跟 spec 拆段 1:1 对齐
+3. **Stance 黑名单 grep** — 反约束关键词机器化检查
+4. **Content-lock byte-identical** — UI 文案字面锁定
+5. **PR 跨文件 cross-check** — review 时 spec/stance/acceptance/实施互查
+
+### 一 Milestone 一 PR
+
+不拆 spec PR、stance PR、implementation PR——4 件套 + 代码在同一 worktree 叠 commit，Teamlead 唯一开 PR，一次 squash merge。好处：
+
+- 零 PR 串行等待
+- Milestone 产出是原子的——要么全进，要么全不进
+- 历史干净，一个 merge commit = 一个 milestone 闭环
+
+### 角色 ≠ 人
+
+6 角色（Architect / PM / Dev / QA / Designer / Security）定义的是**职责边界**，不是人头。一个 agent 可以承担多个角色，3 人团队也能跑完整流程。
+
+## 4 层结构
+
+```
+┌─ 概念层 ──────── brainstorm → blueprint-write
+│      ↓
+├─ 计划层 ──────── phase-plan
+│      ↓
+├─ 实施层 ──────── git-workflow + milestone-fourpiece + pr-review-flow
+│      ↓
+└─ 协调层 ──────── fast-cron (idle 派活) + slow-cron (偏差 audit) + phase-exit-gate
 ```
 
-或单独装某个:
-```bash
-ln -s $(pwd)/<repo>/skills/blueprintflow-workflow ~/.claude/skills/blueprintflow-workflow
-```
+## 适用场景
 
-装完 Claude Code 重启即可见 `blueprintflow-*` skills。
+**适合：**
+- 新产品 / 大功能 / 大 refactor，从概念开始
+- 多 agent 协作（≥ 3 角色），单 agent 跑不完
+- 需要立场 / 蓝图 / 实施 / 验收分轨且互锁
+- 跨 milestone 漂移控制要求高
 
-## 11 Skills
+**不适合：**
+- 单 agent / 小任务（overhead 太重）
+- 纯 bug fix（走 PR review 即可）
+- Hackathon / 一次性脚本
+- 探索阶段没立场（先用 brainstorm 锁立场再走这套）
+
+## Skills 清单
 
 | Skill | 触发 | 用途 |
 |---|---|---|
-| [blueprintflow-workflow](blueprintflow-workflow/SKILL.md) | 起步 | workflow 总览 + 何时用 + 角色 + 阶段索引 |
-| [blueprintflow-team-roles](blueprintflow-team-roles/SKILL.md) | 起团 | 6 角色 prompt 模板 (架构师/PM/Dev/QA/设计/安全) |
-| [blueprintflow-milestone-fourpiece](blueprintflow-milestone-fourpiece/SKILL.md) | milestone 启动 | 4 件套并行 (spec / stance / acceptance / content-lock) |
-| [blueprintflow-pr-review-flow](blueprintflow-pr-review-flow/SKILL.md) | PR open | 双 review + 标准 squash merge |
-| [blueprintflow-teamlead-fast-cron-checkin](blueprintflow-teamlead-fast-cron-checkin/SKILL.md) | 15min cron | idle 派活, 不只 audit |
-| [blueprintflow-teamlead-slow-cron-checkin](blueprintflow-teamlead-slow-cron-checkin/SKILL.md) | 2-4h cron | 偏差 audit + 文档/代码一致性 + 翻牌延迟 |
-| [blueprintflow-phase-plan](blueprintflow-phase-plan/SKILL.md) | Phase 启动 | Phase 拆 + 退出 gate + 4 道防偏离闸门 |
-| [blueprintflow-phase-exit-gate](blueprintflow-phase-exit-gate/SKILL.md) | Phase 收尾 | Phase 收尾联签 + closure announcement |
-| [blueprintflow-blueprint-write](blueprintflow-blueprint-write/SKILL.md) | 立项 | 蓝图模板 (核心立场 / 概念模型 / v0/v1 边界) |
-| [blueprintflow-brainstorm](blueprintflow-brainstorm/SKILL.md) | 多轮讨论 | 讨论 driver (无回声 / 反约束 / 收敛) |
-| [blueprintflow-git-workflow](blueprintflow-git-workflow/SKILL.md) | milestone 启动 | git 协议: 一 milestone 一 worktree, teamlead 唯一开 PR |
+| [workflow](blueprintflow-workflow/SKILL.md) | 起步 | 总览 + 何时用 + 角色 + 阶段索引 |
+| [team-roles](blueprintflow-team-roles/SKILL.md) | 起团 | 6 角色 prompt 模板 |
+| [brainstorm](blueprintflow-brainstorm/SKILL.md) | 讨论 | 多轮讨论锁立场 + 反约束 |
+| [blueprint-write](blueprintflow-blueprint-write/SKILL.md) | 立项 | 蓝图模板（立场 / 概念 / v0/v1 边界） |
+| [phase-plan](blueprintflow-phase-plan/SKILL.md) | 规划 | Phase 拆分 + 退出 gate |
+| [milestone-fourpiece](blueprintflow-milestone-fourpiece/SKILL.md) | 实施 | 4 件套（spec / stance / acceptance / content-lock） |
+| [git-workflow](blueprintflow-git-workflow/SKILL.md) | 实施 | 一 milestone 一 worktree 一 PR |
+| [pr-review-flow](blueprintflow-pr-review-flow/SKILL.md) | Review | 双 review + 标准 squash merge |
+| [fast-cron](blueprintflow-teamlead-fast-cron-checkin/SKILL.md) | 巡检 | 15min idle 派活 |
+| [slow-cron](blueprintflow-teamlead-slow-cron-checkin/SKILL.md) | 巡检 | 2-4h 偏差 audit |
+| [phase-exit-gate](blueprintflow-phase-exit-gate/SKILL.md) | 收尾 | Phase 4 联签 + closure |
+| [skill-workflow](skill-workflow/SKILL.md) | 更新 | Skill 自身的 PR 流程 |
 
 ## 起步
 
-新项目用这套 workflow:
-
 ```
-1. follow skill blueprintflow-workflow             — 看总览, 决定是否适用
-2. follow skill blueprintflow-team-roles           — spawn 6 角色 (按需)
-3. follow skill blueprintflow-milestone-fourpiece  — milestone 启动
-4. follow skill blueprintflow-pr-review-flow       — PR 流程
-5. cron 15min: blueprintflow-teamlead-fast-cron-checkin
-6. cron 2-4h:  blueprintflow-teamlead-slow-cron-checkin
+1. blueprintflow-workflow          — 看总览，决定是否适用
+2. blueprintflow-team-roles        — spawn 角色（按需）
+3. blueprintflow-brainstorm        — 多轮讨论锁立场
+4. blueprintflow-blueprint-write   — 落蓝图
+5. blueprintflow-phase-plan        — 拆 Phase
+6. (循环) milestone-fourpiece + git-workflow + pr-review-flow
+7. (巡检) fast-cron + slow-cron
+8. (收尾) phase-exit-gate
 ```
 
-## 设计哲学
+## 安装
 
-- **Dogfooding**: 改 workflow 走完整 PR 流程 (4 角色协议自检 — skills 必须能 review 自己的更新)
-- **真实跑过**: 不是抽象方法论, 是实战提炼
-- **跨项目通用**: 角色名可自定义, 路径约定可调, 核心协议 (worktree 隔离 / lint / 立场漂移防御) 不动
+**Claude Code:**
+```bash
+git clone https://github.com/codetreker/blueprintflow.git
+ln -s $(pwd)/blueprintflow/* ~/.claude/skills/
+```
+
+**OpenClaw / 其他框架:** 按各自的 skill 安装方式引入即可。
 
 ## 反馈
 
-skills 跑出新经验? 开 PR 改 SKILL.md, 走 4 角色 review 协议 (本身就是 dogfood)。
+跑出新经验？开 PR 改 SKILL.md，走 skill-workflow 全员 vote。这套 skill 自己也是用 blueprintflow 方式迭代的。

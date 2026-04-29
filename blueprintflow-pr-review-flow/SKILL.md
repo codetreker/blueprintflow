@@ -21,8 +21,8 @@ PR open 后到 merged 的标准流程.
 - 历史血账: e2e fail bypass 进 main 多次, 每次都得 hotfix 善后
 
 **真 flaky / 真误报怎么办**:
-- 真 flaky → 真修根因 (e.g. RT-1.2 #300 修 e2e harness setOffline 不关握手 WS)
-- lint 误报 → 修 lint regex (e.g. #446 lint 改 `gh api` 读 body 修 stale event payload)
+- 真 flaky → 真修根因 (修 root cause, 不是绕过)
+- lint 误报 → 修 lint regex (修 lint 规则)
 - coverage 卡线 → 真补 test 提覆盖率
 - e2e 真 fail → 退给 author 修 bug
 - 任何场景下, **"等我修完再合"** 是唯一答案, 不存在 "先合进去再说" 选项
@@ -75,7 +75,7 @@ gh pr comment <num> --body "LGTM (理由 ≤30字)"
 review 内容必须包含锚 (跟 spec/stance/acceptance 字面 cross-check):
 - 跟 #<other-PR> 字面对得上吗?
 - §X.Y 反约束守住吗?
-- 跟 byte-identical 模板 (e.g. #237 envelope) 一致吗?
+- 跟 byte-identical 模板 (e.g. 跨 milestone 共享结构体模板) 一致吗?
 
 **Merge 三联签** (CI + LGTM + 任务完成度):
 - ① CI 真过 (statusCheckRollup 全 SUCCESS, 永远不 admin/ruleset bypass)
@@ -94,7 +94,7 @@ review 内容必须包含锚 (跟 spec/stance/acceptance 字面 cross-check):
 2. **context 干净**: subagent 只读 PR + spec + 几个 cross-ref 锚, 没 inbox 噪音
 3. **可并行**: 同时派 N 个 subagent (架构 + 立场 + 文案 各一), 一波出多 LGTM
 
-**实测**: #384 CV-4 acceptance 双 review subagent (架构 36s + 立场 62s 并行) ≈ 62s 总耗时, vs persistent 角色串行 6-10min. **8x 速度提升**.
+**实测**: review subagent 并行 (架构 + 立场各一) 总耗时约 1 分钟, vs persistent 角色串行 6-10min. **8x 速度提升**.
 
 #### 派 review subagent 模板
 
@@ -220,8 +220,8 @@ repo: codetreker/<repo>. batch merge 多个 PR (顺序无关并发):
 
 #### 触发信号
 
-- reviewer 一波给多 PR LGTM (e.g. "**双批 LGTM 信号**: #380 + #382") → batch agent
-- 4 件套 acceptance 一波交多 PR (e.g. CV-3 + CHN-3 #376) → batch agent
+- reviewer 一波给多 PR LGTM (e.g. "双批 LGTM 信号: PR-A + PR-B") → batch agent
+- 4 件套 acceptance 一波交多 PR (e.g. 多 milestone 一波交) → batch agent
 
 #### 反模式
 
@@ -232,7 +232,7 @@ repo: codetreker/<repo>. batch merge 多个 PR (顺序无关并发):
 
 ## 跨 review 例子: 立场漂移抓出
 
-烈马 review #302 al-3 acceptance 时自检, 发现 acceptance template 字段名跟飞马 #301 spec brief 不一致 (Track vs TrackOnline / last_seen_at vs last_heartbeat_at), 当场 patch 5065e59 修齐, 不等审完。
+> **实战案例（Borgee）：** 烈马 review acceptance 时自检, 发现字段名跟飞马 spec brief 不一致 (字段改名未同步), 当场 patch 修齐。
 
 这就是双轨 review 起作用 — spec 写 A 形态, acceptance 自然按 A 写, drift 可以发现。
 
@@ -246,7 +246,7 @@ repo: codetreker/<repo>. batch merge 多个 PR (顺序无关并发):
 
 **操作反模式**:
 - ❌ LGTM 不读 PR 内容, 模板字面套话 (失去 cross-check 价值)
-- ❌ 实施 PR 把 acceptance template ⚪→🟢 翻牌写一起 (按 一 milestone 一 PR 协议, 翻牌跟实施同 PR; 不开 follow-up 翻牌 PR)
+- ✅ 翻牌 (acceptance ⚪→✅ / REG flip / PROGRESS [x]) 跟实施代码在同一 milestone PR 内完成，不开 follow-up PR
 - ❌ 跳过 PR template 5 字段 (lint 拒, 不要走 ## H2 重复 metadata 绕过)
 - ❌ merge agent 报告里出现 admin/ruleset/bypass 字眼 (透明度 + 红线警报)
 - ❌ self-LGTM 算双批 (同 GH 账号多 agent 评论 LGTM 不算 ≥1 non-author, 必须真 reviewer 不同身份)

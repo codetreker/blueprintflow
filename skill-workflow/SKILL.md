@@ -72,12 +72,13 @@ git fetch origin --prune
 
 - **只有飞马能开 PR 和合并**——其他角色通过 review comment 参与
 - **不直接推 main**——任何修改都走 PR
-- **PR 至少需要 1 个非作者 review**——最好全员都看
+- **PR 必须全员 vote 才能合并**——飞马、野马、战马、烈马、建军全部勾✅，缺任何一个 = 不合并
+- **整体阅读**——review 不能只看 diff，要看改完后的完整 skill 文件
 - **commit message 格式**：`docs(<skill-name>): <description>`
 
 ## 不适用
 
-- Borgee 项目代码修改（走 blueprintflow-git-workflow）
+- 实战项目代码修改（走 blueprintflow-git-workflow）
 - 其他项目的 skill（走各项目自己的流程）
 - 纯讨论（在频道讨论，结论再走 PR 固化）
 

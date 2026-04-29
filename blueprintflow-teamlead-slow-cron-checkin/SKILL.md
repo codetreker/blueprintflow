@@ -20,14 +20,14 @@ description: Teamlead 慢节奏巡检 (2-4h) — 偏差 audit + 文档/代码一
 - **但**代码引入新概念 (PR title 含 "新增" / "扩展" / "feat:" 但描述没引蓝图段) → 派架构师 audit, 看是否需回写蓝图
 
 ### 3. docs/current 跨 PR 累积偏差
-- `git diff main HEAD docs/current/ packages/server-go/internal/ packages/client/src/`
+- `git diff main HEAD docs/current/ <server-package>/ <client-package>/`
 - 规则 6 在 PR 级别强制, slow-cron 看跨 PR 累积
 - 有 server/client 改但 docs/current 没跟上 → 派 QA 补
 - 留账 N/A — <reason> 形式 opt-out 算正常 (跟规则 6 lint 一致), 但要看 reason 真的合理
 
 ### 4. 翻牌延迟
 - merged PR > 24h, acceptance template 还 ⚪ — 漏翻
-- 派 QA 翻牌 PR (跟 #287 / #289 / #315 / #320 同模式)
+- 派 QA 翻牌 PR 
 - regression-registry count 数学 audit (active + pending = 总计)
 
 ### 5. 已开 PR 任务完成度 audit (不只看 CI)

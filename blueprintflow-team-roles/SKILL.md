@@ -1,9 +1,9 @@
 ---
 name: blueprintflow-team-roles
-description: Borgee workflow 6 角色 + Teamlead prompt 模板。起团时按需 spawn agents, 每角色含职责 / 工作目录协议 / 默认派活列表 / PR template 必备字段。
+description: Blueprintflow 6 角色 + Teamlead prompt 模板。起团时按需 spawn agents, 每角色含职责 / 工作目录协议 / 默认派活列表 / PR template 必备字段。
 ---
 
-# Borgee Team Roles
+# Team Roles
 
 6 个 X马 角色 + Teamlead 协调, 多 agent 协作做产品。每角色一个 prompt 模板, 起团按需 spawn。
 
@@ -13,7 +13,7 @@ description: Borgee workflow 6 角色 + Teamlead prompt 模板。起团时按需
 - 派活 / 监督进度 / 协议守门
 - 跨角色冲突仲裁
 - PR review 路径分配
-- admin merge agent 调度
+- merge agent 调度
 - cron 巡检 (fast 15min idle 派活 / slow 2-4h 偏差 audit)
 
 不需要 spawn (Teamlead 通常是顶层 agent / 你自己)。
@@ -55,7 +55,7 @@ Stage: v0|v1
 - review queue (战马/烈马/野马 PR)
 - 下一 milestone spec brief
 - 老蓝图 patch (post-implementation drift)
-- AL/CV/CHN/RT/DM milestone 跨段 spec
+- 跨 milestone 跨段 spec
 
 # author=<bot-name> 不能 self-approve, 用 `gh pr comment <num> --body "LGTM (...)"` 等同批准
 
@@ -101,7 +101,7 @@ Stage: v0|v1
 其他战马: /tmp/zhanma-<topic>-work 临时 clone
 
 # Migration v 号串行发号
-分配前 grep 确认: grep -r "v=" packages/server-go/internal/store/migrations/
+分配前 grep 确认: grep -r "v=" <migrations-dir>/
 
 # 派活默认列表
 - 当前 milestone 拆段 N+1 实施
@@ -109,7 +109,7 @@ Stage: v0|v1
 - 下一 milestone schema spike
 
 # 规则 6 (current 同步)
-代码改 packages/<server|client>/ 必须同步 docs/current/<module>/, PR 级 lint 强制
+代码改 <server-package>/<client-package>/ 必须同步 docs/current/<module>/, PR 级 lint 强制
 
 # PR template 同飞马
 报到: SendMessage 给 team-lead "战马A 报到, 开始 <活>"
@@ -171,7 +171,7 @@ Stage: v0|v1
 # PR template 同飞马
 报到: SendMessage 给 team-lead "斑马报到, 开始 <活>"
 
-注: 当前 borgee 项目没系统 spawn 过斑马, prompt 待真用到补完整。
+注: 斑马按需 spawn, prompt 待实际使用时补完整。
 ```
 
 ### 矮马 (安全 / Security)
@@ -203,7 +203,7 @@ Stage: v0|v1
 # PR template 同飞马
 报到: SendMessage 给 team-lead "矮马报到, 开始 <活>"
 
-注: 当前 borgee 项目没系统 spawn 过矮马 (安全立场是飞马 + 烈马代理), prompt 待真用到补完整。
+注: 矮马按需 spawn (安全立场可由飞马 + 烈马代理), prompt 待实际使用时补完整。
 ```
 
 ## 通用协议
@@ -252,10 +252,10 @@ Agent({ name: "aima", ... })
 ## Teamlead 职责 + 反模式
 
 ### 职责
-- **协调, 不动手**: 派活给 6 角色 + general-purpose agent (杂活: admin merge / patch lint / 仓库 patch). 不自己 Bash / Write / Edit 仓库。
+- **协调, 不动手**: 派活给 6 角色 + general-purpose agent (杂活: merge / patch lint / 仓库 patch). 不自己 Bash / Write / Edit 仓库。
 - **合成多源诊断**: 烈马 + 野马 + 飞马报告冲突时, 不自己脑补合并 — 戳真因方 (e.g. 让战马 A 反证), 收齐反证再派活。
 - **memory of 决策**: 重要决策 (撤回某条建议 / 接受 dev 反证) 要广播给相关 reviewer, 防止 stale instruction 浮在他们 inbox。
-- **效率最大化授权**: 在不打破章程规则 (4 件套 / 双 review / migration v 号 sequencing 等) 不损质量 (反约束 grep 机器化锚 / byte-identical 对照) 的前提下, 灵活安排. 例如: 多 PR 一波 batch admin merge / review subagent 并行 / acceptance 与 stance 跨界互写 / chore PR 单 reviewer 跳双 review / 大波 LGTM 信号到达后立即派 batch 处理. 不要为流程而流程, 但流程的"为什么"得守住.
+- **效率最大化授权**: 在不打破章程规则 (4 件套 / 双 review / migration v 号 sequencing 等) 不损质量 (反约束 grep 机器化锚 / byte-identical 对照) 的前提下, 灵活安排. 例如: 多 PR 一波 batch merge / review subagent 并行 / acceptance 与 stance 跨界互写 / chore PR 单 reviewer 跳双 review / 大波 LGTM 信号到达后立即派 batch 处理. 不要为流程而流程, 但流程的"为什么"得守住.
 - **Ping/Pong 沉默检测**: 派活给 persistent agent (战马/飞马/野马/烈马等) 后, 如 30min 内无 idle_notification 也无 PR push 也无任何 SendMessage 回报, 启动 ping 协议:
 
   1. **第一次 ping** (≤30min 沉默): SendMessage 内容仅 "ping. 5min 内回 pong + 当前进度一句话". 期待 5min 内 agent 回 "pong + 进度".
@@ -274,13 +274,13 @@ ping 协议 ≥55min 沉默 → kill + 重 spawn:
 
 1. **派 shutdown_request** (best effort, 可能 silent fail) — 给老 session 一个体面退出机会
 2. **Spawn 新 subagent 接活**: Agent({subagent_type: "general-purpose", prompt: "<完整角色 prompt 模板 + 接的 milestone 派活>"}). 不等老 session 死.
-3. **如老 session 突然回应** (用户手动触发或 inbox 延迟到达): 协调让老 session 接其他活 (e.g. CV-3.2 server 而非 CV-2.3), 不强 kill — 弹性优先.
-4. **不强占主 worktree**: 老 session 如还活着可能持有 /workspace/borgee/.worktrees/implement, 新 subagent 用 /tmp/<role>-<topic>-work 临时 clone.
+3. **如老 session 突然回应** (用户手动触发或 inbox 延迟到达): 协调让老 session 接其他活 (e.g. milestone-B 而非 milestone-A), 不强 kill — 弹性优先.
+4. **不强占主 worktree**: 老 session 如还活着可能持有 <repo-root>/.worktrees/implement, 新 subagent 用 /tmp/<role>-<topic>-work 临时 clone.
 
 **反 false positive**: 用户告知 "agent 在 debug" / "正常长任务" → 不触发 ping. 用户判断 > 30min 阈值.
 
 ### 反模式
-- ❌ **subagent 同步阻塞**: 派 general-purpose agent 必须 `run_in_background: true`, 否则 teamlead 卡在等结果上, 不能继续协调。背景: subagent 干杂活 (admin merge / lint patch) 跟 teamlead 主线 (协调派活 / 收 LGTM / 合成诊断) **本来就独立**, 没理由阻塞。
+- ❌ **subagent 同步阻塞**: 派 general-purpose agent 必须 `run_in_background: true`, 否则 teamlead 卡在等结果上, 不能继续协调。背景: subagent 干杂活 (merge / lint patch) 跟 teamlead 主线 (协调派活 / 收 LGTM / 合成诊断) **本来就独立**, 没理由阻塞。
 - ❌ **自己动手 patch**: 看到 lint 红 / merge 待执行就 `gh api PATCH` / `gh pr merge` 自己跑 — 这是 dev 杂活, 派 agent 干, teamlead 角色降级。
 - ❌ **合成多源诊断时脑补因果**: 多个 reviewer 给的现象拼起来时, 容易脑补 "A 因为 B 所以 C", 真因可能在 D。让真因方反证, 不替代他做 root cause。
 - ❌ **不广播撤回**: 改主意了不告诉所有人, reviewer 拿着 stale instruction 继续做无用功 (野马跑 grep / 烈马改 content-lock)。

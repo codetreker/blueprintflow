@@ -1,11 +1,11 @@
 ---
 name: blueprintflow-workflow
-description: Borgee 工作流总览 — 多 agent 协作做产品的方法论。何时用 + 角色 + 阶段 + skill 索引。从 Borgee 项目跑通的通用工作流, 不限单一项目。
+description: 多 agent 协作工作流总览 — 多 agent 协作做产品的方法论。何时用 + 角色 + 阶段 + skill 索引。通用工作流, 不限单一项目。
 ---
 
-# Borgee Workflow
+# Blueprintflow Workflow
 
-从 Borgee 项目跑通的多 agent 协作工作流, 适合**做产品**: 从模糊概念到可发布软件, 6 角色 + Teamlead 协议推进。
+多 agent 协作工作流, 适合**做产品**: 从模糊概念到可发布软件, 6 角色 + Teamlead 协议推进。
 
 ## 心智模型: 城市工程
 
@@ -103,9 +103,9 @@ description: Borgee 工作流总览 — 多 agent 协作做产品的方法论。
 ### 阶段 4: 持续推进 + Phase 退出
 **目标**: idle 派活 + 偏差纠正 + Phase 退出 gate
 
-6. **blueprintflow:teamlead-fast-cron-checkin** — 15 min cron, idle 角色派活
-7. **blueprintflow:teamlead-slow-cron-checkin** — 2-4h cron, 偏差 audit
-8. **blueprintflow:phase-exit-gate** — Phase 收尾联签 + closure announcement
+7. **blueprintflow:teamlead-fast-cron-checkin** — 15 min cron, idle 角色派活
+8. **blueprintflow:teamlead-slow-cron-checkin** — 2-4h cron, 偏差 audit
+9. **blueprintflow:phase-exit-gate** — Phase 收尾联签 + closure announcement
 
 ## tmux 起团窗格排版
 

@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-brainstorm
-description: 概念层多轮讨论 driver — Teamlead 主持 PM + Architect 锁立场 + 概念 + 反约束。新模块 / 新立场 / 蓝图改动前必走。
+description: 多轮讨论锁产品立场和反约束。新产品起步/新模块加入/蓝图改动前触发。
 ---
 
 # Brainstorm

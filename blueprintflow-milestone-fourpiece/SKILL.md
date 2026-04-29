@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-milestone-fourpiece
-description: Milestone 启动 4 件套 (spec/stance/acceptance/content-lock), 跟实施代码一起在**一个 PR** 里落 — 不再拆多个 docs PR。
+description: Milestone 实施前的 4 个基线文档 + 代码一次合入一 PR。Phase plan 拆完 milestone 后触发。
 ---
 
 # Milestone 4 件套

@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-phase-exit-gate
-description: Phase 收尾 — 4 角色联签 PR + closure announcement + 留账 PR # 锁规则 6。条件性 ✅ SIGNED 模式允许 partial signoff。
+description: Phase 收尾：4 角色联签 + closure announcement。Phase 内所有 milestone 完成后触发。
 ---
 
 # Phase Exit Gate

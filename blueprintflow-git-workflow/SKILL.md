@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-git-workflow
-description: Milestone git 工作流硬规范 — 一 milestone 一 worktree + 一 branch, teamlead 唯一开 PR 角色, 全员同 worktree 叠 commit, 不开 docs/spec/acceptance follow-up PR。
+description: Git 协作规范：一 milestone 一 worktree 一 PR，teamlead 唯一开 PR。milestone 启动时触发。
 ---
 
 # Git Workflow (Milestone 协议)

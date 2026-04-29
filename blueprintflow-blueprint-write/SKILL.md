@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-blueprint-write
-description: 概念锁定后, Architect + PM 落蓝图模板 - 核心立场 / 概念模型 / 反约束 / v0/v1 边界。docs/blueprint/*.md 是产品形状的 source of truth。
+description: 把讨论锁定的立场落成蓝图文档（docs/blueprint/）。brainstorm 收敛后触发。
 ---
 
 # Blueprint Write

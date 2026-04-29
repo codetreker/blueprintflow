@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-team-roles
-description: Blueprintflow 6 角色 + Teamlead prompt 模板。起团时按需 spawn agents, 每角色含职责 / 工作目录协议 / 默认派活列表 / PR template 必备字段。
+description: 6 角色 prompt 模板（架构/PM/Dev/QA/设计/安全）+ Teamlead 职责定义。起团 spawn agents 时触发。
 ---
 
 # Team Roles

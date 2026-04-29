@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-phase-exit-gate
-description: Phase 收尾流程——严格闸验收 + 4 角色联签 + closure announcement。触发：Phase 内所有 milestone 完成，准备退出进入下一 Phase 时。
+description: Phase 收尾 — 4 角色联签 PR + closure announcement + 留账 PR # 锁规则 6。条件性 ✅ SIGNED 模式允许 partial signoff。
 ---
 
 # Phase Exit Gate

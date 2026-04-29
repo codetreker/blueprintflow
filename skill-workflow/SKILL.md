@@ -1,6 +1,6 @@
 ---
 name: skill-workflow
-description: Blueprintflow skill 自身的更新流程——飞马开 worktree、提 PR、全员 vote、合并。触发：需要新增、修改或删除 blueprintflow skill 时。
+description: Blueprintflow skill 更新流程。飞马开 worktree + draft → 提 PR → 全员 review → 飞马合并 → 清理。适用于 blueprintflow skill 的任何修改（新增、修改、删除）。
 ---
 
 # Skill Workflow

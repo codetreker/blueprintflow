@@ -11,7 +11,7 @@
 | BPF-004 | team-roles prompt 模板：/tmp clone → git worktree 统一 | Ready | 飞马 | — |
 | BPF-005 | 工作量/时间评估按 agent 效率而非人类效率（如 ≤3天/≤500行 等约束重新标定） | Ready | 飞马 | — |
 | BPF-006 | 区分工作模式：subagent / Claude Code team / OpenClaw 多 agent / tmux 等，规则尽量通用，特定特性显式标注模式依赖 | Ready | 飞马 | — ||
-| BPF-001 | 通用化改造（解除 Borgee 绑定） | In Review | 飞马 | [#1](https://github.com/codetreker/blueprintflow/pull/1) |
+| BPF-001 | 通用化改造（解除 Borgee 绑定） | Done | 飞马 | [#1](https://github.com/codetreker/blueprintflow/pull/1) |
 | BPF-002 | Description 重写（做什么 + 触发条件） | Ready | 飞马 | — |
 | BPF-003 | X马 → Role 名 + "角色≠人" 说明 | Ready | 飞马 | — |
 | BPF-004 | team-roles prompt 模板：/tmp clone → git worktree | Ready | 飞马 | — |

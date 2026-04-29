@@ -5,6 +5,11 @@
 
 | ID | 任务 | 状态 | Owner | PR |
 |----|------|------|-------|----||
+| BPF-001 | 通用化改造：解绑 Borgee 特定内容 | In Review | 飞马 | [#1](https://github.com/codetreker/blueprintflow/pull/1) |
+| BPF-002 | Description 重写：统一「做什么 + 触发条件」结构 | Ready | 飞马 | — |
+| BPF-003 | X马→Role：角色名通用化 + Role ≠ Person 明确化 | Ready | 飞马 | — |
+| BPF-004 | team-roles prompt 模板：/tmp clone → git worktree 统一 | Ready | 飞马 | — ||
 | BPF-001 | 通用化改造（解除 Borgee 绑定） | In Review | 飞马 | [#1](https://github.com/codetreker/blueprintflow/pull/1) |
 | BPF-002 | Description 重写（做什么 + 触发条件） | Ready | 飞马 | — |
 | BPF-003 | X马 → Role 名 + "角色≠人" 说明 | Ready | 飞马 | — |
+| BPF-004 | team-roles prompt 模板：/tmp clone → git worktree | Ready | 飞马 | — |

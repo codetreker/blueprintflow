@@ -43,7 +43,7 @@ description: Borgee 工作流总览 — 多 agent 协作做产品的方法论。
 
 不适合:
 - 单 agent / 小任务 (overhead 太重)
-- 纯 bug fix (走 PR review + admin merge 即可)
+- 纯 bug fix (走 PR review + 标准 squash merge 即可, 永远不 admin/ruleset bypass)
 - 已有产品的运维 / oncall
 
 ## 4 层结构
@@ -92,10 +92,11 @@ description: Borgee 工作流总览 — 多 agent 协作做产品的方法论。
 产出: PROGRESS.md ready, Phase 1/2/3+ 拆段清晰
 
 ### 阶段 3: milestone 实施 (主战场)
-**目标**: 每 milestone 落 4 件套 → 拆段实施 ≤3 PR → 全 merged 闭环
+**目标**: 每 milestone 一 worktree + 一 branch + 一 PR — teamlead 创 worktree, 全员叠 commit, teamlead 唯一开 PR, merged 后 teamlead 删 worktree
 
-4. **blueprintflow:milestone-fourpiece** — 4 件套并行 (spec / stance / acceptance / content-lock)
-5. **blueprintflow:pr-review-flow** — PR open 后双 review + admin merge + follow-up 翻牌
+4. **blueprintflow:git-workflow** — git 协议: 一 milestone 一 worktree, 角色不开 PR, teamlead 唯一开 PR
+5. **blueprintflow:milestone-fourpiece** — 4 件套全员同 worktree 叠 commit (spec / stance / acceptance / content-lock 都进同一 PR)
+6. **blueprintflow:pr-review-flow** — PR (teamlead 开) 后双 review + 标准 squash merge (永远不 admin/ruleset bypass)
 
 产出: milestone 全 merged + acceptance template ⚪→🟢 翻牌 + REG-* 寄存
 
@@ -160,8 +161,10 @@ tmux attach -t $SESSION
 
 ## 关键协议
 
-- **Worktree 隔离**: 主 worktree 给战马 in-flight (一次只一个), 其他用 `/tmp/<name>-<topic>` 临时 clone
-- **PR template 顶部 4 行裸 metadata**: `Blueprint: §X.Y` / `Touches:` / `Current 同步:` / `Stage: v0|v1`
+- **Git workflow** (见 `blueprintflow-git-workflow`): teamlead 唯一创建 `.worktrees/<milestone>` + branch `feat/<milestone>`, 全员同 worktree 叠 commit, **角色不开 PR, teamlead 唯一开 PR**, PR merged 后 teamlead 删 worktree.
+- **一 milestone 一 PR**: 4 件套 + 三段实施 + e2e + docs/current sync + REG flip + acceptance ⚪→✅ + PROGRESS [x] **全在同一 PR**, 不拆多 PR. 不开 closure follow-up.
+- **PR 合并永远不 admin bypass / 不 ruleset disable** (硬红线, 见 pr-review-flow): CI 必须真过, flaky 真修不绕 (含 PR template lint 误报 / e2e flaky / coverage 卡线 — 都修不绕)
+- **PR template 顶部 4 行裸 metadata**: `Blueprint: §X.Y` / `Touches:` / `Current 同步:` / `Stage: v0|v1` (或 h2 章节式)
 - **Migration v 号串行发号** (如适用): 分配前先 grep 确认
 - **规则 6 (current 同步)**: 代码改 → docs/current 必同步, PR 级 lint 强制
 - **立场漂移 5 层防御**: spec grep + acceptance 反查锚 + stance 黑名单 + content-lock byte-identical + PR 跨文件 cross-check
@@ -172,7 +175,7 @@ tmux attach -t $SESSION
 - ❌ 跳过 4 件套直接实施 (立场漂移无法抓)
 - ❌ 一个角色多 milestone 并行 (worktree 冲突)
 - ❌ 把 audit 当推进 (audit + 派活才是)
-- ❌ ruleset 兜底跑 e2e 真 fail PR (掩盖 bug)
+- ❌ **任何形式的 admin merge / ruleset disable / bypass required CI** (永久禁, 不接受 "临时" / "兜底" 借口)
 - ❌ idle 不派活 (cron 必须 ACT)
 
 ## 起步

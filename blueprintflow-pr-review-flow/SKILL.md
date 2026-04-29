@@ -246,7 +246,7 @@ repo: codetreker/<repo>. batch merge 多个 PR (顺序无关并发):
 
 **操作反模式**:
 - ❌ LGTM 不读 PR 内容, 模板字面套话 (失去 cross-check 价值)
-- ❌ 实施 PR 把 acceptance template ⚪→🟢 翻牌写一起 (按 一 milestone 一 PR 协议, 翻牌跟实施同 PR; 不开 follow-up 翻牌 PR)
+- ✅ 翻牌 (acceptance ⚪→✅ / REG flip / PROGRESS [x]) 跟实施代码在同一 milestone PR 内完成，不开 follow-up PR
 - ❌ 跳过 PR template 5 字段 (lint 拒, 不要走 ## H2 重复 metadata 绕过)
 - ❌ merge agent 报告里出现 admin/ruleset/bypass 字眼 (透明度 + 红线警报)
 - ❌ self-LGTM 算双批 (同 GH 账号多 agent 评论 LGTM 不算 ≥1 non-author, 必须真 reviewer 不同身份)

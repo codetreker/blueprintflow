@@ -23,7 +23,7 @@ ln -s $(pwd)/<repo>/skills/blueprintflow-workflow ~/.claude/skills/blueprintflow
 | [blueprintflow-workflow](blueprintflow-workflow/SKILL.md) | 起步 | workflow 总览 + 何时用 + 角色 + 阶段索引 |
 | [blueprintflow-team-roles](blueprintflow-team-roles/SKILL.md) | 起团 | 6 X马 角色 prompt 模板 (架构师/PM/Dev/QA/设计/安全) |
 | [blueprintflow-milestone-fourpiece](blueprintflow-milestone-fourpiece/SKILL.md) | milestone 启动 | 4 件套并行 (spec / stance / acceptance / content-lock) |
-| [blueprintflow-pr-review-flow](blueprintflow-pr-review-flow/SKILL.md) | PR open | 双 review + 标准 squash merge + ruleset 兜底 |
+| [blueprintflow-pr-review-flow](blueprintflow-pr-review-flow/SKILL.md) | PR open | 双 review + 标准 squash merge |
 | [blueprintflow-teamlead-fast-cron-checkin](blueprintflow-teamlead-fast-cron-checkin/SKILL.md) | 15min cron | idle 派活, 不只 audit |
 | [blueprintflow-teamlead-slow-cron-checkin](blueprintflow-teamlead-slow-cron-checkin/SKILL.md) | 2-4h cron | 偏差 audit + 文档/代码一致性 + 翻牌延迟 |
 | [blueprintflow-phase-plan](blueprintflow-phase-plan/SKILL.md) | Phase 启动 | Phase 拆 + 退出 gate + 4 道防偏离闸门 |

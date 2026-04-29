@@ -53,7 +53,7 @@ partial 闸 (e.g. 留账闸) 挂占号 PR # — 不是空头措辞, 必须真 PR
 每角色拉新 branch `docs/<role>-phase-N-cosign`, edit announcement §7 自己那行加 ✅ + 日期 + 锚点。
 
 ### Step 4: 占号 PR 全 merged 后再合联签 4 PR
-留账闸 PR # 锁的占号 PR 必须先 merged, 然后联签 4 PR 一波 admin merge。
+留账闸 PR # 锁的占号 PR 必须先 merged, 然后联签 4 PR 一波标准 squash merge。
 
 ### Step 5: closure announcement v2 + Phase N+1 启动
 - patch announcement 加 §9 关闭宣布段 (date + 留账明细 + Phase N+1 entry 解封信号)

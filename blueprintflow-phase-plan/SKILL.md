@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-phase-plan
-description: 蓝图 ready 后, 把项目拆成 Phase + 退出 gate + 4 道防偏离闸门。落地 PROGRESS.md + execution-plan + roadmap。
+description: 把蓝图拆成多个 Phase（按价值闭环），定义退出 gate 和防偏离闸门。触发：蓝图 ready 后，需要拆实施计划时。
 ---
 
 # Phase Plan

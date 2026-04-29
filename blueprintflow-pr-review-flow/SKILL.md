@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-pr-review-flow
-description: PR open 后 review + merge 流程 — 双 review 路径 / LGTM 模板 / 标准 squash merge / **永久禁** admin bypass + ruleset disable。
+description: PR 从 open 到 merged 的标准流程——双 review 路径、review subagent 并行、标准 squash merge。触发：PR open 后需要 review 和合并时。
 ---
 
 # PR Review Flow

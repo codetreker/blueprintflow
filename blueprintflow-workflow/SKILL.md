@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-workflow
-description: 多 agent 协作工作流总览 — 多 agent 协作做产品的方法论。何时用 + 角色 + 阶段 + skill 索引。通用工作流, 不限单一项目。
+description: 多 agent 协作做产品的完整工作流。覆盖从概念到发布的 4 层结构（概念→计划→实施→协调）。触发：新产品/大功能/大 refactor 起步时，或需要确认该走哪个 skill 时。
 ---
 
 # Blueprintflow Workflow

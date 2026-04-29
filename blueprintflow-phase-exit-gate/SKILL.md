@@ -23,6 +23,8 @@ partial 闸 (e.g. 留账闸) 挂占号 PR # — 不是空头措辞, 必须真 PR
 
 公告 title 锁 "条件性全过", 不写"全过" (诚实工程)。
 
+> **实战案例（Borgee）：** Phase 2 退出 5 SIGNED + 3 PARTIAL + 2 DEFERRED → "条件性全过"。
+
 ### 4. 4 角色联签
 每个角色独立 PR signoff :
 - Architect (飞马): readiness review 拍 ✅, 引 PR 锚点

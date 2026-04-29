@@ -5,7 +5,9 @@ description: 概念层多轮讨论 driver — Teamlead 主持 PM + Architect 锁
 
 # Brainstorm
 
-模糊产品 idea → 可写蓝图的核心立场 + 概念模型 + 反约束。Teamlead 主持 PM + Architect (按需 + Designer / Security), 多轮讨论, 每轮锁 1-2 个概念。
+模糊产品 idea → 可写蓝图的核心立场 + 概念模型 + 反约束。Teamlead 主持 PM + Architect (按需 + Designer / Security), 多轮讨论 (通常 5-15 轮), 每轮锁 1-2 个概念。
+
+> **实战案例（Borgee）：** 跑了 11 轮 brainstorm，锁 14 条核心立场。
 
 ## 何时用
 

@@ -5,9 +5,10 @@
 
 | ID | 任务 | 状态 | Owner | PR |
 |----|------|------|-------|----|
-| BPF-001 | 通用化改造（解除 Borgee 绑定） | Done | 飞马 | [#1](https://github.com/codetreker/blueprintflow/pull/1) |
-| BPF-002 | Description 重写（做什么 + 触发条件） | In Progress | 飞马 | [#2](https://github.com/codetreker/blueprintflow/pull/2) |
-| BPF-003 | X马 → Role 名 + "角色≠人" 说明 | Ready | 飞马 | — |
-| BPF-004 | team-roles prompt 模板：/tmp clone → git worktree | Ready | 飞马 | — |
-| BPF-005 | 工作量/时间评估按 agent 效率，不按人类 | Ready | 飞马 | — |
-| BPF-006 | 区分工作模式（subagent/CC team/真多 agent/tmux） | Ready | 飞马 | — |
+| BPF-001 | 通用化改造（解除 Borgee 绑定） | Done | Architect | [#1](https://github.com/codetreker/blueprintflow/pull/1) |
+| BPF-002 | Description 重写（做什么 + 触发条件 + 触发词） | Done | Architect | [#2](https://github.com/codetreker/blueprintflow/pull/2) |
+| BPF-003 | 角色 → Role 名 + "角色≠人" 说明 | In Progress | Architect | [#3](https://github.com/codetreker/blueprintflow/pull/3) |
+| BPF-004 | team-roles prompt 模板：/tmp clone → git worktree | Ready | Architect | — |
+| BPF-005 | 工作量/时间评估按 agent 效率，不按人类 | Ready | Architect | — |
+| BPF-006 | 区分工作模式（subagent/CC team/真多 agent/tmux） | Ready | Architect | — |
+| BPF-007 | Service 项目每个 milestone deploy 到 test 环境验证 | Ready | Architect | — |

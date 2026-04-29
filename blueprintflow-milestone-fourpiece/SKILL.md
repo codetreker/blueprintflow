@@ -9,14 +9,14 @@ description: Milestone 实施前建立 4 件基线文档（spec/stance/acceptanc
 
 **git workflow 配套** (见 `blueprintflow-git-workflow`):
 - teamlead 创建 `.worktrees/<milestone>` + branch `feat/<milestone>`
-- 4 件套作者 (飞马/烈马/野马) **不单独开 PR** — 全员在同一 worktree 叠 commit
+- 4 件套作者 (Architect/QA/PM) **不单独开 PR** — 全员在同一 worktree 叠 commit
 - 全员 commit 完 → teamlead 唯一开 PR
 
 **反例 (旧做法)**: 一个 milestone 拆 8-10 PR, 每个双 review + CI + rebase + §5 totals 串行写竞争 + closure follow-up 拖尾. 实际比"一 PR 整 milestone"慢得多.
 
 ## 4 件套
 
-### 1. 飞马 spec brief
+### 1. Architect spec brief
 **Path**: `docs/implementation/modules/<milestone>-spec.md` (≤80 行)
 
 结构:
@@ -28,7 +28,7 @@ description: Milestone 实施前建立 4 件基线文档（spec/stance/acceptanc
 
 > **实战案例（Borgee）：** spec brief 实例参考 RT-1 / CHN-1 / AL-3 / CV-1 / AL-4，每篇 50-80 行，含 schema + server + client 拆段。
 
-### 2. 野马 stance checklist
+### 2. PM stance checklist
 **Path**: `docs/qa/<milestone>-stance-checklist.md` (≤80 行)
 
 结构:
@@ -36,7 +36,7 @@ description: Milestone 实施前建立 4 件基线文档（spec/stance/acceptanc
 - 黑名单 grep + 不在范围 + 验收挂钩
 - v0/v1 transition criteria (如需要, 按 v1 transition 同模式 PR # 锁规则)
 
-### 3. 烈马 acceptance template
+### 3. QA acceptance template
 **Path**: `docs/qa/acceptance-templates/<milestone>.md` (≤50 行)
 
 结构:
@@ -45,7 +45,7 @@ description: Milestone 实施前建立 4 件基线文档（spec/stance/acceptanc
 - REG-* 寄存器 占号 (留 ⚪ 等实施翻 🟢)
 - 反查锚 + 退出条件
 
-### 4. 野马 content lock (仅 client UI milestone 必备)
+### 4. PM content lock (仅 client UI milestone 必备)
 **Path**: `docs/qa/<milestone>-content-lock.md` (≤40 行)
 
 结构:
@@ -53,7 +53,7 @@ description: Milestone 实施前建立 4 件基线文档（spec/stance/acceptanc
 - 反约束: 同义词禁词 + 反向 grep
 - demo 截屏路径预备
 
-如 milestone 涉及视觉新组件, 跟斑马 design system 联动 (未来扩展)。
+如 milestone 涉及视觉新组件, 跟Designer design system 联动 (未来扩展)。
 
 ## 4 件套间字面一致硬条件
 
@@ -72,10 +72,10 @@ git worktree add .worktrees/<milestone> -b feat/<milestone> origin/main
 ```
 
 ```
-2. 派飞马 (在 .worktrees/<milestone> 里): spec brief, commit + push, 不开 PR
-3. 派野马 (同 worktree): stance checklist + content lock, commit + push, 不开 PR
-4. 派烈马 (同 worktree): acceptance template, commit + push, 不开 PR
-5. 派战马 (同 worktree): 三段实施 + e2e + docs/current sync + REG/acceptance/PROGRESS 翻牌, commit + push, 不开 PR
+2. 派 Architect (在 .worktrees/<milestone> 里): spec brief, commit + push, 不开 PR
+3. 派 PM (同 worktree): stance checklist + content lock, commit + push, 不开 PR
+4. 派 QA (同 worktree): acceptance template, commit + push, 不开 PR
+5. 派 Dev (同 worktree): 三段实施 + e2e + docs/current sync + REG/acceptance/PROGRESS 翻牌, commit + push, 不开 PR
 6. 全员就绪 → teamlead 唯一开 PR (gh pr create)
 7. PR merged → teamlead 删 worktree
 ```
@@ -85,14 +85,14 @@ git worktree add .worktrees/<milestone> -b feat/<milestone> origin/main
 ## 拆段实施 (在同一 PR 内顺序提交)
 
 全员在**同一 worktree + 同一 branch** 内叠 commit (角色都不开 PR, teamlead 最后开):
-- 1.1 schema (migration v=N + 表 + drift test) — 战马
-- 1.2 server (API + 业务逻辑 + 反向断言 test) — 战马
-- 1.3 client (SPA UI + e2e Playwright) — 战马
-- 1.4 docs/current sync (server / client docs) — 战马
-- 1.5 REG-* 翻 🟢 + acceptance template ⚪→✅ + PROGRESS [x] — 烈马 / 战马
-- (并行) spec brief — 飞马
-- (并行) stance + content lock — 野马
-- (并行) acceptance template — 烈马
+- 1.1 schema (migration v=N + 表 + drift test) — Dev
+- 1.2 server (API + 业务逻辑 + 反向断言 test) — Dev
+- 1.3 client (SPA UI + e2e Playwright) — Dev
+- 1.4 docs/current sync (server / client docs) — Dev
+- 1.5 REG-* 翻 🟢 + acceptance template ⚪→✅ + PROGRESS [x] — QA / Dev
+- (并行) spec brief — Architect
+- (并行) stance + content lock — PM
+- (并行) acceptance template — QA
 
 worktree 协议:
 
@@ -127,6 +127,6 @@ acceptance ⚪→✅ + REG-* + PROGRESS [x] 都在实施 PR 内同 commit 落. *
 - ❌ 一个 milestone 多个 branch (撞车 + 历史脏)
 - ❌ **文案锁早于实施太久, 不跟既有实施 cross-grep**
 
-  **背景**: 文案锁草稿期写的字面跟既有实施不一致, 文案锁字面没跟既有实施 cross-grep, 后续实施对齐了既有代码 (合理), 文案锁文档变孤儿。
+ **背景**: 文案锁草稿期写的字面跟既有实施不一致, 文案锁字面没跟既有实施 cross-grep, 后续实施对齐了既有代码 (合理), 文案锁文档变孤儿。
 
-  **如何应用**: 写文案锁前必跑 grep 反查既有实施: `grep -rnE "<候选字面>" <client-package>/ <server-package>/`. 如有命中既有字面, 文案锁字面跟它对齐, 不要按草稿臆想字面写; 如既有实施跟立场冲突, 应同步改实施 + 文案锁两边 byte-identical.
+ **如何应用**: 写文案锁前必跑 grep 反查既有实施: `grep -rnE "<候选字面>" <client-package>/ <server-package>/`. 如有命中既有字面, 文案锁字面跟它对齐, 不要按草稿臆想字面写; 如既有实施跟立场冲突, 应同步改实施 + 文案锁两边 byte-identical.

@@ -57,7 +57,7 @@ PR template lint 5 字段缺任一 → 红, 走 lint patch 流程修 (修 body /
 
 ## 双 review 路径
 
-每 PR ≥30 min 内派双 review:
+每 PR 立即派双 review:
 
 | PR 类型 | reviewer 1 | reviewer 2 | reviewer 3 (可选) |
 |---|---|---|---|

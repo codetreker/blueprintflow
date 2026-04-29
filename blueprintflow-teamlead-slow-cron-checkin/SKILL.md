@@ -11,7 +11,7 @@ description: Teamlead 2-4 小时慢巡检：蓝图偏差 audit + 文档/代码�
 
 ### 1. PROGRESS.md 时效性
 - 读 `docs/implementation/PROGRESS.md`, 看 Phase / milestone 行 ✅/⚪/🔄 状态
-- 跟最近 24h merged PR 对账, 有 PR merged 但 PROGRESS 没翻 → 派架构师补 (≤30 LOC doc PR)
+- 跟最近 2-4h merged PR 对账, 有 PR merged 但 PROGRESS 没翻 → 派架构师补 (≤30 LOC doc PR)
 - Phase 概览行特别盯 (容易漂)
 
 ### 2. Blueprint 偏差扫描
@@ -26,7 +26,7 @@ description: Teamlead 2-4 小时慢巡检：蓝图偏差 audit + 文档/代码�
 - 留账 N/A — <reason> 形式 opt-out 算正常 (跟规则 6 lint 一致), 但要看 reason 真的合理
 
 ### 4. 翻牌延迟
-- merged PR > 24h, acceptance template 还 ⚪ — 漏翻
+- merged PR 超过 2-4h, acceptance template 还 ⚪ — 漏翻
 - 派 QA 翻牌 PR 
 - regression-registry count 数学 audit (active + pending = 总计)
 
@@ -44,7 +44,7 @@ description: Teamlead 2-4 小时慢巡检：蓝图偏差 audit + 文档/代码�
 - 4 件套 spec 在 main 旧 PR, 没 cherry-pick 进 milestone worktree → 派 Architect commit 进 worktree
 
 ## out-of-date 红线 (兜底)
-- 任一蓝图文件 mtime > 7 天且对应 milestone 在最近 PR 推进 → 派架构师在该蓝图文件加 "Last reviewed: <date>" 行
+- 任一蓝图文件 mtime > 1 天且对应 milestone 在最近 PR 推进 → 派架构师在该蓝图文件加 "Last reviewed: <date>" 行
 - 防"蓝图躺坟"式漂移
 
 ## 输出格式

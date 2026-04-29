@@ -101,7 +101,7 @@ Stage: v0|v1
 其他战马: /tmp/zhanma-<topic>-work 临时 clone
 
 # Migration v 号串行发号
-分配前 grep 确认: grep -r "v=" <server-package>/internal/store/migrations/
+分配前 grep 确认: grep -r "v=" <migrations-dir>/
 
 # 派活默认列表
 - 当前 milestone 拆段 N+1 实施

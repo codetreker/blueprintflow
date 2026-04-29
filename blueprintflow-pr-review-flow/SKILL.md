@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-pr-review-flow
-description: PR 双 review + 标准 squash merge 流程。PR open 后触发。
+description: PR 从 open 到 merged 的标准流程：双 review 路径 + review subagent 并行 + 标准 squash merge。前提：项目已采用 blueprintflow 工作流。触发词：PR review、LGTM、merge PR、双 review。触发场景：PR open 后需要 review 和合并时。
 ---
 
 # PR Review Flow

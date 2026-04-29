@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-teamlead-fast-cron-checkin
-description: Teamlead 15 分钟快巡检：检查 idle 角色并派新活。每 15 分钟 cron 自动触发。
+description: Teamlead 15 分钟快巡检：检查 idle 角色并派新活，不只做 audit。前提：blueprintflow 工作流已激活。触发词：快巡检、idle 派活、15 分钟。触发场景：每 15 分钟 cron 自动触发。
 ---
 
 # Teamlead 快节奏巡检 (fast cron)

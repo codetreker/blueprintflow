@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-brainstorm
-description: 多轮讨论锁产品立场和反约束。新产品起步/新模块加入/蓝图改动前触发。
+description: 概念层多轮讨论，把模糊 idea 锁成可写蓝图的核心立场 + 反约束。前提：项目已采用 blueprintflow 工作流。触发词：brainstorm、讨论立场、锁概念、新模块讨论。触发场景：新产品起步/新模块加入/蓝图改动前。
 ---
 
 # Brainstorm

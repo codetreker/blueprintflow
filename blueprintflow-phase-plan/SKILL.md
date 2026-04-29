@@ -59,7 +59,7 @@ digraph phase_plan_preflight {
 3. **团队 collaborator < 3** (任务大小轴) → 跳过 4 角色 dual review (单人迭代场景)
    - 检查: 仓库实际 active contributor 数 (`gh api repos/:owner/:repo/contributors | jq length`) < 3
    - 理由: 4 件套 + 双 review 路径假设 PM / Dev / QA / Architect 多人协作; 单人 / 双人项目走不起 4 角色, 自审即可
-   - 反约束: AI agent 团队 (Borgee 模式: 1 human + 6 X马 agent) **不算单人** — agent 履行多角色协作, 走完整流程
+   - 反约束: AI agent 团队 (如 1 human + 6 X马 agent) **不算单人** — agent 履行多角色协作, 走完整流程
 
 4. **项目缺 `docs/blueprint/` 目录** (任务大小轴) → 重定向到 `blueprintflow:brainstorm` 锁立场再回来
    - 检查: `test -d docs/blueprint/ && ls docs/blueprint/*.md | wc -l` ≥ 1
@@ -73,8 +73,6 @@ digraph phase_plan_preflight {
 - ❌ 4 条决策点用 \"或\" 短路: 必须按图顺序走 (改动量 → 修改类型 → 团队规模 → 蓝图 ready), 后置条件依赖前置确认
 - ❌ 借 hotfix / dep bump 类型轴永久绕 4 件套: 修完 7 天内必须补 retro PR (跟决策点 2 反约束一致)
 
-
-
 ## Phase 拆分原则
 
 按**价值闭环**拆, 不按技术层:
@@ -82,19 +80,20 @@ digraph phase_plan_preflight {
 - ❌ 错: Phase 1 schema / Phase 2 server / Phase 3 client (技术层, 没价值)
 - ✅ 对: Phase 1 身份闭环 / Phase 2 协作闭环 / Phase 3 第二维度产品 / Phase 4+ 剩余 (每 Phase 独立可演示)
 
-**Borgee 实例**:
-- Phase 0 基建 (INFRA-1)
-- Phase 1 身份闭环 (CM-1 + AP-0 + CM-3) — 一人一 org, 注册即用
-- Phase 2 协作闭环 ⭐ (CM-4 邀请 + 通知) — 多人多 agent 协作
-- Phase 3 第二维度产品 (CHN + CV) — channel + canvas
-- Phase 4+ 剩余模块
+> **实战案例（Borgee）：**
+> **实战案例（Borgee）：**
+> - Phase 0 基建
+> - Phase 1 身份闭环 — 注册即用
+> - Phase 2 协作闭环 ⭐ — 多人协作
+> - Phase 3 第二维度产品
+> - Phase 4+ 剩余模块
 
 ## 退出 gate 设计
 
 每 Phase 必须有**机器化** + **用户感知**双轨退出条件:
 
 ### 严格闸 (机器化)
-- e.g. G2.0 cookie 串扰反向断言 / G2.3 节流单测 / G2.6 lint 通过
+- e.g. 如 cookie 串扰反向断言 / 节流单测 / lint 通过
 
 ### 用户感知闸 (signoff)
 - 标志性 milestone 跑 demo + 野马签字 + 关键截屏
@@ -103,8 +102,6 @@ digraph phase_plan_preflight {
 ### 留账闸 (允许 partial signoff)
 - 不阻塞 Phase 退出, 但必须挂 Phase N+1 PR # 编号锁 (规则 6)
 - e.g. G2.5 留 Phase 4 AL-3 + G2.6 留 Phase 4 BPP-1 lint
-
-实例: Phase 2 退出 announcement (#268) 5 SIGNED + 3 PARTIAL + 2 DEFERRED, 全挂 Phase 4 PR # 编号锁。
 
 ## 4 道防偏离闸门
 
@@ -125,7 +122,7 @@ digraph phase_plan_preflight {
 - **00-foundation/execution-plan.md** — 5 Phase + 退出 gate + 4 道闸门
 - **00-foundation/roadmap.md** — 缩略图 + 首波 demo 路径
 - **00-foundation/how-to-write-milestone.md** — milestone 模板 + acceptance 四选一
-- **modules/** — 11 模块大纲, 每 milestone 拆到 PR 级 (≤ 3 天 / ≤ 500 行)
+- **modules/** — N 模块大纲, 每 milestone 拆到 PR 级 (≤ 3 天 / ≤ 500 行)
 
 ## PROGRESS.md 模板
 
@@ -133,8 +130,8 @@ digraph phase_plan_preflight {
 | Phase | 状态 | 退出条件 | 备注 |
 |-------|------|---------|------|
 | Phase 0 基建闭环 | ✅ DONE | G0.x 全过 | 起步 |
-| Phase 1 身份闭环 | ✅ DONE | G1.x 全过 | CM-1+AP-0+CM-3 |
-| Phase 2 协作闭环 ⭐ | 🔄/✅ | 严格 N + 留账挂 Phase 4 PR # | CM-4 ⭐ |
+| Phase 1 身份闭环 | ✅ DONE | G1.x 全过 | <milestone-ids> |
+| Phase 2 协作闭环 ⭐ | 🔄/✅ | 严格 N + 留账挂 Phase 4 PR # | <milestone-id> ⭐ |
 | Phase 3 第二维度 | TODO | G3.x + 野马签字 | 等 Phase 2 |
 | Phase 4+ 剩余 | TODO | G4.audit | 等 Phase 3 |
 ```

@@ -11,12 +11,12 @@ description: 概念锁定后, Architect + PM 落蓝图模板 — 核心立场 / 
 
 `docs/blueprint/` 目录下:
 
-- **README.md** — 14 条核心立场清单 (产品立场最权威表达)
+- **README.md** — N 条核心立场清单 (产品立场最权威表达)
 - **concept-model.md** — 一等概念 (e.g. org / human / agent / channel) + 关系
 - **<module>.md** — 每模块产品形状 (e.g. admin-model / channel-model / agent-lifecycle / canvas-vision / plugin-protocol / realtime / auth-permissions / data-layer / client-shape)
 - **onboarding-journey.md** — 用户首次使用旅程
 
-Borgee 实例: 11 篇蓝图 + 14 条核心立场。
+> **实战案例（Borgee）：** N 篇蓝图 + N 条核心立场。
 
 ## 单篇蓝图模板
 
@@ -53,7 +53,7 @@ Borgee 实例: 11 篇蓝图 + 14 条核心立场。
 跟 acceptance template / stance checklist 怎么对接 (引锚)
 ```
 
-## 14 条核心立场示例 (Borgee README §核心)
+## 核心立场示例
 
 每条一句话 + 反约束 + 关键场景:
 
@@ -61,7 +61,7 @@ Borgee 实例: 11 篇蓝图 + 14 条核心立场。
 2. **Agent 代表自己** (不是工具 / 不是 owner 的代理 / agent ↔ agent 协作允许有边界)
 3. **沉默胜于假 loading** (§11 — 不显示 spinner, 不显示"正在思考...")
 4. **workspace + chat 双支柱** (artifact 不在聊天里, channel 协作不挤入 workspace)
-5. **Borgee 不带 runtime** (§7 — agent runtime 是 plugin 自己事, Borgee 只挂 process descriptor)
+5. **产品不带 runtime** (§7 — agent runtime 是 plugin 自己事, 只挂 process descriptor)
 6. **管控元数据 OK, 读你内容必须授权** (§13 — admin god-mode 边界)
 7-14: ...
 
@@ -77,7 +77,7 @@ Borgee 实例: 11 篇蓝图 + 14 条核心立场。
 ## 流程
 
 ### 1. 概念多轮讨论
-跟 `blueprintflow:brainstorm` 配套 — Teamlead 主持 PM + Architect 多轮 (Borgee 跑了 11 轮), 每轮锁 1-2 个概念 + 立场。
+跟 `blueprintflow:brainstorm` 配套 — Teamlead 主持 PM + Architect 多轮 (多轮讨论), 每轮锁 1-2 个概念 + 立场。
 
 ### 2. 落蓝图 (PR)
 Architect + PM 配对落 docs/blueprint/<module>.md, 走 PR review (战马 + QA 也参与, 立场必须 dev/QA 也认同, 否则实施漂)。

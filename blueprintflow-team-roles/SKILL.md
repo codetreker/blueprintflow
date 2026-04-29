@@ -1,9 +1,9 @@
 ---
 name: blueprintflow-team-roles
-description: Borgee workflow 6 角色 + Teamlead prompt 模板。起团时按需 spawn agents, 每角色含职责 / 工作目录协议 / 默认派活列表 / PR template 必备字段。
+description: Blueprintflow 6 角色 + Teamlead prompt 模板。起团时按需 spawn agents, 每角色含职责 / 工作目录协议 / 默认派活列表 / PR template 必备字段。
 ---
 
-# Borgee Team Roles
+# Team Roles
 
 6 个 X马 角色 + Teamlead 协调, 多 agent 协作做产品。每角色一个 prompt 模板, 起团按需 spawn。
 
@@ -101,7 +101,7 @@ Stage: v0|v1
 其他战马: /tmp/zhanma-<topic>-work 临时 clone
 
 # Migration v 号串行发号
-分配前 grep 确认: grep -r "v=" packages/server-go/internal/store/migrations/
+分配前 grep 确认: grep -r "v=" <server-package>/internal/store/migrations/
 
 # 派活默认列表
 - 当前 milestone 拆段 N+1 实施
@@ -171,7 +171,7 @@ Stage: v0|v1
 # PR template 同飞马
 报到: SendMessage 给 team-lead "斑马报到, 开始 <活>"
 
-注: 当前 borgee 项目没系统 spawn 过斑马, prompt 待真用到补完整。
+注: 斑马按需 spawn, prompt 待实际使用时补完整。
 ```
 
 ### 矮马 (安全 / Security)
@@ -203,7 +203,7 @@ Stage: v0|v1
 # PR template 同飞马
 报到: SendMessage 给 team-lead "矮马报到, 开始 <活>"
 
-注: 当前 borgee 项目没系统 spawn 过矮马 (安全立场是飞马 + 烈马代理), prompt 待真用到补完整。
+注: 矮马按需 spawn (安全立场可由飞马 + 烈马代理), prompt 待实际使用时补完整。
 ```
 
 ## 通用协议
@@ -275,7 +275,7 @@ ping 协议 ≥55min 沉默 → kill + 重 spawn:
 1. **派 shutdown_request** (best effort, 可能 silent fail) — 给老 session 一个体面退出机会
 2. **Spawn 新 subagent 接活**: Agent({subagent_type: "general-purpose", prompt: "<完整角色 prompt 模板 + 接的 milestone 派活>"}). 不等老 session 死.
 3. **如老 session 突然回应** (用户手动触发或 inbox 延迟到达): 协调让老 session 接其他活 (e.g. CV-3.2 server 而非 CV-2.3), 不强 kill — 弹性优先.
-4. **不强占主 worktree**: 老 session 如还活着可能持有 /workspace/borgee/.worktrees/implement, 新 subagent 用 /tmp/<role>-<topic>-work 临时 clone.
+4. **不强占主 worktree**: 老 session 如还活着可能持有 <repo-root>/.worktrees/implement, 新 subagent 用 /tmp/<role>-<topic>-work 临时 clone.
 
 **反 false positive**: 用户告知 "agent 在 debug" / "正常长任务" → 不触发 ping. 用户判断 > 30min 阈值.
 

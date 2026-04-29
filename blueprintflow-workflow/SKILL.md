@@ -1,11 +1,11 @@
 ---
 name: blueprintflow-workflow
-description: Borgee 工作流总览 — 多 agent 协作做产品的方法论。何时用 + 角色 + 阶段 + skill 索引。从 Borgee 项目跑通的通用工作流, 不限单一项目。
+description: 多 agent 协作工作流总览 — 多 agent 协作做产品的方法论。何时用 + 角色 + 阶段 + skill 索引。通用工作流, 不限单一项目。
 ---
 
-# Borgee Workflow
+# Blueprintflow Workflow
 
-从 Borgee 项目跑通的多 agent 协作工作流, 适合**做产品**: 从模糊概念到可发布软件, 6 角色 + Teamlead 协议推进。
+多 agent 协作工作流, 适合**做产品**: 从模糊概念到可发布软件, 6 角色 + Teamlead 协议推进。
 
 ## 心智模型: 城市工程
 

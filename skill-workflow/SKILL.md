@@ -77,7 +77,7 @@ git fetch origin --prune
 
 ## 不适用
 
-- Borgee 项目代码修改（走 blueprintflow-git-workflow）
+- 实战项目代码修改（走 blueprintflow-git-workflow）
 - 其他项目的 skill（走各项目自己的流程）
 - 纯讨论（在频道讨论，结论再走 PR 固化）
 

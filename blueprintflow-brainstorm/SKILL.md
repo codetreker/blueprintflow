@@ -38,8 +38,6 @@ Teamlead 抛 3 题, PM + Architect 各答 ≤ 200 字:
 ### 末轮: 立场 freeze
 Teamlead 总结 5-7 立场 + 反约束, PM + Architect 双签字, 进 `blueprintflow:blueprint-write` 落地。
 
-实例: Borgee 跑了 11 轮 brainstorm, 锁 14 条核心立场。
-
 ## Teamlead 主持原则
 
 ### 不替别人答
@@ -52,7 +50,7 @@ Teamlead 总结 5-7 立场 + 反约束, PM + Architect 双签字, 进 `blueprint
 
 ### 收敛 5-7 立场
 - 不要无限扩展 (太多立场记不住, 实施漂)
-- 14 立场是产品级总数, 单模块 5-7 立场已够
+- N 立场是产品级总数, 单模块 5-7 立场已够
 
 ## 立场写法 (强约束)
 
@@ -62,7 +60,7 @@ Teamlead 总结 5-7 立场 + 反约束, PM + Architect 双签字, 进 `blueprint
 - **关键场景** (一个 demo 能跑出来的例子)
 - **v0/v1 边界** (现在做到哪, 以后做到哪)
 
-实例 (Borgee §11 沉默胜于假 loading):
+> **立场示例（沉默胜于假 loading）：**
 - 主张: 不显示 spinner / 进度条 / "正在思考..."
 - 反约束: agent 处理时 UI 静止, 不 fake 进度; 真完成才显示结果
 - 场景: agent 编辑 artifact, 用户看不到中间态, 直到 commit

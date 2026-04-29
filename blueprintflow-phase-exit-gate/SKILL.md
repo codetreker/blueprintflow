@@ -10,7 +10,7 @@ Phase 退出 = 严格闸 ✅ + 留账挂 Phase N+1 PR # + 4 角色联签 + closu
 ## 退出条件
 
 ### 1. 严格闸全 ✅
-机器化条件 (e.g. G2.0/G2.3/G2.audit/G2.6) 全 SIGNED, 走 commit SHA 锚点。
+机器化条件 (e.g. G<Phase>.<序号>) 全 SIGNED, 走 commit SHA 锚点。
 
 ### 2. 留账挂 Phase N+1 PR # 编号锁 (规则 6)
 partial 闸 (e.g. 留账闸) 挂占号 PR # — 不是空头措辞, 必须真 PR 号 。

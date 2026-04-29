@@ -11,12 +11,12 @@ description: 概念锁定后, Architect + PM 落蓝图模板 — 核心立场 / 
 
 `docs/blueprint/` 目录下:
 
-- **README.md** — N 条核心立场清单 (产品立场最权威表达)
+- **README.md** — 核心立场清单 (产品立场最权威表达，通常 10-15 条)
 - **concept-model.md** — 一等概念 (e.g. org / human / agent / channel) + 关系
 - **<module>.md** — 每模块产品形状 (e.g. admin-model / channel-model / agent-lifecycle / canvas-vision / plugin-protocol / realtime / auth-permissions / data-layer / client-shape)
 - **onboarding-journey.md** — 用户首次使用旅程
 
-> **实战案例（Borgee）：** N 篇蓝图 + N 条核心立场。
+> **实战案例（Borgee）：** 11 篇蓝图 + 14 条核心立场。
 
 ## 单篇蓝图模板
 

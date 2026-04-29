@@ -220,7 +220,7 @@ repo: codetreker/<repo>. batch merge 多个 PR (顺序无关并发):
 
 #### 触发信号
 
-- reviewer 一波给多 PR LGTM (e.g. reviewer 一波给多 PR LGTM) → batch agent
+- reviewer 一波给多 PR LGTM (e.g. "双批 LGTM 信号: PR-A + PR-B") → batch agent
 - 4 件套 acceptance 一波交多 PR (e.g. 多 milestone 一波交) → batch agent
 
 #### 反模式

@@ -81,7 +81,6 @@ digraph phase_plan_preflight {
 - ✅ 对: Phase 1 身份闭环 / Phase 2 协作闭环 / Phase 3 第二维度产品 / Phase 4+ 剩余 (每 Phase 独立可演示)
 
 > **实战案例（Borgee）：**
-> **实战案例（Borgee）：**
 > - Phase 0 基建
 > - Phase 1 身份闭环 — 注册即用
 > - Phase 2 协作闭环 ⭐ — 多人协作
@@ -101,7 +100,7 @@ digraph phase_plan_preflight {
 
 ### 留账闸 (允许 partial signoff)
 - 不阻塞 Phase 退出, 但必须挂 Phase N+1 PR # 编号锁 (规则 6)
-- e.g. G2.5 留 Phase 4 AL-3 + G2.6 留 Phase 4 BPP-1 lint
+- e.g. 留账闸挂下一 Phase 的占号 PR #
 
 ## 4 道防偏离闸门
 

@@ -121,7 +121,7 @@ digraph phase_plan_preflight {
 - **00-foundation/execution-plan.md** — 5 Phase + 退出 gate + 4 道闸门
 - **00-foundation/roadmap.md** — 缩略图 + 首波 demo 路径
 - **00-foundation/how-to-write-milestone.md** — milestone 模板 + acceptance 四选一
-- **modules/** — N 模块大纲, 每 milestone 拆到 PR 级 (≤ 3 天 / ≤ 500 行)
+- **modules/** — N 模块大纲, 每 milestone 拆到 PR 级 (≤ 500 行)
 
 ## PROGRESS.md 模板
 

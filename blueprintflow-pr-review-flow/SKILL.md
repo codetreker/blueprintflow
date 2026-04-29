@@ -61,11 +61,11 @@ PR template lint 5 字段缺任一 → 红, 走 lint patch 流程修 (修 body /
 
 | PR 类型 | reviewer 1 | reviewer 2 | reviewer 3 (可选) |
 |---|---|---|---|
-| 战马实施 PR | 飞马 (架构) | 烈马 (acceptance) | — |
-| 飞马 spec brief PR | 战马 (实施视角) | 烈马 (acceptance 可机器化) | 野马 (立场) |
-| 野马 stance / content-lock PR | 飞马 (架构) | 烈马 (acceptance) | — |
-| 烈马 acceptance template / 翻牌 PR | 飞马 (架构) | 野马 (立场, 仅 v0 立场相关时) | — |
-| 涉敏感写动作 (auth/admin) PR | + 矮马 (security) | | |
+| Dev实施 PR | Architect (架构) | QA (acceptance) | — |
+| Architect spec brief PR | Dev (实施视角) | QA (acceptance 可机器化) | PM (立场) |
+| PM stance / content-lock PR | Architect (架构) | QA (acceptance) | — |
+| QA acceptance template / 翻牌 PR | Architect (架构) | PM (立场, 仅 v0 立场相关时) | — |
+| 涉敏感写动作 (auth/admin) PR | + Security (security) | | |
 
 LGTM 命令 (author 不能 self-approve):
 ```
@@ -88,7 +88,7 @@ review 内容必须包含锚 (跟 spec/stance/acceptance 字面 cross-check):
 
 ### Review subagent 并行模式 (加速 — 推荐)
 
-不派 SendMessage 给 persistent 角色 (飞马/烈马/野马) 而是 spawn fresh review subagent. 三个收益:
+不派 SendMessage 给 persistent 角色 (Architect/QA/PM) 而是 spawn fresh review subagent. 三个收益:
 
 1. **不打断**: persistent 角色继续手头工作 (写 spec / acceptance / 文案锁), 不切回来 review
 2. **context 干净**: subagent 只读 PR + spec + 几个 cross-ref 锚, 没 inbox 噪音
@@ -232,7 +232,7 @@ repo: codetreker/<repo>. batch merge 多个 PR (顺序无关并发):
 
 ## 跨 review 例子: 立场漂移抓出
 
-> **实战案例（Borgee）：** 烈马 review acceptance 时自检, 发现字段名跟飞马 spec brief 不一致 (字段改名未同步), 当场 patch 修齐。
+> **实战案例（Borgee）：** QA review acceptance 时自检, 发现字段名跟Architect spec brief 不一致 (字段改名未同步), 当场 patch 修齐。
 
 这就是双轨 review 起作用 — spec 写 A 形态, acceptance 自然按 A 写, drift 可以发现。
 

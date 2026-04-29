@@ -27,10 +27,10 @@ partial 闸 (e.g. 留账闸) 挂占号 PR # — 不是空头措辞, 必须真 PR
 
 ### 4. 4 角色联签
 每个角色独立 PR signoff :
-- Architect (飞马): readiness review 拍 ✅, 引 PR 锚点
-- QA (烈马): acceptance + REG count 数学对账, 引 acceptance-templates 锚
-- PM (野马): 立场 OK + 反约束守住, 引立场反查表锚
-- Dev (战马): 实施侧 acceptance 全挂闸, 引实施 PR 锚
+- Architect (Architect): readiness review 拍 ✅, 引 PR 锚点
+- QA (QA): acceptance + REG count 数学对账, 引 acceptance-templates 锚
+- PM (PM): 立场 OK + 反约束守住, 引立场反查表锚
+- Dev (Dev): 实施侧 acceptance 全挂闸, 引实施 PR 锚
 
 每个 signoff PR ≤ 5 行修改 (在 announcement §7 表格加一行)。
 

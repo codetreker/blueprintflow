@@ -21,7 +21,7 @@ ln -s $(pwd)/<repo>/skills/blueprintflow-workflow ~/.claude/skills/blueprintflow
 | Skill | 触发 | 用途 |
 |---|---|---|
 | [blueprintflow-workflow](blueprintflow-workflow/SKILL.md) | 起步 | workflow 总览 + 何时用 + 角色 + 阶段索引 |
-| [blueprintflow-team-roles](blueprintflow-team-roles/SKILL.md) | 起团 | 6 X马 角色 prompt 模板 (架构师/PM/Dev/QA/设计/安全) |
+| [blueprintflow-team-roles](blueprintflow-team-roles/SKILL.md) | 起团 | 6 角色 prompt 模板 (架构师/PM/Dev/QA/设计/安全) |
 | [blueprintflow-milestone-fourpiece](blueprintflow-milestone-fourpiece/SKILL.md) | milestone 启动 | 4 件套并行 (spec / stance / acceptance / content-lock) |
 | [blueprintflow-pr-review-flow](blueprintflow-pr-review-flow/SKILL.md) | PR open | 双 review + 标准 squash merge |
 | [blueprintflow-teamlead-fast-cron-checkin](blueprintflow-teamlead-fast-cron-checkin/SKILL.md) | 15min cron | idle 派活, 不只 audit |
@@ -49,7 +49,7 @@ ln -s $(pwd)/<repo>/skills/blueprintflow-workflow ~/.claude/skills/blueprintflow
 
 - **Dogfooding**: 改 workflow 走完整 PR 流程 (4 角色协议自检 — skills 必须能 review 自己的更新)
 - **真实跑过**: 不是抽象方法论, 是实战提炼
-- **跨项目通用**: 角色名 (X马) ergonomic, 路径约定可调, 核心协议 (worktree 隔离 / lint / 立场漂移防御) 不动
+- **跨项目通用**: 角色名可自定义, 路径约定可调, 核心协议 (worktree 隔离 / lint / 立场漂移防御) 不动
 
 ## 反馈
 

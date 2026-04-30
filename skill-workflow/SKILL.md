@@ -47,6 +47,7 @@ Dev、PM、QA在 PR 上 review + comment：
 - **Dev**：实施视角——规则能执行吗？有歧义吗？
 - **PM**：用户视角——新团队读得懂吗？立场清晰吗？
 - **QA**：验收视角——规则可验证吗？示例够吗？
+- **全员**：渐进式披露——这个 skill 是否需要拆 references？（trade-off：少占 context vs 多一次 tool call）
 - **Architect**：一致性——跟其他 skill 矛盾吗？
 
 Review comment 用 `gh pr comment` 或直接在 GitHub PR 页面。

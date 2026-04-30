@@ -12,3 +12,6 @@
 | BPF-005 | 工作量/时间评估按 agent 效率 | Done | Architect | [#4](https://github.com/codetreker/blueprintflow/pull/4) |
 | BPF-006 | 区分工作模式（subagent/CC team/真多 agent/tmux） | Ready | Architect | — |
 | BPF-007 | Service 项目每个 milestone deploy 到 test 环境验证 | Ready | Architect | — |
+| BPF-009 | skill review checklist 加渐进式披露 tradeoff 评估 | Done | Architect | [#7](https://github.com/codetreker/blueprintflow/pull/7) |
+| BPF-010 | Review 所有 skill：哪些需要渐进式披露拆 references | Ready | Architect | — |
+| BPF-011 | fast-cron PR blocker 处理：conflict → subagent 解冲突；CI 失败 → 交还 teammate | Ready | Architect | — |

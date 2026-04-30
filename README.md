@@ -99,19 +99,21 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 | [fast-cron](blueprintflow-teamlead-fast-cron-checkin/SKILL.md) | 巡检 | 15min idle 派活 |
 | [slow-cron](blueprintflow-teamlead-slow-cron-checkin/SKILL.md) | 巡检 | 2-4h 偏差 audit |
 | [phase-exit-gate](blueprintflow-phase-exit-gate/SKILL.md) | 收尾 | Phase 4 联签 + closure |
+| [runtime-adapter](blueprintflow-runtime-adapter/SKILL.md) | 起步 | 运行时适配（通讯/文件/调度的模式对照表） |
 | [skill-workflow](skill-workflow/SKILL.md) | 更新 | Skill 自身的 PR 流程 |
 
 ## 起步
 
 ```
 1. blueprintflow-workflow          — 看总览，决定是否适用
-2. blueprintflow-team-roles        — spawn 角色（按需）
-3. blueprintflow-brainstorm        — 多轮讨论锁立场
-4. blueprintflow-blueprint-write   — 落蓝图
-5. blueprintflow-phase-plan        — 拆 Phase
-6. (循环) milestone-fourpiece + git-workflow + pr-review-flow
-7. (巡检) fast-cron + slow-cron
-8. (收尾) phase-exit-gate
+2. blueprintflow-runtime-adapter    — 确认运行模式
+3. blueprintflow-team-roles        — spawn 角色（按需）
+4. blueprintflow-brainstorm        — 多轮讨论锁立场
+5. blueprintflow-blueprint-write   — 落蓝图
+6. blueprintflow-phase-plan        — 拆 Phase
+7. (循环) milestone-fourpiece + git-workflow + pr-review-flow
+8. (巡检) fast-cron + slow-cron
+9. (收尾) phase-exit-gate
 ```
 
 ## 安装

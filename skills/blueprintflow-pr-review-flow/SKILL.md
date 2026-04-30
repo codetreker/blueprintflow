@@ -245,12 +245,29 @@ repo: codetreker/<repo>. batch merge 多个 PR (顺序无关并发):
 - ❌ 任何绕过 required CI check 的方式
 - ❌ "ruleset 兜底" / "admin merge agent" / "临时过渡" 话术
 
-**操作反模式**:
-- ❌ LGTM 不读 PR 内容, 模板字面套话 (失去 cross-check 价值)
+**Review 正模式**:
+- ✅ 先通读完整文件，再看 diff
+- ✅ 换位思考：“我是第一次读这个 skill 的 agent，读到这段会困惑吗？”
+- ✅ 每个角色 review 角度必须不同：
+  - **Architect**：架构一致性 + 成本合理性 + 跨 skill 矛盾
+  - **PM**：用户体验 + 认知负担 + 新团队读得懂吗
+  - **Dev**：可执行性 + 有歧义吗 + 按这个干活会不会卡住
+  - **QA**：可验证性 + 怎么知道做对了 + 示例够不够
+  - **Security**：代码漏洞（注入/XSS/SSRF）+ auth/权限最小化 + 敏感数据处理 + 依赖安全
+  - **Performance**：算法复杂度 + 热路径性能 + 不必要的 IO/网络调用 + 内存/并发
+- ✅ LGTM 前先找 3 个可以质疑的点，找不到再 LGTM
+- ✅ 技术细节（命令、API、参数）必须查文档验证，不能信作者
 - ✅ 翻牌 (acceptance ⚪→✅ / REG flip / PROGRESS [x]) 跟实施代码在同一 milestone PR 内完成，不开 follow-up PR
 - ❌ 跳过 PR template 5 字段 (lint 拒, 不要走 ## H2 重复 metadata 绕过)
 - ❌ merge agent 报告里出现 admin/ruleset/bypass 字眼 (透明度 + 红线警报)
 - ❌ self-LGTM 算双批 (同 GH 账号多 agent 评论 LGTM 不算 ≥1 non-author, 必须真 reviewer 不同身份)
+
+**操作反模式**:
+- ❌ LGTM 不读 PR 内容, 模板字面套话 (失去 cross-check 价值)
+- ❌ 只看 diff 不看整体——漏掉上下文断裂、逻辑矛盾
+- ❌ 没明显 bug 就 LGTM——review 不是“没错”就行，是“够好”才行
+- ❌ 不质疑设计合理性——“规则上说得通”不等于“实际合理”（token 成本、用户体验、认知负担）
+- ❌ 作者写什么信什么——技术细节必须验证（如命令、API、参数）
 
 ## 调用方式
 

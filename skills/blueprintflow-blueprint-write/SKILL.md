@@ -1,6 +1,7 @@
 ---
 name: blueprintflow-blueprint-write
 description: 把讨论锁定的立场落成蓝图文档（docs/blueprint/），定义产品形状的 source of truth。前提：blueprintflow brainstorm 已收敛。触发词：写蓝图、落蓝图、blueprint。触发场景：brainstorm 收敛后需要落蓝图时。
+version: 1.0.0
 ---
 
 # Blueprint Write

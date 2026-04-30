@@ -1,6 +1,7 @@
 ---
 name: blueprintflow-milestone-fourpiece
 description: Milestone 实施前建立 4 件基线文档（spec/stance/acceptance/content-lock），确保实施有锚可查。前提：blueprintflow Phase plan 已拆完 milestone。触发词：4 件套、milestone 启动、spec brief、stance checklist。触发场景：每个 milestone 开始实施前。
+version: 1.0.0
 ---
 
 # Milestone 4 件套

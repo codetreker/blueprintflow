@@ -1,0 +1,13 @@
+{
+  "name": "blueprintflow",
+  "owner": {
+    "name": "codetreker"
+  },
+  "plugins": [
+    {
+      "name": "blueprintflow",
+      "source": "./plugins/blueprintflow",
+      "description": "Blueprint-driven multi-agent collaboration workflow"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 ---
-name: skill-workflow
+name: blueprintflow-skill-workflow
 description: Blueprintflow skill 自身的更新流程：worktree → PR → 全员 vote → 合并。触发词：改 skill、更新 skill、skill PR。触发场景：需要新增、修改或删除 blueprintflow skill 时。
 version: 1.0.0
 ---

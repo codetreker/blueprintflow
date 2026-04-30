@@ -99,8 +99,8 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 | [blueprintflow-teamlead-fast-cron-checkin](skills/blueprintflow-teamlead-fast-cron-checkin/SKILL.md) | 巡检 | 15min idle 派活 |
 | [blueprintflow-teamlead-slow-cron-checkin](skills/blueprintflow-teamlead-slow-cron-checkin/SKILL.md) | 巡检 | 2-4h 偏差 audit |
 | [blueprintflow-phase-exit-gate](skills/blueprintflow-phase-exit-gate/SKILL.md) | 收尾 | Phase 4 联签 + closure |
-| [runtime-adapter](skills/runtime-adapter/SKILL.md) | 起步 | 运行时适配（通讯/文件/调度的模式对照表） |
-| [skill-workflow](skills/skill-workflow/SKILL.md) | 更新 | Skill 自身的 PR 流程 |
+| [runtime-adapter](skills/blueprintflow-runtime-adapter/SKILL.md) | 起步 | 运行时适配（通讯/文件/调度的模式对照表） |
+| [skill-workflow](skills/blueprintflow-skill-workflow/SKILL.md) | 更新 | Skill 自身的 PR 流程 |
 
 ## 起步
 

@@ -6,7 +6,7 @@
   "plugins": [
     {
       "name": "blueprintflow",
-      "source": "./plugins/blueprintflow",
+      "source": "./",
       "description": "Blueprint-driven multi-agent collaboration workflow"
     }
   ]

@@ -10,6 +10,12 @@ Phase 退出 = 严格闸 ✅ + 留账挂 Phase N+1 PR # + 4 角色联签 + closu
 
 ## 退出条件
 
+### 0. PROGRESS 完整性检查（前置条件）
+退出 Phase 前必须确认 PROGRESS.md 所有任务状态准确：
+- 每个 milestone 是否已完成并打勾 ✅
+- 未打勾的必须逐条确认：是漏了还是真没做完
+- 发现不一致 → 先修正 PROGRESS，再走退出流程
+
 ### 1. 严格闸全 ✅
 机器化条件 (e.g. G<Phase>.<序号>) 全 SIGNED, 走 commit SHA 锚点。
 
@@ -28,10 +34,10 @@ partial 闸 (e.g. 留账闸) 挂占号 PR # — 不是空头措辞, 必须真 PR
 
 ### 4. 4 角色联签
 每个角色独立 PR signoff :
-- Architect (Architect): readiness review 拍 ✅, 引 PR 锚点
-- QA (QA): acceptance + REG count 数学对账, 引 acceptance-templates 锚
-- PM (PM): 立场 OK + 反约束守住, 引立场反查表锚
-- Dev (Dev): 实施侧 acceptance 全挂闸, 引实施 PR 锚
+- Architect: readiness review 拍 ✅, 引 PR 锚点
+- QA: acceptance + REG count 数学对账, 引 acceptance-templates 锚
+- PM: 立场 OK + 反约束守住, 引立场反查表锚
+- Dev: 实施侧 acceptance 全挂闸, 引实施 PR 锚
 
 每个 signoff PR ≤ 5 行修改 (在 announcement §7 表格加一行)。
 

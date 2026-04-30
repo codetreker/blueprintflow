@@ -135,6 +135,35 @@ acceptance ⚪→✅ + REG-* + PROGRESS [x] 都在实施 PR 内同 commit 落. *
 
 **原则：** milestone 编号是项目管理概念，不该出现在文件名里。文件名是给人和代码工具看的，要一看就懂。在 PR description 和 commit message 里引 milestone 编号就够了。
 
+## subagent 写测试反约束 (cov bump 防 spam)
+
+派 subagent 批量补 cov / 写测试**容易触发 spam**：subagent context 隔离，不知其他 subagent 写过什么，复制 idiom 各加 milestone prefix 起 N 份 byte-identical 重复。
+
+**真实事故**：1 个 dev 派 subagent 补 30+ 函数 cov，subagent 把同一份 `ImpersonateGrantLifecycle` test 起 5 个名 (CHN_5/CHN_6/CHN_8/CHN_11/RT_4) 跑 5 遍，body 完全一样仅 prefix 不同。18 个 covbump_*.go / 3238 行 / 75 test，真 unique 仅 21。dev commit 时只看 cov 数字升 PASS 就过，没看文件名 / body 重复。
+
+### 派 subagent 写测试必带反约束 (prompt 内显式列)
+
+1. **1 helper 1 test 函数** — 反向 grep 任一 helper 名只能出 1 个 `func Test`
+2. **禁 milestone prefix in test name + filename** — 走功能命名 (`TestImpersonateGrantLifecycle` 不 `TestCHN_8_CovBump_v3_ImpersonateGrantLifecycle`)
+3. **禁 byte-identical body 复制** — 任意两 *_cov_test.go diff ≥30% 行差异
+4. **deterministic test** — sync.WaitGroup + done chan, 不靠 race scheduler / time.Sleep
+
+### dev 收 subagent 输出必 review (commit 前)
+
+- ls 文件名抓 milestone-prefix drift
+- diff 抽查 body 重复率
+- 测试函数命名贴功能不贴 milestone
+
+**反模式：**
+- ❌ "为 N 个 milestone 各加 cov bump test" 当 prompt — subagent 会复制 N 份
+- ❌ commit subagent 输出时只看 cov 数字过线就过
+- ❌ **subagent 完工 ≠ dev 完工** — dev 必 review 文件名 + body diff 才 commit
+
+### teamlead review dev commit 也必看
+
+- 任何 *_cov_test.go 数量 >5 文件一次加 → 高度可疑, 审 file list + body 重复
+- subagent 写出 5 份 byte-identical only-milestone-prefix-different = 立刻拒签 + 派 dev 删合并
+
 ## 反模式
 
 - ❌ 跳过 4 件套直接实施 (立场漂移无法抓)

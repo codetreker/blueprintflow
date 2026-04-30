@@ -44,6 +44,17 @@ version: 1.0.0
 - 实施全有, 但 docs/current sync 没补 → 派 Dev补
 - 4 件套 spec 在 main 旧 PR, 没 cherry-pick 进 milestone worktree → 派 Architect commit 进 worktree
 
+## PROGRESS 准确性检查
+
+确认 PROGRESS.md 跟实际状态一致：
+- PR 已 merged → 对应 milestone 必须已勾 ✅
+- 任务在干 → 不能标 Done
+- 不一致 → 立即修正
+
+**反模式：**
+- ❌ 完成了不勾
+- ❌ 没完成标 Done
+
 ## out-of-date 红线 (兜底)
 - 任一蓝图文件 mtime > 1 天且对应 milestone 在最近 PR 推进 → 派架构师在该蓝图文件加 "Last reviewed: <date>" 行
 - 防"蓝图躺坟"式漂移

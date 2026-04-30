@@ -72,6 +72,29 @@ CI 绿 + LGTM 齐 ≠ 可 merge. **必须看 milestone 任务真做完** — PR 
 **Designer**: 视觉规范 / 组件库 / 跟 PM content-lock 配套写 visual lock
 **Security**: 敏感 PR review / privacy stance / audit log review
 
+## PR BLOCKED 处理路由
+
+PR 被 block 时，**先看 block 类型**，再决定派给谁：
+
+| Block 类型 | 派给 | 理由 |
+|---|---|---|
+| **rebase / merge conflict** (DIRTY) | **subagent** | 跨 PR 共性活, author 看不出累积冲突; subagent batch 处理快 |
+| **CI fail** (cov / test / e2e / lint) | **author** | author 最懂自己 milestone 立场 + 实施细节; subagent fresh-context 容易破 byte-identical 锁链 |
+| **PR body 缺 section** (lint 同步等机械补 N/A) | **subagent** | 机械活 (PATCH body + empty commit + re-lint) |
+| **review pending > 1h** | **ping reviewer** | 不是 block，戳 review 角色 |
+
+**正例：**
+- ✅ 10 PR 撞 main 同时 DIRTY → batch rebase subagent (一次性解)
+- ✅ 7 PR PR-lint 缺 N/A section → subagent 机械补 + push empty commit
+- ✅ author A 的 PR cov 83.9% → 派 author A 加 unit test
+- ✅ author B 的 PR test 违例 → 派 author B 修
+
+**反例：**
+- ❌ 见 cov fail 就派 subagent 加 unit test — author 知道哪里覆盖率低，派回 author
+- ❌ 见 test 违例派 subagent — author 写的 mock，派回 author
+- ❌ 见 e2e 真 bug 派 subagent — author 写的 spec + 实施代码，派回 author
+- ❌ 见 merge 冲突派 author — 跨 PR 共性，batch subagent 更快
+
 ## 反模式
 
 - ❌ 输出 "全员 idle 等 merge" 不派活 (即使等也得让 idle 的人干别的)
@@ -80,6 +103,7 @@ CI 绿 + LGTM 齐 ≠ 可 merge. **必须看 milestone 任务真做完** — PR 
 - ❌ 假设 "并行会冲突" 就不并行 (新协议: 一 milestone 一 worktree, 多 milestone 自然并行)
 - ❌ **"CI 绿就 merge"** — 必须先审 PR body Acceptance/Test plan 全勾 (见 §5)
 - ❌ **subagent LGTM = merge 信号** — subagent 不审任务完成度, teamlead 自己审 PR body
+- ❌ **CI fail 派 subagent 揽** — author 最懂自己 milestone, 派回 author (见 §PR BLOCKED 处理路由)
 - ❌ 派 review 看作 merge 唯一 gate — review 是质量检查, **任务完成度 + CI + LGTM 三联签才合**
 
 ## 调用方式

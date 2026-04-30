@@ -84,6 +84,8 @@ PR 被 block 时，**先看 block 类型**，再决定派给谁：
 | **PR body 缺 section** (lint 同步等机械补 N/A) | **subagent** | 机械活 (PATCH body + empty commit + re-lint) |
 | **review pending > 1h** | **ping reviewer** | 不是 block，戳 review 角色 |
 
+> **Flaky 注意**：如果 CI fail 跟当前 PR 改动无关（flaky 信号），不 block PR，但必须开 issue 跟踪。详见 `blueprintflow-pr-review-flow` §Flaky test。
+
 **正例：**
 - ✅ 10 PR 撞 main 同时 DIRTY → batch rebase subagent (一次性解)
 - ✅ 7 PR PR-lint 缺 N/A section → subagent 机械补 + push empty commit

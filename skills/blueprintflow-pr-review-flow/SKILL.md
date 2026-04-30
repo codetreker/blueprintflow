@@ -21,13 +21,6 @@ PR open 后到 merged 的标准流程.
 - 让 "CI 真过" 协议失效, 团队信号噪音化
 - 历史血账: e2e fail bypass 进 main 多次, 每次都得 hotfix 善后
 
-**真 flaky / 真误报怎么办**:
-- 真 flaky → 真修根因 (修 root cause, 不是绕过)
-- lint 误报 → 修 lint regex (修 lint 规则)
-- coverage 卡线 → 真补 test 提覆盖率
-- e2e 真 fail → 退给 author 修 bug
-- 任何场景下, **"等我修完再合"** 是唯一答案, 不存在 "先合进去再说" 选项
-
 **反模式 (永久)**:
 - ❌ `gh pr merge --admin` 任何场景
 - ❌ `gh api -X PUT /rulesets/<id> -f enforcement=disabled` 任何场景
@@ -55,6 +48,27 @@ Stage: v0|v1
 ```
 
 PR template lint 5 字段缺任一 → 红, 走 lint patch 流程修 (修 body / 修 lint regex, **不绕**).
+
+## Flaky test 处理
+
+**Flaky test 信号识别**:
+- PR 没改相关代码，但 CI case fail 了 → flaky 信号
+- 同一 case 在不同 PR 随机 fail → flaky 信号
+- main 上已经偶尔 fail → flaky 信号（不是借口，是更需要修的理由）
+
+**Flaky test 处理原则：修，不是 rerun**:
+- 发现 flaky → 立即修根因，不是 rerun 碰运气
+- 真 flaky → 真修根因（竞态、时序、环境依赖）
+- lint 误报 → 修 lint 规则
+- coverage 卡线 → 真补 test 提覆盖率
+- e2e 真 fail → 退给 author 修 bug
+- 任何场景下, **"等我修完再合"** 是唯一答案, 不存在 "先合进去再说" 选项
+
+**Flaky 反模式**:
+- ❌ **rerun 碰运气** — flaky 不会自己好，rerun 绿了只是运气好，下次还会 fail
+- ❌ **"不是我改的，main 上就存在"** — 至少开 issue 跟踪，最好顺手修。不 block 当前 PR，但不能假装没看见
+- ❌ **"先合进去，后面再修 flaky"** — 进了 main 就没人修了，flaky 只会越积越多
+- ❌ **rerun 3 次绿了就当过了** — 3 次里 1 次 fail = 33% 失败率，这不是"偶尔"，是真 bug
 
 ## 双 review 路径
 

@@ -95,6 +95,22 @@ git worktree add .worktrees/<milestone> -b feat/<milestone> origin/main
 - (并行) stance + content lock — PM
 - (并行) acceptance template — QA
 
+### 文件命名规范
+
+代码文件按**实际功能**命名，不按 milestone 编号。
+
+**正模式：**
+- `agent_status.go` — 一看就知道是 agent 状态相关
+- `canvas_renderers_test.ts` — 一看就知道测的是 canvas 渲染器
+- `privacy_promise.tsx` — 一看就知道是隐私承诺组件
+
+**反模式：**
+- ❌ `al_1b_2_status.go` — 半年后没人记得 `al_1b` 是什么 milestone
+- ❌ `cv_3_3_renderers_test.ts` — 要先查 `cv-3-3` 是哪个 milestone 才知道测什么
+- ❌ `cm5stance/` — 目录名是 milestone 编号的拼接，应该叫 `stance_checklist/`
+
+**原则：** milestone 编号是项目管理概念，不该出现在文件名里。文件名是给人和代码工具看的，要一看就懂。在 PR description 和 commit message 里引 milestone 编号就够了。
+
 worktree 协议:
 
 ```bash

@@ -1,6 +1,7 @@
 ---
 name: blueprintflow-workflow
 description: Blueprintflow 是一套多 agent 协作做产品的工作流方法论，覆盖从概念讨论到代码发布的完整生命周期（概念→计划→实施→协调），适合大需求/长周期/多角色协作项目。触发词：blueprintflow、多 agent 协作、起团、新产品启动、大功能开发。触发场景：新产品/大功能/大 refactor 起步时，或需要确认该走哪个 blueprintflow skill 时。
+version: 1.0.0
 ---
 
 # Blueprintflow Workflow

@@ -1,6 +1,7 @@
 ---
 name: blueprintflow-phase-plan
 description: 把蓝图拆成按价值闭环分期的 Phase，定义退出 gate 和防偏离闸门。前提：blueprintflow 蓝图已 freeze。触发词：拆 Phase、Phase plan、实施计划。触发场景：蓝图 freeze 后需要拆实施计划时。
+version: 1.0.0
 ---
 
 # Phase Plan

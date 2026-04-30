@@ -88,19 +88,19 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 
 | Skill | 触发 | 用途 |
 |---|---|---|
-| [workflow](blueprintflow-workflow/SKILL.md) | 起步 | 总览 + 何时用 + 角色 + 阶段索引 |
-| [team-roles](blueprintflow-team-roles/SKILL.md) | 起团 | 6 角色 prompt 模板 |
-| [brainstorm](blueprintflow-brainstorm/SKILL.md) | 讨论 | 多轮讨论锁立场 + 反约束 |
-| [blueprint-write](blueprintflow-blueprint-write/SKILL.md) | 立项 | 蓝图模板（立场 / 概念 / v0/v1 边界） |
-| [phase-plan](blueprintflow-phase-plan/SKILL.md) | 规划 | Phase 拆分 + 退出 gate |
-| [milestone-fourpiece](blueprintflow-milestone-fourpiece/SKILL.md) | 实施 | 4 件套（spec / stance / acceptance / content-lock） |
-| [git-workflow](blueprintflow-git-workflow/SKILL.md) | 实施 | 一 milestone 一 worktree 一 PR |
-| [pr-review-flow](blueprintflow-pr-review-flow/SKILL.md) | Review | 双 review + 标准 squash merge |
-| [fast-cron](blueprintflow-teamlead-fast-cron-checkin/SKILL.md) | 巡检 | 15min idle 派活 |
-| [slow-cron](blueprintflow-teamlead-slow-cron-checkin/SKILL.md) | 巡检 | 2-4h 偏差 audit |
-| [phase-exit-gate](blueprintflow-phase-exit-gate/SKILL.md) | 收尾 | Phase 4 联签 + closure |
-| [runtime-adapter](blueprintflow-runtime-adapter/SKILL.md) | 起步 | 运行时适配（通讯/文件/调度的模式对照表） |
-| [skill-workflow](skill-workflow/SKILL.md) | 更新 | Skill 自身的 PR 流程 |
+| [workflow](skills/blueprintflow-workflow/SKILL.md) | 起步 | 总览 + 何时用 + 角色 + 阶段索引 |
+| [team-roles](skills/blueprintflow-team-roles/SKILL.md) | 起团 | 6 角色 prompt 模板 |
+| [brainstorm](skills/blueprintflow-brainstorm/SKILL.md) | 讨论 | 多轮讨论锁立场 + 反约束 |
+| [blueprint-write](skills/blueprintflow-blueprint-write/SKILL.md) | 立项 | 蓝图模板（立场 / 概念 / v0/v1 边界） |
+| [phase-plan](skills/blueprintflow-phase-plan/SKILL.md) | 规划 | Phase 拆分 + 退出 gate |
+| [milestone-fourpiece](skills/blueprintflow-milestone-fourpiece/SKILL.md) | 实施 | 4 件套（spec / stance / acceptance / content-lock） |
+| [git-workflow](skills/blueprintflow-git-workflow/SKILL.md) | 实施 | 一 milestone 一 worktree 一 PR |
+| [pr-review-flow](skills/blueprintflow-pr-review-flow/SKILL.md) | Review | 双 review + 标准 squash merge |
+| [fast-cron](skills/blueprintflow-teamlead-fast-cron-checkin/SKILL.md) | 巡检 | 15min idle 派活 |
+| [slow-cron](skills/blueprintflow-teamlead-slow-cron-checkin/SKILL.md) | 巡检 | 2-4h 偏差 audit |
+| [phase-exit-gate](skills/blueprintflow-phase-exit-gate/SKILL.md) | 收尾 | Phase 4 联签 + closure |
+| [runtime-adapter](skills/blueprintflow-runtime-adapter/SKILL.md) | 起步 | 运行时适配（通讯/文件/调度的模式对照表） |
+| [skill-workflow](skills/skill-workflow/SKILL.md) | 更新 | Skill 自身的 PR 流程 |
 
 ## 起步
 
@@ -118,13 +118,24 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 
 ## 安装
 
-**Claude Code:**
+**Claude Code（推荐）：**
 ```bash
+# 方式 1：Plugin marketplace（推荐）
+/plugin marketplace add codetreker/blueprintflow
+
+# 方式 2：手动安装
 git clone https://github.com/codetreker/blueprintflow.git
-ln -s $(pwd)/blueprintflow/* ~/.claude/skills/
+ln -s $(pwd)/blueprintflow/skills/* ~/.claude/skills/
 ```
 
-**OpenClaw / 其他框架:** 按各自的 skill 安装方式引入即可。
+**ClawHub：**
+```bash
+clawhub install blueprintflow-workflow
+# 或安装全部
+clawhub search blueprintflow
+```
+
+**OpenClaw / 其他框架：** 将 `skills/` 下的目录复制或链接到对应的 skill 目录。
 
 ## 反馈
 

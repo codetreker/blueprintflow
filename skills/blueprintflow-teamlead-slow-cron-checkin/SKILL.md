@@ -1,6 +1,7 @@
 ---
 name: blueprintflow-teamlead-slow-cron-checkin
 description: Teamlead 2-4 小时慢巡检：蓝图偏差 audit + 文档/代码一致性检查 + 翻牌延迟纠正。前提：blueprintflow 工作流已激活。触发词：偏差 audit、慢巡检、文档一致性。触发场景：每 2-4 小时 cron 自动触发。
+version: 1.0.0
 ---
 
 # Teamlead 慢节奏巡检 (slow cron)

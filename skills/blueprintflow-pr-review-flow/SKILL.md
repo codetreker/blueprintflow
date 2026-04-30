@@ -89,7 +89,7 @@ review 内容必须包含锚 (跟 spec/stance/acceptance 字面 cross-check):
 
 ### Review subagent 并行模式 (加速 — 推荐)
 
-不派 SendMessage 给 persistent 角色 (Architect/QA/PM) 而是 spawn fresh review subagent. 三个收益:
+不通知 persistent 角色 (Architect/QA/PM) 而是 spawn fresh review subagent. 三个收益:
 
 1. **不打断**: persistent 角色继续手头工作 (写 spec / acceptance / 文案锁), 不切回来 review
 2. **context 干净**: subagent 只读 PR + spec + 几个 cross-ref 锚, 没 inbox 噪音

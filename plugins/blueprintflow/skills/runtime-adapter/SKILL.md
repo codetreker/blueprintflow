@@ -1,5 +1,5 @@
 ---
-name: blueprintflow-runtime-adapter
+name: runtime-adapter
 description: Blueprintflow 运行时适配层——按 agent 环境的能力组合，给出通讯/文件/调度/观察的具体操作方式。前提：项目已采用 blueprintflow 工作流。触发词：运行时适配、模式选择、环境配置、adapter。触发场景：首次启动 blueprintflow 时确认运行模式，或切换 agent 环境时。
 version: 1.0.0
 ---

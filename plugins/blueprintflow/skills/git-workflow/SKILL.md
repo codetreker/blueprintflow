@@ -1,5 +1,5 @@
 ---
-name: blueprintflow-git-workflow
+name: git-workflow
 description: Blueprintflow 的 git 协作规范：一 milestone 一 worktree 一 branch，全员同 worktree 叠 commit，teamlead 唯一开 PR。前提：项目已采用 blueprintflow 工作流。触发词：git worktree、开 branch、milestone 分支。触发场景：milestone 启动创建 worktree 时。
 version: 1.0.0
 ---

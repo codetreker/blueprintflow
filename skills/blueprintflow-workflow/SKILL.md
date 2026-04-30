@@ -117,13 +117,13 @@ version: 1.0.0
 ### 推荐布局 (6 角色团 + Teamlead)
 
 ```
-┌─────────────────┬────────────┬────────────┐
-│                 │  飞马      │  野马      │
-│   Teamlead      ├────────────┼────────────┤
-│   (顶部宽窗)    │  战马A     │  战马B/C   │
-│                 ├────────────┼────────────┤
-│                 │  烈马      │  斑马/矮马 │
-└─────────────────┴────────────┴────────────┘
+┌─────────────────┬──────────────┬──────────────┐
+│                 │  Architect   │  PM          │
+│   Teamlead      ├──────────────┼──────────────┤
+│   (顶部宽窗)    │  Dev-A       │  Dev-B/C     │
+│                 ├──────────────┼──────────────┤
+│                 │  QA          │  Designer    │
+└─────────────────┴──────────────┴──────────────┘
 ```
 
 - **Teamlead 占左半屏整列** (协调主线, 视野最大)
@@ -150,8 +150,8 @@ done
 # pane 命名 (status line 显示)
 tmux set-option -t $SESSION pane-border-status top
 tmux select-pane -t $SESSION:0.0 -T 'teamlead'
-tmux select-pane -t $SESSION:0.1 -T 'feima'
-# ... feima/yema/zhanma-a/zhanma-c/liema 等
+tmux select-pane -t $SESSION:0.1 -T 'architect'
+# ... architect/pm/dev-a/dev-c/qa 等
 tmux attach -t $SESSION
 ```
 

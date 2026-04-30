@@ -53,6 +53,8 @@ Dev、PM、QA在 PR 上 review + comment：
 
 **Review 标准**：见 `blueprintflow-pr-review-flow` Review 正模式段。核心：通读整体 + 换位思考 + 认真找问题才 LGTM。
 
+**格式检查**：批量替换/rename 的 PR 必须检查 ASCII 图（时序图、表格、代码块缩进）有没有被误伤。diff 里出现大量纯空格变化 = 红旗。
+
 Review comment 用 `gh pr comment` 或直接在 GitHub PR 页面。
 
 ### 5. 达成一致后 Architect合并

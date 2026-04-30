@@ -49,5 +49,4 @@
 **规则适配（两种形态通用）：**
 - ⚠️ **Ping 协议**：如果角色无响应，Teamlead 先自行排查（检查 session 状态、重发消息）；无法解决 → escalate 到用户处理
 - ⚠️ **跨实例文件同步**：不共享 fs 时，"全员叠 commit"改为各 agent 独立 commit + push，Teamlead 在开 PR 前 pull 确认无冲突
-
 ---

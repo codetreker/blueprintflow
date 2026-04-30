@@ -101,28 +101,7 @@ review 内容必须包含锚 (跟 spec/stance/acceptance 字面 cross-check):
 
 详细 merge gate 协议见 `blueprintflow-teamlead-fast-cron-checkin §5`. 任务完成度判据 (一 milestone 一 PR 协议下) 在那里展开.
 
-### Review subagent 并行模式 (加速 — 推荐)
-
-不通知 persistent 角色 (Architect/QA/PM) 而是 spawn fresh review subagent. 三个收益:
-
-1. **不打断**: persistent 角色继续手头工作 (写 spec / acceptance / 文案锁), 不切回来 review
-2. **context 干净**: subagent 只读 PR + spec + 几个 cross-ref 锚, 没 inbox 噪音
-3. **可并行**: 同时派 N 个 subagent (架构 + 立场 + 文案 各一), 一波出多 LGTM
-
-**实测**: review subagent 并行 (架构 + 立场各一) 总耗时约 1 分钟, vs persistent 角色串行 6-10min. **8x 速度提升**.
-
-#### 派 review subagent 模板
-
-```
-Agent({
-  description: "Parallel <视角> review #<N>",
-  subagent_type: "general-purpose",
-  run_in_background: true,
-  prompt: `
-你是 codetreker/<repo> 项目的临时 reviewer (subagent, fresh context, 不是 persistent 角色).
-
-任务: review **PR #<N> <题目>** (<author> author).
-视角: **<架构 | 立场 + 文案 | acceptance + 反查锚>** 角度.
+> Review subagent 并行模板见 `references/review-subagent.md`。
 
 ## 必读锚
 1. \`gh pr view <N>\` — PR body + diff
@@ -191,59 +170,7 @@ Merge PR #<N>:
 
 注: `gh pr edit --body` 在某些环境不生效, 用 `gh api PATCH` 直 patch JSON.
 
-### Batch 模式 (加速 — 多 PR 一波, 仍标准 squash)
-
-不派 1 merge agent / 1 PR, 而是 1 agent 接 N 个 PR. 共享 lint/PR template 知识, 不重复检查. **batch 也是标准 squash, 不 admin / 不 ruleset disable**.
-
-**实测**: 8 PR 一波 5min, vs 单 PR 单 agent ~5min × 8 = 40min. **8x 速度提升**.
-
-#### 派 batch merge agent 模板
-
-```
-Agent({
-  description: "Batch merge N PRs (squash, 不 admin)",
-  subagent_type: "general-purpose",
-  run_in_background: true,
-  prompt: `
-repo: codetreker/<repo>. batch merge 多个 PR (顺序无关并发):
-
-| PR | 内容 | LGTM |
-|---|---|---|
-| #N1 | <内容> | <reviewer1> + <reviewer2> ✅ |
-| #N2 | <内容> | <reviewer1> ✅ (待 <reviewer2>, 报回不 merge) |
-...
-
-**协议硬红线**:
-- 绝对不 \`--admin\` flag
-- 绝对不 ruleset disable / PUT enforcement=disabled
-- CI 任何 fail → 不合, 退 author 修
-
-执行顺序:
-1. 先处理已 ≥1 non-author LGTM + CI 真全绿 + mergeable=CLEAN 的
-2. 不达标的报回, 不强 merge
-
-每个:
-- \`gh pr view <N> --json statusCheckRollup,mergeStateStatus,reviews\`
-- PR template lint fail → patch body via gh api PATCH + close+reopen (不 bypass lint)
-- CI 全绿 + CLEAN + ≥1 non-author LGTM → \`gh pr merge <N> --squash --delete-branch\`
-- 报回 SHA + 时间 ≤80 字 each
-
-总报告 ≤300 字, 列每个 PR 状态 (merged 或待 LGTM/CI 跳过). 报告里禁止出现 admin/ruleset/bypass 字眼.
-`
-})
-```
-
-#### 触发信号
-
-- reviewer 一波给多 PR LGTM (e.g. "双批 LGTM 信号: PR-A + PR-B") → batch agent
-- 4 件套 acceptance 一波交多 PR (e.g. 多 milestone 一波交) → batch agent
-
-#### 反模式
-
-- ❌ batch 含 NOT-LGTM 的 PR (混 review 状态, agent 不知该停还是跳过)
-- ❌ batch 含跨 base 互相依赖的 stacked PR (顺序锁需 sequential, 不能并发)
-- ❌ batch agent 数 > 5 (一个 agent 跟踪多 PR 错乱风险)
-- ❌ batch agent prompt 含 `--admin` / ruleset disable 任何指令 — **永久禁**
+#> Batch merge 模式详见 `references/batch-merge.md`。
 
 ## 跨 review 例子: 立场漂移抓出
 
@@ -271,6 +198,8 @@ repo: codetreker/<repo>. batch merge 多个 PR (顺序无关并发):
   - **Performance**：算法复杂度 + 热路径性能 + 不必要的 IO/网络调用 + 内存/并发
 - ✅ LGTM 前先找 3 个可以质疑的点，找不到再 LGTM
 - ✅ 技术细节（命令、API、参数）必须查文档验证，不能信作者
+- ✅ 检查有没有引入额外副作用——批量替换误伤格式、删改一处导致另一处断裂、改名导致引用失效
+- ✅ 新增/修改代码后检查有没有破坏现有逻辑——回归思维，不只看新加的对不对，也看旧的还能不能跑
 - ✅ 翻牌 (acceptance ⚪→✅ / REG flip / PROGRESS [x]) 跟实施代码在同一 milestone PR 内完成，不开 follow-up PR
 - ❌ 跳过 PR template 5 字段 (lint 拒, 不要走 ## H2 重复 metadata 绕过)
 - ❌ merge agent 报告里出现 admin/ruleset/bypass 字眼 (透明度 + 红线警报)

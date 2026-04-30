@@ -108,7 +108,9 @@ version: 1.0.0
 8. **blueprintflow:teamlead-slow-cron-checkin** — 2-4h cron, 偏差 audit
 9. **blueprintflow:phase-exit-gate** — Phase 收尾联签 + closure announcement
 
-## tmux 起团窗格排版
+## 起团窗格排版（仅 tmux 环境）
+
+> 以下内容仅适用于有 tmux 的环境。其他环境的起团方式见 `blueprintflow-runtime-adapter`。
 
 用 tmux 起团时, 窗格排版要合理化 — 不能全堆一行扁条, 一眼看不出谁在干什么。
 
@@ -196,17 +198,13 @@ tmux attach -t $SESSION
 **workflow 激活的同时, Teamlead 必启动 fast + slow 两个 cron**:
 
 ```
-CronCreate({
-  cron: "7,22,37,52 * * * *",  // 15min, 错峰 :07/:22/:37/:52 避免整点流量
-  prompt: "[自动巡检 · 15 min] Phase 进展 + idle 派活检查 (按 blueprintflow:teamlead-fast-cron-checkin 走)",
-  durable: false  // session-only, workflow 关停 cron 同步消失
-})
+启动巡检（具体命令见 blueprintflow-runtime-adapter 对照表）:
+  频率: 每 15 分钟
+  内容: "[自动巡检 · 15 min] Phase 进展 + idle 派活检查 (按 blueprintflow-teamlead-fast-cron-checkin 走)"
 
-CronCreate({
-  cron: "17 */2 * * *",  // 每 2h :17, 跟 fast cron :07/:22/:37/:52 错开
-  prompt: "[偏差 audit · 2 小时] 蓝图 / docs/current / 翻牌延迟检查 (按 blueprintflow:teamlead-slow-cron-checkin 走)",
-  durable: false
-})
+启动巡检（具体命令见 blueprintflow-runtime-adapter 对照表）:
+  频率: 每 2 小时
+  内容: "[偏差 audit · 2 小时] 蓝图 / docs/current / 翻牌延迟检查 (按 blueprintflow-teamlead-slow-cron-checkin 走)"
 ```
 
 **为什么必启**:

@@ -23,8 +23,8 @@
 | 通知 \<Role\> | `sessions_send(sessionKey, message)` — 同实例内 agent 间直接发消息 |
 | 创建 worktree | `exec("git worktree add .worktrees/<milestone> ...")` |
 | 提交代码 | 在 worktree 里 `exec("git add -A && git commit && git push")` |
-| 启动 fast-cron | 在 OpenClaw 设置 cron：`/cron add "7,22,37,52 * * * *" "<fast-cron prompt>"` 或在 HEARTBEAT.md 里加巡检项 |
-| 启动 slow-cron | 在 OpenClaw 设置 cron：`/cron add "17 */2 * * *" "<slow-cron prompt>"` 或单独配置 cron job |
+| 启动 fast-cron | `exec('openclaw cron add --cron "7,22,37,52 * * * *" --message "<fast-cron prompt>" --to <project-channel-id>')` 或在 HEARTBEAT.md 里加巡检项 |
+| 启动 slow-cron | `exec('openclaw cron add --cron "17 */2 * * *" --message "<slow-cron prompt>" --to <project-channel-id>')` |
 | 查看角色状态 | `sessions_list` / `sessions_history` |
 | 开 PR | `exec("gh pr create")` (Teamlead 唯一) |
 | Merge PR | `exec("gh pr merge <N> --squash")` |
@@ -40,8 +40,8 @@
 | 通知 \<Role\> | `message(action=send, target=<channel-id>, message=content)` — 通过 Discord 频道 |
 | 创建 worktree | 各 agent 本地 `git worktree add`，通过 `git push/pull` 同步 |
 | 提交代码 | 本地 commit + `git push`，其他 agent `git pull` 获取 |
-| 启动 fast-cron | 在 OpenClaw 设置 cron：`/cron add "7,22,37,52 * * * *" "<fast-cron prompt>"` 或在 HEARTBEAT.md 里加巡检项 |
-| 启动 slow-cron | 在 OpenClaw 设置 cron：`/cron add "17 */2 * * *" "<slow-cron prompt>"` 或单独配置 cron job |
+| 启动 fast-cron | `exec('openclaw cron add --cron "7,22,37,52 * * * *" --message "<fast-cron prompt>" --to <project-channel-id>')` 或在 HEARTBEAT.md 里加巡检项 |
+| 启动 slow-cron | `exec('openclaw cron add --cron "17 */2 * * *" --message "<slow-cron prompt>" --to <project-channel-id>')` |
 | 查看角色状态 | 频道消息历史 / `message(action=read)` |
 | 开 PR | `exec("gh pr create")` (Teamlead 唯一) |
 | Merge PR | `exec("gh pr merge <N> --squash")` |

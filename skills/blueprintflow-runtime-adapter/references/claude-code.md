@@ -81,6 +81,18 @@ Claude Code 有 3 种配置组合。按以下决策树确认你的配置：
 
 ---
 
+## Ping/Pong 沉默检测（仅 team mode）
+
+派活给 persistent agent 后, 如 10min 内无消息回报, 启动 ping 协议:
+
+1. **第一次 ping** (≤10min 沉默): 通知 "ping. 5min 内回 pong + 当前进度一句话"
+2. **第二次 ping** (≤15min 沉默): 通知 "再次 ping. 是否在干活? 5min 内回报或我 shutdown."
+3. **Kill + 重 spawn** (≤20min 沉默): shutdown_request → spawn 新 subagent 接活
+
+**阈值可调**：10min 是默认, e2e 调试 30min 沉默正常, schema migration 10min 异常。用户拍板可豁免。
+
+**不适用**：subagent 有自己的完成信号, 不用 ping。
+
 ## 如果你检测到缺少能力
 
 如果你发现当前环境缺少 team mode 或 tmux，把下面的提示发给用户，帮他们升级：

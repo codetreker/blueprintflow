@@ -20,6 +20,8 @@ version: 1.0.0
 ### 1. Architect spec brief
 **Path**: `docs/implementation/modules/<milestone>-spec.md` (≤80 行)
 
+> **注**: spec brief 仅 §0-§4, 不允许 §5+ 派活/自审/更新日志段 (见反模式)。
+
 结构:
 - §0 关键约束 (3 立场)
 - §1 拆段 ≤3 PR (schema / server / client)
@@ -142,6 +144,14 @@ acceptance ⚪→✅ + REG-* + PROGRESS [x] 都在实施 PR 内同 commit 落. *
 - ❌ 实施 PR 不引 spec § 锚点 (跨 PR drift 无法抓)
 - ❌ 用 `/tmp/<work>` 临时 clone (改用 `.worktrees/<milestone>`)
 - ❌ 一个 milestone 多个 branch (撞车 + 历史脏)
+- ❌ **spec brief 写 §5/§6/§7 (派活 / Architect 自审 / 更新日志) 段**
+
+ **背景**: 末段信息全是重复 — 派活记录在 PR body + 通讯历史已有, Architect 自审走 PR review comment, 更新日志 git log + git blame 自带; 而且末段 narrative changelog 是 docs 撞冲突主因 (共享 changelog / closure 段 / spec brief 末尾几行被多 wave 并行翻牌全堵在这里)。
+
+ > **实战案例（Borgee）：** 60+ spec brief 都中招, 末段 narrative changelog 集中撞 `phase-4.md` / `closure §1` / spec brief 末尾几行。
+
+ **如何应用**: spec brief ≤80 行只保 §0-§4 (关键约束 / 拆段 / 留账 / 反查 grep / 不在范围)。派活走通知 / Task, 自审走 PR review comment, 更新日志走 git log + PR body, 不在 spec brief 末尾叠 narrative changelog。
+
 - ❌ **文案锁早于实施太久, 不跟既有实施 cross-grep**
 
  **背景**: 文案锁草稿期写的字面跟既有实施不一致, 文案锁字面没跟既有实施 cross-grep, 后续实施对齐了既有代码 (合理), 文案锁文档变孤儿。

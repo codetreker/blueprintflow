@@ -105,6 +105,7 @@ Agent({ name: "designer", ... })
 - **memory of 决策**: 重要决策 (撤回某条建议 / 接受 dev 反证) 要广播给相关 reviewer, 防止 stale instruction 浮在他们 inbox。
 - **效率最大化授权**: 在不打破章程规则 (4 件套 / 双 review / migration v 号 sequencing 等) 不损质量 (反约束 grep 机器化锚 / byte-identical 对照) 的前提下, 灵活安排. 例如: 多 PR 一波 batch merge / review subagent 并行 / acceptance 与 stance 跨界互写 / chore PR 单 reviewer 跳双 review / 大波 LGTM 信号到达后立即派 batch 处理. 不要为流程而流程, 但流程的"为什么"得守住.
 - **沉默检测**：如果角色无响应，处理方式取决于运行环境（见 `blueprintflow-runtime-adapter`）
+- **issue triage 分发**: cron 扫 untriaged GitHub issues 时 Teamlead 先判分发 — 代码改进/tech-debt → Architect, 新功能 → PM, bug → QA。Teamlead 是分发, **不下场判类型** (跟"协调不动手"同立场)。详见 `blueprintflow-issue-triage`。
 
 ### 反模式
 - ❌ **subagent 同步阻塞**: 派 general-purpose agent 必须 `run_in_background: true`, 否则 teamlead 卡在等结果上, 不能继续协调。背景: subagent 干杂活 (merge / lint patch) 跟 teamlead 主线 (协调派活 / 收 LGTM / 合成诊断) **本来就独立**, 没理由阻塞。

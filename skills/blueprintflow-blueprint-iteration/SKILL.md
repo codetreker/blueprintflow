@@ -51,11 +51,13 @@ Backlog 真账走 GitHub issues, label `backlog` 标记。
 
 ### Issue 流转规则
 
+新 issue 进来的 **入闸 triage** 走 `blueprintflow-issue-triage` (cron 扫 + Teamlead 先判分发 + Architect/PM/QA 角色分类 + 打 `triaged` label)。本 skill 主管 triage 之后的**状态机流转**:
+
 ```
-新 issue 入 → Architect 判定:
+issue triaged (label 已打) → 状态机流转:
   ├── type:bug + 当前蓝图覆盖 → label `current-iteration` + 派 patch / bugfix milestone
   ├── type:feature / type:tech-debt → label `backlog` 等下一版
-  └── 拿不准 → label `type:question` 升 Teamlead
+  └── type:question → 升 Teamlead + 用户拍
 
 下一版讨论开始 → 扫所有 label `backlog` issues (人工一条条评):
   ├── 挑入 → 移 label `backlog` → `next-iteration`

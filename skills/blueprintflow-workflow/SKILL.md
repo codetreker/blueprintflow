@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-workflow
-description: Blueprintflow 是一套多 agent 协作做产品的工作流方法论，覆盖从概念讨论到代码发布的完整生命周期（概念→计划→实施→协调），适合大需求/长周期/多角色协作项目。触发词：blueprintflow、多 agent 协作、起团、新产品启动、大功能开发。触发场景：新产品/大功能/大 refactor 起步时，或需要确认该走哪个 blueprintflow skill 时。
+description: Blueprintflow 多 agent 协作做产品的工作流方法论入口, 覆盖概念→蓝图→Phase→milestone→PR→闸全生命周期, 是其他 blueprintflow skill 的导航。触发: 新产品启动 / 大功能起步 / 团队首次接入 blueprintflow / 不确定该走哪个具体 skill。反触发: 已在 milestone 实施中按 4 件套或 implementation design 推进 / 单文件 typo / dep bump / hotfix 紧急路径 / 已明确知道走哪个具体 skill。
 version: 1.0.0
 ---
 

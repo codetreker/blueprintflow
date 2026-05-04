@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-runtime-adapter
-description: Blueprintflow 运行时适配层——按 agent 环境的能力组合，给出通讯/文件/调度/观察的具体操作方式。前提：项目已采用 blueprintflow 工作流。触发词：运行时适配、模式选择、环境配置、adapter。触发场景：首次启动 blueprintflow 时确认运行模式，或切换 agent 环境时。
+description: Blueprintflow 运行时适配层, 按 agent 环境能力组合给出通讯/文件/调度/观察/沉默检测的具体操作方式 (e.g. tmux + SendMessage 替代 / cron 实现 / idle 检测路径)。触发: 首次启动 blueprintflow 团队需确认运行模式 / 切换 agent 环境 (本地 ↔ 云 / 通讯通道更换) / 沉默检测协议拿不准。反触发: 蓝图/Phase/milestone 业务流程 (各自走对应 skill) / 已配好运行时直接派活 / 单文件 commit / hotfix。
 version: 1.0.0
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-team-roles
-description: Blueprintflow 6 角色 prompt 模板（架构/PM/Dev/QA/设计/安全, Security 必备独立角色, 所有代码改动必走 review）+ Teamlead 职责定义。前提：项目已采用 blueprintflow 工作流。触发词：起团、spawn agents、角色分工、职责边界。触发场景：起团 spawn agents 时，或需要确认某角色职责时。
+description: Blueprintflow 6 角色 (Architect/PM/Dev/QA/Designer/Security) prompt 模板 + Teamlead 职责定义, Security 必备独立角色不允许 Architect 兼任, 标准 8 人配置 (3 Dev + Architect + PM + QA + Security + Teamlead)。触发: 起团 spawn agents / 确认某角色职责边界 / 派活前选合适角色 / 角色冲突仲裁。反触发: 已知道派给谁的具体派活动作 (直接通讯) / 角色 prompt 模板已加载 / 单文件机械改动 / 不需多角色协作的 hotfix。
 version: 1.0.0
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-implementation-design
-description: 在 milestone 4 件套后、写代码前, Dev 出实现方案设计文档, 由 Architect/PM/Security/QA 共同 review, 全 ✅ 才放行写代码。前提: 4 件套已就位, 涉及代码改动. 触发词: implementation design, 实现设计, design review.
+description: 4 件套后写代码前, Dev 主写实现方案设计 (数据流/数据模型/API contract/边界 case/多方案/集成点), 由 Architect+PM+Security+QA 4 角色 review 全 ✅ 才放行写代码; 设计文档跟 4 件套 + 实施同 milestone PR, 不开独立 PR。触发: 4 件套已就位, 涉及代码改动的 milestone 启动写代码前 / 重要 refactor / 跨模块改动设计。反触发: 非代码 milestone (docs-only / config-only / 字面调整) / 4 件套未就位 (先走 4 件套) / 已通过 design review 进实施 (设计已 frozen, 直接写代码) / typo / hotfix 紧急路径。
 version: 1.0.0
 ---
 

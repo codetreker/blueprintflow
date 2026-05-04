@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-pr-review-flow
-description: PR 从 open 到 merged 的标准流程：双 review 路径 + review subagent 并行 + 标准 squash merge。前提：项目已采用 blueprintflow 工作流。触发词：PR review、LGTM、merge PR、双 review。触发场景：PR open 后需要 review 和合并时。
+description: PR open 到 merged 的标准流程: 双 review 路径 (Architect 架构 + QA acceptance + 涉敏感加 Security) + Security checklist (12 类 lazy reference) + 三联签 merge gate (CI + LGTM + 任务完成度) + 标准 squash, 永不 admin/ruleset bypass。触发: PR open 后派 review / 收 LGTM 后 merge / merge 前 CI fail 处理。反触发: PR 还未 open (走 milestone-fourpiece + implementation-design) / 实施未完 (走 4 件套 / design review) / draft PR 未 ready / 蓝图层立场审查 (走 brainstorm)。
 version: 1.0.0
 ---
 
@@ -20,6 +20,16 @@ milestone PR 开之前, 涉及代码的 milestone **必须**已通过 implementa
 完整规格见 `blueprintflow-implementation-design`。
 
 非代码 milestone (docs-only / config-only / 字面调整) 可跳此步, 直接进 PR review。
+
+## Security review 走清单 (lazy reference)
+
+Security 角色做 PR review 时, 引 `references/security-checklist.md` 走 12 类清单 (鉴权/输入验证/敏感数据/会话凭证/rate limit/依赖/配置部署/业务逻辑等)。
+
+- 清单**不进 SKILL.md 主体** — 节省主流程 context
+- Security review 时按 PR 改动范围挑相关条目查
+- LGTM 评论必引具体清单条目 (e.g. "§1 鉴权 ✅, §8 IDOR 见 line 42 已防"), 反 "笼统过审"
+
+详见 `references/security-checklist.md` (12 类, 每类 bullet + "为什么 + 怎么验")。
 
 ## 🚫 永久禁 (硬红线 — 不可商量)
 

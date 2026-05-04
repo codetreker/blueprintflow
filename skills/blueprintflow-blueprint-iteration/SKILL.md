@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-blueprint-iteration
-description: 蓝图迭代管理 — 3 状态机 (当前 / 下一版 / backlog) + major/minor 版本号 + 变更流转判定. 适用蓝图已落地后的演进期. 触发词: 蓝图迭代, 下一版蓝图, blueprint version.
+description: 蓝图首版 freeze 后的演进规则: 3 状态机 (current/next/backlog) + major/minor 版本号 (蓝图自带 frontmatter) + 变更流转判定 (真 bug 入当前 patch / 非 bug 入 backlog) + 迭代生命周期 (验收过 → 提醒 → 扫 backlog → 落 next → freeze + tag)。触发: 当前迭代验收过, 用户拍开下一版讨论 / 收到变更建议需判 bug vs 非 bug / blueprint-next 收敛要 freeze 切版。反触发: 蓝图首版起草期 (走 blueprint-write) / 实施期 milestone 拆段 / 当前蓝图字面 typo 直 commit (patch 不 bump 版号)。
 version: 1.0.0
 ---
 

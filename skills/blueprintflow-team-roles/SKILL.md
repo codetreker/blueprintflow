@@ -1,15 +1,37 @@
 ---
 name: blueprintflow-team-roles
-description: Blueprintflow 6 角色 prompt 模板（架构/PM/Dev/QA/设计/安全）+ Teamlead 职责定义。前提：项目已采用 blueprintflow 工作流。触发词：起团、spawn agents、角色分工、职责边界。触发场景：起团 spawn agents 时，或需要确认某角色职责时。
+description: Blueprintflow 6 角色 prompt 模板（架构/PM/Dev/QA/设计/安全, Security 必备独立角色, 所有代码改动必走 review）+ Teamlead 职责定义。前提：项目已采用 blueprintflow 工作流。触发词：起团、spawn agents、角色分工、职责边界。触发场景：起团 spawn agents 时，或需要确认某角色职责时。
 version: 1.0.0
 ---
 
 # Team Roles
 
-> **角色 ≠ 人**：6 角色不要求 6 个 agent 或 6 个人。一个 agent/人可以承担多个角色（如 Architect + Security、PM + Designer）。小团队 2-3 人即可分担全部角色。角色定义的是职责边界，不是人头。
+> **角色 ≠ 人**：6 角色不要求 6 个 agent 或 6 个人。一个 agent/人可以承担多个角色（如 PM + Designer）。小团队可分担, **但 Security 必须独立, 不允许 Architect 兼任** (见下方 Security 段)。
 >
 
-6 个角色 + Teamlead 协调, 多 agent 协作做产品。每角色一个 prompt 模板, 起团按需 spawn。
+6 个角色 + Teamlead 协调, 多 agent 协作做产品。每角色一个 prompt 模板, 起团按需 spawn (Security 必备, 不按需)。
+
+## 团队标准配置
+
+8 人配置 (推荐):
+
+- 3 Dev
+- 1 Architect
+- 1 PM
+- 1 QA
+- **1 Security (必备 + 独立角色)**
+- 1 Teamlead (协调, 不写代码)
+
+Designer 按项目需要追加 (视觉新组件多的项目必备)。
+
+## Security: 必备 + 独立角色
+
+**所有代码改动必走 Security review** — 这是 2026 拍板的硬规, 不允许:
+- ❌ "lazy spawn / 涉及敏感才拉" (旧规则, 已废)
+- ❌ Architect 兼任 Security (架构视角 ≠ 安全视角, 合并后两边失声)
+- ❌ "这个 milestone 不涉敏感跳过" (鉴权 / capability / cookie 域 / cross-org / admin god-mode 路径无处不在, 默认全审)
+
+实战教训: 多次安全 bug (admin god-mode 漏审 / cookie 域错配 / cross-org 数据泄露) 都是 "看着不敏感所以没拉 Security" 留的口子。改成默认必审后, 这类口子封死。
 
 ## Teamlead (协调, facilitator)
 

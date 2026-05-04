@@ -8,6 +8,19 @@ version: 1.0.0
 
 PR open 后到 merged 的标准流程.
 
+## PR 出之前: implementation design 4 ✅ 必备
+
+milestone PR 开之前, 涉及代码的 milestone **必须**已通过 implementation design 4 角色 review:
+
+- 设计文档: `docs/implementation/design/<milestone>.md` (Dev 主写)
+- 4 角色 ✅: Architect (架构 + 立场) / PM (用户价值 + UX) / Security (鉴权 / 数据隔离 / cross-org) / QA (可测性 + 边界 case)
+- review 走 worktree 内通讯 / PR comment, 不开独立 PR
+- 任一 ❌ 阻塞 — 不允许开 milestone PR
+
+完整规格见 `blueprintflow-implementation-design`。
+
+非代码 milestone (docs-only / config-only / 字面调整) 可跳此步, 直接进 PR review。
+
 ## 🚫 永久禁 (硬红线 — 不可商量)
 
 以下手段**永远禁用**, 任何场景任何理由都不允许. 这是用户 2026-04-29 拍板的硬红线, 不接受 "临时" / "兜底" / "flaky" / "急" 任何借口:

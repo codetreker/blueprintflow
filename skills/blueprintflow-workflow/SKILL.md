@@ -97,16 +97,25 @@ version: 1.0.0
 
 4. **blueprintflow:git-workflow** — git 协议: 一 milestone 一 worktree, 角色不开 PR, teamlead 唯一开 PR
 5. **blueprintflow:milestone-fourpiece** — 4 件套全员同 worktree 叠 commit (spec / stance / acceptance / content-lock 都进同一 PR)
-6. **blueprintflow:pr-review-flow** — PR (teamlead 开) 后双 review + 标准 squash merge (永远不 admin/ruleset bypass)
+6. **blueprintflow:implementation-design** — 4 件套后写代码前, Dev 主写实现方案设计, Architect/PM/Security/QA 4 角色 review 全 ✅ 才放行写代码
+7. **blueprintflow:pr-review-flow** — PR (teamlead 开) 后双 review + Security checklist + 标准 squash merge (永远不 admin/ruleset bypass)
 
 产出: milestone 全 merged + acceptance template ⚪→🟢 翻牌 + REG-* 寄存
 
 ### 阶段 4: 持续推进 + Phase 退出
-**目标**: idle 派活 + 偏差纠正 + Phase 退出 gate
+**目标**: idle 派活 + 偏差纠正 + issue 分类 + Phase 退出 gate
 
-7. **blueprintflow:teamlead-fast-cron-checkin** — 15 min cron, idle 角色派活
-8. **blueprintflow:teamlead-slow-cron-checkin** — 2-4h cron, 偏差 audit
-9. **blueprintflow:phase-exit-gate** — Phase 收尾联签 + closure announcement
+8. **blueprintflow:teamlead-fast-cron-checkin** — 15 min cron, idle 角色派活 (PR 维度)
+9. **blueprintflow:teamlead-slow-cron-checkin** — 2-4h cron, 偏差 audit (蓝图偏差维度)
+10. **blueprintflow:issue-triage** — 3h cron, 扫 GitHub issues, Teamlead 先判分发 Architect/PM/QA (issue 维度, 跟 fast/slow cron 平行不重叠)
+11. **blueprintflow:phase-exit-gate** — Phase 收尾联签 + closure announcement
+
+### 阶段 5: 蓝图迭代 (Phase 全过完后)
+**目标**: 当前蓝图验收过 → 演进到下一版蓝图 (3 状态机 + 版本号管理)
+
+12. **blueprintflow:blueprint-iteration** — 3 状态机 (current/next/GitHub issues backlog) + major/minor 版本号 + 变更流转判定 (真 bug 入当前 patch / 非 bug 入 backlog) + freeze + tag 切版
+
+产出: 新版蓝图 freeze + 旧版 git tag 留历史 + source-issues.md 留来源
 
 ## 起团窗格排版（仅 tmux 环境）
 
@@ -128,7 +137,7 @@ version: 1.0.0
 
 - **Teamlead 占左半屏整列** (协调主线, 视野最大)
 - **6 角色右侧 2x3 网格** (每格高度均等, 名字一眼看见)
-- 按需 spawn 的Designer/Security 跟 Dev 共用底格 (lazy spawn)
+- Security 必备独立角色, 必占一格 (不允许 Architect 兼任); Designer 按项目需要追加, 没视觉新组件可不占格
 
 ### 起团命令骨架
 

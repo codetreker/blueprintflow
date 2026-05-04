@@ -93,11 +93,14 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 | [blueprintflow-brainstorm](skills/blueprintflow-brainstorm/SKILL.md) | 讨论 | 多轮讨论锁立场 + 反约束 |
 | [blueprintflow-blueprint-write](skills/blueprintflow-blueprint-write/SKILL.md) | 立项 | 蓝图模板（立场 / 概念 / v0/v1 边界） |
 | [blueprintflow-phase-plan](skills/blueprintflow-phase-plan/SKILL.md) | 规划 | Phase 拆分 + 退出 gate |
+| [blueprintflow-blueprint-iteration](skills/blueprintflow-blueprint-iteration/SKILL.md) | 演进 | 蓝图首版 freeze 后的迭代 (3 状态机 + 版本号 + GitHub issues backlog) |
 | [blueprintflow-milestone-fourpiece](skills/blueprintflow-milestone-fourpiece/SKILL.md) | 实施 | 4 件套（spec / stance / acceptance / content-lock） |
+| [blueprintflow-implementation-design](skills/blueprintflow-implementation-design/SKILL.md) | 实施 | 4 件套后写代码前 Dev 出实现方案设计 + 4 角色 review |
 | [blueprintflow-git-workflow](skills/blueprintflow-git-workflow/SKILL.md) | 实施 | 一 milestone 一 worktree 一 PR |
 | [blueprintflow-pr-review-flow](skills/blueprintflow-pr-review-flow/SKILL.md) | Review | 双 review + 标准 squash merge |
 | [blueprintflow-teamlead-fast-cron-checkin](skills/blueprintflow-teamlead-fast-cron-checkin/SKILL.md) | 巡检 | 15min idle 派活 |
 | [blueprintflow-teamlead-slow-cron-checkin](skills/blueprintflow-teamlead-slow-cron-checkin/SKILL.md) | 巡检 | 2-4h 偏差 audit |
+| [blueprintflow-issue-triage](skills/blueprintflow-issue-triage/SKILL.md) | 巡检 | 3h cron 扫 GitHub issues, Teamlead 先判分发到 Architect/PM/QA |
 | [blueprintflow-phase-exit-gate](skills/blueprintflow-phase-exit-gate/SKILL.md) | 收尾 | Phase 4 联签 + closure |
 | [runtime-adapter](skills/blueprintflow-runtime-adapter/SKILL.md) | 起步 | 运行时适配（通讯/文件/调度的模式对照表） |
 | [skill-workflow](skills/blueprintflow-skill-workflow/SKILL.md) | 更新 | Skill 自身的 PR 流程 |

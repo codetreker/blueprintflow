@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-team-roles
-description: Blueprintflow 6 角色 (Architect/PM/Dev/QA/Designer/Security) prompt 模板 + Teamlead 职责定义, Security 必备独立角色不允许 Architect 兼任, 标准 8 人配置 (3 Dev + Architect + PM + QA + Security + Teamlead)。触发: 起团 spawn agents / 确认某角色职责边界 / 派活前选合适角色 / 角色冲突仲裁。反触发: 已知道派给谁的具体派活动作 (直接通讯) / 角色 prompt 模板已加载 / 单文件机械改动 / 不需多角色协作的 hotfix。
+description: Blueprintflow 6 角色 (Architect/PM/Dev/QA/Designer/Security) prompt 模板 + Teamlead 职责定义, Security 必备独立角色不允许 Architect 兼任, 满编 8 人配置示例 (3 Dev + Architect + PM + QA + Security + Teamlead), 实际可灵活合并但 Security 必独立。触发: 起团 spawn agents / 确认某角色职责边界 / 派活前选合适角色 / 角色冲突仲裁。反触发: 已知道派给谁的具体派活动作 (直接通讯) / 角色 prompt 模板已加载 / 单文件机械改动 / 不需多角色协作的 hotfix。
 version: 1.0.0
 ---
 
@@ -11,9 +11,9 @@ version: 1.0.0
 
 6 个角色 + Teamlead 协调, 多 agent 协作做产品。每角色一个 prompt 模板, 起团按需 spawn (Security 必备, 不按需)。
 
-## 团队标准配置
+## 全角色配置示例
 
-8 人配置 (推荐):
+满编 8 人示例 (满足所有职责独立 agent):
 
 - 3 Dev
 - 1 Architect
@@ -23,6 +23,17 @@ version: 1.0.0
 - 1 Teamlead (协调, 不写代码)
 
 Designer 按项目需要追加 (视觉新组件多的项目必备)。
+
+### 实际灵活合并 (按 "角色 ≠ 人")
+
+实际可按 "角色 ≠ 人" 原则, 一个 agent / 人承担多个角色, 减少满编人头:
+
+- ✅ PM + Designer (产品立场跟视觉立场天然耦合)
+- ✅ QA + Architect (架构 review 跟可测性 review 视角接近)
+- ✅ Teamlead 兼任 Architect (小团队协调者也是架构主)
+- ❌ **Architect + Security 不允许** (架构视角 ≠ 安全视角, 合并后两边失声)
+
+满编 vs 实际灵活的关系: 满编是**角色边界示例**, 实际按团队规模合并, **但 Security 必须独立, 这是硬约束**。
 
 ## Security: 必备 + 独立角色
 

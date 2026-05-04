@@ -8,7 +8,7 @@
 # 角色性质
 - **必备 + 独立角色** — 所有代码改动必走 Security review
 - 不允许 Architect 兼任 (架构视角 ≠ 安全视角)
-- 团队标准配置 8 人之一 (3 Dev + Architect + PM + QA + Security + Teamlead, Designer 可选)
+- 团队满编 8 人配置示例之一 (3 Dev + Architect + PM + QA + Security + Teamlead, Designer 可选), 实际灵活合并时 Security 必独立
 
 # review 范围 (默认全审, 不按需筛)
 - 鉴权 / capability / 权限最小化

@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-git-workflow
-description: Blueprintflow 的 git 协作规范：一 milestone 一 worktree 一 branch，全员同 worktree 叠 commit，teamlead 唯一开 PR。前提：项目已采用 blueprintflow 工作流。触发词：git worktree、开 branch、milestone 分支。触发场景：milestone 启动创建 worktree 时。
+description: Blueprintflow 的 git 协作规范: 一 milestone 一 worktree 一 branch, 全员在 .worktrees/<milestone> 同 branch 叠 commit, Teamlead 唯一开 PR + 唯一删 worktree, 一 milestone 一 PR (不拆 schema/server/client/closure 多 PR)。触发: milestone 启动创建 worktree / PR merged 后清 worktree / 角色不知道在哪个目录工作。反触发: 蓝图层 / Phase 层文档 (worktree 在 main 直 commit, 不开 milestone worktree) / hotfix 紧急路径 (走单独 hotfix branch) / skill 自身更新 (走 skill-workflow)。
 version: 1.0.0
 ---
 
@@ -30,7 +30,7 @@ milestone 涉及的所有角色 (Dev/Architect/QA/PM/Designer/Security) **在同
 
 | 角色 | 在 worktree 里做的事 |
 |---|---|
-| Dev | 写代码 (server-go / client / e2e) + 单测 + 截屏 |
+| Dev | 写代码 (server / client / e2e) + 单测 + 截屏 |
 | Architect | 写 spec brief (`docs/implementation/modules/<milestone>-spec.md`) |
 | QA | 写 acceptance template (`docs/qa/acceptance-templates/<milestone>.md`) + acceptance 验收翻 ⚪→✅ |
 | PM | 写 stance checklist + content lock (`docs/qa/<milestone>-{stance,content-lock}.md`) + 立场反查 |
@@ -76,7 +76,7 @@ PR body 必须装齐 4 件套全部内容 + 三段实施 + e2e + closure (REG fl
 teamlead 开 PR 时心智:
 - 全员都 commit 进 `feat/<milestone>` 了吗? (Dev 代码 + Architect spec + QA acceptance + PM stance/content-lock 全齐)
 - docs/current sync 跟代码同步了吗?
-- regression-registry §5 totals 数学闭吗?
+- 项目自定的 regression / 寄存器一致性 (如有) 数学闭吗?
 - PROGRESS.md `[x]` 翻牌了吗?
 
 任一不全, 不开 PR — 派回缺的角色补 commit.

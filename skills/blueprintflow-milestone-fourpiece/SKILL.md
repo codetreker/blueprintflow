@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-milestone-fourpiece
-description: Milestone 实施前建立 4 件基线文档（spec/stance/acceptance/content-lock），确保实施有锚可查。前提：blueprintflow Phase plan 已拆完 milestone。触发词：4 件套、milestone 启动、spec brief、stance checklist。触发场景：每个 milestone 开始实施前。
+description: Milestone 实施前建立 4 件基线文档 (Architect spec brief / PM stance + content lock / QA acceptance template), 锁立场 + 拆段 + 验收 + 文案, 跟 implementation design + 实施 + e2e + closure 全在同一 milestone PR 内。触发: Phase plan 拆完 milestone, 启动具体 milestone / Teamlead 唯一创建 .worktrees/<milestone> 派活给 Architect/PM/QA。反触发: 蓝图层立场未定 (走 brainstorm / blueprint-write) / Phase 拆段 (走 phase-plan) / 已有 4 件套进 implementation design (走 implementation-design) / docs-only / hotfix 紧急路径。
 version: 1.0.0
 ---
 
@@ -58,6 +58,20 @@ version: 1.0.0
 
 如 milestone 涉及视觉新组件, 跟Designer design system 联动 (未来扩展)。
 
+## 步 5: 写代码前 Dev 出 Implementation Design
+
+4 件套就位后、拆段实施前, Dev 主写一份实现方案设计文档 (`docs/implementation/design/<milestone>.md`), 由 Architect / PM / Security / QA 4 角色 review, **全 ✅ 才放行写代码**。
+
+适用范围:
+- ✅ 涉及代码的 milestone **必走** (schema / server / client 任一改动)
+- ❌ 非代码 milestone (docs-only / config-only / 字面调整) 可跳
+
+PR 协议:
+- 设计文档**不是独立 PR** — 跟 4 件套同 worktree 叠 commit, 全在 milestone PR 内 (守 "一 milestone 一 PR" 铁律)
+- review 走 worktree 内通讯 / PR comment, 不靠开独立 PR
+
+完整规格见 `blueprintflow-implementation-design`。
+
 ## 4 件套间字面一致硬条件
 
 spec / stance / acceptance / content-lock 互相引 §X.Y 锚点, 任一漂移其他 review 时抓出 (跨 PR drift 抓得到)。
@@ -78,9 +92,11 @@ git worktree add .worktrees/<milestone> -b feat/<milestone> origin/main
 2. 派 Architect (在 .worktrees/<milestone> 里): spec brief, commit + push, 不开 PR
 3. 派 PM (同 worktree): stance checklist + content lock, commit + push, 不开 PR
 4. 派 QA (同 worktree): acceptance template, commit + push, 不开 PR
-5. 派 Dev (同 worktree): 三段实施 + e2e + docs/current sync + REG/acceptance/PROGRESS 翻牌, commit + push, 不开 PR
-6. 全员就绪 → teamlead 唯一开 PR (gh pr create)
-7. PR merged → teamlead 删 worktree
+5. 派 Dev (同 worktree): 写 implementation design (docs/implementation/design/<milestone>.md), commit + push
+6. 派 Architect / PM / Security / QA review design, 全 ✅ 才放行
+7. 派 Dev (同 worktree): 三段实施 + e2e + docs/current sync + REG/acceptance/PROGRESS 翻牌, commit + push, 不开 PR
+8. 全员就绪 → teamlead 唯一开 PR (gh pr create)
+9. PR merged → teamlead 删 worktree
 ```
 
 详细 git 协议见 `blueprintflow-git-workflow` (角色不开 PR / teamlead 唯一开 PR / 一 worktree 一 milestone).
@@ -90,7 +106,7 @@ git worktree add .worktrees/<milestone> -b feat/<milestone> origin/main
 全员在**同一 worktree + 同一 branch** 内叠 commit (角色都不开 PR, teamlead 最后开):
 - 1.1 schema (migration v=N + 表 + drift test) — Dev
 - 1.2 server (API + 业务逻辑 + 反向断言 test) — Dev
-- 1.3 client (SPA UI + e2e Playwright) — Dev
+- 1.3 client (UI + e2e) — Dev
 - 1.4 docs/current sync (server / client docs) — Dev
 - 1.5 REG-* 翻 🟢 + acceptance template ⚪→✅ + PROGRESS [x] — QA / Dev
 - (并行) spec brief — Architect

@@ -20,14 +20,14 @@ version: 1.0.0
 
 3 状态独立, 不混。当前蓝图允许 patch (字面/锚/反约束), 但**不允许立场反转** — 立场反转必走 `blueprint-next/`。
 
-> **为什么 backlog 走 GitHub issues 不走 repo 内 docs/**:
-> - **Fork-friendly**: GitHub issues 不会跟 fork 走是 feature, 反让 fork 拿到上游内部讨论 (噪音/敏感)。fork 拿到的是干净蓝图 + 实施代码, 不带上游讨论包袱。
+> **为什么 backlog 走 GitHub issues**:
+> - **Fork-friendly**: GitHub issues 跟着 origin 仓库走, 不污染 fork。fork 拿到的是干净蓝图 + 实施代码, 上游内部讨论 (噪音/敏感) 留在 origin。
 > - **协作原生**: comment / label / assign / link PR 全是 GitHub 原生能力, 不重发明。
 > - **可搜索 / 可 link**: PR `Closes gh#NNN` 直 link 真因, 不靠手写交叉引用。
 
 ## Backlog: GitHub issues SSOT
 
-Backlog 真账走 GitHub issues, 不再写 `docs/blueprint-backlog/` 目录。
+Backlog 真账走 GitHub issues, label `backlog` 标记。
 
 ### Tag 体系 (3 维度)
 
@@ -226,7 +226,7 @@ reminder-period 项目自定 (e.g. 2w / 1m), 不写死。版本号规则**不写
 - ❌ 蓝图当前版直接立场反转改 (实施 PR 锚漂, 历史污染)
 - ❌ 没扫 GitHub `backlog` issues 直接开下一版讨论 (清理良机错过, backlog 越积越大)
 - ❌ 版本号写在 AGENTS.md (蓝图自带 frontmatter, 跟蓝图同 source of truth)
-- ❌ Backlog 走 `docs/blueprint-backlog/` 仓库内目录 (反 fork-friendly, 上游讨论噪音跟 fork 走)
+- ❌ Backlog 走 repo 内 docs 目录而非 GitHub issues (反 fork-friendly, 上游讨论噪音跟 fork 走)
 - ❌ 自动清 backlog issues (人工讨论时清, 反 "误删用户真需求")
 - ❌ Backlog issue body 只写标题不写 "为什么入这" (后续扫描无法判)
 - ❌ Patch / bugfix milestone PR 不 link `Closes gh#NNN` (真因断链)

@@ -29,7 +29,7 @@ version: 1.0.0
 ### 4. 翻牌延迟
 - merged PR 超过 2-4h, acceptance template 还 ⚪ — 漏翻
 - 派 QA 翻牌 PR 
-- regression-registry count 数学 audit (active + pending = 总计)
+- 项目自定的 regression / 寄存器一致性 (如有) 数学 audit (active + pending = 总计)
 
 ### 5. 已开 PR 任务完成度 audit (不只看 CI)
 

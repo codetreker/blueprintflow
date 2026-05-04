@@ -84,14 +84,18 @@ Designer 按项目需要追加 (视觉新组件多的项目必备)。
 ## 起团示例
 
 ```
-Agent({ name: "feima", subagent_type: "general-purpose", prompt: <Architect prompt 模板> })
-Agent({ name: "yema", ... })
-Agent({ name: "zhanma", ... })
-Agent({ name: "liema", ... })
+Agent({ name: "architect", subagent_type: "general-purpose", prompt: <Architect prompt 模板> })
+Agent({ name: "pm", ... })
+Agent({ name: "dev-1", ... })
+Agent({ name: "dev-2", ... })
+Agent({ name: "dev-3", ... })
+Agent({ name: "qa", ... })
+Agent({ name: "security", ... })  # 必备, 独立角色, 不允许 Architect 兼任
 # 按需:
-Agent({ name: "banma", ... })
-Agent({ name: "aima", ... })
+Agent({ name: "designer", ... })
 ```
+
+> **实战案例（Borgee）：** 团队按 X 马代号 (feima/yema/zhanma/liema 等) 起团是 Borgee 内部命名习惯, 通用 blueprintflow 团队按角色名 (architect/pm/dev/qa/security) 起即可。
 
 ## Teamlead 职责 + 反模式
 

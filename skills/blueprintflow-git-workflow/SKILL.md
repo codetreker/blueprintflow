@@ -30,7 +30,7 @@ milestone 涉及的所有角色 (Dev/Architect/QA/PM/Designer/Security) **在同
 
 | 角色 | 在 worktree 里做的事 |
 |---|---|
-| Dev | 写代码 (server-go / client / e2e) + 单测 + 截屏 |
+| Dev | 写代码 (server / client / e2e) + 单测 + 截屏 |
 | Architect | 写 spec brief (`docs/implementation/modules/<milestone>-spec.md`) |
 | QA | 写 acceptance template (`docs/qa/acceptance-templates/<milestone>.md`) + acceptance 验收翻 ⚪→✅ |
 | PM | 写 stance checklist + content lock (`docs/qa/<milestone>-{stance,content-lock}.md`) + 立场反查 |
@@ -76,7 +76,7 @@ PR body 必须装齐 4 件套全部内容 + 三段实施 + e2e + closure (REG fl
 teamlead 开 PR 时心智:
 - 全员都 commit 进 `feat/<milestone>` 了吗? (Dev 代码 + Architect spec + QA acceptance + PM stance/content-lock 全齐)
 - docs/current sync 跟代码同步了吗?
-- regression-registry §5 totals 数学闭吗?
+- 项目自定的 regression / 寄存器一致性 (如有) 数学闭吗?
 - PROGRESS.md `[x]` 翻牌了吗?
 
 任一不全, 不开 PR — 派回缺的角色补 commit.

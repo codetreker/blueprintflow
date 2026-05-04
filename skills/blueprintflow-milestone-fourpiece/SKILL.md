@@ -106,7 +106,7 @@ git worktree add .worktrees/<milestone> -b feat/<milestone> origin/main
 全员在**同一 worktree + 同一 branch** 内叠 commit (角色都不开 PR, teamlead 最后开):
 - 1.1 schema (migration v=N + 表 + drift test) — Dev
 - 1.2 server (API + 业务逻辑 + 反向断言 test) — Dev
-- 1.3 client (SPA UI + e2e Playwright) — Dev
+- 1.3 client (UI + e2e) — Dev
 - 1.4 docs/current sync (server / client docs) — Dev
 - 1.5 REG-* 翻 🟢 + acceptance template ⚪→✅ + PROGRESS [x] — QA / Dev
 - (并行) spec brief — Architect

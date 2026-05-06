@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-runtime-adapter
-description: "Blueprintflow's runtime adaptation layer. Given an agent environment's capabilities, this skill spells out the concrete way to do communication, file operations, scheduling, observation, and silence detection (tmux layout + messaging API / cron implementation / idle detection paths). Use this skill whenever a blueprintflow team is being brought up for the first time and the run mode needs confirming, when switching agent environments (local ↔ cloud, changing comms channel), or when unsure about the silence detection protocol. Don't use for blueprint / Phase / milestone business flows (each has its own skill), when the runtime is already configured and you're just dispatching work, for a single-file commit, or for a hotfix."
+description: "Part of the Blueprintflow methodology. Maps agent environment capabilities to concrete messaging, file, scheduling, and silence-detection operations. Use when bringing up a team, switching environments (local ↔ cloud), or unsure about ping/pong protocol. Don't use for business flows (each has its own skill), when runtime is configured, or for hotfixes."
 version: 1.0.0
 ---
 

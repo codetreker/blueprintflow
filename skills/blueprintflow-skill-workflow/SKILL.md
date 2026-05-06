@@ -1,7 +1,7 @@
 ---
 name: blueprintflow-skill-workflow
 description: "Part of the Blueprintflow methodology. Use when adding, editing, or deleting a blueprintflow skill - runs the self-governing worktree to PR to all-hands vote to merge flow for the skill repo."
-version: 1.1.0
+version: 1.1.1
 ---
 
 # Skill Workflow
@@ -80,6 +80,7 @@ git fetch origin --prune
 - **Never push to main directly** — every change goes through a PR
 - **PR can only merge after all-hands vote** — Architect, PM, Dev, QA, and Jianjun all ✅; missing any one = don't merge
 - **Read the whole thing** — review can't be diff-only; read the post-change skill file in full
+- **Bump version on every content change** — update the `version:` field in every changed SKILL.md + `.claude-plugin/plugin.json`. Patch bump (e.g. 1.1.0 → 1.1.1) for fixes/tweaks, minor bump (e.g. 1.1.x → 1.2.0) for new skills or significant rewrites. Do this in the same PR, not as a follow-up
 - **Commit message format**: `docs(<skill-name>): <description>`
 
 ## When it doesn't apply

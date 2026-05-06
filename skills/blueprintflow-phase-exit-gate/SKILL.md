@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-phase-exit-gate
-description: "The final gate before moving from one Phase to the next. Once every milestone in the Phase is merged, four roles (Architect / PM / QA / Teamlead) sign off, and only then does the project move on. Trigger: every milestone PR in the Phase merged + acceptance flipped to ✅ + REG status all updated / preparing to start the next Phase / Teamlead deciding to wrap up. Don't trigger: there's still an in-flight milestone in this Phase / wrapping up a single milestone (do that inside the milestone's own PR, no follow-up) / blueprint version bump (use blueprint-iteration)."
+description: "The final gate when wrapping up a Phase. Confirms every milestone in the Phase is finished and gets four roles to sign off before the project moves to the next Phase."
 version: 1.0.0
 ---
 

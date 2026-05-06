@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-teamlead-fast-cron-checkin
-description: "The Teamlead's 15-minute fast check-in. Sweeps for idle roles and dispatches new work right away, sweeps PR mergeStateStatus / statusCheckRollup and clears the stuck ones (≥2 DIRTY → batch agent / ≥2h block → top priority), and runs the merge gate's three-way signoff. The whole point is to fight idleness and empty spinning. Use this skill whenever the 15-minute cron fires, when an idle_notification is received and verification is needed, or when Teamlead wants to sweep PR blockers. Don't use for blueprint-level stance review, for Phase exit gate (use phase-exit-gate), for review inside one milestone (use pr-review-flow), or for slow-paced blueprint drift audit (use slow-cron)."
+description: "Part of the Blueprintflow methodology. Teamlead's 15-min check-in: dispatch idle roles, clear stuck PRs (≥2 DIRTY → batch agent, ≥2h block → top priority), run merge-gate signoff. Use on 15-min cron, idle notifications, or PR blocker sweeps. Don't use for blueprint stance review, Phase exit gate, or slow drift audit."
 version: 1.0.0
 ---
 

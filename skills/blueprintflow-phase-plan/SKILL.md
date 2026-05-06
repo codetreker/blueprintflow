@@ -1,154 +1,155 @@
 ---
 name: blueprintflow-phase-plan
-description: "蓝图 freeze 后把模块/立场拆成按价值闭环分期的 Phase (0/1/2/3/4+), 每 Phase 定退出 gate + 防偏离闸门 + milestone 列表。触发: 蓝图首版 freeze 后首次起 execution-plan / 蓝图 next 版 freeze 后重排 Phase / 卡死 milestone 评估踢回 backlog 后重排。反触发: 蓝图未 freeze (先走 blueprint-write) / Phase 内 milestone 拆段 (走 4 件套) / 单 milestone 实施细节 / 已有 execution-plan 字面 patch (直接 commit)。"
+description: "Part of the Blueprintflow methodology. Use when the blueprint is freshly frozen and an execution-plan is needed - breaks it into value-loop Phases (0/1/2/3/4+) with exit gates and milestone lists."
 version: 1.0.0
 ---
 
 # Phase Plan
 
-蓝图 ready 后, Architect 主, 把项目拆成 Phase 序列, 每 Phase 锚一个**价值闭环** (端到端用户能用), 不是按层拆。
+Once the blueprint is ready, the Architect leads. Break the project into a sequence of Phases, each anchored to a **value loop** (something an end user can actually use), not to technical layers.
 
 ## Preflight check
 
-开始用这套重型基建之前, 先跑决策图判定是否合适. 6 不适用场景按两轴拆: **任务大小轴** (改动量 / 团队 / 概念锁定) + **修改类型轴** (typo / dep / lint / single-file refactor / tooling / hotfix), 互补不冲突, 4 决策点 diamond 串行:
+Before you reach for this heavyweight machinery, run the decision graph to check whether it actually applies. The 6 not-applicable scenarios split across two axes: a **task-size axis** (change volume / team / concept lock-in) and a **change-type axis** (typo / dep / lint / single-file refactor / tooling / hotfix). The two axes are complementary, and four diamond decision points run in series:
 
 ```dot
 digraph phase_plan_preflight {
-    "考虑用 blueprintflow" [shape=doublecircle];
-    "PR 改动 ≤1 文件且无 docs/blueprint 引用?" [shape=diamond];
-    "PR 类型 ∈ {typo/dep/lint/refactor/tooling/hotfix}?" [shape=diamond];
-    "团队 collaborator <3?" [shape=diamond];
-    "项目缺 docs/blueprint/ 目录?" [shape=diamond];
-    "跳过 4 件套, 直接 PR review" [shape=box];
-    "跳过 4 件套 (修改类型轴)" [shape=box];
-    "跳过 4 角色 dual review (单人迭代)" [shape=box];
-    "重定向到 blueprintflow:brainstorm 锁立场" [shape=box];
-    "走完整 phase-plan + 4 件套" [shape=doublecircle];
-    "出 preflight (不适用)" [shape=doublecircle];
+    "Considering blueprintflow" [shape=doublecircle];
+    "PR touches ≤1 file with no docs/blueprint reference?" [shape=diamond];
+    "PR type ∈ {typo/dep/lint/refactor/tooling/hotfix}?" [shape=diamond];
+    "Team collaborators <3?" [shape=diamond];
+    "Project missing docs/blueprint/?" [shape=diamond];
+    "Skip 4-piece, go straight to PR review" [shape=box];
+    "Skip 4-piece (change-type axis)" [shape=box];
+    "Skip 4-role dual review (single-person iteration)" [shape=box];
+    "Redirect to blueprintflow:brainstorm to lock stance" [shape=box];
+    "Run the full phase-plan + 4-piece flow" [shape=doublecircle];
+    "Exit preflight (not applicable)" [shape=doublecircle];
 
-    "考虑用 blueprintflow" -> "PR 改动 ≤1 文件且无 docs/blueprint 引用?";
-    "PR 改动 ≤1 文件且无 docs/blueprint 引用?" -> "跳过 4 件套, 直接 PR review" [label="是"];
-    "PR 改动 ≤1 文件且无 docs/blueprint 引用?" -> "PR 类型 ∈ {typo/dep/lint/refactor/tooling/hotfix}?" [label="否"];
-    "跳过 4 件套, 直接 PR review" -> "出 preflight (不适用)";
+    "Considering blueprintflow" -> "PR touches ≤1 file with no docs/blueprint reference?";
+    "PR touches ≤1 file with no docs/blueprint reference?" -> "Skip 4-piece, go straight to PR review" [label="yes"];
+    "PR touches ≤1 file with no docs/blueprint reference?" -> "PR type ∈ {typo/dep/lint/refactor/tooling/hotfix}?" [label="no"];
+    "Skip 4-piece, go straight to PR review" -> "Exit preflight (not applicable)";
 
-    "PR 类型 ∈ {typo/dep/lint/refactor/tooling/hotfix}?" -> "跳过 4 件套 (修改类型轴)" [label="是"];
-    "PR 类型 ∈ {typo/dep/lint/refactor/tooling/hotfix}?" -> "团队 collaborator <3?" [label="否"];
-    "跳过 4 件套 (修改类型轴)" -> "出 preflight (不适用)";
+    "PR type ∈ {typo/dep/lint/refactor/tooling/hotfix}?" -> "Skip 4-piece (change-type axis)" [label="yes"];
+    "PR type ∈ {typo/dep/lint/refactor/tooling/hotfix}?" -> "Team collaborators <3?" [label="no"];
+    "Skip 4-piece (change-type axis)" -> "Exit preflight (not applicable)";
 
-    "团队 collaborator <3?" -> "跳过 4 角色 dual review (单人迭代)" [label="是"];
-    "团队 collaborator <3?" -> "项目缺 docs/blueprint/ 目录?" [label="否"];
-    "跳过 4 角色 dual review (单人迭代)" -> "出 preflight (不适用)";
+    "Team collaborators <3?" -> "Skip 4-role dual review (single-person iteration)" [label="yes"];
+    "Team collaborators <3?" -> "Project missing docs/blueprint/?" [label="no"];
+    "Skip 4-role dual review (single-person iteration)" -> "Exit preflight (not applicable)";
 
-    "项目缺 docs/blueprint/ 目录?" -> "重定向到 blueprintflow:brainstorm 锁立场" [label="是"];
-    "项目缺 docs/blueprint/ 目录?" -> "走完整 phase-plan + 4 件套" [label="否"];
-    "重定向到 blueprintflow:brainstorm 锁立场" -> "出 preflight (不适用)";
+    "Project missing docs/blueprint/?" -> "Redirect to blueprintflow:brainstorm to lock stance" [label="yes"];
+    "Project missing docs/blueprint/?" -> "Run the full phase-plan + 4-piece flow" [label="no"];
+    "Redirect to blueprintflow:brainstorm to lock stance" -> "Exit preflight (not applicable)";
 }
 ```
 
-### 4 决策点详解
+### The four decision points in detail
 
-1. **单 PR 改动 ≤1 文件 + 无 `docs/blueprint/` 引用** (任务大小轴) → 跳过 4 件套, 直接 PR review
- - 检查: `git diff --name-only main | wc -l` ≤ 1 且 `git diff main | grep -c 'docs/blueprint'` == 0
- - 理由: 4 件套 (spec / stance / acceptance / content-lock) 是 milestone 级开销, 单文件 fix / 注释改动用不上; 走 `blueprintflow:pr-review-flow` 单 review 路径足够
- - 反约束: 单文件改动如果引蓝图 §X.Y (修立场 / 改概念定义) → 不能跳过, 必须走 4 件套 + 4 角色 review
+1. **Single PR touches ≤1 file with no `docs/blueprint/` reference** (task-size axis) → skip the 4-piece, go straight to PR review
+   - Check: `git diff --name-only main | wc -l` ≤ 1 and `git diff main | grep -c 'docs/blueprint'` == 0
+   - Reason: the 4-piece (spec / stance / acceptance / content-lock) is milestone-level overhead. A single-file fix or comment tweak doesn't need it. The single review path in `blueprintflow:pr-review-flow` is enough.
+   - Constraint: if a single-file change cites a blueprint §X.Y (modifying a stance / changing a concept definition) → you can't skip; you have to run the 4-piece + 4-role review.
 
-2. **PR 类型 ∈ {typo / dep bump / lint patch / single-file refactor / CI tooling / hotfix}** (修改类型轴) → 跳过 4 件套
- - 检查 (任一命中即跳): typo (commit msg 含 `typo` / `fix typo`); dep bump (仅 `package.json` / `go.mod` / `Cargo.toml` + lockfile); lint patch (仅 `.eslintrc` / `.golangci.yml` / formatter 配置); single-file refactor (变量改名 / 抽函数, 不改 API / 立场); CI tooling (`.github/` / ruleset / cron 调整); hotfix (`hotfix/` 分支前缀 + production incident 关联)
- - 理由: 这些类型 PR 形状机械化 (依赖管理 / 工具链 / 紧急修复), 走 spec → stance → acceptance → content-lock 4 件套是空转; hotfix 还要 skip brainstorm (紧急路径不能等立场锁)
- - 反约束: ❌ dep bump 如果 major version (breaking) → 退回 4 件套 (跨版本 = 改概念契约); ❌ single-file refactor 如果跨蓝图 §X.Y 锚点 → 退回; ❌ hotfix 修完 7 天内必须补 retro PR 写明根因 (不能用 hotfix 永久绕过)
+2. **PR type ∈ {typo / dep bump / lint patch / single-file refactor / CI tooling / hotfix}** (change-type axis) → skip the 4-piece
+   - Check (skip if any one matches): typo (commit message contains `typo` / `fix typo`); dep bump (only `package.json` / `go.mod` / `Cargo.toml` + lockfile); lint patch (only `.eslintrc` / `.golangci.yml` / formatter config); single-file refactor (variable rename / extract function, no API or stance change); CI tooling (`.github/` / ruleset / cron tweaks); hotfix (`hotfix/` branch prefix + tied to a production incident).
+   - Reason: these PRs are mechanical in shape (dep management / tooling / emergency fix); running spec → stance → acceptance → content-lock is empty motion. Hotfix also skips brainstorm (the emergency path can't wait for stance lock).
+   - Constraint: ❌ a major-version dep bump (breaking) → fall back to the 4-piece (cross-version = changing the concept contract); ❌ a single-file refactor that crosses a blueprint §X.Y anchor → fall back; ❌ a hotfix must be followed within 7 days by a retro PR explaining the root cause (you can't permanently use hotfix to bypass).
 
-3. **团队 collaborator < 3** (任务大小轴) → 跳过 4 角色 dual review (单人迭代场景)
- - 检查: 仓库实际 active contributor 数 (`gh api repos/:owner/:repo/contributors | jq length`) < 3
- - 理由: 4 件套 + 双 review 路径假设 PM / Dev / QA / Architect 多人协作; 单人 / 双人项目走不起 4 角色, 自审即可
- - 反约束: AI agent 团队 (如 1 human + 6 角色 agent) **不算单人** — agent 履行多角色协作, 走完整流程
+3. **Team collaborators < 3** (task-size axis) → skip the 4-role dual review (single-person iteration scenario)
+   - Check: actual active contributor count in the repo (`gh api repos/:owner/:repo/contributors | jq length`) < 3
+   - Reason: the 4-piece + dual review path assumes PM / Dev / QA / Architect collaborating across multiple people. A 1- or 2-person project can't carry 4 roles; self-review is enough.
+   - Constraint: an AI agent team (e.g. 1 human + 6 role agents) **doesn't count as single-person** — the agents fill the roles, run the full flow.
 
-4. **项目缺 `docs/blueprint/` 目录** (任务大小轴) → 重定向到 `blueprintflow:brainstorm` 锁立场再回来
- - 检查: `test -d docs/blueprint/ && ls docs/blueprint/*.md | wc -l` ≥ 1
- - 理由: phase-plan 假设 \"蓝图 ready\" (本 skill 第一句话字面), 没立场 / 没概念模型直接拆 Phase = 拆出空壳; 退一步走 brainstorm + blueprint-write 锁住立场再回来
- - 反约束: `docs/blueprint/` 存在但只有 README 没具体模块文档 → 仍算未 ready, 走 brainstorm 补 (单 README 不构成产品形状 source of truth)
+4. **Project is missing the `docs/blueprint/` directory** (task-size axis) → redirect to `blueprintflow:brainstorm` to lock stance, then come back
+   - Check: `test -d docs/blueprint/ && ls docs/blueprint/*.md | wc -l` ≥ 1
+   - Reason: phase-plan assumes "blueprint ready" (literally the first sentence of this skill). Splitting Phases without stances or a concept model = splitting an empty shell. Step back, run brainstorm + blueprint-write to lock stance, then come back.
+   - Constraint: `docs/blueprint/` exists but only has a README and no concrete module docs → still counts as not-ready; run brainstorm to fill it (a lone README isn't a product-shape source of truth).
 
-### 反模式
+### Anti-patterns
 
-- ❌ 不跑 preflight 直接 phase-plan: 重型基建套到不需要的项目上, 拖慢 short-task 迭代
-- ❌ preflight 判 \"不适用\" 后又勉强跑一遍: 决策图给出 \"不适用\" 即 exit, 不要回头硬上
-- ❌ 4 条决策点用 \"或\" 短路: 必须按图顺序走 (改动量 → 修改类型 → 团队规模 → 蓝图 ready), 后置条件依赖前置确认
-- ❌ 借 hotfix / dep bump 类型轴永久绕 4 件套: 修完 7 天内必须补 retro PR (跟决策点 2 反约束一致)
+- ❌ Skipping preflight and going straight into phase-plan: dragging heavyweight machinery onto a project that doesn't need it, slowing short-task iteration
+- ❌ Forcing phase-plan after preflight returned "not applicable": once the decision graph says "not applicable", exit; don't double back
+- ❌ Short-circuiting the four decision points with "or": you have to walk the graph in order (change volume → change type → team size → blueprint ready); each later condition depends on the earlier ones being confirmed
+- ❌ Permanently bypassing the 4-piece via hotfix / dep bump: a retro PR is required within 7 days (consistent with constraint 2)
 
-## Phase 拆分原则
+## How to split Phases
 
-按**价值闭环**拆, 不按技术层:
+Split by **value loop**, not by technical layer:
 
-- ❌ 错: Phase 1 schema / Phase 2 server / Phase 3 client (技术层, 没价值)
-- ✅ 对: Phase 1 身份闭环 / Phase 2 协作闭环 / Phase 3 第二维度产品 / Phase 4+ 剩余 (每 Phase 独立可演示)
+- ❌ Wrong: Phase 1 schema / Phase 2 server / Phase 3 client (technical layers, no value)
+- ✅ Right: Phase 1 identity loop / Phase 2 collaboration loop / Phase 3 second-dimension product / Phase 4+ remaining (each Phase independently demonstrable)
 
-> **实战案例（Borgee）：**
-> - Phase 0 基建
-> - Phase 1 身份闭环 — 注册即用
-> - Phase 2 协作闭环 ⭐ — 多人协作
-> - Phase 3 第二维度产品
-> - Phase 4+ 剩余模块
+> **Real example (Borgee):**
+> - Phase 0 foundation
+> - Phase 1 identity loop — usable on signup
+> - Phase 2 collaboration loop ⭐ — multi-person collaboration
+> - Phase 3 second-dimension product
+> - Phase 4+ remaining modules
 
-## 退出 gate 设计
+## Exit gate design
 
-每 Phase 必须有**机器化** + **用户感知**双轨退出条件:
+Every Phase must have **machine-checkable** + **user-perceivable** exit conditions on dual rails:
 
-### 严格闸 (机器化)
-- e.g. 如 cookie 串扰反向断言 / 节流单测 / lint 通过
+### Strict gate (machine-checkable)
+- e.g. cookie crosstalk reverse assertion / throttling unit test / lint passes
 
-### 用户感知闸 (signoff)
-- 标志性 milestone 跑 demo + PM签字 + 关键截屏
-- 跨 Phase 不能省 (Phase 2 退出 = 真人能用 + PM拍 ✅)
+### User-perceivable gate (signoff)
+- A flagship milestone runs a demo + PM signs off + key screenshot
+- Cross-Phase you can't skip this (Phase 2 exit = a real human can use it + PM ✅)
 
-### 留账闸 (允许 partial signoff)
-- 不阻塞 Phase 退出, 但必须挂 Phase N+1 PR # 编号锁 (规则 6)
-- e.g. 留账闸挂下一 Phase 的占号 PR #
+### Carry-over gate (partial signoff allowed)
+- Doesn't block Phase exit, but must be anchored to a Phase N+1 placeholder PR # (rule 6)
+- e.g. a carry-over gate anchored to a placeholder PR # in the next Phase
 
-## 4 道防偏离闸门
+## Four drift-prevention gates
 
-每 milestone 实施前必须挂 4 道闸:
+Every milestone must have these four gates attached before execution:
 
-1. **闸 1 模板自检** (Architect): spec brief 用模板写, 验通用性
-2. **闸 2 grep §X.Y 锚点** (Architect): 每 milestone 有蓝图锚点
-3. **闸 3 反查表** (PM + Architect): 每模块文档末尾, 立场一句话写不出 = 漂移
-4. **闸 4 标志性 milestone 签字 + 关键截屏** (PM, AI 团队不录视频)
+1. **Gate 1 template self-check** (Architect): the spec brief uses the template; check it's general enough
+2. **Gate 2 grep §X.Y anchor** (Architect): every milestone has a blueprint anchor
+3. **Gate 3 reverse-check table** (PM + Architect): at the end of every module doc; if a stance can't be written in one sentence, drift is happening
+4. **Gate 4 flagship milestone signoff + key screenshot** (PM; AI teams skip the video)
 
-闸 1+2 在 spec brief PR 走 (`blueprintflow:milestone-fourpiece`), 闸 3 在 stance + acceptance 走, 闸 4 在 demo signoff 走 (`blueprintflow:phase-exit-gate` 收尾)。
+Gates 1+2 happen in the spec brief PR (`blueprintflow:milestone-fourpiece`), gate 3 in stance + acceptance, gate 4 at demo signoff (closed by `blueprintflow:phase-exit-gate`).
 
-## 落地清单
+## Deliverables
 
 **Path**: `docs/implementation/`
 
-- **PROGRESS.md** — 单一进度真相, 每 PR / Phase gate 状态变化更新
-- **00-foundation/execution-plan.md** — 5 Phase + 退出 gate + 4 道闸门
-- **00-foundation/roadmap.md** — 缩略图 + 首波 demo 路径
-- **00-foundation/how-to-write-milestone.md** — milestone 模板 + acceptance 四选一
-- **modules/** — N 模块大纲, 每 milestone 拆到 PR 级 (≤ 500 行)
+- **PROGRESS.md** — single source of progress truth, updated on every PR / Phase gate state change
+- **00-foundation/execution-plan.md** — 5 Phases + exit gates + 4 drift gates
+- **00-foundation/roadmap.md** — thumbnail + first-wave demo path
+- **00-foundation/how-to-write-milestone.md** — milestone template + acceptance four-choice
+- **modules/** — N module outlines, each milestone broken down to PR scale (≤500 lines)
 
-## PROGRESS.md 模板
+## PROGRESS.md template
 
 ```
-| Phase | 状态 | 退出条件 | 备注 |
-|-------|------|---------|------|
-| Phase 0 基建闭环 | ✅ DONE | G0.x 全过 | 起步 |
-| Phase 1 身份闭环 | ✅ DONE | G1.x 全过 | <milestone-ids> |
-| Phase 2 协作闭环 ⭐ | 🔄/✅ | 严格 N + 留账挂 Phase 4 PR # | <milestone-id> ⭐ |
-| Phase 3 第二维度 | TODO | G3.x + PM 签字 | 等 Phase 2 |
-| Phase 4+ 剩余 | TODO | G4.audit | 等 Phase 3 |
+| Phase | Status | Exit condition | Notes |
+|-------|--------|----------------|-------|
+| Phase 0 foundation loop | ✅ DONE | G0.x all passed | bootstrap |
+| Phase 1 identity loop | ✅ DONE | G1.x all passed | <milestone-ids> |
+| Phase 2 collaboration loop ⭐ | 🔄/✅ | strict N + carry-over anchored to Phase 4 PR # | <milestone-id> ⭐ |
+| Phase 3 second dimension | TODO | G3.x + PM signoff | waiting for Phase 2 |
+| Phase 4+ remaining | TODO | G4.audit | waiting for Phase 3 |
 ```
 
-每 PR merged 立即更新对应 milestone 行 ⚪→✅ (走 follow-up 翻牌 PR, 跟 `blueprintflow:pr-review-flow`)。
+After every PR is merged, update the corresponding milestone row ⚪→✅ immediately (via a follow-up flip PR, see `blueprintflow:pr-review-flow`).
 
-## 反模式
+## Anti-patterns
 
-- ❌ 按技术层拆 Phase (没价值闭环)
-- ❌ 退出 gate 只靠机器化 (漏用户感知)
-- ❌ 留账闸不挂 Phase N+1 PR # (规则 6 强制)
-- ❌ PROGRESS.md 不及时更新 (slow-cron audit 抓出会派活补)
+- ❌ Splitting Phases by technical layer (no value loop)
+- ❌ Exit gates that only rely on machine checks (missing user perception)
+- ❌ Carry-over gate not anchored to a Phase N+1 PR # (rule 6 requires it)
+- ❌ PROGRESS.md not updated promptly (slow-cron audit will catch it and assign a fix-up)
 
-## 调用方式
+## How to invoke
 
-蓝图 ready 后:
+After the blueprint is ready:
+
 ```
 follow skill blueprintflow-phase-plan
-落 PROGRESS.md + execution-plan + roadmap
+write PROGRESS.md + execution-plan + roadmap
 ```

@@ -199,7 +199,8 @@ tmux attach -t $SESSION
 4. blueprintflow:phase-plan      — split into Phases
 5. (loop) blueprintflow:milestone-fourpiece + blueprintflow:pr-review-flow + blueprintflow:teamlead-fast-cron-checkin
 6. (periodic) blueprintflow:teamlead-slow-cron-checkin
-7. (Phase wrap-up) blueprintflow:phase-exit-gate
+7. (periodic) blueprintflow:issue-triage
+8. (Phase wrap-up) blueprintflow:phase-exit-gate
 ```
 
 ## Activation protocol (cron required)

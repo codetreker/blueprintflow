@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-workflow
-description: "Part of the Blueprintflow methodology. Entry point covering concept → blueprint → Phase → milestone → PR → gate lifecycle; navigates to the right skill. Use when starting a new product, onboarding a team, or unsure which skill applies. Don't use mid-milestone, for typos/hotfixes, or when the right skill is already known."
+description: "Part of the Blueprintflow methodology. Use when starting a new product, onboarding a team, or unsure which skill applies - navigates the concept-to-blueprint-to-Phase-to-milestone-to-PR-to-gate lifecycle."
 version: 1.0.0
 ---
 

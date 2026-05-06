@@ -1,7 +1,6 @@
 ---
 name: blueprintflow-phase-exit-gate
 description: "Part of the Blueprintflow methodology. Wraps up a Phase: confirms every milestone is finished, four roles (Dev/PM/QA/Teamlead) sign off in one PR, then the project moves on. Use when all milestone PRs are merged and acceptance is ✅. Don't use mid-milestone, for single milestone closure, or blueprint version bumps."
-version: 1.1.0
 ---
 
 # Phase Exit Gate

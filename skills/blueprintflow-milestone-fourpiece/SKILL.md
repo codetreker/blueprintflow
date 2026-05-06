@@ -1,7 +1,6 @@
 ---
 name: blueprintflow-milestone-fourpiece
 description: "Part of the Blueprintflow methodology. Use when a milestone starts and code has not begun - establishes the 4 baseline docs (spec brief, stance, content lock, acceptance template) inside one milestone PR."
-version: 1.1.0
 ---
 
 # Milestone 4 pieces

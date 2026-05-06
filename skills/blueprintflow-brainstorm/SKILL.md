@@ -1,96 +1,101 @@
 ---
 name: blueprintflow-brainstorm
-description: "通过 Architect+PM+Teamlead 多轮讨论锁立场/概念/反约束, 是 blueprint-write 前置, 把模糊 idea 收敛成可落蓝图的核心立场。触发: 用户提\"我想做 X\"但产品立场未定 / 现有蓝图无该模块章节 / 团队对方向有分歧需对齐 / 新产品起步。反触发: typo/dep bump/lint 等机械 PR / 已有蓝图段落清楚的小补丁 / hotfix 紧急路径 / 实施中的 milestone 拆段问题 (走 phase-plan 或 4 件套)。"
+description: "通过 Architect+PM+Teamlead 多轮讨论, 把模糊想法收敛成可以写进蓝图的核心规则. 写蓝图前必走. 触发: 用户提\"我想做 X\"但产品方向还没定 / 现有蓝图没这个模块 / 团队对方向有分歧 / 新产品起步. 反触发: typo/dep bump/lint 等机械 PR / 已有蓝图段落清楚的小补丁 / hotfix / 实施中的拆段问题 (走 phase-plan 或 4 件套)."
 version: 1.0.0
 ---
 
 # Brainstorm
 
-模糊产品 idea → 可写蓝图的核心立场 + 概念模型 + 反约束。Teamlead 主持 PM + Architect (按需 + Designer / Security), 多轮讨论 (通常 5-15 轮), 每轮锁 1-2 个概念。
+把模糊的产品想法变成能写进蓝图的东西: 几条核心规则、概念怎么互相搭、各自的边界. Teamlead 主持, PM 和 Architect 主谈 (需要的话拉 Designer / Security 进来), 通常聊 5-15 轮, 每轮敲定 1-2 个概念.
 
-> **实战案例（Borgee）：** 跑了 11 轮 brainstorm，锁 14 条核心立场。
+> **实战案例 (Borgee)**: 跑了 11 轮 brainstorm, 最终定下来 14 条核心规则.
 
 ## 何时用
 
 - 新产品起步 (跟 `blueprintflow:blueprint-write` 配套)
-- 新模块加入 (e.g. CV-2 加 anchor 对话)
-- 现有立场冲突 (实施暴露立场没拍清楚)
-- 蓝图改动 (大改之前必经)
+- 加新模块 (e.g. CV-2 加 anchor 对话)
+- 现有规则出现冲突, 实施时才发现当初没说清
+- 蓝图要大改之前
 
 ## 不用的场景
 
-- 实施细节技术选型 (e.g. SQLite vs Postgres) — 这是 spec brief 的事, 不是 brainstorm
-- 已锁立场的 milestone 实施 (跟 `blueprintflow:milestone-fourpiece` 走)
+- 实施时的技术选型 (e.g. SQLite vs Postgres) — 这是 spec brief 的事, 不是 brainstorm
+- 已经定好规则的 milestone 实施 (跟 `blueprintflow:milestone-fourpiece` 走)
 
 ## 多轮讨论结构
 
-### 轮 1: 范围划定
-Teamlead 抛 3 题, PM + Architect 各答 ≤ 200 字:
-- Q1: 这模块的**一等概念**是什么? (≤ 3 个)
-- Q2: 跟现有概念 (org / agent / channel) 关系?
-- Q3: 反向边界 — 什么**不是**这模块的事?
+### 轮 1: 划范围
 
-### 轮 2-N: 立场争论
-每轮挑 1-2 个具体立场展开, PM 给用户视角, Architect 给可行性, Teamlead 仲裁:
-- 立场 X 写得清吗? (能否写出 "X 是, Y 不是" 反约束)
-- 跟其他立场冲突? 选哪个?
-- v0 / v1 边界拍清楚吗?
+Teamlead 抛 3 个问题, PM + Architect 各答 ≤200 字:
 
-每轮产出 ≤ 5 行立场草稿, 入下轮基线。
+- Q1: 这模块最核心的几个概念是什么? (≤3 个)
+- Q2: 跟现有概念 (org / agent / channel) 怎么搭?
+- Q3: 反过来想 — 什么**不算**这模块的事?
 
-### 末轮: 立场 freeze
-Teamlead 总结 5-7 立场 + 反约束, PM + Architect 双签字, 进 `blueprintflow:blueprint-write` 落地。
+### 轮 2-N: 一条一条谈
 
-## Teamlead 主持原则
+每轮挑 1-2 条具体的规则展开. PM 从用户视角说, Architect 从能不能做、好不好做的视角说, Teamlead 仲裁:
+
+- 这条写得清吗? (能不能补一句"什么算, 什么不算")
+- 跟其他规则会不会打架? 打架了选哪个?
+- 现在做到哪 (v0)? 以后做到哪 (v1)?
+
+每轮要有产出 — 5 行以内的规则草稿. 写不出来就是这条没想清, 留给下一轮接着谈.
+
+### 最后一轮: 收口
+
+Teamlead 把这一轮的 5-7 条规则 + 各自边界整理出来, PM 跟 Architect 都同意后, 进 `blueprintflow:blueprint-write` 写进蓝图.
+
+## Teamlead 怎么主持
 
 ### 不替别人答
-- 派活给 PM/Architect, 自己只仲裁
-- 仲裁基准: 跟现有立场冲突? v0/v1 边界? 反约束写不写得出?
+- 把活派给 PM 或 Architect, 自己只仲裁
+- 仲裁的依据: 这条会不会跟现有规则打架? v0/v1 边界清不清楚? 能不能写出"什么算什么不算"?
 
-### 推动落地
-- 每轮强制产出 ≤ 5 行立场草稿 (写不出 = 不成立, 退轮)
-- 不允许 "等更多信息" 拖延 (信息永远不够, 拍立场)
+### 推动出东西
+- 每轮必须出 ≤5 行规则草稿. 写不出来这条就不算成立, 退回去重谈
+- 不允许"再等等更多信息" — 信息永远不够, 该定就定
 
-### 收敛 5-7 立场
-- 不要无限扩展 (太多立场记不住, 实施漂)
-- 10-15 立场是产品级总数, 单模块 5-7 立场已够
+### 收敛到 5-7 条
+- 别一直加. 太多了记不住, 实施时就走样
+- 整个产品 10-15 条核心规则就够; 单个模块 5-7 条已经够
 
-## 立场写法 (强约束)
+## 一条规则怎么写 (硬性要求)
 
-每条立场必须含:
-- **一句话主张** (≤ 30 字, 用户能复述)
-- **反约束** (X 是, Y 不是, 防漂移)
-- **关键场景** (一个 demo 能跑出来的例子)
-- **v0/v1 边界** (现在做到哪, 以后做到哪)
+每条都要有:
+- **一句话** (≤30 字, 别人能照着复述)
+- **边界** — 什么算这条, 什么不算 (防止做着做着跑偏)
+- **场景** — 一个能跑出来的具体例子
+- **v0 / v1 分界** — 现在做到哪, 以后做到哪
 
-> **立场示例（沉默胜于假 loading）：**
-- 主张: 不显示 spinner / 进度条 / "正在思考..."
-- 反约束: agent 处理时 UI 静止, 不 fake 进度; 真完成才显示结果
-- 场景: agent 编辑 artifact, 用户看不到中间态, 直到 commit
-- v0: 全静默; v1 视用户反馈考虑加 "thinking" subject 提示 (但仍不 fake)
+> **示例 (沉默胜于假 loading)**:
+- 一句话: 不显示 spinner / 进度条 / "正在思考..."
+- 边界: agent 处理时 UI 不动, 不假装显示进度; 真做完才显示结果
+- 场景: agent 编辑 artifact, 用户看不到中间状态, 直到 commit
+- v0: 全静默. v1 看用户反馈, 可能加 "thinking" 提示词 (但仍然不假装进度)
 
-## 多轮讨论的反模式
+## 反模式
 
-- ❌ 第一轮就想锁全部立场 (不收敛, 拖死)
-- ❌ Teamlead 替 PM 答用户立场 (没经过用户视角讨论, 实施侧立场漂)
-- ❌ 每轮不出立场草稿 (空谈)
-- ❌ 立场写抽象空话 (反约束写不出 → 退轮重写)
-- ❌ 实施细节抢戏 (e.g. 讨论用 SQLite 还是 Postgres) — Teamlead 必须打断, 拉回立场
+- ❌ 第一轮就想把所有规则都定下来 (收敛不了, 拖死)
+- ❌ Teamlead 替 PM 答用户视角的事 (没真过用户视角讨论, 实施时就漂)
+- ❌ 每轮不出草稿 (光说不写)
+- ❌ 规则写得太抽象, 写不出"什么算什么不算" (退回去重写)
+- ❌ 跑偏到实施细节 (e.g. 用 SQLite 还是 Postgres) — Teamlead 必须打断, 拉回到规则层面
 
-## 产出 checklist
+## 收尾 checklist
 
-brainstorm 完结时:
-- [ ] 5-7 立场全有 "主张 + 反约束 + 场景 + v0/v1 边界"
-- [ ] 反约束能机器化 (反向 grep / 反向断言)
-- [ ] PM + Architect 双签字
-- [ ] 入 `blueprintflow:blueprint-write` 写蓝图
+brainstorm 结束时:
+- [ ] 5-7 条规则都有 "一句话 + 边界 + 场景 + v0/v1 分界"
+- [ ] 边界要写得能机器查 (e.g. 写出 grep 能查的反向条件)
+- [ ] PM 和 Architect 都同意
+- [ ] 接 `blueprintflow:blueprint-write` 写蓝图
 
 ## 调用方式
 
-新模块 / 新立场:
+新模块 / 新规则:
 ```
 follow skill blueprintflow-brainstorm
 开始多轮讨论 (Teamlead + PM + Architect)
 ```
 
-讨论收敛后接 `blueprintflow:blueprint-write`。
+讨论收敛后接 `blueprintflow:blueprint-write`.

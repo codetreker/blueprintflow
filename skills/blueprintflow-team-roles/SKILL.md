@@ -1,7 +1,7 @@
 ---
 name: blueprintflow-team-roles
 description: "Part of the Blueprintflow methodology. Use when spawning the team or arbitrating role boundaries - provides prompt templates for the 6 roles + Teamlead and enforces Security as an independent role."
-version: 1.0.0
+version: 1.1.0
 ---
 
 # Team Roles

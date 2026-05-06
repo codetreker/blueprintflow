@@ -1,7 +1,7 @@
 ---
 name: blueprintflow-pr-review-flow
 description: "Part of the Blueprintflow methodology. Use when a milestone PR is open through merge - runs dual review (Architect + QA, plus Security if needed), the three-signoff gate, and standard squash; never admin-bypass."
-version: 1.0.0
+version: 1.1.0
 ---
 
 # PR Review Flow

@@ -16,12 +16,15 @@ Once confirmed, read only the matching section.
 
 #### Team mode + tmux (full capability)
 
-Multiple Claude Code sessions talk to each other through team mode, and tmux manages the panes.
+Every teammate is an **independent Claude Code process** (`claude --agent-id <name>@<team>` on startup), each with its own context window and token budget. When the lead spawns a teammate, Claude Code automatically starts a child claude process and adds it to the shared mailbox; inside the tmux session the default display mode is split-pane, where each teammate automatically takes one pane.
+
+Messaging goes through `SendMessage` (backed by a file mailbox `~/.claude/teams/<team>/inboxes/<name>.json` — observed in practice; as an experimental feature, internals may change between versions), not through tmux send-keys.
 
 **Capabilities:** persistent / cross-agent messaging / shared FS / scheduled jobs / parallel multi-role — all available.
 
 | Generic phrase | Concrete command |
 |---------|---------|
+| Start team | Lead inside the tmux session: `TeamCreate({team_name})` + `Agent({team_name, name, subagent_type, run_in_background: true, prompt})` × N. Claude Code auto-starts child claude processes and lays them out in tmux panes |
 | Notify \<Role\> | `SendMessage("role_name", content)` |
 | Create worktree | `cd <repo> && git worktree add .worktrees/<milestone> -b feat/<milestone> origin/main` |
 | Commit code | Inside the worktree: `git add && git commit && git push` |
@@ -31,7 +34,17 @@ Multiple Claude Code sessions talk to each other through team mode, and tmux man
 | Open PR | `gh pr create` (Teamlead only) |
 | Merge PR | `gh pr merge <N> --squash` |
 
+**Display mode setting** (`~/.claude/settings.json`):
+
+- `teammateMode: "auto"` (default) — automatically uses split-pane inside a tmux session, otherwise uses in-process
+- `teammateMode: "tmux"` — force split-pane (requires tmux or iTerm2)
+- `teammateMode: "in-process"` — single terminal, use Shift+Down to switch between teammates (teammates are still independent instances, just displayed stacked in one terminal)
+
+**Prerequisite**: agent teams is an experimental feature, you must enable `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` (env or settings.json), requires Claude Code v2.1.32+.
+
 **Rule fit:** all rules apply.
+
+**Anti-pattern**: ❌ Treating a teammate as a subagent. A subagent is a Task spawned inside the lead's session, shares the lead's context, and can only report back to the lead; a teammate is an independent Claude Code process, each with its own 1M context, communicating directly with each other through mailbox. Don't interchange the terms, and don't assume a teammate can see the lead's conversation history.
 
 #### Team mode without tmux (e.g. Windows)
 

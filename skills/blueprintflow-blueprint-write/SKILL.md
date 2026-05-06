@@ -1,107 +1,108 @@
 ---
 name: blueprintflow-blueprint-write
-description: "把 brainstorm 收敛的立场落成 docs/blueprint/ 蓝图文档, 定义产品形状的 source of truth (含立场 + 反约束 + 边界 + grep 锚)。触发: brainstorm 已收敛, 立场拍板待落地 / 首版蓝图起草 / 蓝图新模块章节落地。反触发: brainstorm 立场未定 (先走 brainstorm) / 已 freeze 蓝图的字面 patch (直接 commit, 走 blueprint-iteration patch 规则) / 立场反转 (走 blueprint-iteration 开 next 版) / 实施期 spec brief / 文案锁。"
+description: "Part of the Blueprintflow methodology. Use when brainstorm has converged stances or a new module chapter is starting - writes them into docs/blueprint/ as the product-shape source of truth."
 version: 1.0.0
 ---
 
 # Blueprint Write
 
-`docs/blueprint/*.md` 是产品形状的 source of truth, 后续 PR 必引 §X.Y 锚点。蓝图 freeze 后, 实施跟着蓝图走, 不反向。
+`docs/blueprint/*.md` is the source of truth for the product's shape. Every later PR has to cite a §X.Y anchor here. Once the blueprint is frozen, execution follows the blueprint, not the other way around.
 
-## 蓝图结构
+## Blueprint structure
 
-`docs/blueprint/` 目录下:
+Under `docs/blueprint/`:
 
-- **README.md** - 核心立场清单 (产品立场最权威表达,通常 10-15 条)
-- **concept-model.md** - 一等概念 (e.g. org / human / agent / channel) + 关系
-- **<module>.md** - 每模块产品形状 (e.g. admin-model / channel-model / agent-lifecycle / canvas-vision / plugin-protocol / realtime / auth-permissions / data-layer / client-shape)
-- **onboarding-journey.md** - 用户首次使用旅程
+- **README.md** — the core stance list (the most authoritative statement of product stances, usually 10-15)
+- **concept-model.md** — first-class concepts (e.g. org / human / agent / channel) and their relationships
+- **<module>.md** — the product shape for each module (e.g. admin-model / channel-model / agent-lifecycle / canvas-vision / plugin-protocol / realtime / auth-permissions / data-layer / client-shape)
+- **onboarding-journey.md** — the user's first-time journey
 
-> **实战案例(Borgee):** 11 篇蓝图 + 14 条核心立场。
+> **Real example (Borgee):** 11 blueprint files plus 14 core stances.
 
-## 单篇蓝图模板
+## Single-blueprint template
 
 ```markdown
-# <Module Name> (产品形状)
+# <Module Name> (product shape)
 
-## §1 核心概念
+## §1 Core concepts
 
-### §1.1 <一等概念>
-一句话定义 + 跟其他概念的关系 + 反约束 (X 是, Y 不是)。
+### §1.1 <first-class concept>
+One-sentence definition + how it relates to other concepts + constraint (X is, Y isn't).
 
 ### §1.2 ...
 
-## §2 不变量 / 红线
+## §2 Invariants / red lines
 
-5-10 条产品级红线, 任意实施都不能违反:
-- 红线 1: ... (反约束写明)
-- 红线 2: ...
+5-10 product-level red lines that no execution can violate:
+- Red line 1: ... (constraint spelled out)
+- Red line 2: ...
 
-## §3 v0/v1 边界
+## §3 v0/v1 boundary
 
-### v0 (无外部用户)
-- 允许删库重建 / 不写 backfill / 直接换协议
-- 实施侧自由度高
+### v0 (no external users)
+- Free to drop and recreate the database / no backfill / swap protocols
+- High freedom on the execution side
 
-### v1 (第一个外部用户后)
-- forward-only schema / backup / 灰度
-- 不再删库
+### v1 (after the first external user)
+- Forward-only schema / backups / gradual rollout
+- No more dropping the database
 
-## §4 反约束 (留 v2+)
-明确不在 v1 范围 (e.g. CRDT / 多端协作 / 锚点对话扩展)
+## §4 Constraints (kept for v2+)
+Explicit list of what is not in v1's scope (e.g. CRDT / multi-device collaboration / anchor conversation extension)
 
-## §5 验收挂钩
-跟 acceptance template / stance checklist 怎么对接 (引锚)
+## §5 Acceptance hooks
+How this connects to acceptance template / stance checklist (with anchors)
 ```
 
-## 核心立场示例
+## Core stance examples
 
-每条一句话 + 反约束 + 关键场景:
+Each stance is one sentence + constraint + key scenario:
 
-> **示例(Borgee 产品):**
-> 1. **一个组织 = 一个人 + 多个 agent** (UI 隐藏 org 概念, 用户视角是"我和我的 agent")
-> 2. **Agent 代表自己** (不是工具 / 不是 owner 的代理 / agent ↔ agent 协作允许有边界)
-> 3. **沉默胜于假 loading** (§11 - 不显示 spinner, 不显示"正在思考...")
-> 4. **workspace + chat 双支柱** (artifact 不在聊天里, channel 协作不挤入 workspace)
-> 5. **产品不带 runtime** (§7 - agent runtime 是 plugin 自己事, 只挂 process descriptor)
-> 6. **管控元数据 OK, 读你内容必须授权** (§13 - admin god-mode 边界)
+> **Example (Borgee product):**
+> 1. **One organization = one human + multiple agents** (the UI hides the org concept; the user perspective is "me and my agents")
+> 2. **An agent represents itself** (not a tool / not the owner's proxy / agent-to-agent collaboration is allowed across boundaries)
+> 3. **Silence beats fake loading** (§11 — no spinners, no "thinking...")
+> 4. **Workspace + chat as twin pillars** (artifacts don't live inside chat; channel collaboration doesn't bleed into workspace)
+> 5. **The product carries no runtime** (§7 — agent runtime is the plugin's own concern; we only attach a process descriptor)
+> 6. **Managing metadata is OK; reading your content requires authorization** (§13 — admin god-mode boundary)
 > 7-14: ...
 
-每条立场必须能写出 5-7 项反查 (`blueprintflow:milestone-fourpiece` stance checklist 用)。
+Every stance has to be able to produce 5-7 reverse-check items (used by `blueprintflow:milestone-fourpiece` stance checklist).
 
-## 立场写不出反约束 = 立场不成立
+## A stance you can't write a constraint for is not a stance
 
-实战检查: 每条立场必须能写出“X 是, Y 不是”双向。
+Practical check: every stance has to be able to write both directions of "X is, Y isn't".
 
-> **示例（Borgee）：**
-> - ✅ “Agent 代表自己” → 反约束: “agent 不是 owner 的代理 / agent ↔ agent 协作允许跨 owner / mention agent ≠ mention owner”
-> - ❌ “用户体验好” → 反约束写不出 → 立场太虚, 不入蓝图
+> **Example (Borgee):**
+> - ✅ "An agent represents itself" → constraint: "an agent is not the owner's proxy / agent-to-agent collaboration may cross owners / mentioning an agent ≠ mentioning the owner"
+> - ❌ "Good user experience" → no constraint can be written → too vague, not in the blueprint
 
-## 流程
+## Process
 
-### 1. 概念多轮讨论
-跟 `blueprintflow:brainstorm` 配套 - Teamlead 主持 PM + Architect 多轮 (多轮讨论), 每轮锁 1-2 个概念 + 立场。
+### 1. Multi-round concept discussion
+Paired with `blueprintflow:brainstorm` — Teamlead facilitates PM and Architect through multiple rounds, locking one or two concepts and stances per round.
 
-### 2. 落蓝图 (PR)
-Architect + PM 配对落 docs/blueprint/<module>.md, 走 PR review (Dev + QA 也参与, 立场必须 dev/QA 也认同, 否则实施漂)。
+### 2. Write the blueprint (PR)
+Architect and PM pair up to write `docs/blueprint/<module>.md`. The PR goes through review (Dev and QA participate too — stances must also be accepted by Dev and QA, otherwise execution will drift).
 
-### 3. 核心立场清单出炉
-所有模块蓝图 review 完, 提炼核心立场 (通常 10-15 条) 到 README.md, 标注 ⭐ 重要立场 (后续 acceptance 必查)。
+### 3. Core stance list emerges
+Once every module blueprint is reviewed, distill the core stances (usually 10-15) into README.md and mark the ⭐ important ones (which acceptance must check later).
 
-### 4. 蓝图 freeze
-freeze 后修改走 PR + 4 角色 review (跟实施 PR 同审格)。修改原因写 changelog, 影响 milestone 全部回查。
+### 4. Blueprint freeze
+After freeze, changes go through PR + four-role review (same review bar as execution PRs). Reasons go into the changelog, and every affected milestone is rechecked.
 
-## 反模式
+## Anti-patterns
 
-- ❌ 立场写抽象空话 (反约束写不出 = 立场不成立)
-- ❌ 跳过反查表只写主张 (立场漂 acceptance 抓不出)
-- ❌ 蓝图频繁改不 freeze (实施跟着抖, 立场失焦)
-- ❌ 蓝图 §X.Y 锚点不规范 (PR 引用 grep 不出)
+- ❌ Stances written as abstract platitudes (if no constraint can be written, the stance doesn't exist)
+- ❌ Skipping the reverse-check table and writing only the claim (drift escapes acceptance)
+- ❌ Constantly editing the blueprint and never freezing (execution keeps shifting, stances lose focus)
+- ❌ Non-standard §X.Y anchors (PRs cite them but grep can't find them)
 
-## 调用方式
+## How to invoke
 
-概念多轮讨论锁定后:
+After the multi-round concept discussion locks down:
+
 ```
 follow skill blueprintflow-blueprint-write
-落 docs/blueprint/<module>.md
+write docs/blueprint/<module>.md
 ```

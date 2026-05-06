@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-implementation-design
-description: "Part of the Blueprintflow methodology. Dev writes an implementation design (data flow, API contract, edge cases, alternatives) after the four-piece set is ready but before coding. Four roles must approve before code starts. Lives in the same milestone PR. Use for code milestones, refactors, cross-module changes. Don't use for docs-only milestones, typos, or hotfixes."
+description: "Part of the Blueprintflow methodology. Use when the four-piece is in place and code has not started - Dev drafts the implementation design (data flow, contracts, edge cases) for 4-role signoff before coding."
 version: 1.0.0
 ---
 

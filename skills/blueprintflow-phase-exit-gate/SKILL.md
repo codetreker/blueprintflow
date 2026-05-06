@@ -1,82 +1,108 @@
 ---
 name: blueprintflow-phase-exit-gate
-description: "Phase 收尾闸: 严格闸验收 + Architect/PM/QA/Teamlead 4 角色联签 + closure announcement, 是 Phase 切换前的最后一道关。触发: Phase 内所有 milestone PR merged + acceptance ⚪→✅ + REG flip 完 / 准备进入下一 Phase 实施 / Teamlead 主动收口 Phase。反触发: Phase 内还有 in-flight milestone PR / 单 milestone closure (在 milestone PR 内同 commit 落, 不开 follow-up) / 蓝图迭代切版 (走 blueprint-iteration freeze)。"
+description: "Wraps up a Phase: confirms every milestone is finished and gets four roles (Architect / PM / QA / Teamlead) to sign off before the project moves on. Use this skill whenever a Phase is reaching its end — every milestone PR has merged, acceptance has flipped to ✅, REG status is updated, or Teamlead is deciding to close the Phase out. Don't use when there's still an in-flight milestone, when wrapping up a single milestone (that happens inside the milestone's own PR), or when bumping the blueprint version (use blueprint-iteration instead)."
 version: 1.0.0
 ---
 
 # Phase Exit Gate
 
-Phase 退出 = 严格闸 ✅ + 留账挂 Phase N+1 PR # + 4 角色联签 + closure announcement。
+Phase exit is the last checkpoint when finishing a Phase. You confirm everything that was supposed to happen actually happened, four roles sign off, and only then can the project move into the next Phase.
 
-## 退出条件
+This is **not** the same as wrapping up a single milestone. A milestone wraps up inside its own PR. Phase exit is one level higher — it closes a whole stretch of work made up of multiple milestones.
 
-### 0. PROGRESS 完整性检查（前置条件）
-退出 Phase 前必须确认 PROGRESS.md 所有任务状态准确：
-- 每个 milestone 是否已完成并打勾 ✅
-- 未打勾的必须逐条确认：是漏了还是真没做完
-- 发现不一致 → 先修正 PROGRESS，再走退出流程
+## Before starting the exit flow
 
-### 1. 严格闸全 ✅
-机器化条件 (e.g. G<Phase>.<序号>) 全 SIGNED, 走 commit SHA 锚点。
+Make sure these are all in place first:
 
-### 2. 留账挂 Phase N+1 PR # 编号锁 (规则 6)
-partial 闸 (e.g. 留账闸) 挂占号 PR # — 不是空头措辞, 必须真 PR 号 。
+### 1. PROGRESS.md is honest
 
-### 3. 条件性 ✅ SIGNED 模式 (允许 partial)
-不强制全闸严格 ✅, 允许:
-- N 闸严格 ✅
-- M 闸 PARTIAL (按 condition signoff 形式挂闭合路径)
-- K 闸 DEFERRED (留 Phase N+1 PR # 锁)
+Every milestone that's done should be checked off. For anything not checked, confirm one by one: was it actually done and someone forgot to flip the status, or is it really not done? Fix PROGRESS first, then start the exit flow. Don't carry inconsistencies into the gate.
 
-公告 title 锁 "条件性全过", 不写"全过" (诚实工程)。
+### 2. Machine-checkable gates all green
 
-> **实战案例（Borgee）：** Phase 2 退出 5 SIGNED + 3 PARTIAL + 2 DEFERRED → "条件性全过"。
+Every strict check in the Phase (the `G<Phase>.<n>` ones) is SIGNED, anchored to a commit SHA.
 
-### 4. 4 角色联签
-每个角色独立 PR signoff :
-- Architect: readiness review 拍 ✅, 引 PR 锚点
-- QA: acceptance + REG count 数学对账, 引 acceptance-templates 锚
-- PM: 立场 OK + 反约束守住, 引立场反查表锚
-- Dev: 实施侧 acceptance 全挂闸, 引实施 PR 锚
+### 3. Carry-overs are properly anchored
 
-每个 signoff PR ≤ 5 行修改 (在 announcement §7 表格加一行)。
+It's OK if some things in the Phase didn't get fully done — but **every carry-over must be anchored to a placeholder PR number in the next Phase** (rule 6). Vague language like "we'll get to it later" doesn't count. If there's no placeholder PR yet, open one before running the exit flow.
 
-## 流程
+### 4. "Conditionally complete" is fine
 
-### Step 1: Architect readiness review
-- 落 `docs/qa/phase-N-readiness-review.md` (≤100 行)
-- 5 闸 SIGNED 状态汇总 + PR 锚点
-- 拍 ✅ ready / ⚠️ blockers
-- Phase N+1 entry 前置依赖 + 唯一冲突点
+You don't have to wait for every gate to be strictly ✅. This combination is acceptable:
 
-### Step 2: closure announcement skeleton
-- 落 `docs/qa/phase-N-exit-announcement.md` (≤80 行)
-- §1 SIGNED / PARTIAL / DEFERRED 三段
-- §2-§5 各闸引 PR # / commit SHA + acceptance-templates 锚
-- §7 4 角色联签位 placeholder
-- §8 changelog v1.0
+- N gates strictly ✅
+- M gates PARTIAL (with a condition signoff and a closure path attached)
+- K gates DEFERRED (locked to a placeholder PR in the next Phase)
 
-### Step 3: 4 角色联签 (每个独立 PR)
-每角色拉新 branch `docs/<role>-phase-N-cosign`, edit announcement §7 自己那行加 ✅ + 日期 + 锚点。
+The announcement title says "conditionally complete", not "complete". This is honesty, not slack.
 
-### Step 4: 占号 PR 全 merged 后再合联签 4 PR
-留账闸 PR # 锁的占号 PR 必须先 merged, 然后联签 4 PR 一波标准 squash merge。
+> **Real example (Borgee):** Phase 2 exit was 5 SIGNED + 3 PARTIAL + 2 DEFERRED → "conditionally complete".
 
-### Step 5: closure announcement v2 + Phase N+1 启动
-- patch announcement 加 §9 关闭宣布段 (date + 留账明细 + Phase N+1 entry 解封信号)
-- PR title `docs(qa): Phase N closure announcement (建军 <date>)`
+## How it works
 
-## 反模式
+The whole Phase exit goes through **one** PR — not four separate PRs for the four signoffs (that would conflict with the "one milestone, one PR" rule). All four roles commit and review inside the same worktree, just like a regular milestone PR.
 
-- ❌ 留账闸不挂 PR # 用空头措辞 ("同 PR" 而不是具体 PR #)
-- ❌ 强制全闸严格 ✅ 拖延 Phase 退出 (条件性 ✅ SIGNED 是诚实, 不是妥协)
-- ❌ 4 联签合一 PR (历史脏, 责任不清)
-- ❌ 占号 PR 还没 merged 就合联签 (锚 PR 不存在, 逻辑断)
+worktree: `.worktrees/phase-N-exit/`. branch: `docs/phase-N-exit`.
 
-## 调用方式
+### Step 1: Architect drafts
 
-Phase 进入收尾期 (严格闸全 ✅, 留账挂占号 PR):
+The Architect writes two documents in the worktree and commits them together:
+
+- `docs/qa/phase-N-readiness-review.md` (≤100 lines) — "Is the Phase ready to exit?"
+  - Status of each gate: SIGNED / PARTIAL / DEFERRED, with PR anchors
+  - Final call: ✅ ready or ⚠️ still has blockers
+  - Prerequisites for the next Phase, plus any handoff points
+
+- `docs/qa/phase-N-exit-announcement.md` (≤80 lines) — the closure announcement
+  - §1 Three sections (SIGNED / PARTIAL / DEFERRED) listing what's in each
+  - §2-§5 Each gate, anchored to PR # / commit SHA + acceptance template
+  - §7 Four signoff slots (placeholder, waiting for the four roles)
+  - §8 Changelog v1.0
+
+### Step 2: Four-role review and signoff
+
+Reviews go through PR comments — same pattern as a milestone PR. No new branches, no new PRs. Each role has a specific review focus (see `references/` for detailed checklists):
+
+- **Dev**: Verify implementation coverage — every milestone's acceptance criteria maps to merged code, no gaps between what was planned and what shipped
+- **QA**: Verify acceptance is fully flipped, REG counts add up, anchored to acceptance templates
+- **PM**: Verify product rules haven't drifted, scope boundaries held, anchored to the rules cross-check table
+- **Teamlead**: Final signoff (coordination + confirmation that all four pieces are in place)
+
+After approving, each role **commits a single line into the announcement's §7** (their role / ✅ / date / PR anchor) directly in the same worktree. No separate branch, no separate PR.
+
+### Step 3: Placeholder PRs land first
+
+If any DEFERRED gate is anchored to a placeholder PR in the next Phase, those placeholder PRs must be merged before merging the Phase exit PR. Otherwise the announcement references PRs that don't exist yet, and the anchors are broken.
+
+### Step 4: Announcement closes + next Phase starts
+
+Once all four roles have signed and all placeholder PRs are merged, the Architect commits one more section into the same PR — §9 Closure Announcement:
+
+- Date
+- Carry-over details (where each DEFERRED gate is anchored)
+- Signal that the next Phase is unblocked
+
+Then the Teamlead squash merges the whole PR, removes the worktree, and deletes the branch.
+
+PR title: `docs(qa): Phase N closure announcement`
+
+## Anti-patterns
+
+- ❌ Vague language for DEFERRED gates ("same PR" or "later") instead of a real PR number
+- ❌ Forcing every gate to be strictly ✅ before allowing exit, dragging the Phase forever — "conditionally complete" is honest, not slack
+- ❌ Four separate PRs, one per role signoff — conflicts with "one milestone, one PR"; Phase exit is one event, one PR
+- ❌ Merging the Phase exit PR before placeholder PRs land (anchored PRs don't exist, broken references)
+- ❌ Splitting the announcement into v1 / v2 across two PRs (same root cause as the "four PRs" anti-pattern: one event, fragmented commits)
+
+## How to invoke
+
+When the Phase enters its wrap-up window (all strict gates ✅, carry-overs anchored to placeholder PRs):
+
 ```
 follow skill blueprintflow-phase-exit-gate
-派 readiness review → announcement skeleton → 4 联签 → closure
+Architect drafts readiness review + announcement →
+four roles review in PR comments and commit their signoff lines →
+all placeholder PRs merge →
+Architect commits §9 closure →
+Teamlead squash merges
 ```

@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-teamlead-slow-cron-checkin
-description: "The Teamlead's 2-4 hour slow audit. Sweeps for blueprint drift (do implementation PRs still match the blueprint's §X.Y?), checks docs / code consistency (docs/current sync drift), corrects delayed flips (acceptance ⚪→✅ / REG flip / PROGRESS [x] really synced), and cleans up worktree pile-up. Use this skill whenever the 2-4 hour cron fires, mid-Phase quality audit is happening, or a drift signal arrives that needs a deeper dig. Don't use for emergency PR dispatch, for dispatching idle roles (use fast-cron), for a single PR review (use pr-review-flow), or for Phase exit gate (use phase-exit-gate)."
+description: "Part of the Blueprintflow methodology. Teamlead's 2-4h slow audit: blueprint drift scan, docs/code consistency check, delayed-flip correction, worktree cleanup. Use on 2-4h cron, mid-Phase quality audit, or drift signals. Don't use for emergency PR dispatch, idle-role dispatch (use fast-cron), single PR review, or Phase exit gate."
 version: 1.0.0
 ---
 

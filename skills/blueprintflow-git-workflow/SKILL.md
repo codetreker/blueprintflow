@@ -1,177 +1,177 @@
 ---
 name: blueprintflow-git-workflow
-description: "Blueprintflow 的 git 协作规范: 一 milestone 一 worktree 一 branch, 全员在 .worktrees/<milestone> 同 branch 叠 commit, Teamlead 唯一开 PR + 唯一删 worktree, 一 milestone 一 PR (不拆 schema/server/client/closure 多 PR)。触发: milestone 启动创建 worktree / PR merged 后清 worktree / 角色不知道在哪个目录工作。反触发: 蓝图层 / Phase 层文档 (worktree 在 main 直 commit, 不开 milestone worktree) / hotfix 紧急路径 (走单独 hotfix branch) / skill 自身更新 (走 skill-workflow)。"
+description: "Blueprintflow's git collaboration rules: one milestone, one worktree, one branch — every role stacks commits on the same branch under .worktrees/<milestone>; only the Teamlead opens the PR and only the Teamlead removes the worktree; one milestone, one PR (don't split into separate schema / server / client / closure PRs). Use this skill whenever a milestone is starting and a worktree needs creating, cleanup after a PR is merged, or a role isn't sure which directory to work in. Don't use for blueprint-level or Phase-level documents (commit on main directly, don't open a milestone worktree), for hotfix urgent path (use a dedicated hotfix branch), or for skill repo updates (use skill-workflow)."
 version: 1.0.0
 ---
 
-# Git Workflow (Milestone 协议)
+# Git Workflow (Milestone Protocol)
 
-用户 2026-04-29 拍板的硬规范. 跟 `blueprintflow-pr-review-flow` (合并红线) + `blueprintflow-milestone-fourpiece` (4 件套并入实施 PR) 配套.
+A hard rule the user set on 2026-04-29. Pairs with `blueprintflow-pr-review-flow` (merge red lines) and `blueprintflow-milestone-fourpiece` (the four-piece set lands inside the implementation PR).
 
-## 🔒 硬规范 (不可商量)
+## 🔒 Hard rules (non-negotiable)
 
-### 规则 1: 一 milestone 一 worktree 一 branch
+### Rule 1: one milestone, one worktree, one branch
 
-每个 milestone 起步时, **teamlead** (唯一) 创建:
+When a milestone starts, the **Teamlead** (and only the Teamlead) creates:
 
 ```bash
 cd <repo-root>
 git worktree add .worktrees/<milestone> -b feat/<milestone> origin/main
 ```
 
-- 路径: `.worktrees/<milestone>` (repo 根的 `.worktrees/` 下, 不在 `/tmp/`)
-- 分支: `feat/<milestone>` (e.g. `feat/<milestone-a>` / `feat/<milestone-b>` / `feat/<milestone-c>`)
-- base: `origin/main` (rebase 时也 rebase main, 不 stack 别 milestone)
-- 一个 milestone 整个生命周期 **复用同一 worktree + 同一 branch**
+- Path: `.worktrees/<milestone>` (under the repo root's `.worktrees/`, not `/tmp/`)
+- Branch: `feat/<milestone>` (e.g. `feat/<milestone-a>` / `feat/<milestone-b>` / `feat/<milestone-c>`)
+- Base: `origin/main` (when rebasing, also rebase onto main; don't stack on another milestone)
+- The whole milestone lifecycle **reuses the same worktree + the same branch**
 
-### 规则 2: 全员同 worktree 干活
+### Rule 2: every role works in the same worktree
 
-milestone 涉及的所有角色 (Dev/Architect/QA/PM/Designer/Security) **在同一 worktree 叠 commit**:
+Every role involved in the milestone (Dev / Architect / QA / PM / Designer / Security) **stacks commits in the same worktree**:
 
-| 角色 | 在 worktree 里做的事 |
+| Role | What they do in the worktree |
 |---|---|
-| Dev | 写代码 (server / client / e2e) + 单测 + 截屏 |
-| Architect | 写 spec brief (`docs/implementation/modules/<milestone>-spec.md`) |
-| QA | 写 acceptance template (`docs/qa/acceptance-templates/<milestone>.md`) + acceptance 验收翻 ⚪→✅ |
-| PM | 写 stance checklist + content lock (`docs/qa/<milestone>-{stance,content-lock}.md`) + 立场反查 |
-| Designer (UI) | 视觉对照 + design system 锚 |
-| Security | auth/admin/cross-org 路径 review (作为 commit) |
+| Dev | Write code (server / client / e2e) + unit tests + screenshots |
+| Architect | Write the spec brief (`docs/implementation/modules/<milestone>-spec.md`) |
+| QA | Write the acceptance template (`docs/qa/acceptance-templates/<milestone>.md`) + flip acceptance ⚪→✅ |
+| PM | Write stance checklist + content lock (`docs/qa/<milestone>-{stance,content-lock}.md`) + stance reverse-checks |
+| Designer (UI) | Visual reference + design system anchor |
+| Security | auth/admin/cross-org path review (committed) |
 
-**全员可以 commit + push 到 `feat/<milestone>` 分支**. 不需要起子 branch / 不需要 stash / 不需要 cherry-pick. 互相能看到对方 commit, 跟跨角色 review 同步进行.
+**Every role can commit + push to the `feat/<milestone>` branch.** No sub-branches, no stash, no cherry-pick. Everyone sees each other's commits, and cross-role review happens in sync.
 
-### 规则 3: 角色不开 PR
+### Rule 3: roles don't open PRs
 
-**任何角色** (包括 Dev) **绝对不能** `gh pr create`. 永久禁:
+**No role** (including Dev) **may ever** run `gh pr create`. Permanently forbidden:
 
 ```bash
-# ❌ Dev 不开
+# ❌ Dev doesn't open
 gh pr create --title "feat(<milestone>.1): schema"
 
-# ❌ Architect 不开
+# ❌ Architect doesn't open
 gh pr create --title "docs(<milestone>): spec brief v0"
 
-# ❌ QA 不开
+# ❌ QA doesn't open
 gh pr create --title "docs(qa): <milestone> acceptance template"
 
-# ❌ PM 不开
+# ❌ PM doesn't open
 gh pr create --title "chore(<milestone>): stance + content-lock"
 ```
 
-PR 是 milestone 完整产物的入口, 不是单角色的产物. 角色单独开 PR 会:
-- 拆碎 milestone (违反 一 milestone 一 PR)
-- 制造 §5 totals / acceptance template / PROGRESS.md 多 PR 串行写竞争
-- 制造 closure follow-up 拖尾
+The PR is the entry point for the milestone's complete deliverable, not for any single role's output. Roles opening separate PRs would:
+- Fragment the milestone (violates "one milestone, one PR")
+- Create write contention across multiple PRs on §5 totals / acceptance template / PROGRESS.md
+- Create closure follow-up tails
 
-### 规则 4: PR 由 teamlead 唯一创建
+### Rule 4: only the Teamlead creates the PR
 
-milestone 全员工作都 commit 完 + push 完 + 自检过后, **teamlead** 唯一开 PR:
+After everyone has committed + pushed + self-checked, **only the Teamlead** opens the PR:
 
 ```bash
 cd <repo-root>/.worktrees/<milestone>
 gh pr create --title "feat(<milestone>): <summary>" --body "..."
 ```
 
-PR body 必须装齐 4 件套全部内容 + 三段实施 + e2e + closure (REG flip / acceptance ⚪→✅ / PROGRESS [x]) — 对应 `blueprintflow-milestone-fourpiece` 协议.
+The PR body must contain the full four-piece set + the three implementation sections + e2e + closure (REG flip / acceptance ⚪→✅ / PROGRESS [x]) — per the `blueprintflow-milestone-fourpiece` protocol.
 
-teamlead 开 PR 时心智:
-- 全员都 commit 进 `feat/<milestone>` 了吗? (Dev 代码 + Architect spec + QA acceptance + PM stance/content-lock 全齐)
-- docs/current sync 跟代码同步了吗?
-- 项目自定的 regression / 寄存器一致性 (如有) 数学闭吗?
-- PROGRESS.md `[x]` 翻牌了吗?
+When opening the PR, the Teamlead's mental check:
+- Has every role committed to `feat/<milestone>`? (Dev code + Architect spec + QA acceptance + PM stance/content-lock all present)
+- Is `docs/current` synced with the code?
+- Does the project's regression / registry math add up (where applicable)?
+- Has PROGRESS.md `[x]` been flipped?
 
-任一不全, 不开 PR — 派回缺的角色补 commit.
+Any one missing → don't open the PR — send the missing role back to commit.
 
-### 规则 5: PR merged 后 teamlead 删 worktree
+### Rule 5: after the PR is merged, the Teamlead removes the worktree
 
 ```bash
 cd <repo-root>
 git worktree remove .worktrees/<milestone>
-git branch -d feat/<milestone>  # 如未自动 prune
+git branch -d feat/<milestone>  # if not auto-pruned
 ```
 
-worktree 生命周期完全由 teamlead 管. 角色不动 worktree (不删 / 不切 branch / 不创新 worktree).
+Worktree lifecycle is entirely the Teamlead's. Roles don't touch worktrees (don't delete / don't switch branch / don't create new worktrees).
 
-## 工作流时序图
+## Workflow timeline
 
 ```
-teamlead                角色 (Dev+Architect+QA+PM+...)         GitHub
+teamlead                roles (Dev+Architect+QA+PM+...)         GitHub
    │                            │                                │
    │── git worktree add ──────► │                                │
    │   .worktrees/<milestone>   │                                │
    │   -b feat/<milestone>      │                                │
    │                            │                                │
-   │── 派活给角色 (在 worktree 里干) ►│                          │
+   │── dispatch to roles (work in worktree) ►│                   │
    │                            │── commit + push ──────────────►│
-   │                            │    (Dev 代码 / Architect spec /        │
-   │                            │      QA acceptance / PM stance) │
-   │                            │── 跨角色 review (commit 评论 + │
-   │                            │   通知) ─────────────── │
-   │                            │── 全员自检 + commit 完成      │
-   │ ◄──────── 全员就绪信号 ──── │                                │
+   │                            │    (Dev code / Architect spec /        │
+   │                            │     QA acceptance / PM stance) │
+   │                            │── cross-role review (commit  │
+   │                            │   comments + ping) ─────── │
+   │                            │── all roles self-check + commit │
+   │ ◄──────── ready signal ──── │                                │
    │                                                             │
    │── gh pr create ──────────────────────────────────────────►│
    │                                                             │
-   │── 派 review subagent (双角度) ────────────────────────────►│
+   │── dispatch review subagents (dual lens) ──────────────────►│
    │                                                             │
-   │── 标准 squash merge (CI 真过) ────────────────────────────►│
-   │   (永远不 admin / 不 ruleset bypass — 见 pr-review-flow)    │
+   │── standard squash merge (CI really passes) ───────────────►│
+   │   (never admin / never ruleset bypass — see pr-review-flow)│
    │                                                             │
-   │── git worktree remove ──── 清理                              │
+   │── git worktree remove ──── cleanup                          │
 ```
 
-## 反模式
+## Anti-patterns
 
-### ❌ 角色自己开 PR
-任何角色 `gh pr create` 都是越权. 历史血账:
-- Architect单开 spec brief PR → 制造 4 件套串行
-- QA单开 acceptance template PR → 拆碎 milestone
-- Dev拆 .1 schema / .2 server / .3 client / .4 closure 多 PR → 撞车 + rebase 噩梦
+### ❌ A role opens a PR by themselves
+Any role running `gh pr create` is overstepping. History:
+- Architect opening a standalone spec brief PR → forces the four-piece set into a serial chain
+- QA opening a standalone acceptance template PR → fragments the milestone
+- Dev splitting into .1 schema / .2 server / .3 client / .4 closure PRs → collisions + rebase nightmare
 
-### ❌ 不同 milestone 用同 worktree
-worktree 跟 milestone 1:1 绑定. 不允许:
-- 一个 worktree 装两个 milestone (e.g. `.worktrees/<milestone-a>` 里夹 <milestone-b> commit)
-- 跨 milestone branch (e.g. `feat/<milestone-a>-and-<milestone-b>`)
-- worktree 复用 (e.g. `.worktrees/<milestone-c>.2` 里干 <milestone-c> 下一版 — 应该删旧 worktree 起新的, 或同 branch 同 worktree 走完)
+### ❌ Two milestones sharing one worktree
+Worktree and milestone are 1:1. Not allowed:
+- One worktree carrying two milestones (e.g. `<milestone-b>` commits sneaking into `.worktrees/<milestone-a>`)
+- Cross-milestone branch (e.g. `feat/<milestone-a>-and-<milestone-b>`)
+- Worktree reuse (e.g. doing the next version of <milestone-c> in `.worktrees/<milestone-c>.2` — should remove the old worktree and create a new one, or stay on the same branch / same worktree the whole way)
 
-### ❌ closure follow-up PR / spec 漂移 follow-up PR
-新协议下不存在 follow-up PR. 翻牌 / 字面 sync / closure 全在主 PR 里搞定. 主 PR merged 后发现漂 → 下一个 milestone PR 顺手补, 不开独立 follow-up.
+### ❌ Closure follow-up PR / spec drift follow-up PR
+Under the new protocol there is no follow-up PR. Status flip / literal sync / closure all happen inside the main PR. If drift is found after the main PR is merged → fix it incidentally in the next milestone's PR. No standalone follow-up.
 
-例外 (谨慎): 真硬 bug fix 可独立 PR (e.g. `fix/ci-flaky-xyz`), 但**不算 milestone PR**, teamlead 也不当 milestone follow-up.
+Exception (use sparingly): a real hard bug fix can be a standalone PR (e.g. `fix/ci-flaky-xyz`), but it **doesn't count as a milestone PR** and the Teamlead doesn't treat it as a milestone follow-up.
 
-### ❌ teamlead 替角色写代码
-teamlead 创 worktree + 派活 + 监督 + 开 PR + 删 worktree, **不下场写代码 / spec / acceptance / 文案锁**. 写就是越权 (跟 city engineer 总包不砌墙同).
+### ❌ Teamlead writing code for a role
+Teamlead creates worktrees + dispatches + supervises + opens PRs + removes worktrees, **and doesn't write code / specs / acceptance / content lock**. Writing it is overstepping (same as a city engineer overseeing the contractor doesn't lay bricks).
 
-### ❌ worktree 复用相同路径不同 branch
-dev-d 派 <milestone-d> 起 `.worktrees/<milestone-d>` + branch `feat/<milestone-d>-server-client`, 之后 dev-e 同路径起 branch `feat/<milestone-d>` — 撞车直接覆盖 dev-e 工作. **同一 worktree path 同时只能由 teamlead 创建一次, 同时只能一个 branch**. 角色不动 worktree.
+### ❌ Same worktree path reused with a different branch
+Dev-d gets <milestone-d> and starts `.worktrees/<milestone-d>` + branch `feat/<milestone-d>-server-client`; later Dev-e starts the same path with branch `feat/<milestone-d>` — the collision overwrites Dev-e's work directly. **A worktree path can only be created once at a time, by the Teamlead, and only one branch at a time.** Roles don't touch worktrees.
 
-### ❌ /tmp/ 临时 clone
-`/tmp/<role>-<topic>-work` clone 模式已弃用. 全部 `.worktrees/<milestone>` 走.
+### ❌ /tmp/ ad-hoc clones
+The `/tmp/<role>-<topic>-work` clone pattern is deprecated. Everything goes through `.worktrees/<milestone>`.
 
-## 跟其他 skill 配套
+## Pairs with other skills
 
-- `blueprintflow-milestone-fourpiece` — 4 件套并入实施 PR (一 milestone 一 PR), 写 4 件套也是在 worktree 里 commit, 不单独开 PR
-- `blueprintflow-pr-review-flow` — PR 由 teamlead 开后走双 review + 标准 squash (永远不 admin/ruleset bypass)
-- `blueprintflow-workflow` — 顶层时序: 概念 → Phase → milestone (走本 skill) → 退出 gate
+- `blueprintflow-milestone-fourpiece` — the four-piece set lands inside the implementation PR (one milestone, one PR); the four-piece set is also written by committing into the worktree, not as a separate PR
+- `blueprintflow-pr-review-flow` — once the Teamlead opens the PR, it goes through dual review + standard squash (never admin/ruleset bypass)
+- `blueprintflow-workflow` — top-level timeline: concept → Phase → milestone (this skill) → exit gate
 
-## 跨 milestone 并行
+## Cross-milestone parallelism
 
-N 个 milestone 同时跑 = N 个 worktree + N 个 branch. teamlead 各自创/各自删. 角色按派活分到不同 worktree 干活:
+N milestones running at once = N worktrees + N branches. The Teamlead creates and removes each. Roles split across worktrees by dispatch:
 
 ```
 .worktrees/<milestone-a>    ← teamlead create, dev-c + Architect spec + QA acceptance commit
 .worktrees/<milestone-b>    ← teamlead create, dev-d + Architect + QA + PM commit
-.worktrees/<milestone-c>     ← teamlead create, dev-a + ...
+.worktrees/<milestone-c>    ← teamlead create, dev-a + ...
 .worktrees/<milestone-d>    ← teamlead create, dev-b + ...
 ```
 
-同一Dev一次只能在一个 worktree 干 (worktree 隔离, 不允许同时双 in-flight). 不同Dev并行 N milestone OK.
+A single Dev can only work in one worktree at a time (worktree isolation; no two in-flight at once). Different Devs running N milestones in parallel is fine.
 
-## 调用方式
+## How to invoke
 
-milestone 启动时:
+When a milestone starts:
 ```
 follow skill blueprintflow-git-workflow
-teamlead 创建 .worktrees/<milestone> + feat/<milestone>
-派活给角色, 全员同 worktree 叠 commit
-全员就绪 → teamlead 开 PR → merged → teamlead 删 worktree
+teamlead creates .worktrees/<milestone> + feat/<milestone>
+dispatch to roles, all roles stack commits in the same worktree
+all roles ready → teamlead opens the PR → merged → teamlead removes the worktree
 ```

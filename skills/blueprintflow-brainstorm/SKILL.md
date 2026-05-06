@@ -13,7 +13,7 @@ Take a fuzzy product idea and converge it into the core stances, concept model, 
 ## When to use
 
 - A new product is starting up (paired with `blueprintflow:blueprint-write`)
-- A new module is being added (e.g. CV-2 adding anchor conversation)
+- A new module is being added (e.g. adding a conversation module to an existing product)
 - Existing stances are in conflict (execution exposed that the stance was never really settled)
 - A major blueprint change (always go through brainstorm before a big rewrite)
 

@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-git-workflow
-description: "Blueprintflow's git collaboration rules: one milestone, one worktree, one branch — every role stacks commits on the same branch under .worktrees/<milestone>; only the Teamlead opens the PR and only the Teamlead removes the worktree; one milestone, one PR (don't split into separate schema / server / client / closure PRs). Use this skill whenever a milestone is starting and a worktree needs creating, cleanup after a PR is merged, or a role isn't sure which directory to work in. Don't use for blueprint-level or Phase-level documents (commit on main directly, don't open a milestone worktree), for hotfix urgent path (use a dedicated hotfix branch), or for skill repo updates (use skill-workflow)."
+description: "Part of the Blueprintflow methodology. Git rules: one milestone = one worktree + one branch + one PR. All roles stack commits under .worktrees/<milestone>; only Teamlead opens PRs and removes worktrees. Use when creating/cleaning worktrees or clarifying work directories. Don't use for blueprint/Phase docs on main, hotfix branches, or skill repo updates."
 version: 1.0.0
 ---
 

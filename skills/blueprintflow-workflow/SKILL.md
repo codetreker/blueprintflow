@@ -204,7 +204,7 @@ tmux attach -t $SESSION
 
 ## Activation protocol (cron required)
 
-**When workflow activates, Teamlead must start both fast and slow cron**:
+**When workflow activates, Teamlead must start all three crons**:
 
 ```
 Start checkin (specific commands in the blueprintflow-runtime-adapter table):
@@ -214,12 +214,16 @@ Start checkin (specific commands in the blueprintflow-runtime-adapter table):
 Start checkin (specific commands in the blueprintflow-runtime-adapter table):
   Frequency: every 2 hours
   Body: "[drift audit · 2 h] blueprint / docs/current / flip-delay check (follow blueprintflow-teamlead-slow-cron-checkin)"
+
+Start checkin (specific commands in the blueprintflow-runtime-adapter table):
+  Frequency: every 3 hours
+  Body: "[issue triage · 3 h] scan GitHub issues, route untriaged to Architect/PM/QA (follow blueprintflow-issue-triage)"
 ```
 
 **Why required**:
 - Agents don't clock in; **without a cron prod, they go idle**. Active-check frequency on long projects drops to 0.
 - Under large requirements and long durations, no proactive dispatch = invisible delay (when the user asks "why did this stop?", that's this trigger firing)
-- Fast cron looks at the PR queue + idle dispatch; slow cron looks at blueprint / PROGRESS / flip delay; the two rails cover everything
+- Fast cron looks at the PR queue + idle dispatch; slow cron looks at blueprint / PROGRESS / flip delay; issue-triage cron scans GitHub issues for untriaged items — the three rails cover everything
 
 **Stopping**:
 - workflow session ends → durable: false makes them disappear automatically
@@ -227,6 +231,7 @@ Start checkin (specific commands in the blueprintflow-runtime-adapter table):
 
 **Anti-patterns**:
 - ❌ Starting only fast cron and not slow → long-term drift accumulates with no audit
+- ❌ Starting fast + slow but not issue-triage → GitHub issues pile up untriaged, blueprint-iteration state machine starves
 - ❌ Starting cron but the prompt doesn't cite `blueprintflow:teamlead-{fast,slow}-cron-checkin` → cron behavior uncontrolled
 - ❌ durable: true without user signoff → leaks across sessions, dispatches into the wrong project
 

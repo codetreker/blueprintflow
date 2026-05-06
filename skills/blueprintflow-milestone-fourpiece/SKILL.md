@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-milestone-fourpiece
-description: "Before starting milestone execution, build the four baseline documents (Architect spec brief, PM stance, PM content lock, QA acceptance template) that lock down stance, segmentation, acceptance, and copy. All four live in the same milestone PR alongside implementation design, execution, e2e, and closure. Use this skill whenever phase plan has split out the milestones and a specific milestone is starting, or when Teamlead is creating .worktrees/<milestone> and dispatching to Architect/PM/QA. Don't use when blueprint-level stance isn't settled (use brainstorm or blueprint-write), for Phase splitting (use phase-plan), when the 4 pieces are already done and entering implementation design (use implementation-design), for a docs-only milestone, or for hotfix emergency path."
+description: "Part of the Blueprintflow methodology. Build the 4 baseline docs before milestone execution: Architect spec brief, PM stance + content lock, QA acceptance template. All live in the same milestone PR. Use when a milestone starts. Don't use if blueprint stance isn't settled, for Phase splitting, after 4-piece is done (use implementation-design), or for hotfixes."
 version: 1.0.0
 ---
 

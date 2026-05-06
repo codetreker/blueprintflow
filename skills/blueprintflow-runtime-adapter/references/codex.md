@@ -1,26 +1,26 @@
-# Codex 适配
+# Codex adapter
 
-### Codex（sandbox）[⚠️ 未实跑验证]
+### Codex (sandbox) [not yet verified in real runs]
 
-**能力：** ✅ 持久化（session 级） ⚠️ 跨 agent 通讯（通过父 agent 中转） ⚠️ 共享 fs（sandbox 隔离） ❌ 定时调度 ⚠️ 并行多角色（调用方 spawn 多个）
+**Capabilities:** persistent at the session level / cross-agent messaging only via the parent agent / shared FS limited (sandboxed) / no scheduled jobs / parallel multi-role only if the caller spawns multiple sessions.
 
-**操作对照表：**
+**Lookup table:**
 
-| 通用描述 | 具体命令 |
+| Generic phrase | Concrete command |
 |---------|---------|
-| 通知 \<Role\> | 通过调用方中转 |
-| 创建 worktree | sandbox 内 `git worktree add` (每个 Codex session 独立) |
-| 提交代码 | sandbox 内 commit，完成后 push 到 remote |
-| 启动 fast-cron | ❌ 不支持 — 由调用方定期触发 |
-| 启动 slow-cron | ❌ 不支持 — 由调用方定期触发 |
-| 查看角色状态 | 调用方自行检查 |
-| 开 PR | 完成后由调用方 `gh pr create` |
-| Merge PR | 由调用方 `gh pr merge <N> --squash` |
+| Notify \<Role\> | Relayed by the caller |
+| Create worktree | `git worktree add` inside the sandbox (each Codex session is independent) |
+| Commit code | Commit inside the sandbox, push to remote when done |
+| Start fast-cron | Not supported — the caller has to trigger periodically |
+| Start slow-cron | Not supported — the caller has to trigger periodically |
+| Check role status | The caller checks itself |
+| Open PR | After completion the caller runs `gh pr create` |
+| Merge PR | The caller runs `gh pr merge <N> --squash` |
 
-**规则适配：**
-- ⚠️ **全员叠 commit**：sandbox 隔离，改为各角色独立 commit + push，Teamlead 确认无冲突后开 PR
-- ❌ **fast/slow cron**：不支持，由调用方 heartbeat 或定时触发
-- ❌ **Ping 协议**：不适用，Codex session 有自己的完成信号
-- ⚠️ **并行 review subagent**：可以，调用方可 spawn 多个 session 并行 review
+**Rule fit:**
+- **Everyone stacks commits**: not possible because of sandbox isolation. Each role commits + pushes independently; the Teamlead confirms there's no conflict before opening the PR.
+- **fast / slow cron**: not supported. The caller drives them through a heartbeat or scheduled trigger.
+- **Ping protocol**: doesn't apply. Codex sessions have their own completion signal.
+- **Parallel review subagents**: supported. The caller can spawn multiple sessions to review in parallel.
 
 ---

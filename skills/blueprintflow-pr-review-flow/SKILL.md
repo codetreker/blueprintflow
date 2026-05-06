@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-pr-review-flow
-description: "Part of the Blueprintflow methodology. PR open → merged: dual review (Architect + QA, plus Security when needed), Security checklist, three-signoff merge gate (CI + LGTM + task completeness), standard squash. Never admin-bypass. Use when reviewing PRs, deciding merge, or handling CI failures. Don't use pre-PR-open, mid-implementation, or for blueprint stance review."
+description: "Part of the Blueprintflow methodology. Use when a milestone PR is open through merge - runs dual review (Architect + QA, plus Security if needed), the three-signoff gate, and standard squash; never admin-bypass."
 version: 1.0.0
 ---
 

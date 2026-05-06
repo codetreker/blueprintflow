@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-workflow
-description: "Entry point for the Blueprintflow multi-agent product collaboration methodology. Covers the full lifecycle from concept → blueprint → Phase → milestone → PR → gate, and serves as the navigator across the other blueprintflow skills. Use this skill whenever a new product is starting up, a major feature is starting, a team is onboarding to blueprintflow for the first time, or you're not sure which specific skill applies. Don't use when already executing a milestone via the four-piece flow or implementation-design, for a single-file typo, dep bump, hotfix emergency path, or when you already know exactly which specific skill to use."
+description: "Part of the Blueprintflow methodology. Entry point covering concept → blueprint → Phase → milestone → PR → gate lifecycle; navigates to the right skill. Use when starting a new product, onboarding a team, or unsure which skill applies. Don't use mid-milestone, for typos/hotfixes, or when the right skill is already known."
 version: 1.0.0
 ---
 

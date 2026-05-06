@@ -18,7 +18,7 @@ Claude Code 有 3 种配置组合。按以下决策树确认你的配置：
 
 每个 teammate 都是**独立的 Claude Code 进程** (`claude --agent-id <name>@<team>` 启动), 各自独立 context window 和 token 配额. lead spawn teammate 时, Claude Code 自动起 child claude 进程并加入共享 mailbox; 在 tmux session 内, 默认显示模式是 split-pane, 每 teammate 自动占一个 pane.
 
-通讯走 `SendMessage` (背后是 `~/.claude/teams/<team>/inboxes/<name>.json` 文件 mailbox), 不是 tmux send-keys.
+通讯走 `SendMessage` (背后是文件 mailbox `~/.claude/teams/<team>/inboxes/<name>.json` — 实测观察, 实验功能内部实现可能随版本变), 不是 tmux send-keys.
 
 **能力：** ✅ 持久化 ✅ 跨 agent 通讯 ✅ 共享 fs ✅ 定时调度 ✅ 并行多角色
 

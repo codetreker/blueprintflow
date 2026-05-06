@@ -165,7 +165,7 @@ tmux send-keys -t $SESSION:0 'claude' Enter
 tmux attach -t $SESSION
 ```
 
-进 Teamlead session 后, lead 用 `TeamCreate` 建 team + `Agent({team_name, name, subagent_type, run_in_background: true, prompt})` 逐个 spawn 角色. Claude Code 会自己起 child claude 进程并填入剩余 pane — 不需要手动给每个 pane `tmux send-keys 'claude'`. 通讯走 `SendMessage(to: "<role>", ...)`, 背后是 `~/.claude/teams/<team>/inboxes/<name>.json` 文件 mailbox.
+进 Teamlead session 后, lead 用 team mode 工具建 team + spawn 角色 — 不需要手动给每个 pane 起 claude. Claude Code 会自己起 child claude 进程并填入剩余 pane. 通讯走 mailbox 通知 (具体命令见 `blueprintflow-runtime-adapter` → `references/claude-code.md`).
 
 ### 窗格反模式
 

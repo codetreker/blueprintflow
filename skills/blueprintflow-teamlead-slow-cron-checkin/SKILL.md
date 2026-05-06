@@ -1,84 +1,85 @@
 ---
 name: blueprintflow-teamlead-slow-cron-checkin
-description: "Teamlead 2-4 小时慢节奏 audit: 蓝图偏差扫 (实施 PR 是否漂蓝图 §X.Y) + 文档/代码一致性检查 (docs/current sync drift) + 翻牌延迟纠正 (acceptance ⚪→✅ / REG flip / PROGRESS [x] 是否真同步) + worktree 堆积清理。触发: 每 2-4 小时 cron 自动触发 / Phase 中段质量 audit / 收到 drift 信号需深查。反触发: PR 急派活 / idle 角色派活 (走 fast-cron) / 单 PR review (走 pr-review-flow) / Phase 退出闸 (走 phase-exit-gate)。"
+description: "The Teamlead's 2-4 hour slow audit. Sweeps for blueprint drift (do implementation PRs still match the blueprint's §X.Y?), checks docs / code consistency (docs/current sync drift), corrects delayed flips (acceptance ⚪→✅ / REG flip / PROGRESS [x] really synced), and cleans up worktree pile-up. Use this skill whenever the 2-4 hour cron fires, mid-Phase quality audit is happening, or a drift signal arrives that needs a deeper dig. Don't use for emergency PR dispatch, for dispatching idle roles (use fast-cron), for a single PR review (use pr-review-flow), or for Phase exit gate (use phase-exit-gate)."
 version: 1.0.0
 ---
 
-# Teamlead 慢节奏巡检 (slow cron)
+# Teamlead slow-cron check-in
 
-`blueprintflow:teamlead-fast-cron-checkin` 推 idle 派活, slow-cron 推漂移纠正。两个不重叠。
+`blueprintflow:teamlead-fast-cron-checkin` pushes idle dispatches forward; slow-cron pushes drift correction. They don't overlap.
 
-## 4 类 audit (按优先级)
+## Four audit categories (priority order)
 
-### 1. PROGRESS.md 时效性
-- 读 `docs/implementation/PROGRESS.md`, 看 Phase / milestone 行 ✅/⚪/🔄 状态
-- 跟最近 2-4h merged PR 对账, 有 PR merged 但 PROGRESS 没翻 → 派架构师补 (≤30 LOC doc PR)
-- Phase 概览行特别盯 (容易漂)
+### 1. Is PROGRESS.md current?
+- Read `docs/implementation/PROGRESS.md` and look at each Phase / milestone row's ✅ / ⚪ / 🔄 status.
+- Reconcile against PRs merged in the last 2-4 hours. If a PR merged but PROGRESS wasn't flipped → assign the Architect to patch it (≤30 LOC doc PR).
+- Watch the Phase overview row carefully — it drifts the most.
 
-### 2. Blueprint 偏差扫描
-- `git log --since="4 hours ago" --name-only` 列代码改动文件
-- 关键词 (admin/auth/message/channel/agent) 文件改但蓝图同期 0 改动 — 正常 (蓝图变 → 代码变, 不反向)
-- **但**代码引入新概念 (PR title 含 "新增" / "扩展" / "feat:" 但描述没引蓝图段) → 派架构师 audit, 看是否需回写蓝图
+### 2. Blueprint drift scan
+- `git log --since="4 hours ago" --name-only` lists code-change files.
+- Files matching keywords (admin / auth / message / channel / agent) changed but no blueprint files changed in the same window — that's normal (blueprint changes drive code, not the other way around).
+- **But** if code introduces a new concept (PR title contains "add" / "extend" / "feat:" but the description doesn't reference a blueprint section) → assign the Architect to audit and decide if the change needs to be reflected back into the blueprint.
 
-### 3. docs/current 跨 PR 累积偏差
+### 3. docs/current cross-PR drift accumulation
 - `git diff main HEAD docs/current/ <server-package>/ <client-package>/`
-- 规则 6 在 PR 级别强制, slow-cron 看跨 PR 累积
-- 有 server/client 改但 docs/current 没跟上 → 派 QA 补
-- 留账 N/A — <reason> 形式 opt-out 算正常 (跟规则 6 lint 一致), 但要看 reason 真的合理
+- Rule 6 is enforced at the PR level; slow-cron looks at cross-PR accumulation.
+- If server / client changed but docs/current didn't follow → assign QA to patch.
+- A "carry-over: N/A — <reason>" opt-out is fine (consistent with the rule 6 lint), but check that the reason is genuinely reasonable.
 
-### 4. 翻牌延迟
-- merged PR 超过 2-4h, acceptance template 还 ⚪ — 漏翻
-- 派 QA 翻牌 PR 
-- 项目自定的 regression / 寄存器一致性 (如有) 数学 audit (active + pending = 总计)
+### 4. Delayed flips
+- A PR has been merged for more than 2-4 hours, but its acceptance template is still ⚪ — flip was missed.
+- Assign QA to flip it.
+- If the project has its own regression / registry consistency math (active + pending = total), audit it here.
 
-### 5. 已开 PR 任务完成度 audit (不只看 CI)
+### 5. Open-PR task-completion audit (not just CI)
 
-新协议下一 milestone 一 PR — PR 早开, 全员往里叠 commit. slow-cron 看每个 open PR 的 Acceptance/Test plan 还剩多少 `[ ]`:
+Under the new protocol — one milestone, one PR — PRs are opened early and everyone stacks commits inside them. Slow-cron looks at how many `[ ]` items remain in each open PR's Acceptance / Test plan:
 
-- `gh pr view <N> --json body | jq -r .body | grep -E "^- \\[ \\]"` 列还没勾的项
-- 多 `[ ]` 项 + 长时间无 commit (≥4h) → 派对应角色 commit 进 worktree
-- **不要急着 merge**: CI 绿 + LGTM 齐 但 Acceptance 还有 `[ ]` → 留 PR comment "等 X 角色补 Y", 不 merge
+- `gh pr view <N> --json body | jq -r .body | grep -E "^- \\[ \\]"` lists the unticked items.
+- Many `[ ]` items + no commits for a long time (≥4h) → assign the matching role to commit into the worktree.
+- **Don't rush to merge.** Green CI + LGTMs but Acceptance still has `[ ]` → leave a PR comment "waiting on role X to add Y", don't merge.
 
-**典型卡点**:
-- Dev代码进了 + e2e 进了, 但 acceptance template 还 ⚪ → QA没 commit
-- 实施全有, 但 docs/current sync 没补 → 派 Dev补
-- 4 件套 spec 在 main 旧 PR, 没 cherry-pick 进 milestone worktree → 派 Architect commit 进 worktree
+**Typical sticking points:**
+- Dev's code has landed and e2e is green, but the acceptance template is still ⚪ → QA hasn't committed.
+- Implementation is all in, but docs/current sync hasn't been patched → assign Dev to patch.
+- The four-piece spec is in an old PR on main and was not cherry-picked into the milestone worktree → assign the Architect to commit it into the worktree.
 
-## PROGRESS 准确性检查
+## PROGRESS accuracy check
 
-确认 PROGRESS.md 跟实际状态一致：
-- PR 已 merged → 对应 milestone 必须已勾 ✅
-- 任务在干 → 不能标 Done
-- 不一致 → 立即修正
+Confirm PROGRESS.md matches reality:
+- A PR is merged → the matching milestone must already be ticked ✅.
+- A task is in progress → it must not be marked Done.
+- Anything inconsistent → fix it immediately.
 
-**反模式：**
-- ❌ 完成了不勾
-- ❌ 没完成标 Done
+**Anti-patterns:**
+- Done but not ticked.
+- Not done but marked Done.
 
-## out-of-date 红线 (兜底)
-- 任一蓝图文件 mtime > 1 天且对应 milestone 在最近 PR 推进 → 派架构师在该蓝图文件加 "Last reviewed: <date>" 行
-- 防"蓝图躺坟"式漂移
+## Out-of-date red line (catch-all)
 
-## 输出格式
+- If any blueprint file has mtime > 1 day and the matching milestone has been progressing in recent PRs → assign the Architect to add a "Last reviewed: <date>" line to that blueprint file.
+- This prevents the "blueprint left to rot" kind of drift.
 
-- 一切同步: "文档同步, 无偏差"
-- 发现偏差: 列具体 PR # / 文件 / 派活给谁
-- 派活遵循 fast-cron 同优先级 (unblock > follow-up > forward > maintenance)
+## Output format
 
-## 反模式
+- All in sync: "docs in sync, no drift".
+- Drift found: list specific PR # / files / who you're assigning.
+- Dispatch priority follows fast-cron's order (unblock > follow-up > forward > maintenance).
 
-- ❌ 把 audit 当推进 (audit 必须派活, 否则无效)
-- ❌ 4 类全跑一遍才输出 (任一发现立即派, 不等其他)
-- ❌ 跟 fast-cron idle 派活混 (slow-cron 专 audit, fast-cron 专 idle)
+## Anti-patterns
 
-## 调用方式
+- Treating audit as forward motion (audit must end in dispatch, otherwise it's wasted).
+- Running all four categories before producing any output (any single finding triggers immediate dispatch — don't wait for the rest).
+- Mixing it with fast-cron's idle dispatch (slow-cron is dedicated to audit, fast-cron is dedicated to idle).
 
-cron prompt 改成:
+## How to invoke
+
+Set the cron prompt to:
 ```
-[偏差 audit · 2 小时]
+[drift audit · 2 hours]
 follow skill blueprintflow-teamlead-slow-cron-checkin
 ```
 
-## 配套
+## Companion
 
-- 快节奏 idle 派活走 `blueprintflow:teamlead-fast-cron-checkin`, 不重叠
+- Fast-paced idle dispatch goes through `blueprintflow:teamlead-fast-cron-checkin`. The two don't overlap.

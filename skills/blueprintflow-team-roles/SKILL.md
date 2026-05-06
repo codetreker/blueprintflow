@@ -1,125 +1,128 @@
 ---
 name: blueprintflow-team-roles
-description: "Blueprintflow 6 角色 (Architect/PM/Dev/QA/Designer/Security) prompt 模板 + Teamlead 职责定义, Security 必备独立角色不允许 Architect 兼任, 满编 8 人配置示例 (3 Dev + Architect + PM + QA + Security + Teamlead), 实际可灵活合并但 Security 必独立。触发: 起团 spawn agents / 确认某角色职责边界 / 派活前选合适角色 / 角色冲突仲裁。反触发: 已知道派给谁的具体派活动作 (直接通讯) / 角色 prompt 模板已加载 / 单文件机械改动 / 不需多角色协作的 hotfix。"
+description: "Prompt templates for the 6 blueprintflow roles (Architect, PM, Dev, QA, Designer, Security) plus Teamlead's responsibilities. Security must be its own role and is never allowed to be merged into Architect. Full headcount example is 8 people (3 Dev + Architect + PM + QA + Security + Teamlead); in practice you can merge other roles, but Security stays independent. Use this skill whenever spawning agents to start a team, confirming where one role's responsibility ends, picking the right role before handing out work, or arbitrating a role conflict. Don't use when you already know exactly which agent gets the work (just message them), when the role prompt template is already loaded, for a single mechanical file change, or for a hotfix that doesn't need multi-role coordination."
 version: 1.0.0
 ---
 
 # Team Roles
 
-> **角色 ≠ 人**：6 角色不要求 6 个 agent 或 6 个人。一个 agent/人可以承担多个角色（如 PM + Designer）。小团队可分担, **但 Security 必须独立, 不允许 Architect 兼任** (见下方 Security 段)。
->
+> **Role ≠ person.** The 6 roles do not require 6 agents or 6 people. One agent or one person can carry multiple roles (for example PM + Designer). A small team can combine roles, **but Security must stay independent — Architect is not allowed to take it on as well** (see the Security section below).
 
-6 个角色 + Teamlead 协调, 多 agent 协作做产品。每角色一个 prompt 模板, 起团按需 spawn (Security 必备, 不按需)。
+The setup is 6 roles plus a Teamlead who coordinates, all working together as multiple agents on the product. Each role has its own prompt template, and you spawn whichever ones you need when starting the team (Security is always there, not "as needed").
 
-## 全角色配置示例
+## Full headcount example
 
-满编 8 人示例 (满足所有职责独立 agent):
+A full 8-person setup, where every responsibility has its own dedicated agent:
 
 - 3 Dev
 - 1 Architect
 - 1 PM
 - 1 QA
-- **1 Security (必备 + 独立角色)**
-- 1 Teamlead (协调, 不写代码)
+- **1 Security (mandatory, independent role)**
+- 1 Teamlead (coordination only, doesn't write code)
 
-Designer 按项目需要追加 (视觉新组件多的项目必备)。
+Designer is added on top when the project needs it (any project with a lot of new visual components should have one).
 
-### 实际灵活合并 (按 "角色 ≠ 人")
+### Merging roles in practice ("role ≠ person")
 
-实际可按 "角色 ≠ 人" 原则, 一个 agent / 人承担多个角色, 减少满编人头:
+Following the "role ≠ person" rule, one agent or person can carry multiple roles, which keeps the headcount lower:
 
-- ✅ PM + Designer (产品立场跟视觉立场天然耦合)
-- ✅ QA + Architect (架构 review 跟可测性 review 视角接近)
-- ✅ Teamlead 兼任 Architect (小团队协调者也是架构主)
-- ❌ **Architect + Security 不允许** (架构视角 ≠ 安全视角, 合并后两边失声)
+- ✅ PM + Designer (product rules and visual rules naturally line up)
+- ✅ QA + Architect (architecture review and testability review look at things from a similar angle)
+- ✅ Teamlead also acting as Architect (in a small team the coordinator is often also the lead architect)
+- ❌ **Architect + Security is not allowed** (architecture and security are different perspectives — merging them silences both sides)
 
-满编 vs 实际灵活的关系: 满编是**角色边界示例**, 实际按团队规模合并, **但 Security 必须独立, 这是硬约束**。
+The relationship between full headcount and merging in practice: full headcount shows you **the boundary between roles**. In real life you merge as your team size requires, **but Security stays independent — that's a hard constraint.**
 
-## Security: 必备 + 独立角色
+## Security: mandatory and independent
 
-**所有代码改动必走 Security review** — 这是 2026 拍板的硬规, 不允许:
-- ❌ "lazy spawn / 涉及敏感才拉" (旧规则, 已废)
-- ❌ Architect 兼任 Security (架构视角 ≠ 安全视角, 合并后两边失声)
-- ❌ "这个 milestone 不涉敏感跳过" (鉴权 / capability / cookie 域 / cross-org / admin god-mode 路径无处不在, 默认全审)
+**Every code change goes through Security review.** This was decided in 2026 and is now a hard rule. None of the following are allowed:
 
-实战教训: 多次安全 bug (admin god-mode 漏审 / cookie 域错配 / cross-org 数据泄露) 都是 "看着不敏感所以没拉 Security" 留的口子。改成默认必审后, 这类口子封死。
+- ❌ "Lazy spawn — only pull Security in when something sensitive shows up" (old rule, retired)
+- ❌ Architect doubling as Security (architecture and security are different perspectives, merging them silences both)
+- ❌ "This milestone isn't sensitive, skip Security" (auth / capability / cookie domain / cross-org / admin god-mode paths show up everywhere — review everything by default)
 
-## Teamlead (协调, facilitator)
+Lessons from real life: several security bugs (admin god-mode skipping review, cookie domain mismatch, cross-org data leak) all came from "this didn't look sensitive so we didn't pull Security in". Switching to "always review by default" closes that hole.
 
-**不写代码**, 只协调:
-- 派活 / 监督进度 / 协议守门
-- 跨角色冲突仲裁
-- PR review 路径分配
-- merge agent 调度
-- cron 巡检 (fast 15min idle 派活 / slow 2-4h 偏差 audit)
+## Teamlead (coordinator / facilitator)
 
-不需要 spawn (Teamlead 通常是顶层 agent / 你自己)。
+**Doesn't write code**, only coordinates:
 
-## 6 角色 prompt 模板
+- Hand out work, watch progress, guard the protocol
+- Arbitrate conflicts between roles
+- Decide which review path a PR goes through
+- Schedule the merge agent
+- Run cron checkins (fast 15-min idle checkin / slow 2-4h drift audit)
 
-确认你的角色后，只读对应的 prompt 文件：
+You don't spawn the Teamlead — the Teamlead is usually the top-level agent, i.e. you yourself.
 
-| 角色 | Prompt 文件 |
-|------|-----------|
-| Architect（架构师） | `references/architect.md` |
-| PM（产品） | `references/pm.md` |
-| Dev（开发） | `references/dev.md` |
-| QA（测试） | `references/qa.md` |
-| Designer（设计） | `references/designer.md` |
-| Security（安全） | `references/security.md` |
+## The 6 role prompt templates
 
-> **渐进式披露**：只读你的角色 prompt，不加载其他角色。
+Once you know your role, only read the matching prompt file:
 
-## 通用协议
+| Role | Prompt file |
+|------|-------------|
+| Architect | `references/architect.md` |
+| PM | `references/pm.md` |
+| Dev | `references/dev.md` |
+| QA | `references/qa.md` |
+| Designer | `references/designer.md` |
+| Security | `references/security.md` |
 
-### Worktree 协议
+> **Progressive disclosure.** Only read the prompt for your own role. Don't load the others.
 
-- 所有角色在 Teamlead 创建的 milestone worktree 里工作 (`<repo-root>/.worktrees/<milestone>`)
-- 一个 milestone 一个 worktree, 全员叠 commit
-- 不开 `/tmp/` 临时 clone (已弃用, 参见 `blueprintflow:git-workflow`)
+## Shared protocols
 
-### PR 协议
+### Worktree protocol
 
-- 顶部 4 行裸 metadata + `## Acceptance` + `## Test plan` H2 段
-- author=lead-agent 不能 self-approve, 用 `gh pr comment <num> --body "LGTM"` 等同
-- 双 review 路径见 `blueprintflow:pr-review-flow`
+- All roles work inside the milestone worktree the Teamlead created (`<repo-root>/.worktrees/<milestone>`)
+- One milestone, one worktree, everyone stacks commits in it
+- No more `/tmp/` throwaway clones (deprecated, see `blueprintflow:git-workflow`)
 
-### 立场漂移 5 层防御 (硬约束)
+### PR protocol
 
-1. spec brief grep 反查 (反约束)
-2. acceptance template 反查锚 (机器化)
-3. stance checklist 黑名单 grep
+- Top of the PR body: 4 lines of bare metadata, then `## Acceptance` and `## Test plan` H2 sections
+- author=lead-agent can't self-approve; use `gh pr comment <num> --body "LGTM"` as the equivalent
+- Dual review path: see `blueprintflow:pr-review-flow`
+
+### Five layers of defense against rule drift (hard constraint)
+
+1. spec brief grep cross-check (anti-constraint)
+2. acceptance template anchor cross-check (machine-checkable)
+3. stance checklist blacklist grep
 4. content-lock byte-identical
-5. PR review 跨文件 cross-check
+5. cross-file cross-check during PR review
 
-## 起团示例
+## Spawning a team — example
 
 ```
-Agent({ name: "architect", subagent_type: "general-purpose", prompt: <Architect prompt 模板> })
+Agent({ name: "architect", subagent_type: "general-purpose", prompt: <Architect prompt template> })
 Agent({ name: "pm", ... })
 Agent({ name: "dev-1", ... })
 Agent({ name: "dev-2", ... })
 Agent({ name: "dev-3", ... })
 Agent({ name: "qa", ... })
-Agent({ name: "security", ... })  # 必备, 独立角色, 不允许 Architect 兼任
-# 按需:
+Agent({ name: "security", ... })  # mandatory, independent role, Architect is not allowed to double
+# As needed:
 Agent({ name: "designer", ... })
 ```
 
-> **实战案例（Borgee）：** 团队按 X 马代号 (feima/yema/zhanma/liema 等) 起团是 Borgee 内部命名习惯, 通用 blueprintflow 团队按角色名 (architect/pm/dev/qa/security) 起即可。
+> **Real example (Borgee):** the Borgee team spawns agents using horse-themed codenames (feima / yema / zhanma / liema, etc.) — that's a Borgee-internal naming habit. A generic blueprintflow team just spawns by role name (architect / pm / dev / qa / security).
 
-## Teamlead 职责 + 反模式
+## Teamlead — responsibilities and anti-patterns
 
-### 职责
-- **协调, 不动手**: 派活给 6 角色 + general-purpose agent (杂活: merge / patch lint / 仓库 patch). 不自己 Bash / Write / Edit 仓库。
-- **合成多源诊断**: QA + PM + Architect 报告冲突时, 不自己脑补合并 — 戳真因方 (e.g. 让 Dev 反证), 收齐反证再派活。
-- **memory of 决策**: 重要决策 (撤回某条建议 / 接受 dev 反证) 要广播给相关 reviewer, 防止 stale instruction 浮在他们 inbox。
-- **效率最大化授权**: 在不打破章程规则 (4 件套 / 双 review / migration v 号 sequencing 等) 不损质量 (反约束 grep 机器化锚 / byte-identical 对照) 的前提下, 灵活安排. 例如: 多 PR 一波 batch merge / review subagent 并行 / acceptance 与 stance 跨界互写 / chore PR 单 reviewer 跳双 review / 大波 LGTM 信号到达后立即派 batch 处理. 不要为流程而流程, 但流程的"为什么"得守住.
-- **沉默检测**：如果角色无响应，处理方式取决于运行环境（见 `blueprintflow-runtime-adapter`）
-- **issue triage 分发**: cron 扫 untriaged GitHub issues 时 Teamlead 先判分发 — 代码改进/tech-debt → Architect, 新功能 → PM, bug → QA。Teamlead 是分发, **不下场判类型** (跟"协调不动手"同立场)。详见 `blueprintflow-issue-triage`。
+### Responsibilities
 
-### 反模式
-- ❌ **subagent 同步阻塞**: 派 general-purpose agent 必须 `run_in_background: true`, 否则 teamlead 卡在等结果上, 不能继续协调。背景: subagent 干杂活 (merge / lint patch) 跟 teamlead 主线 (协调派活 / 收 LGTM / 合成诊断) **本来就独立**, 没理由阻塞。
-- ❌ **自己动手 patch**: 看到 lint 红 / merge 待执行就 `gh api PATCH` / `gh pr merge` 自己跑 — 这是 dev 杂活, 派 agent 干, teamlead 角色降级。
-- ❌ **合成多源诊断时脑补因果**: 多个 reviewer 给的现象拼起来时, 容易脑补 "A 因为 B 所以 C", 真因可能在 D。让真因方反证, 不替代他做 root cause。
-- ❌ **不广播撤回**: 改主意了不告诉所有人, reviewer 拿着 stale instruction 继续做无用功 (PM 跑 grep / QA改 content-lock)。
+- **Coordinate, don't do the work.** Hand work out to the 6 roles plus a general-purpose agent (for odd jobs like merge / patch lint / repo patches). Don't run Bash / Write / Edit on the repo yourself.
+- **Synthesize multiple sources of diagnosis.** When QA, PM and Architect reports conflict, don't merge them in your head — poke whoever is closest to the root cause (e.g. ask a Dev to disprove it), collect the counter-evidence first, then hand out the next piece of work.
+- **Memory of decisions.** Whenever you make an important decision (retracting a previous suggestion, accepting a Dev's counter-argument), broadcast it to the affected reviewers so stale instructions don't sit in their inbox.
+- **Authorize for maximum efficiency.** As long as you don't break the charter (4-piece set, dual review, migration version sequencing, etc.) and don't lower quality (anti-constraint grep machine anchors, byte-identical comparison), be flexible. Examples: batch-merge a wave of PRs together, run review subagents in parallel, let acceptance and stance reviewers cross-write each other's pieces, single-reviewer chore PRs that skip dual review, fire a batch processing wave the moment a flood of LGTMs arrives. Don't follow process for process's sake — but never lose the *why* behind the process.
+- **Silence detection.** If a role doesn't respond, how you handle it depends on the runtime environment (see `blueprintflow-runtime-adapter`).
+- **Issue triage routing.** When the cron sweep finds untriaged GitHub issues, the Teamlead routes them — code improvement / tech debt → Architect, new feature → PM, bug → QA. The Teamlead **routes only, does not classify the type personally** (same posture as "coordinate, don't do the work"). See `blueprintflow-issue-triage` for details.
+
+### Anti-patterns
+
+- ❌ **Blocking on a subagent.** Always spawn the general-purpose agent with `run_in_background: true`. Otherwise the Teamlead is stuck waiting for the result and can't keep coordinating. Background: subagent odd jobs (merge / lint patch) and the Teamlead's main thread (handing out work, collecting LGTMs, synthesizing diagnosis) **are independent by design** — no reason to block.
+- ❌ **Patching things yourself.** Seeing red lint or a pending merge and just running `gh api PATCH` / `gh pr merge` yourself — that's Dev odd-job work. Hand it to an agent. Doing it yourself downgrades the Teamlead role.
+- ❌ **Inventing causal chains when synthesizing diagnosis.** When you stitch together symptoms from several reviewers, it's easy to imagine "A because B therefore C" when the real cause is D. Have the closest party prove or disprove it — don't do their root-cause work for them.
+- ❌ **Not broadcasting a retraction.** You change your mind but don't tell everyone, so reviewers keep working off stale instructions (PM running grep, QA editing content-lock) for nothing.

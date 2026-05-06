@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-runtime-adapter
-description: "Part of the Blueprintflow methodology. Maps agent environment capabilities to concrete messaging, file, scheduling, and silence-detection operations. Use when bringing up a team, switching environments (local ↔ cloud), or unsure about ping/pong protocol. Don't use for business flows (each has its own skill), when runtime is configured, or for hotfixes."
+description: "Part of the Blueprintflow methodology. Use when bringing up a team or switching agent environments - maps environment capabilities (messaging, files, scheduling, silence detection) to concrete operations."
 version: 1.0.0
 ---
 

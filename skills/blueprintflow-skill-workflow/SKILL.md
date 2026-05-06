@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-skill-workflow
-description: "The update process for the blueprintflow skill repo itself: worktree → PR → all-hands vote → merge. The skill repo is self-governing and doesn't mix with business project flows. Use this skill whenever adding, changing, or deleting a blueprintflow skill, changing a skill's anti-constraints, adding a lazy reference, changing a skill description, or doing batch description optimization. Don't use for business project implementation (use milestone-fourpiece + implementation-design), business project blueprint iteration (use blueprint-iteration), single business PR review (use pr-review-flow), or hotfix urgent path."
+description: "Part of the Blueprintflow methodology. Update process for the skill repo itself: worktree → PR → all-hands vote → merge. Self-governing, separate from business project flows. Use when adding/changing/deleting skills, updating descriptions, or adding references. Don't use for business implementation, blueprint iteration, or hotfixes."
 version: 1.0.0
 ---
 

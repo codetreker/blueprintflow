@@ -1,175 +1,175 @@
 ---
 name: blueprintflow-milestone-fourpiece
-description: "Milestone 实施前建立 4 件基线文档 (Architect spec brief / PM stance + content lock / QA acceptance template), 锁立场 + 拆段 + 验收 + 文案, 跟 implementation design + 实施 + e2e + closure 全在同一 milestone PR 内。触发: Phase plan 拆完 milestone, 启动具体 milestone / Teamlead 唯一创建 .worktrees/<milestone> 派活给 Architect/PM/QA。反触发: 蓝图层立场未定 (走 brainstorm / blueprint-write) / Phase 拆段 (走 phase-plan) / 已有 4 件套进 implementation design (走 implementation-design) / docs-only / hotfix 紧急路径。"
+description: "Before starting milestone execution, build the four baseline documents (Architect spec brief, PM stance, PM content lock, QA acceptance template) that lock down stance, segmentation, acceptance, and copy. All four live in the same milestone PR alongside implementation design, execution, e2e, and closure. Use this skill whenever phase plan has split out the milestones and a specific milestone is starting, or when Teamlead is creating .worktrees/<milestone> and dispatching to Architect/PM/QA. Don't use when blueprint-level stance isn't settled (use brainstorm or blueprint-write), for Phase splitting (use phase-plan), when the 4 pieces are already done and entering implementation design (use implementation-design), for a docs-only milestone, or for hotfix emergency path."
 version: 1.0.0
 ---
 
-# Milestone 4 件套
+# Milestone 4 pieces
 
-每个 milestone **一个 PR 一次合**: 4 件套 + 三段实施 + e2e + docs/current sync + REG flip + acceptance ⚪→✅ + PROGRESS [x] **全在同一 PR** 内. 不再拆 spec/acceptance/文案锁/stance 4 个独立 docs PR, 也不拆 schema/server/client 三个实施 PR.
+Each milestone goes in **one PR, merged once**: the 4 pieces + three execution segments + e2e + docs/current sync + REG flip + acceptance ⚪→✅ + PROGRESS [x] **all in the same PR**. No more splitting spec / acceptance / content lock / stance into 4 separate doc PRs, and no more splitting schema / server / client into 3 separate execution PRs.
 
-**git workflow 配套** (见 `blueprintflow-git-workflow`):
-- teamlead 创建 `.worktrees/<milestone>` + branch `feat/<milestone>`
-- 4 件套作者 (Architect/QA/PM) **不单独开 PR** — 全员在同一 worktree 叠 commit
-- 全员 commit 完 → teamlead 唯一开 PR
+**Git workflow companion** (see `blueprintflow-git-workflow`):
+- Teamlead creates `.worktrees/<milestone>` + branch `feat/<milestone>`
+- The 4-piece authors (Architect / QA / PM) **don't open separate PRs** — everyone stacks commits in the same worktree
+- Once everyone has committed → Teamlead is the sole PR opener
 
-**反例 (旧做法)**: 一个 milestone 拆 8-10 PR, 每个双 review + CI + rebase + §5 totals 串行写竞争 + closure follow-up 拖尾. 实际比"一 PR 整 milestone"慢得多.
+**Counter-example (the old way)**: a milestone split into 8-10 PRs, each with dual review + CI + rebase + serial writes on §5 totals + closure follow-up trailing behind. In practice it's much slower than "one PR for the whole milestone".
 
-## 4 件套
+## The 4 pieces
 
 ### 1. Architect spec brief
-**Path**: `docs/implementation/modules/<milestone>-spec.md` (≤80 行)
+**Path**: `docs/implementation/modules/<milestone>-spec.md` (≤80 lines)
 
-> **注**: spec brief 仅 §0-§4, 不允许 §5+ 派活/自审/更新日志段 (见反模式)。
+> **Note**: spec brief covers only §0-§4. §5+ sections (dispatch / self-review / changelog) are not allowed (see anti-patterns).
 
-结构:
-- §0 关键约束 (3 立场)
-- §1 拆段 ≤3 PR (schema / server / client)
-- §2 留账边界 (跟其他 milestone 接口)
-- §3 反查 grep 锚 (含反约束)
-- §4 不在范围 (留 v2+)
+Structure:
+- §0 key constraints (3 stances)
+- §1 segmentation ≤3 PRs (schema / server / client)
+- §2 carry-over boundary (interfaces with other milestones)
+- §3 reverse-check grep anchors (including constraints)
+- §4 not in scope (kept for v2+)
 
-> **实战案例（Borgee）：** spec brief 实例参考 RT-1 / CHN-1 / AL-3 / CV-1 / AL-4，每篇 50-80 行，含 schema + server + client 拆段。
+> **Real example (Borgee):** see RT-1 / CHN-1 / AL-3 / CV-1 / AL-4 spec briefs — each 50-80 lines, with schema + server + client segmentation.
 
 ### 2. PM stance checklist
-**Path**: `docs/qa/<milestone>-stance-checklist.md` (≤80 行)
+**Path**: `docs/qa/<milestone>-stance-checklist.md` (≤80 lines)
 
-结构:
-- 5-7 项立场, 每项一句话锚 §X.Y + 反约束 (X 是, Y 不是) + v0/v1
-- 黑名单 grep + 不在范围 + 验收挂钩
-- v0/v1 transition criteria (如需要, 按 v1 transition 同模式 PR # 锁规则)
+Structure:
+- 5-7 stances, each one sentence anchored to §X.Y + constraint (X is, Y isn't) + v0/v1
+- Blacklist grep + not-in-scope + acceptance hooks
+- v0/v1 transition criteria (if needed, follow the same PR # lock rules as v1 transition)
 
 ### 3. QA acceptance template
-**Path**: `docs/qa/acceptance-templates/<milestone>.md` (≤50 行)
+**Path**: `docs/qa/acceptance-templates/<milestone>.md` (≤50 lines)
 
-结构:
-- 跟拆段 1:1 对齐 (§1 schema / §2 server / §3 client)
-- 验收四选一: E2E / 蓝图行为对照 / 数据契约 / 行为不变量
-- REG-* 寄存器 占号 (留 ⚪ 等实施翻 🟢)
-- 反查锚 + 退出条件
+Structure:
+- 1:1 aligned with the segmentation (§1 schema / §2 server / §3 client)
+- Acceptance four-choice: E2E / blueprint behavior comparison / data contract / behavior invariants
+- REG-* register placeholders (⚪ awaiting execution to flip 🟢)
+- Reverse-check anchors + exit conditions
 
-### 4. PM content lock (仅 client UI milestone 必备)
-**Path**: `docs/qa/<milestone>-content-lock.md` (≤40 行)
+### 4. PM content lock (only required for client UI milestones)
+**Path**: `docs/qa/<milestone>-content-lock.md` (≤40 lines)
 
-结构:
-- DOM 字面锁 (data-* attr / 文案 byte-identical)
-- 反约束: 同义词禁词 + 反向 grep
-- demo 截屏路径预备
+Structure:
+- DOM literal lock (data-* attributes / copy byte-identical)
+- Constraint: synonym blacklist + reverse grep
+- Demo screenshot path prepared
 
-如 milestone 涉及视觉新组件, 跟Designer design system 联动 (未来扩展)。
+If the milestone introduces new visual components, this links into the Designer's design system (future extension).
 
-## 步 5: 写代码前 Dev 出 Implementation Design
+## Step 5: Dev writes the implementation design before code
 
-4 件套就位后、拆段实施前, Dev 主写一份实现方案设计文档 (`docs/implementation/design/<milestone>.md`), 由 Architect / PM / Security / QA 4 角色 review, **全 ✅ 才放行写代码**。
+Once the 4 pieces are in place, before splitting and starting execution, Dev writes an implementation design (`docs/implementation/design/<milestone>.md`). It's reviewed by Architect / PM / Security / QA, and **only released to write code once all 4 sign off ✅**.
 
-适用范围:
-- ✅ 涉及代码的 milestone **必走** (schema / server / client 任一改动)
-- ❌ 非代码 milestone (docs-only / config-only / 字面调整) 可跳
+Scope:
+- ✅ Any milestone that touches code **must** go through it (any change to schema / server / client)
+- ❌ Non-code milestones (docs-only / config-only / literal-only adjustments) can skip
 
-PR 协议:
-- 设计文档**不是独立 PR** — 跟 4 件套同 worktree 叠 commit, 全在 milestone PR 内 (守 "一 milestone 一 PR" 铁律)
-- review 走 worktree 内通讯 / PR comment, 不靠开独立 PR
+PR protocol:
+- The design document is **not a separate PR** — it's stacked as a commit in the same worktree as the 4 pieces, all inside the milestone PR (sticking to the "one milestone, one PR" rule)
+- Review goes through worktree-internal communication / PR comments, not via opening a separate PR
 
-完整规格见 `blueprintflow-implementation-design`。
+Full spec in `blueprintflow-implementation-design`.
 
-## 4 件套间字面一致硬条件
+## Hard condition: literal consistency across the 4 pieces
 
-spec / stance / acceptance / content-lock 互相引 §X.Y 锚点, 任一漂移其他 review 时抓出 (跨 PR drift 抓得到)。
+spec / stance / acceptance / content-lock cite each other's §X.Y anchors. Any drift gets caught during the others' reviews (cross-PR drift gets caught).
 
-> **实战案例（Borgee）：** QA 自检发现 acceptance template 字段名跟 spec brief drift (字段改名未同步), 当场 patch 修齐 (双轨 review 起作用)。
+> **Real example (Borgee):** QA self-check found that field names in the acceptance template had drifted from the spec brief (a field rename hadn't been propagated). Patched on the spot to align (the dual review rails worked).
 
-## 派活模板
+## Dispatch template
 
-milestone 启动时 (**Teamlead 唯一**创建 worktree + 派活):
+When the milestone starts (**Teamlead is the sole** worktree creator and dispatcher):
 
 ```bash
-# 1. teamlead 创建 worktree (一 milestone 一 worktree)
+# 1. Teamlead creates the worktree (one milestone, one worktree)
 cd <repo-root>
 git worktree add .worktrees/<milestone> -b feat/<milestone> origin/main
 ```
 
 ```
-2. 派 Architect (在 .worktrees/<milestone> 里): spec brief, commit + push, 不开 PR
-3. 派 PM (同 worktree): stance checklist + content lock, commit + push, 不开 PR
-4. 派 QA (同 worktree): acceptance template, commit + push, 不开 PR
-5. 派 Dev (同 worktree): 写 implementation design (docs/implementation/design/<milestone>.md), commit + push
-6. 派 Architect / PM / Security / QA review design, 全 ✅ 才放行
-7. 派 Dev (同 worktree): 三段实施 + e2e + docs/current sync + REG/acceptance/PROGRESS 翻牌, commit + push, 不开 PR
-8. 全员就绪 → teamlead 唯一开 PR (gh pr create)
-9. PR merged → teamlead 删 worktree
+2. Dispatch Architect (in .worktrees/<milestone>): spec brief, commit + push, no PR
+3. Dispatch PM (same worktree): stance checklist + content lock, commit + push, no PR
+4. Dispatch QA (same worktree): acceptance template, commit + push, no PR
+5. Dispatch Dev (same worktree): write implementation design (docs/implementation/design/<milestone>.md), commit + push
+6. Dispatch Architect / PM / Security / QA to review the design; only release once all ✅
+7. Dispatch Dev (same worktree): three execution segments + e2e + docs/current sync + REG/acceptance/PROGRESS flips, commit + push, no PR
+8. Everyone ready → Teamlead is the sole PR opener (gh pr create)
+9. PR merged → Teamlead removes the worktree
 ```
 
-详细 git 协议见 `blueprintflow-git-workflow` (角色不开 PR / teamlead 唯一开 PR / 一 worktree 一 milestone).
+Detailed git protocol in `blueprintflow-git-workflow` (roles don't open PRs / Teamlead is the sole PR opener / one worktree per milestone).
 
-## 拆段实施 (在同一 PR 内顺序提交)
+## Segmented execution (committed sequentially in the same PR)
 
-全员在**同一 worktree + 同一 branch** 内叠 commit (角色都不开 PR, teamlead 最后开):
-- 1.1 schema (migration v=N + 表 + drift test) — Dev
-- 1.2 server (API + 业务逻辑 + 反向断言 test) — Dev
+Everyone stacks commits in the **same worktree + same branch** (no role opens a PR; Teamlead opens it at the end):
+- 1.1 schema (migration v=N + tables + drift test) — Dev
+- 1.2 server (API + business logic + reverse-assertion test) — Dev
 - 1.3 client (UI + e2e) — Dev
 - 1.4 docs/current sync (server / client docs) — Dev
-- 1.5 REG-* 翻 🟢 + acceptance template ⚪→✅ + PROGRESS [x] — QA / Dev
-- (并行) spec brief — Architect
-- (并行) stance + content lock — PM
-- (并行) acceptance template — QA
+- 1.5 REG-* flipped 🟢 + acceptance template ⚪→✅ + PROGRESS [x] — QA / Dev
+- (parallel) spec brief — Architect
+- (parallel) stance + content lock — PM
+- (parallel) acceptance template — QA
 
-worktree 协议:
+Worktree protocol:
 
 ```bash
-# teamlead 创建 (唯一)
+# Teamlead creates (sole)
 cd <repo-root>
 git worktree add .worktrees/<milestone> -b feat/<milestone> origin/main
 
-# 角色干活 (多人多 commit OK, 全员 push 同一 branch)
+# Roles work (multiple people, multiple commits OK; everyone pushes the same branch)
 cd .worktrees/<milestone>
-# ... 干活 ...
+# ... work ...
 git push origin feat/<milestone>
 
-# teamlead 唯一开 PR (所有角色就绪后)
+# Teamlead opens the sole PR (after every role is ready)
 gh pr create --title "feat(<milestone>): ..." --body "..."
 
-# PR merge 后 teamlead 删 worktree (唯一)
+# After PR merge, Teamlead removes the worktree (sole)
 cd <repo-root>
 git worktree remove .worktrees/<milestone>
 ```
 
-## Closure 在 PR 内一次落, 不开 follow-up
+## Closure lands in the same PR; no follow-up
 
-acceptance ⚪→✅ + REG-* + PROGRESS [x] 都在实施 PR 内同 commit 落. **不开 closure follow-up PR**.
+acceptance ⚪→✅ + REG-* + PROGRESS [x] all land in the same PR as the implementation, on the same commit run. **No closure follow-up PR.**
 
-## 文件命名规范
+## File-naming convention
 
-代码文件按**实际功能**命名，不按 milestone 编号。
+Code files are named by **actual functionality**, not by milestone number.
 
-**正模式：**
-- `agent_status.go` — 一看就知道是 agent 状态相关
-- `canvas_renderers_test.ts` — 一看就知道测的是 canvas 渲染器
-- `privacy_promise.tsx` — 一看就知道是隐私承诺组件
+**Good patterns:**
+- `agent_status.go` — obviously about agent status
+- `canvas_renderers_test.ts` — obviously testing the canvas renderers
+- `privacy_promise.tsx` — obviously the privacy-promise component
 
-**反模式：**
-- ❌ `al_1b_2_status.go` — 半年后没人记得 `al_1b` 是什么 milestone
-- ❌ `cv_3_3_renderers_test.ts` — 要先查 `cv-3-3` 是哪个 milestone 才知道测什么
-- ❌ `cm5stance/` — 目录名是 milestone 编号的拼接，应该叫 `stance_checklist/`
+**Anti-patterns:**
+- ❌ `al_1b_2_status.go` — six months later nobody remembers what milestone `al_1b` was
+- ❌ `cv_3_3_renderers_test.ts` — you have to look up which milestone `cv-3-3` is to know what's being tested
+- ❌ `cm5stance/` — directory name is the milestone number concatenated; should just be `stance_checklist/`
 
-**原则：** milestone 编号是项目管理概念，不该出现在文件名里。文件名是给人和代码工具看的，要一看就懂。在 PR description 和 commit message 里引 milestone 编号就够了。
+**Principle:** milestone numbers are a project-management concept and don't belong in filenames. Filenames are read by humans and code tools — they should be self-explanatory. Cite milestone numbers in PR descriptions and commit messages; that's enough.
 
-## 反模式
+## Anti-patterns
 
-- ❌ 跳过 4 件套直接实施 (立场漂移无法抓)
-- ❌ 拆成多 PR (spec/schema/server/client/closure 各自一个 PR, 反而慢)
-- ❌ 实施 PR 不引 spec § 锚点 (跨 PR drift 无法抓)
-- ❌ 用 `/tmp/<work>` 临时 clone (改用 `.worktrees/<milestone>`)
-- ❌ 一个 milestone 多个 branch (撞车 + 历史脏)
-- ❌ **spec brief 写 §5/§6/§7 (派活 / Architect 自审 / 更新日志) 段**
+- ❌ Skipping the 4 pieces and going straight to execution (stance drift can't be caught)
+- ❌ Splitting into multiple PRs (spec / schema / server / client / closure each their own PR — actually slower)
+- ❌ Execution PR doesn't cite spec § anchors (cross-PR drift can't be caught)
+- ❌ Using `/tmp/<work>` as a temporary clone (use `.worktrees/<milestone>` instead)
+- ❌ One milestone on multiple branches (collisions + dirty history)
+- ❌ **spec brief writing §5/§6/§7 sections (dispatch / Architect self-review / changelog)**
 
- **背景**: 末段信息全是重复 — 派活记录在 PR body + 通讯历史已有, Architect 自审走 PR review comment, 更新日志 git log + git blame 自带; 而且末段 narrative changelog 是 docs 撞冲突主因 (共享 changelog / closure 段 / spec brief 末尾几行被多 wave 并行翻牌全堵在这里)。
+  **Background**: those trailing sections are all duplication — dispatch records are already in PR body + communication history; Architect self-review goes through PR review comments; changelog is implicit in git log + git blame. And the trailing narrative changelog is the main cause of doc collisions (shared changelog / closure section / the last few lines of the spec brief all become the bottleneck where parallel waves try to flip status at once).
 
- > **实战案例（Borgee）：** 60+ spec brief 都中招, 末段 narrative changelog 集中撞 `phase-4.md` / `closure §1` / spec brief 末尾几行。
+  > **Real example (Borgee):** 60+ spec briefs all hit it; the trailing narrative changelog crowded into `phase-4.md` / `closure §1` / the spec brief's last few lines.
 
- **如何应用**: spec brief ≤80 行只保 §0-§4 (关键约束 / 拆段 / 留账 / 反查 grep / 不在范围)。派活走通知 / Task, 自审走 PR review comment, 更新日志走 git log + PR body, 不在 spec brief 末尾叠 narrative changelog。
+  **How to apply**: spec brief stays ≤80 lines, only §0-§4 (key constraints / segmentation / carry-over / reverse-check grep / not in scope). Dispatch goes through notification / Task; self-review goes through PR review comment; changelog goes through git log + PR body. Don't pile a narrative changelog at the bottom of the spec brief.
 
-- ❌ **文案锁早于实施太久, 不跟既有实施 cross-grep**
+- ❌ **Content lock written too far ahead of implementation, not cross-grepped against existing code**
 
- **背景**: 文案锁草稿期写的字面跟既有实施不一致, 文案锁字面没跟既有实施 cross-grep, 后续实施对齐了既有代码 (合理), 文案锁文档变孤儿。
+  **Background**: the literal copy in the content lock draft drifts from existing implementation because no cross-grep was done. Later execution aligns with existing code (reasonably), and the content-lock document becomes an orphan.
 
- **如何应用**: 写文案锁前必跑 grep 反查既有实施: `grep -rnE "<候选字面>" <client-package>/ <server-package>/`. 如有命中既有字面, 文案锁字面跟它对齐, 不要按草稿臆想字面写; 如既有实施跟立场冲突, 应同步改实施 + 文案锁两边 byte-identical.
+  **How to apply**: before writing the content lock, run a reverse-check grep against existing implementation: `grep -rnE "<candidate-literal>" <client-package>/ <server-package>/`. If existing literals are matched, align the content lock to them rather than inventing literals from a draft. If existing implementation conflicts with the stance, change both implementation and content lock together so they end up byte-identical.

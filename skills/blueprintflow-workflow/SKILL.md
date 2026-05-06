@@ -1,241 +1,238 @@
 ---
 name: blueprintflow-workflow
-description: "Blueprintflow 多 agent 协作做产品的工作流方法论入口, 覆盖概念→蓝图→Phase→milestone→PR→闸全生命周期, 是其他 blueprintflow skill 的导航。触发: 新产品启动 / 大功能起步 / 团队首次接入 blueprintflow / 不确定该走哪个具体 skill。反触发: 已在 milestone 实施中按 4 件套或 implementation design 推进 / 单文件 typo / dep bump / hotfix 紧急路径 / 已明确知道走哪个具体 skill。"
+description: "Part of the Blueprintflow methodology. Use when starting a new product, onboarding a team, or unsure which skill applies - navigates the concept-to-blueprint-to-Phase-to-milestone-to-PR-to-gate lifecycle."
 version: 1.0.0
 ---
 
 # Blueprintflow Workflow
 
-多 agent 协作工作流, 适合**做产品**: 从模糊概念到可发布软件, 6 角色 + Teamlead 协议推进。
+A multi-agent collaboration workflow for **building products**: from a fuzzy concept to shippable software, driven by 6 roles + a Teamlead.
 
-## 心智模型: 城市工程
+## Mental model: city engineering
 
-这套 skill 是为**大需求 / 长工作时间项目**设计的 — 跟大型城市工程的协作模式同构:
+This skill set is designed for **large requirements / long-duration projects** — the same shape as how large-scale city engineering works:
 
-| 城市工程 | blueprintflow 角色 |
+| City engineering | Blueprintflow role |
 |---|---|
-| 总工程师 | Architect (架构) — 出蓝图 + spec brief |
-| 甲方 | PM（产品） — 拍立场 + 反约束 |
-| 施工队 | Dev（开发） — 按 spec 落地, 不改图 |
-| 质检 | QA — acceptance 验收 |
-| 设计 / 安全 | Designer / Security (装修 / 消防) |
-| 总包 | Teamlead — 协调, 不下场砌墙 |
+| Chief engineer | Architect — produces blueprints + spec briefs |
+| Client | PM — owns stances + constraints |
+| Construction crew | Dev — builds to spec, doesn't redraw blueprints |
+| Inspector | QA — runs acceptance |
+| Designer / safety | Designer / Security (interior / fire safety) |
+| General contractor | Teamlead — coordinates, doesn't lay bricks |
 
-工程方法对应:
-- **蓝图先 freeze 再开工** — 不能边建边改图, 改图走 PR + 4 角色 review (= 工程变更单)
-- **按价值闭环分期** (Phase 0 地基 / Phase 1 主体 / Phase 2 装修) — 不按工种分期
-- **阶段性验收签字** (Phase 退出 4 联签 = 阶段验收报告 + 留账闸)
-- **质量门留痕** (规则 6 / migration v 号串行 = 工程档案)
-- **甲方代表全程在场** (PM立场反查 = 不让施工偏离需求)
+Engineering practices map across:
+- **Freeze the blueprint before construction starts** — you can't redraw while building; blueprint changes go through PR + 4-role review (= an engineering change order)
+- **Phase by value loop** (Phase 0 foundation / Phase 1 main structure / Phase 2 finishing) — not by trade
+- **Phase-end signoff** (the 4-role signoff at Phase exit = phase acceptance report + carry-over gate)
+- **Quality-gate trail** (rule 6 / migration version sequencing = engineering archive)
+- **The client's representative is on site throughout** (PM stance reverse-check = construction can't drift from requirements)
 
-### 不适用场景
+### When this doesn't apply
 
-- Hackathon / 一次性脚本 / 单 PR fix — 蓝图 + brainstorm + Phase exit gate 是重型基建, 短任务用不上
-- 单人快速迭代 — 4 件套 + 双 review 路径假设有多人协作
-- 探索阶段没立场 — 先用 `blueprintflow:brainstorm` 锁立场再走这套
+- Hackathon / one-off script / single-PR fix — blueprint + brainstorm + Phase exit gate is heavyweight infrastructure, short tasks don't need it
+- Solo rapid iteration — the 4-piece + dual review path assumes multi-person collaboration
+- Exploration phase with no settled stance — first use `blueprintflow:brainstorm` to lock stance, then come back
 
-## 何时用
+## When to use
 
-适合:
-- 一个新产品 / 大功能 / 大 refactor 从概念开始
-- 多 agent 协作 (≥3 角色), 单 agent 跑不完
-- 需要立场 / 蓝图 / 实施 / 验收 分轨且互锁的场景
-- 跨 milestone 漂移控制要求高 (立场不能随实施漂)
+Suitable for:
+- A new product / major feature / large refactor starting from concept
+- Multi-agent collaboration (≥3 roles), too much for a single agent
+- Scenarios where stance / blueprint / execution / acceptance need to run on separate but interlocked tracks
+- High demand for cross-milestone drift control (stance can't drift with execution)
 
-不适合:
-- 单 agent / 小任务 (overhead 太重)
-- 纯 bug fix (走 PR review + 标准 squash merge 即可, 永远不 admin/ruleset bypass)
-- 已有产品的运维 / oncall
+Not suitable for:
+- Single agent / small task (overhead too heavy)
+- Pure bugfix (PR review + standard squash merge is enough; never admin/ruleset bypass)
+- Operations / oncall on an existing product
 
-## 4 层结构
+## 4-layer structure
 
 ```
-┌─ 概念层 (蓝图) ───────── blueprintflow:brainstorm + blueprintflow:blueprint-write
+┌─ Concept layer (blueprint) ───── blueprintflow:brainstorm + blueprintflow:blueprint-write
 │      ↓
-├─ 计划层 (Phase 拆) ──── blueprintflow:phase-plan
+├─ Plan layer (Phase split) ───── blueprintflow:phase-plan
 │      ↓
-├─ milestone 层 (实施) ── blueprintflow:milestone-fourpiece + blueprintflow:pr-review-flow
+├─ Milestone layer (execution) ── blueprintflow:milestone-fourpiece + blueprintflow:pr-review-flow
 │      ↓
-└─ 协调层 (持续推进) ──── blueprintflow:teamlead-fast-cron-checkin (15min idle)
-                          blueprintflow:teamlead-slow-cron-checkin (2-4h audit)
-                          blueprintflow:phase-exit-gate (Phase 收尾)
+└─ Coordination layer ─────────── blueprintflow:teamlead-fast-cron-checkin (15 min idle)
+                                   blueprintflow:teamlead-slow-cron-checkin (2-4 h audit)
+                                   blueprintflow:phase-exit-gate (Phase wrap-up)
 ```
 
-## 6 角色 + Teamlead
+## 6 roles + Teamlead
 
-| 代号 | 中文 | 职责 |
+| Code | Name | Responsibilities |
 |---|---|---|
-| **Teamlead** | 协调 | facilitator, 派活 / 监督 / 协议守门, 不写代码 |
-| **Architect** | 架构师 (Architect) | spec brief / 蓝图引用 / 闸 1+2 (模板自检 + grep 锚) / PR 架构 review |
-| **PM** | 产品 (PM) | 立场反查表 / 文案锁 / 闸 3 反查表 / 闸 4 标志性 milestone 签字 |
-| **Dev** | 开发 (Developer) | 实施代码 / migration / 单测 / 主 worktree (一次只一个 in-flight) |
-| **QA** | 测试 (QA) | acceptance template / E2E + 行为不变量单测 / current 同步审 / 闸 4 跑 acceptance |
-| **Designer** | 设计 (Designer) | UI/UX/视觉, milestone 涉及 client UI 时 spawn (跟PM文案锁互锁) |
-| **Security** | 安全 (Security) | auth/privacy/admin god-mode/cross-org 路径 review, 涉敏感写动作时 spawn |
+| **Teamlead** | Coordinator | facilitator: assigns work / supervises / guards protocol; doesn't write code |
+| **Architect** | Architect | spec brief / blueprint citations / gate 1+2 (template self-check + grep anchor) / PR architecture review |
+| **PM** | Product Manager | stance reverse-check table / content lock / gate 3 reverse-check / gate 4 flagship-milestone signoff |
+| **Dev** | Developer | implementation code / migration / unit tests / main worktree (only one in-flight at a time) |
+| **QA** | Quality Assurance | acceptance template / E2E + behavior-invariant unit tests / current-sync review / gate 4 acceptance run |
+| **Designer** | Designer | UI/UX/visual; spawned when a milestone touches client UI (interlocked with PM content lock) |
+| **Security** | Security | reviews auth / privacy / admin god-mode / cross-org paths; spawned when sensitive write actions are involved |
 
-完整角色 prompt 模板见 `blueprintflow:team-roles`。
+Full role prompt templates in `blueprintflow:team-roles`.
 
-## 阶段 + Skill 索引
+## Stages + skill index
 
-### 阶段 1: 概念锁定
-**目标**: 模糊 idea → 可写蓝图的核心立场 + 概念模型 + 反约束
+### Stage 1: concept lock-in
+**Goal**: fuzzy idea → core stances + concept model + constraints a blueprint can be built on
 
-1. **blueprintflow:brainstorm** — Teamlead 主持多轮讨论 (PM + Architect 主), 锁立场 / 概念 / 反约束
-2. **blueprintflow:blueprint-write** — Architect + PM 落 `docs/blueprint/*.md`
+1. **blueprintflow:brainstorm** — Teamlead facilitates multi-round discussion (PM + Architect drive), locking stances / concepts / constraints
+2. **blueprintflow:blueprint-write** — Architect + PM write `docs/blueprint/*.md`
 
-产出: `docs/blueprint/` ready, 概念 freeze, 后续 PR 必引 §X.Y
+Output: `docs/blueprint/` ready, concepts frozen, every later PR has to cite §X.Y
 
-### 阶段 2: 实施计划
-**目标**: 蓝图 → Phase 拆 + 退出 gate + 4 道防偏离闸门
+### Stage 2: execution plan
+**Goal**: blueprint → Phase split + exit gates + 4 drift-prevention gates
 
-3. **blueprintflow:phase-plan** — Architect 主, 落 `docs/implementation/PROGRESS.md` + execution-plan + Phase 退出 gate
+3. **blueprintflow:phase-plan** — Architect leads, writes `docs/implementation/PROGRESS.md` + execution-plan + Phase exit gates
 
-产出: PROGRESS.md ready, Phase 1/2/3+ 拆段清晰
+Output: PROGRESS.md ready, Phase 1/2/3+ split clearly
 
-### 阶段 3: milestone 实施 (主战场)
-**目标**: 每 milestone 一 worktree + 一 branch + 一 PR — teamlead 创 worktree, 全员叠 commit, teamlead 唯一开 PR, merged 后 teamlead 删 worktree
+### Stage 3: milestone execution (the main field)
+**Goal**: each milestone = one worktree + one branch + one PR — Teamlead creates the worktree, everyone stacks commits, Teamlead is the only one who opens the PR, Teamlead removes the worktree after merge
 
-4. **blueprintflow:git-workflow** — git 协议: 一 milestone 一 worktree, 角色不开 PR, teamlead 唯一开 PR
-5. **blueprintflow:milestone-fourpiece** — 4 件套全员同 worktree 叠 commit (spec / stance / acceptance / content-lock 都进同一 PR)
-6. **blueprintflow:implementation-design** — 4 件套后写代码前, Dev 主写实现方案设计, Architect/PM/Security/QA 4 角色 review 全 ✅ 才放行写代码
-7. **blueprintflow:pr-review-flow** — PR (teamlead 开) 后双 review + Security checklist + 标准 squash merge (永远不 admin/ruleset bypass)
+4. **blueprintflow:git-workflow** — git protocol: one milestone, one worktree; roles don't open PRs, Teamlead is the sole PR opener
+5. **blueprintflow:milestone-fourpiece** — the 4 pieces are stacked as commits in the same worktree by everyone (spec / stance / acceptance / content-lock all in the same PR)
+6. **blueprintflow:implementation-design** — after the 4 pieces and before code, Dev writes the implementation design; Architect/PM/Security/QA review and only release to write code once all 4 sign off
+7. **blueprintflow:pr-review-flow** — PR (opened by Teamlead) goes through dual review + Security checklist + standard squash merge (never admin/ruleset bypass)
 
-产出: milestone 全 merged + acceptance template ⚪→🟢 翻牌 + REG-* 寄存
+Output: every milestone merged + acceptance template ⚪→🟢 flipped + REG-* registered
 
-### 阶段 4: 持续推进 + Phase 退出
-**目标**: idle 派活 + 偏差纠正 + issue 分类 + Phase 退出 gate
+### Stage 4: ongoing push + Phase exit
+**Goal**: idle dispatch + drift correction + issue triage + Phase exit gate
 
-8. **blueprintflow:teamlead-fast-cron-checkin** — 15 min cron, idle 角色派活 (PR 维度)
-9. **blueprintflow:teamlead-slow-cron-checkin** — 2-4h cron, 偏差 audit (蓝图偏差维度)
-10. **blueprintflow:issue-triage** — 3h cron, 扫 GitHub issues, Teamlead 先判分发 Architect/PM/QA (issue 维度, 跟 fast/slow cron 平行不重叠)
-11. **blueprintflow:phase-exit-gate** — Phase 收尾联签 + closure announcement
+8. **blueprintflow:teamlead-fast-cron-checkin** — 15-min cron, dispatches work to idle roles (PR dimension)
+9. **blueprintflow:teamlead-slow-cron-checkin** — 2-4 h cron, drift audit (blueprint-drift dimension)
+10. **blueprintflow:issue-triage** — 3 h cron, scans GitHub issues; Teamlead first-call-and-route to Architect/PM/QA (issue dimension, parallel and non-overlapping with fast/slow cron)
+11. **blueprintflow:phase-exit-gate** — Phase wrap-up four-role signoff + closure announcement
 
-### 阶段 5: 蓝图迭代 (Phase 全过完后)
-**目标**: 当前蓝图验收过 → 演进到下一版蓝图 (3 状态机 + 版本号管理)
+### Stage 5: blueprint iteration (after all Phases pass)
+**Goal**: current blueprint accepted → evolve to the next blueprint version (3-state machine + version-number management)
 
-12. **blueprintflow:blueprint-iteration** — 3 状态机 (current/next/GitHub issues backlog) + major/minor 版本号 + 变更流转判定 (真 bug 入当前 patch / 非 bug 入 backlog) + freeze + tag 切版
+12. **blueprintflow:blueprint-iteration** — 3-state machine (current/next/GitHub issues backlog) + major/minor version numbers + change routing (real bug into current patch / non-bug into backlog) + freeze + tag cutover
 
-产出: 新版蓝图 freeze + 旧版 git tag 留历史 + source-issues.md 留来源
+Output: new blueprint version frozen + old version git-tagged for history + source-issues.md to record provenance
 
-## 起团窗格排版（仅 tmux 环境）
+## Pane layout when starting the team (tmux only)
 
-> 以下内容仅适用于有 tmux 的环境。其他环境的起团方式见 `blueprintflow-runtime-adapter`。
+> The following only applies if your environment has tmux. For other environments see `blueprintflow-runtime-adapter`.
 
-用 tmux 起团时, 窗格排版要合理化 — 不能全堆一行扁条, 一眼看不出谁在干什么。
+When starting the team in tmux, lay the panes out sensibly — don't pile everyone into one flat row where you can't tell who's doing what.
 
-### 推荐布局 (6 角色团 + Teamlead)
+### Recommended layout (6 roles + Teamlead)
 
 ```
 ┌─────────────────┬──────────────┬──────────────┐
 │                 │  Architect   │  PM          │
 │   Teamlead      ├──────────────┼──────────────┤
-│   (顶部宽窗)    │  Dev-A       │  Dev-B/C     │
+│   (tall left)   │  Dev-A       │  Dev-B/C     │
 │                 ├──────────────┼──────────────┤
 │                 │  QA          │  Designer    │
 └─────────────────┴──────────────┴──────────────┘
 ```
 
-- **Teamlead 占左半屏整列** (协调主线, 视野最大)
-- **6 角色右侧 2x3 网格** (每格高度均等, 名字一眼看见)
-- Security 必备独立角色, 必占一格 (不允许 Architect 兼任); Designer 按项目需要追加, 没视觉新组件可不占格
+- **Teamlead takes the entire left column** (the coordination thread, biggest field of view)
+- **6 roles in a 2×3 grid on the right** (each cell equal height, names visible at a glance)
+- Security is required as an independent role and must take a cell (Architect can't double up); Designer is added per project need — without new visual components there's no need to allocate a cell
 
-### 起团命令骨架
-
-> 前置: settings.json 开 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`. tmux session 内 `teammateMode` 默认 auto = split-pane.
+### Team-spawn command skeleton
 
 ```bash
-# 1. 起 tmux 画布, 切好 2x3 网格
 SESSION=blueprintflow
-tmux new-session -d -s $SESSION -x 220 -y 60
+tmux new-session -d -s $SESSION -x 220 -y 60   # large canvas
+# left half — Teamlead
+tmux send-keys -t $SESSION:0 'claude' Enter
+# right half split into 2x3
 tmux split-window -h -p 60 -t $SESSION:0
 tmux split-window -v -p 66 -t $SESSION:0.1
 tmux split-window -v -p 50 -t $SESSION:0.2
 tmux split-window -h -t $SESSION:0.1
 tmux split-window -h -t $SESSION:0.3
 tmux split-window -h -t $SESSION:0.5
-
-# 2. 给 pane 命名 (status line 显示)
+for p in 1 2 3 4 5 6; do
+  tmux send-keys -t $SESSION:0.$p 'claude' Enter
+done
+# pane names (shown in status line)
 tmux set-option -t $SESSION pane-border-status top
 tmux select-pane -t $SESSION:0.0 -T 'teamlead'
 tmux select-pane -t $SESSION:0.1 -T 'architect'
-# ... pm / dev-a / dev-b / qa / security 等
-
-# 3. 只在 Teamlead pane 起 claude
-tmux send-keys -t $SESSION:0 'claude' Enter
+# ... architect/pm/dev-a/dev-c/qa, etc
 tmux attach -t $SESSION
 ```
 
-进 Teamlead session 后, lead 用 team mode 工具建 team + spawn 角色 — 不需要手动给每个 pane 起 claude. Claude Code 会自己起 child claude 进程并填入剩余 pane. 通讯走 mailbox 通知 (具体命令见 `blueprintflow-runtime-adapter` → `references/claude-code.md`).
+### Pane anti-patterns
 
-### 窗格反模式
+- ❌ Splitting everything left/right (7 thin columns, content invisible)
+- ❌ Teamlead in the same row as the roles (the coordination thread gets drowned)
+- ❌ Panes left unnamed (status line just says `bash`, can't tell who's who)
+- ❌ One window per session (slow to switch windows, can't see the full picture)
 
-- ❌ 全部左右切 (7 列扁条, 内容看不全)
-- ❌ Teamlead 跟角色混排 (协调主线被淹没)
-- ❌ pane 不命名 (status line 全 `bash`, 找不到谁是谁)
-- ❌ 一个会话开一个窗口 (跨窗口切换慢, 一屏看不到全貌)
+## Key protocols
 
-## 关键协议
+- **Git workflow** (see `blueprintflow-git-workflow`): Teamlead is the sole creator of `.worktrees/<milestone>` + branch `feat/<milestone>`. Everyone stacks commits in the same worktree. **Roles don't open PRs; Teamlead is the sole PR opener.** After merge, Teamlead removes the worktree.
+- **One milestone, one PR**: 4 pieces + three execution segments + e2e + docs/current sync + REG flip + acceptance ⚪→✅ + PROGRESS [x] **all in the same PR**. No splitting into multiple PRs. No closure follow-up.
+- **PR merge never admin-bypasses / never disables ruleset** (hard red line, see pr-review-flow): CI must really pass, flaky tests get fixed not skipped (PR template lint false positives / e2e flakiness / coverage thresholds — fix them, don't skip them)
+- **PR template top: 4 lines of bare metadata**: `Blueprint: §X.Y` / `Touches:` / `Current sync:` / `Stage: v0|v1` (or h2-section style)
+- **Migration version numbers issued in series** (where applicable): grep before allocating
+- **Rule 6 (current sync)**: code change → `docs/current` must sync; PR-level lint enforces it
+- **5 layers of stance-drift defense**: spec grep + acceptance reverse-check anchor + stance blacklist + content-lock byte-identical + PR cross-file cross-check
+- **author=lead-agent can't self-approve**: use `gh pr comment <num> --body "LGTM"` as approval
 
-- **Git workflow** (见 `blueprintflow-git-workflow`): teamlead 唯一创建 `.worktrees/<milestone>` + branch `feat/<milestone>`, 全员同 worktree 叠 commit, **角色不开 PR, teamlead 唯一开 PR**, PR merged 后 teamlead 删 worktree.
-- **一 milestone 一 PR**: 4 件套 + 三段实施 + e2e + docs/current sync + REG flip + acceptance ⚪→✅ + PROGRESS [x] **全在同一 PR**, 不拆多 PR. 不开 closure follow-up.
-- **PR 合并永远不 admin bypass / 不 ruleset disable** (硬红线, 见 pr-review-flow): CI 必须真过, flaky 真修不绕 (含 PR template lint 误报 / e2e flaky / coverage 卡线 — 都修不绕)
-- **PR template 顶部 4 行裸 metadata**: `Blueprint: §X.Y` / `Touches:` / `Current 同步:` / `Stage: v0|v1` (或 h2 章节式)
-- **Migration v 号串行发号** (如适用): 分配前先 grep 确认
-- **规则 6 (current 同步)**: 代码改 → docs/current 必同步, PR 级 lint 强制
-- **立场漂移 5 层防御**: spec grep + acceptance 反查锚 + stance 黑名单 + content-lock byte-identical + PR 跨文件 cross-check
-- **author=lead-agent 不能 self-approve**: 用 `gh pr comment <num> --body "LGTM"` 等同批准
+## Anti-patterns
 
-## 反模式
+- ❌ Skipping the 4 pieces and going straight into execution (stance drift can't be caught)
+- ❌ One role running multiple milestones in parallel (worktree conflict)
+- ❌ Treating audit as forward motion (audit + dispatch is forward motion)
+- ❌ **Any form of admin merge / ruleset disable / bypassing required CI** (permanent ban, no "temporary" or "fallback" excuses)
+- ❌ Idle without dispatch (cron must ACT)
 
-- ❌ 跳过 4 件套直接实施 (立场漂移无法抓)
-- ❌ 一个角色多 milestone 并行 (worktree 冲突)
-- ❌ 把 audit 当推进 (audit + 派活才是)
-- ❌ **任何形式的 admin merge / ruleset disable / bypass required CI** (永久禁, 不接受 "临时" / "兜底" 借口)
-- ❌ idle 不派活 (cron 必须 ACT)
-
-## 起步
+## Bootstrap
 
 ```
-1. blueprintflow:team-roles      — spawn 6 角色 (按需)
-2. blueprintflow:brainstorm      — 锁概念 + 立场
-3. blueprintflow:blueprint-write — 落蓝图
-4. blueprintflow:phase-plan      — 拆 Phase
-5. (循环) blueprintflow:milestone-fourpiece + blueprintflow:pr-review-flow + blueprintflow:teamlead-fast-cron-checkin
-6. (定期) blueprintflow:teamlead-slow-cron-checkin
-7. (Phase 收尾) blueprintflow:phase-exit-gate
+1. blueprintflow:team-roles      — spawn 6 roles (as needed)
+2. blueprintflow:brainstorm      — lock concepts + stances
+3. blueprintflow:blueprint-write — write the blueprint
+4. blueprintflow:phase-plan      — split into Phases
+5. (loop) blueprintflow:milestone-fourpiece + blueprintflow:pr-review-flow + blueprintflow:teamlead-fast-cron-checkin
+6. (periodic) blueprintflow:teamlead-slow-cron-checkin
+7. (Phase wrap-up) blueprintflow:phase-exit-gate
 ```
 
-## 激活协议 (必启 cron)
+## Activation protocol (cron required)
 
-**workflow 激活的同时, Teamlead 必启动 fast + slow 两个 cron**:
+**When workflow activates, Teamlead must start both fast and slow cron**:
 
 ```
-启动巡检（具体命令见 blueprintflow-runtime-adapter 对照表）:
-  频率: 每 15 分钟
-  内容: "[自动巡检 · 15 min] Phase 进展 + idle 派活检查 (按 blueprintflow-teamlead-fast-cron-checkin 走)"
+Start checkin (specific commands in the blueprintflow-runtime-adapter table):
+  Frequency: every 15 minutes
+  Body: "[auto-checkin · 15 min] Phase progress + idle dispatch check (follow blueprintflow-teamlead-fast-cron-checkin)"
 
-启动巡检（具体命令见 blueprintflow-runtime-adapter 对照表）:
-  频率: 每 2 小时
-  内容: "[偏差 audit · 2 小时] 蓝图 / docs/current / 翻牌延迟检查 (按 blueprintflow-teamlead-slow-cron-checkin 走)"
+Start checkin (specific commands in the blueprintflow-runtime-adapter table):
+  Frequency: every 2 hours
+  Body: "[drift audit · 2 h] blueprint / docs/current / flip-delay check (follow blueprintflow-teamlead-slow-cron-checkin)"
 ```
 
-**为什么必启**:
-- agent 不打卡, **没 cron 推就 idle**, 长项目主动检查频次降到 0
-- 大需求长工作时间下, 非主动派活 = 隐形拖延 (用户问"为什么停下了"= 这条触发)
-- fast cron 看 PR 队列 + idle 派活, slow cron 看蓝图/PROGRESS/翻牌延迟, 双轨覆盖
+**Why required**:
+- Agents don't clock in; **without a cron prod, they go idle**. Active-check frequency on long projects drops to 0.
+- Under large requirements and long durations, no proactive dispatch = invisible delay (when the user asks "why did this stop?", that's this trigger firing)
+- Fast cron looks at the PR queue + idle dispatch; slow cron looks at blueprint / PROGRESS / flip delay; the two rails cover everything
 
-**关停**:
-- workflow session 结束 → durable: false 自动消失
-- 如需暂停巡检 (e.g. brainstorm 期间不派活) → `CronDelete` 显式删, 别让它无脑派
+**Stopping**:
+- workflow session ends → durable: false makes them disappear automatically
+- Need to pause checkin (e.g. don't dispatch during brainstorm) → use `CronDelete` to remove explicitly; don't let them dispatch blindly
 
-**反模式**:
-- ❌ 只启 fast cron 不启 slow → 长期偏差累计无 audit
-- ❌ 启 cron 但 prompt 不引 `blueprintflow:teamlead-{fast,slow}-cron-checkin` → cron 行为不可控
-- ❌ durable: true 没用户拍板 → 跨 session 残留, 别项目误派
+**Anti-patterns**:
+- ❌ Starting only fast cron and not slow → long-term drift accumulates with no audit
+- ❌ Starting cron but the prompt doesn't cite `blueprintflow:teamlead-{fast,slow}-cron-checkin` → cron behavior uncontrolled
+- ❌ durable: true without user signoff → leaks across sessions, dispatches into the wrong project
 
-## 跨项目使用
+## Cross-project use
 
-虽叫 `blueprintflow:`, 但这套 workflow 通用:
-- 角色名默认用英文 (Architect/PM/Dev/QA/Designer/Security), 也可用自定义别名
-- 路径 / 文档结构 (`docs/blueprint/`, `docs/implementation/`, `docs/qa/`) 是约定俗成, 项目可调
-- worktree / migration / lint 协议是核心, 不动
+It's named `blueprintflow:` but the workflow is general:
+- Role names default to English (Architect/PM/Dev/QA/Designer/Security); custom aliases allowed
+- Path / doc structure (`docs/blueprint/`, `docs/implementation/`, `docs/qa/`) is a convention; projects may adjust
+- worktree / migration / lint protocols are core; don't change them

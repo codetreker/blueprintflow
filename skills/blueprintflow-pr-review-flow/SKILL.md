@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-pr-review-flow
-description: "The standard flow from PR open to merged: dual review path (Architect for architecture + QA for acceptance, plus Security when sensitive paths are touched), a Security checklist (12 categories, lazy reference), three-signoff merge gate (CI + LGTM + task completeness), and standard squash. Never use admin/ruleset bypass. Use this skill whenever a PR is being reviewed, when LGTM has landed and merge is being decided, or when CI failure is being handled before merge. Don't use when the PR isn't open yet (use milestone-fourpiece + implementation-design), when implementation isn't finished (use the four-piece set or design review), for a draft PR that isn't ready, or for blueprint-level stance review (use brainstorm)."
+description: "Part of the Blueprintflow methodology. PR open → merged: dual review (Architect + QA, plus Security when needed), Security checklist, three-signoff merge gate (CI + LGTM + task completeness), standard squash. Never admin-bypass. Use when reviewing PRs, deciding merge, or handling CI failures. Don't use pre-PR-open, mid-implementation, or for blueprint stance review."
 version: 1.0.0
 ---
 

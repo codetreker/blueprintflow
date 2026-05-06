@@ -16,12 +16,17 @@ Claude Code 有 3 种配置组合。按以下决策树确认你的配置：
 
 #### Team mode + tmux（全能力）
 
-多个 Claude Code session 通过 team mode 通讯，tmux 管理多 pane。
+**单个** Claude Code 主进程 (Teamlead) 通过 `TeamCreate` + `Agent` 工具 spawn 多个 background subagent (其它 6 角色) 加入同一 team. tmux 只是窗格可视化, 不是分进程方式 — **不要**给每个 tmux pane 独立起 `claude`.
+
+- Teamlead pane: 起 `claude` (单一主进程)
+- 6 角色 pane: 由 Claude Code 自动渲染 subagent 的工作画面 (Agent spawn 时 UI 会自动布局到剩余 pane)
+- 通讯: `SendMessage(to: "<role>", message: ...)` 走 mailbox, 不是 `tmux send-keys`
 
 **能力：** ✅ 持久化 ✅ 跨 agent 通讯 ✅ 共享 fs ✅ 定时调度 ✅ 并行多角色
 
 | 通用描述 | 具体命令 |
 |---------|---------|
+| 起团 | `TeamCreate({team_name, agent_type: "team-lead"})` + `Agent({team_name, name, subagent_type, run_in_background: true, prompt})` × 6 |
 | 通知 \<Role\> | `SendMessage("role_name", content)` |
 | 创建 worktree | `cd <repo> && git worktree add .worktrees/<milestone> -b feat/<milestone> origin/main` |
 | 提交代码 | 在 worktree 里 `git add && git commit && git push` |
@@ -32,6 +37,8 @@ Claude Code 有 3 种配置组合。按以下决策树确认你的配置：
 | Merge PR | `gh pr merge <N> --squash` |
 
 **规则适配：** 全部规则适用。
+
+**反模式**: ❌ 给每个 pane 独立 `claude` 进程然后试图通过 team config 文件互通 — Claude Code team mode 没承诺这种拓扑跑得通; subagent 是单进程内 spawn 的, 通过共享 mailbox 通讯.
 
 #### Team mode 无 tmux（如 Windows）
 

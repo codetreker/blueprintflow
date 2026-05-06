@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-brainstorm
-description: "Multi-round discussion led by Architect + PM + Teamlead that turns a fuzzy product idea into the core stances, concept model, and constraints a blueprint can be built on. Use this skill whenever a new product is starting up, a new module is being added, existing stances surface in conflict during execution, or a major blueprint change is on the table. Don't use for mechanical PRs (typo / dep bump / lint), small patches where the relevant blueprint section is already clear, hotfix emergency paths, or milestone-splitting questions during execution (use phase-plan or the four-piece flow)."
+description: "Part of the Blueprintflow methodology. Multi-round Architect + PM + Teamlead discussion that converges a fuzzy idea into core stances, concept model, and constraints for the blueprint. Use when starting a new product/module, stances conflict, or a major blueprint rewrite is needed. Don't use for mechanical PRs, small patches, hotfixes, or milestone-splitting."
 version: 1.0.0
 ---
 

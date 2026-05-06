@@ -1,7 +1,6 @@
 ---
 name: blueprintflow-blueprint-iteration
 description: "Part of the Blueprintflow methodology. Use when the blueprint is already frozen and a change suggestion arrives - routes it through the 3-state machine (current / next / backlog) to evolve safely."
-version: 1.1.0
 ---
 
 # Blueprint Iteration
@@ -85,7 +84,6 @@ The blueprint version number lives in the frontmatter under `docs/blueprint/`:
 
 ```yaml
 ---
-version: vN.M.0
 frozen: <YYYY-MM-DD>
 prev: vN.M-1
 ---

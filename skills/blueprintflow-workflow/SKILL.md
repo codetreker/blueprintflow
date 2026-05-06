@@ -1,7 +1,6 @@
 ---
 name: blueprintflow-workflow
 description: "Part of the Blueprintflow methodology. Use when starting a new product, onboarding a team, or unsure which skill applies - navigates the concept-to-blueprint-to-Phase-to-milestone-to-PR-to-gate lifecycle."
-version: 1.1.1
 ---
 
 # Blueprintflow Workflow

@@ -1,7 +1,6 @@
 ---
 name: blueprintflow-phase-plan
 description: "Part of the Blueprintflow methodology. Use when the blueprint is freshly frozen and an execution-plan is needed - breaks it into value-loop Phases (0/1/2/3/4+) with exit gates and milestone lists."
-version: 1.1.0
 ---
 
 # Phase Plan

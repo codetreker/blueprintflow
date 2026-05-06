@@ -1,7 +1,6 @@
 ---
 name: blueprintflow-git-workflow
 description: "Part of the Blueprintflow methodology. Use when starting a milestone or cleaning up after merge - enforces one-milestone-one-worktree-one-branch-one-PR with Teamlead as sole opener and cleaner."
-version: 1.1.0
 ---
 
 # Git Workflow (Milestone Protocol)

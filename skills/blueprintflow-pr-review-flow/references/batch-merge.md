@@ -1,53 +1,53 @@
-## Batch 模式 (加速 — 多 PR 一波, 仍标准 squash)
+## Batch mode (acceleration — multiple PRs in one go, still standard squash)
 
-不派 1 merge agent / 1 PR, 而是 1 agent 接 N 个 PR. 共享 lint/PR template 知识, 不重复检查. **batch 也是标准 squash, 不 admin / 不 ruleset disable**.
+Instead of dispatching 1 merge agent per PR, dispatch 1 agent to handle N PRs. It shares lint / PR template knowledge and doesn't repeat checks. **Batch is also standard squash — no admin, no ruleset disable**.
 
-**实测**: 8 PR 一波 5min, vs 单 PR 单 agent ~5min × 8 = 40min. **8x 速度提升**.
+**Measured**: 8 PRs in one batch take 5min, vs single-PR/single-agent ~5min × 8 = 40min. **8x speedup**.
 
-#### 派 batch merge agent 模板
+#### Dispatching a batch merge agent — template
 
 ```
 Agent({
- description: "Batch merge N PRs (squash, 不 admin)",
+ description: "Batch merge N PRs (squash, no admin)",
  subagent_type: "general-purpose",
  run_in_background: true,
  prompt: `
-repo: codetreker/<repo>. batch merge 多个 PR (顺序无关并发):
+repo: codetreker/<repo>. batch merge multiple PRs (order-independent, concurrent):
 
-| PR | 内容 | LGTM |
+| PR | content | LGTM |
 |---|---|---|
-| #N1 | <内容> | <reviewer1> + <reviewer2> ✅ |
-| #N2 | <内容> | <reviewer1> ✅ (待 <reviewer2>, 报回不 merge) |
+| #N1 | <content> | <reviewer1> + <reviewer2> ✅ |
+| #N2 | <content> | <reviewer1> ✅ (waiting on <reviewer2>, report back, don't merge) |
 ...
 
-**协议硬红线**:
-- 绝对不 \`--admin\` flag
-- 绝对不 ruleset disable / PUT enforcement=disabled
-- CI 任何 fail → 不合, 退 author 修
+**Protocol red line**:
+- Absolutely no \`--admin\` flag
+- Absolutely no ruleset disable / PUT enforcement=disabled
+- Any CI failure → don't merge, send back to author to fix
 
-执行顺序:
-1. 先处理已 ≥1 non-author LGTM + CI 真全绿 + mergeable=CLEAN 的
-2. 不达标的报回, 不强 merge
+Order:
+1. Handle the ones already with ≥1 non-author LGTM + CI all green + mergeable=CLEAN first
+2. Report back the ones that don't qualify; don't force merge
 
-每个:
+For each:
 - \`gh pr view <N> --json statusCheckRollup,mergeStateStatus,reviews\`
-- PR template lint fail → patch body via gh api PATCH + close+reopen (不 bypass lint)
-- CI 全绿 + CLEAN + ≥1 non-author LGTM → \`gh pr merge <N> --squash --delete-branch\`
-- 报回 SHA + 时间 ≤80 字 each
+- PR template lint fail → patch body via gh api PATCH + close+reopen (don't bypass lint)
+- CI all green + CLEAN + ≥1 non-author LGTM → \`gh pr merge <N> --squash --delete-branch\`
+- Report SHA + time, ≤80 chars each
 
-总报告 ≤300 字, 列每个 PR 状态 (merged 或待 LGTM/CI 跳过). 报告里禁止出现 admin/ruleset/bypass 字眼.
+Total report ≤300 chars listing each PR's status (merged or skipped waiting LGTM/CI). The report must not contain the words admin/ruleset/bypass.
 `
 })
 ```
 
-#### 触发信号
+#### Trigger signals
 
-- reviewer 一波给多 PR LGTM (e.g. "双批 LGTM 信号: PR-A + PR-B") → batch agent
-- 4 件套 acceptance 一波交多 PR (e.g. 多 milestone 一波交) → batch agent
+- A reviewer drops LGTM on multiple PRs in one wave (e.g. "double LGTM signal: PR-A + PR-B") → batch agent
+- A wave of four-piece acceptance lands across multiple PRs (e.g. multiple milestones land together) → batch agent
 
-#### 反模式
+#### Anti-patterns
 
-- ❌ batch 含 NOT-LGTM 的 PR (混 review 状态, agent 不知该停还是跳过)
-- ❌ batch 含跨 base 互相依赖的 stacked PR (顺序锁需 sequential, 不能并发)
-- ❌ batch agent 数 > 5 (一个 agent 跟踪多 PR 错乱风险)
-- ❌ batch agent prompt 含 `--admin` / ruleset disable 任何指令 — **永久禁**
+- ❌ Batch contains a NOT-LGTM PR (mixed review state, the agent doesn't know whether to stop or skip)
+- ❌ Batch contains stacked PRs with cross-base dependencies (order lock requires sequential, can't run concurrent)
+- ❌ Batch agent count > 5 (one agent tracking too many PRs invites confusion)
+- ❌ Batch agent prompt containing `--admin` / ruleset disable instructions — **permanently forbidden**

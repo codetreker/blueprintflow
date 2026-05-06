@@ -1,63 +1,63 @@
 ---
 name: blueprintflow-pr-review-flow
-description: "PR open 到 merged 的标准流程: 双 review 路径 (Architect 架构 + QA acceptance + 涉敏感加 Security) + Security checklist (12 类 lazy reference) + 三联签 merge gate (CI + LGTM + 任务完成度) + 标准 squash, 永不 admin/ruleset bypass。触发: PR open 后派 review / 收 LGTM 后 merge / merge 前 CI fail 处理。反触发: PR 还未 open (走 milestone-fourpiece + implementation-design) / 实施未完 (走 4 件套 / design review) / draft PR 未 ready / 蓝图层立场审查 (走 brainstorm)。"
+description: "The standard flow from PR open to merged: dual review path (Architect for architecture + QA for acceptance, plus Security when sensitive paths are touched), a Security checklist (12 categories, lazy reference), three-signoff merge gate (CI + LGTM + task completeness), and standard squash. Never use admin/ruleset bypass. Use this skill whenever a PR is being reviewed, when LGTM has landed and merge is being decided, or when CI failure is being handled before merge. Don't use when the PR isn't open yet (use milestone-fourpiece + implementation-design), when implementation isn't finished (use the four-piece set or design review), for a draft PR that isn't ready, or for blueprint-level stance review (use brainstorm)."
 version: 1.0.0
 ---
 
 # PR Review Flow
 
-PR open 后到 merged 的标准流程.
+The standard flow once a PR is open until it gets merged.
 
-## PR 出之前: implementation design 4 ✅ 必备
+## Before opening a PR: implementation design with 4 ✅ is required
 
-milestone PR 开之前, 涉及代码的 milestone **必须**已通过 implementation design 4 角色 review:
+Before a milestone PR is opened, any milestone that touches code **must** have already passed the four-role implementation design review:
 
-- 设计文档: `docs/implementation/design/<milestone>.md` (Dev 主写)
-- 4 角色 ✅: Architect (架构 + 立场) / PM (用户价值 + UX) / Security (鉴权 / 数据隔离 / cross-org) / QA (可测性 + 边界 case)
-- review 走 worktree 内通讯 / PR comment, 不开独立 PR
-- 任一 ❌ 阻塞 — 不允许开 milestone PR
+- Design doc: `docs/implementation/design/<milestone>.md` (Dev is the primary author)
+- Four-role ✅: Architect (architecture + stance) / PM (user value + UX) / Security (auth / data isolation / cross-org) / QA (testability + edge cases)
+- Reviews happen through worktree-internal communication or PR comments — no separate PR
+- Any one ❌ blocks — the milestone PR cannot open
 
-完整规格见 `blueprintflow-implementation-design`。
+Full spec is in `blueprintflow-implementation-design`.
 
-非代码 milestone (docs-only / config-only / 字面调整) 可跳此步, 直接进 PR review。
+Non-code milestones (docs-only / config-only / wording adjustments) can skip this step and go directly to PR review.
 
-## Security review 走清单 (lazy reference)
+## Security review walks the checklist (lazy reference)
 
-Security 角色做 PR review 时, 引 `references/security-checklist.md` 走 12 类清单 (鉴权/输入验证/敏感数据/会话凭证/rate limit/依赖/配置部署/业务逻辑等)。
+When the Security role does a PR review, they pull `references/security-checklist.md` and walk the 12 categories (auth, input validation, sensitive data, sessions and credentials, rate limit, dependencies, configuration and deployment, business logic, etc.).
 
-- 清单**不进 SKILL.md 主体** — 节省主流程 context
-- Security review 时按 PR 改动范围挑相关条目查
-- LGTM 评论必引具体清单条目 (e.g. "§1 鉴权 ✅, §8 IDOR 见 line 42 已防"), 反 "笼统过审"
+- The checklist **does not live in the SKILL.md body** — that keeps the main flow's context lean
+- During Security review, pick the relevant items based on the PR's change scope
+- An LGTM comment must cite specific checklist items (e.g. "§1 auth ✅, §8 IDOR — see line 42, already prevented") — no "blanket approval"
 
-详见 `references/security-checklist.md` (12 类, 每类 bullet + "为什么 + 怎么验")。
+Details in `references/security-checklist.md` (12 categories, each with bullets covering "why" and "how to verify").
 
-## 🚫 永久禁 (硬红线 — 不可商量)
+## 🚫 Permanently forbidden (hard red line — non-negotiable)
 
-以下手段**永远禁用**, 任何场景任何理由都不允许. 这是用户 2026-04-29 拍板的硬红线, 不接受 "临时" / "兜底" / "flaky" / "急" 任何借口:
+The following methods are **forbidden forever**, no scenario, no excuse. This is a hard red line the user set on 2026-04-29; "temporary" / "stopgap" / "flaky" / "urgent" — none of these excuses are accepted:
 
-1. **`gh pr merge --admin`** — 任何形式的 admin bypass flag
-2. **Ruleset disable / restore** — 哪怕 "≤10s 暴露" 也不行
-3. **任何绕过 required CI checks 的方式** — 改 ruleset 移除 check / 改 branch protection / 关 required reviewers / 给自己加 admin role 等等
+1. **`gh pr merge --admin`** — any form of admin bypass flag
+2. **Ruleset disable / restore** — even a "≤10s window" is not allowed
+3. **Any way of bypassing required CI checks** — modifying the ruleset to remove a check / changing branch protection / disabling required reviewers / granting yourself an admin role, etc.
 
-**为什么是硬红线**:
-- admin bypass 掩盖 bug — flaky 后面是真 bug 的概率比表面看高
-- 让 "CI 真过" 协议失效, 团队信号噪音化
-- 历史血账: e2e fail bypass 进 main 多次, 每次都得 hotfix 善后
+**Why this is a red line**:
+- Admin bypass hides bugs — flaky symptoms turn out to be real bugs more often than they look
+- It breaks the "CI really passes" protocol; team signals become noise
+- History: e2e failures bypassed into main multiple times, each one needed a hotfix afterwards
 
-**反模式 (永久)**:
-- ❌ `gh pr merge --admin` 任何场景
-- ❌ `gh api -X PUT /rulesets/<id> -f enforcement=disabled` 任何场景
-- ❌ 派 "admin merge agent" / "batch admin merge agent" — agent 名字本身已弃用
-- ❌ "ruleset 兜底" / "临时过渡" 这类话术 — 不存在临时, 临时就是永久的开始
+**Anti-patterns (permanent)**:
+- ❌ `gh pr merge --admin` in any scenario
+- ❌ `gh api -X PUT /rulesets/<id> -f enforcement=disabled` in any scenario
+- ❌ Dispatching an "admin merge agent" or "batch admin merge agent" — the agent name itself is deprecated
+- ❌ Phrases like "ruleset stopgap" or "temporary transition" — there is no temporary; temporary is the start of permanent
 
-## PR template 必备
+## PR template required
 
-顶部 4 行裸 metadata + 2 段 H2:
+Top of the body: 4 lines of bare metadata + 2 H2 sections:
 
 ```
 Blueprint: blueprint/<file>.md §X.Y
 Touches: <packages or docs>
-Current 同步: <说明 or N/A — 理由>
+Current sync: <explanation or N/A — reason>
 Stage: v0|v1
 
 ## Summary
@@ -70,175 +70,175 @@ Stage: v0|v1
 - [x] ...
 ```
 
-PR template lint 5 字段缺任一 → 红, 走 lint patch 流程修 (修 body / 修 lint regex, **不绕**).
+If the PR template lint finds any of the 5 fields missing → red. Fix it through the lint patch flow (fix the body / fix the lint regex; **do not bypass**).
 
-## Flaky test 处理
+## Handling flaky tests
 
-**Flaky test 信号识别**:
-- PR 没改相关代码，但 CI case fail 了 → flaky 信号
-- 同一 case 在不同 PR 随机 fail → flaky 信号
-- main 上已经偶尔 fail → flaky 信号（不是借口，是更需要修的理由）
+**Signals that a test is flaky**:
+- The PR didn't change related code, but a CI case fails → flaky signal
+- The same case fails randomly across different PRs → flaky signal
+- It already fails occasionally on main → flaky signal (not an excuse — even more reason to fix it)
 
-**Flaky test 处理原则：修，不是 rerun**:
-- 发现 flaky → 立即修根因，不是 rerun 碰运气
-- 真 flaky → 真修根因（竞态、时序、环境依赖）
-- lint 误报 → 修 lint 规则
-- coverage 卡线 → 真补 test 提覆盖率
-- e2e 真 fail → 退给 author 修 bug
-- 任何场景下, **"等我修完再合"** 是唯一答案, 不存在 "先合进去再说" 选项
+**Principle for flaky tests: fix, don't rerun**:
+- Found flaky → fix the root cause immediately, don't rerun and pray
+- Truly flaky → fix the real cause (race condition, timing, environment dependency)
+- Lint false positive → fix the lint rule
+- Coverage on the line → really add tests to raise coverage
+- e2e really fails → send back to author to fix the bug
+- In every scenario, **"wait until I've fixed it before merging"** is the only answer; "merge first, fix later" is not an option
 
-**Flaky 反模式**:
-- ❌ **rerun 碰运气** — flaky 不会自己好，rerun 绿了只是运气好，下次还会 fail
-- ❌ **"不是我改的，main 上就存在"** — 至少开 issue 跟踪，最好顺手修。不 block 当前 PR，但不能假装没看见
-- ❌ **"先合进去，后面再修 flaky"** — 进了 main 就没人修了，flaky 只会越积越多
-- ❌ **rerun 3 次绿了就当过了** — 3 次里 1 次 fail = 33% 失败率，这不是"偶尔"，是真 bug
+**Flaky anti-patterns**:
+- ❌ **Rerun and pray** — flaky doesn't fix itself; if a rerun goes green, that's just luck and it'll fail next time
+- ❌ **"Not my change, it's already on main"** — at least open a tracking issue, ideally fix it on the side. It doesn't block the current PR, but you can't pretend not to see it
+- ❌ **"Merge first, deal with flaky later"** — once it's on main nobody fixes it; flaky just piles up
+- ❌ **3 reruns and then green = passed** — 1 fail in 3 = 33% failure rate; that's not "occasional", that's a real bug
 
-## 双 review 路径
+## Dual review path
 
-每 PR 立即派双 review:
+For each PR, dispatch dual reviews immediately:
 
-| PR 类型 | reviewer 1 | reviewer 2 | reviewer 3 (可选) |
+| PR type | reviewer 1 | reviewer 2 | reviewer 3 (optional) |
 |---|---|---|---|
-| Dev实施 PR | Architect (架构) | QA (acceptance) | — |
-| Architect spec brief PR | Dev (实施视角) | QA (acceptance 可机器化) | PM (立场) |
-| PM stance / content-lock PR | Architect (架构) | QA (acceptance) | — |
-| QA acceptance template / 翻牌 PR | Architect (架构) | PM (立场, 仅 v0 立场相关时) | — |
-| 涉敏感写动作 (auth/admin) PR | + Security (security) | | |
+| Dev implementation PR | Architect (architecture) | QA (acceptance) | — |
+| Architect spec brief PR | Dev (implementation lens) | QA (acceptance, machine-checkable) | PM (stance) |
+| PM stance / content-lock PR | Architect (architecture) | QA (acceptance) | — |
+| QA acceptance template / status flip PR | Architect (architecture) | PM (stance, only when v0 stance is involved) | — |
+| Sensitive write actions (auth/admin) PR | + Security | | |
 
-LGTM 命令 (author 不能 self-approve):
+LGTM command (author cannot self-approve):
 ```
-gh pr comment <num> --body "LGTM (理由 ≤30字)"
+gh pr comment <num> --body "LGTM (reason ≤30 chars)"
 ```
 
-review 内容必须包含锚 (跟 spec/stance/acceptance 字面 cross-check):
-- 跟 #<other-PR> 字面对得上吗?
-- §X.Y 反约束守住吗?
-- 跟 byte-identical 模板 (e.g. 跨 milestone 共享结构体模板) 一致吗?
+The review must include anchors (literal cross-check against spec/stance/acceptance):
+- Does it line up word-for-word with #<other-PR>?
+- Is the §X.Y anti-constraint held?
+- Is it consistent with the byte-identical template (e.g. shared structure templates across milestones)?
 
-**Merge 三联签** (CI + LGTM + 任务完成度):
-- ① CI 真过 (statusCheckRollup 全 SUCCESS, 永远不 admin/ruleset bypass)
-- ② ≥1 non-author LGTM (gh pr review --approve OR LGTM 评论 from 不同 reviewer 身份)
-- ③ **teamlead 审 PR body Acceptance + Test plan 全勾** (`gh pr view <N> --json body | jq -r .body | grep -cE "^- \[ \]"` 必须 == 0)
+**Merge three-signoff** (CI + LGTM + task completeness):
+- ① CI really passes (statusCheckRollup all SUCCESS — never admin/ruleset bypass)
+- ② ≥1 non-author LGTM (`gh pr review --approve` OR an LGTM comment from a different reviewer identity)
+- ③ **Teamlead reviews PR body Acceptance + Test plan all checked** (`gh pr view <N> --json body | jq -r .body | grep -cE "^- \[ \]"` must be == 0)
 
-三联签全过 → 标准 squash merge. 任一缺 → 不合.
+All three pass → standard squash merge. Any one missing → don't merge.
 
-详细 merge gate 协议见 `blueprintflow-teamlead-fast-cron-checkin §5`. 任务完成度判据 (一 milestone 一 PR 协议下) 在那里展开.
+The detailed merge gate protocol lives in `blueprintflow-teamlead-fast-cron-checkin §5`. The task-completeness criterion (under the "one milestone, one PR" protocol) is unfolded there.
 
-> Review subagent 并行模板见 `references/review-subagent.md`。
+> Parallel review subagent template is in `references/review-subagent.md`.
 
-## 必读锚
-1. \`gh pr view <N>\` — PR body + diff
-2. \`gh pr diff <N>\` — 看具体改动
-3. <spec brief / 文案锁 / acceptance template / 既有 cross-ref PR>
-4. (可选) PR # 既有 LGTM 评论 — 已覆盖角度你不重复
+## Required anchors
+1. `gh pr view <N>` — PR body + diff
+2. `gh pr diff <N>` — see the actual change
+3. <spec brief / content lock / acceptance template / existing cross-ref PRs>
+4. (optional) Existing LGTM comments on the PR — angles already covered, don't repeat
 
-## review 检查清单 (机器化反查)
-- [ ] 拆段 1:1 跟 spec brief 对齐
-- [ ] count 数学正确 (e.g. 26 项 = 5+7+7+7)
-- [ ] byte-identical 锚跟 N 源对齐 (列出具体 PR # / commit SHA)
-- [ ] 反约束 grep N 行强类型 (列出具体 grep pattern)
+## Review checklist (machine-checkable)
+- [ ] Section breakdown lines up 1:1 with the spec brief
+- [ ] Counts add up (e.g. 26 items = 5+7+7+7)
+- [ ] Byte-identical anchors aligned to N sources (list specific PR # / commit SHA)
+- [ ] Anti-constraint grep N-line strong-typed (list specific grep pattern)
 
-## 输出
-- 全过: \`gh pr comment <N> --body "LGTM (<视角> review subagent). [一句话总结校验点]"\` — 落 GitHub
-- NOT-LGTM: 不 comment, 报回具体问题点 + 引文 + 建议改法.
+## Output
+- All pass: `gh pr comment <N> --body "LGTM (<lens> review subagent). [one-line summary of checks]"` — land it on GitHub
+- NOT-LGTM: don't comment; report back specific issues + quotes + suggested fixes.
 
-报告 ≤200 字.
+Report ≤200 words.
 `
 })
 ```
 
-#### 适用 vs 不适用
+#### When it applies vs when it doesn't
 
-| 适用 | 不适用 |
+| Applies | Doesn't apply |
 |---|---|
-| 4 件套例行 review (byte-identical / 反约束 grep / 拆段 1:1) | 架构判断 / drift 综合仲裁 (e.g. envelope 9 vs 10 字段算不算 drift) |
-| acceptance template / stance / 文案锁 review | spec brief 真写 (创造性工作) |
-| count 数学对账 / REG 占号翻牌 | NOT-LGTM 仲裁 (升级 persistent 角色) |
+| Routine four-piece review (byte-identical / anti-constraint grep / 1:1 breakdown) | Architectural judgment / drift arbitration (e.g. "is envelope going from 9 to 10 fields drift?") |
+| Acceptance template / stance / content lock review | Spec brief authorship (creative work) |
+| Count math reconciliation / REG flip | NOT-LGTM arbitration (escalate to persistent role) |
 
-#### 混合模式协议
+#### Hybrid protocol
 
-1. PR open → 派 review subagent (N 角度并行) 跑机器化校验
-2. 全 LGTM + CI 真过 → 标准 merge (见下方 Merge 段, **永远不 admin/ruleset bypass**)
-3. NOT-LGTM 或跨 PR drift 嫌疑 → 升级给 persistent 角色仲裁
-4. persistent 角色保留: spec brief / stance / acceptance / 文案锁 author 工作 + drift 仲裁 + 跨 milestone 综合判断
+1. PR open → dispatch review subagents (N angles in parallel) for machine-checkable verification
+2. All LGTM + CI really passes → standard merge (see Merge section below — **never admin/ruleset bypass**)
+3. NOT-LGTM or suspected cross-PR drift → escalate to persistent role for arbitration
+4. Persistent roles keep: spec brief / stance / acceptance / content lock authorship + drift arbitration + cross-milestone judgment
 
-#### 反模式
+#### Anti-patterns
 
-- ❌ subagent review 替 persistent 角色 author 工作 (subagent 只读不写 spec brief / 文案锁)
-- ❌ NOT-LGTM 由 subagent 自己仲裁 (升级 persistent)
-- ❌ subagent prompt 不带具体 cross-ref PR # / commit SHA (review 失去 byte-identical 验证能力)
+- ❌ Subagent review replacing persistent-role authoring (subagent is read-only, doesn't write spec brief / content lock)
+- ❌ NOT-LGTM arbitrated by the subagent itself (escalate to persistent)
+- ❌ Subagent prompt missing specific cross-ref PR # / commit SHA (review loses byte-identical verification)
 
-## Merge (标准 squash, 永远不 admin)
+## Merge (standard squash, never admin)
 
-派 general-purpose agent (background) 跑. **绝对不 admin / 不 ruleset disable / 不 bypass 任何 required check**:
+Dispatch a general-purpose agent (background) to run it. **Absolutely no --admin / no ruleset disable / no bypassing any required check**:
 
 ```
 Merge PR #<N>:
 
 1. gh pr view <N> --json statusCheckRollup,mergeStateStatus,reviews,body
-2. 检查 ≥1 non-author LGTM (gh pr review --approve OR LGTM 评论 from 不同 agent role)
-3. 如 PR template lint 缺字段:
+2. Verify ≥1 non-author LGTM (gh pr review --approve OR an LGTM comment from a different agent role)
+3. If PR template lint finds missing fields:
    patch body via gh api -X PATCH /repos/<owner>/<repo>/pulls/<N> --input <(jq ...)
-   close+reopen 触发 lint rerun (修 body, **不**修 lint enforcement)
-4. CI 真过 (statusCheckRollup 全 SUCCESS) + mergeable=CLEAN + ≥1 non-author LGTM
+   close+reopen to trigger lint rerun (fix the body, **do not** modify lint enforcement)
+4. CI really passes (statusCheckRollup all SUCCESS) + mergeable=CLEAN + ≥1 non-author LGTM
    → gh pr merge <N> --squash --delete-branch
-   (注意: 命令里**不允许**带 --admin)
-5. 任何 fail 场景退给 author 修, 不 bypass:
-   - go-test/client-vitest/e2e/bpp-envelope-lint/coverage/build/typecheck FAILURE → author 修
-   - PR template lint regex 误报 → 修 lint regex 让真合规 body 过, 不 bypass
-   - DIRTY → author rebase main
-   - 真 flaky → 重 trigger CI 重跑, 仍 fail 退 author 修根因
-6. 报 merge time + SHA. 报告里**禁止**出现 "admin" / "ruleset disable" / "bypass" 任何字眼
+   (note: --admin is **not allowed** in the command)
+5. Any failure scenario goes back to the author to fix; do not bypass:
+   - go-test/client-vitest/e2e/bpp-envelope-lint/coverage/build/typecheck FAILURE → author fixes
+   - PR template lint regex false positive → fix the regex so a really compliant body passes; don't bypass
+   - DIRTY → author rebases main
+   - Genuinely flaky → re-trigger CI; if it still fails, send back to author to fix the root cause
+6. Report merge time + SHA. The report must **not** contain the words "admin" / "ruleset disable" / "bypass"
 ```
 
-注: `gh pr edit --body` 在某些环境不生效, 用 `gh api PATCH` 直 patch JSON.
+Note: `gh pr edit --body` doesn't take effect in some environments — use `gh api PATCH` to patch the JSON directly.
 
-#> Batch merge 模式详见 `references/batch-merge.md`。
+#> Batch merge mode is detailed in `references/batch-merge.md`.
 
-## 跨 review 例子: 立场漂移抓出
+## Cross-review example: catching stance drift
 
-> **实战案例（Borgee）：** QA review acceptance 时自检, 发现字段名跟Architect spec brief 不一致 (字段改名未同步), 当场 patch 修齐。
+> **Real example (Borgee):** While reviewing acceptance, QA self-checked and noticed a field name didn't match the Architect's spec brief (a rename hadn't been propagated). Patched on the spot.
 
-这就是双轨 review 起作用 — spec 写 A 形态, acceptance 自然按 A 写, drift 可以发现。
+This is the dual-track review working — the spec was written in shape A, acceptance was naturally written against shape A, and the drift surfaced.
 
-## 反模式 (汇总)
+## Anti-patterns (consolidated)
 
-**永久禁 (硬红线, 已在文首单列)**:
-- ❌ `gh pr merge --admin` 任何场景
-- ❌ ruleset disable/restore 任何场景
-- ❌ 任何绕过 required CI check 的方式
-- ❌ "ruleset 兜底" / "admin merge agent" / "临时过渡" 话术
+**Permanently forbidden (hard red line, listed up top)**:
+- ❌ `gh pr merge --admin` in any scenario
+- ❌ Ruleset disable/restore in any scenario
+- ❌ Any way of bypassing required CI checks
+- ❌ Phrases like "ruleset stopgap" / "admin merge agent" / "temporary transition"
 
-**Review 正模式**:
-- ✅ 先通读完整文件，再看 diff
-- ✅ 换位思考：“我是第一次读这个 skill 的 agent，读到这段会困惑吗？”
-- ✅ 每个角色 review 角度必须不同：
-  - **Architect**：架构一致性 + 成本合理性 + 跨 skill 矛盾
-  - **PM**：用户体验 + 认知负担 + 新团队读得懂吗
-  - **Dev**：可执行性 + 有歧义吗 + 按这个干活会不会卡住
-  - **QA**：可验证性 + 怎么知道做对了 + 示例够不够
-  - **Security**：代码漏洞（注入/XSS/SSRF）+ auth/权限最小化 + 敏感数据处理 + 依赖安全
-  - **Performance**：算法复杂度 + 热路径性能 + 不必要的 IO/网络调用 + 内存/并发
-- ✅ LGTM 前先找 3 个可以质疑的点，找不到再 LGTM
-- ✅ 技术细节（命令、API、参数）必须查文档验证，不能信作者
-- ✅ 检查有没有引入额外副作用——批量替换误伤格式、删改一处导致另一处断裂、改名导致引用失效
-- ✅ 新增/修改代码后检查有没有破坏现有逻辑——回归思维，不只看新加的对不对，也看旧的还能不能跑
-- ✅ 翻牌 (acceptance ⚪→✅ / REG flip / PROGRESS [x]) 跟实施代码在同一 milestone PR 内完成，不开 follow-up PR
-- ❌ 跳过 PR template 5 字段 (lint 拒, 不要走 ## H2 重复 metadata 绕过)
-- ❌ merge agent 报告里出现 admin/ruleset/bypass 字眼 (透明度 + 红线警报)
-- ❌ self-LGTM 算双批 (同 GH 账号多 agent 评论 LGTM 不算 ≥1 non-author, 必须真 reviewer 不同身份)
+**Review do's**:
+- ✅ Read the whole file first, then look at the diff
+- ✅ Put yourself in others' shoes: "I'm an agent reading this skill for the first time — would this paragraph confuse me?"
+- ✅ Each role's review angle must be different:
+  - **Architect**: architectural consistency + cost reasonableness + cross-skill conflicts
+  - **PM**: user experience + cognitive load + can a new team member understand it
+  - **Dev**: executability + ambiguity + would I get stuck following this
+  - **QA**: verifiability + how do we know it's done right + are there enough examples
+  - **Security**: code vulnerabilities (injection / XSS / SSRF) + auth and least-privilege + sensitive data handling + dependency security
+  - **Performance**: algorithmic complexity + hot path performance + unnecessary IO/network calls + memory and concurrency
+- ✅ Before LGTM, find 3 things to challenge; if you can't, then LGTM
+- ✅ Verify technical details (commands, APIs, parameters) against documentation — don't trust the author
+- ✅ Check for unintended side effects — bulk replaces breaking formatting, edits in one place breaking another, renames breaking references
+- ✅ When code is added or changed, check that existing logic isn't broken — regression thinking; not just "is the new thing right" but "does the old thing still work"
+- ✅ Status flips (acceptance ⚪→✅ / REG flip / PROGRESS [x]) land in the same milestone PR as the implementation — no follow-up PRs
+- ❌ Skipping the 5 PR template fields (lint will reject — don't try to bypass by repeating metadata in an H2)
+- ❌ The merge agent's report containing "admin" / "ruleset" / "bypass" (transparency + red-line alarm)
+- ❌ Self-LGTM counting as dual approval (multiple agents on the same GH account commenting LGTM does not count as ≥1 non-author — needs a real different reviewer identity)
 
-**操作反模式**:
-- ❌ LGTM 不读 PR 内容, 模板字面套话 (失去 cross-check 价值)
-- ❌ 只看 diff 不看整体——漏掉上下文断裂、逻辑矛盾
-- ❌ 没明显 bug 就 LGTM——review 不是“没错”就行，是“够好”才行
-- ❌ 不质疑设计合理性——“规则上说得通”不等于“实际合理”（token 成本、用户体验、认知负担）
-- ❌ 作者写什么信什么——技术细节必须验证（如命令、API、参数）
+**Operation anti-patterns**:
+- ❌ LGTMing without reading the PR body, just templated boilerplate (loses cross-check value)
+- ❌ Looking at the diff only without the whole picture — miss broken context, logical contradictions
+- ❌ LGTM as long as there's no obvious bug — review isn't "no errors", it's "good enough"
+- ❌ Not questioning design reasonableness — "the rule technically allows it" ≠ "actually reasonable" (token cost, UX, cognitive load)
+- ❌ Trusting whatever the author wrote — technical details (commands, APIs, parameters) must be verified
 
-## 调用方式
+## How to invoke
 
-PR open 后:
+Once a PR is open:
 ```
 follow skill blueprintflow-pr-review-flow
-派 review for PR #<N>
+dispatch review for PR #<N>
 ```

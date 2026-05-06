@@ -1,16 +1,16 @@
 ---
 name: blueprintflow-skill-workflow
-description: "Blueprintflow skill 仓库自身的更新流程: worktree → PR → 全员 vote → 合并 (skill 仓库自治, 不混业务项目流程)。触发: 新增 / 修改 / 删除 blueprintflow skill / 改 skill 反约束 / 加 lazy reference / 改 skill description / skill description 优化批量改。反触发: 业务项目实施 (走 milestone-fourpiece + implementation-design) / 业务项目蓝图迭代 (走 blueprint-iteration) / 单业务 PR review (走 pr-review-flow) / hotfix 紧急路径。"
+description: "Part of the Blueprintflow methodology. Use when adding, editing, or deleting a blueprintflow skill - runs the self-governing worktree to PR to all-hands vote to merge flow for the skill repo."
 version: 1.0.0
 ---
 
 # Skill Workflow
 
-Blueprintflow skill 的更新流程。所有 skill 修改（新增、编辑、删除）都走这个流程，不直接推 main。
+The update process for blueprintflow skills. All skill changes (add, edit, delete) go through this flow — never push to main directly.
 
-## 流程
+## Flow
 
-### 1. Architect开 worktree + branch
+### 1. Architect creates worktree + branch
 
 ```bash
 cd /workspace/blueprintflow
@@ -18,54 +18,54 @@ git fetch origin
 git worktree add .worktrees/<topic> -b docs/<topic> origin/main
 ```
 
-- 路径：`.worktrees/<topic>`
-- 分支：`docs/<topic>`（如 `docs/generalize-skills`、`docs/add-new-skill`）
+- Path: `.worktrees/<topic>`
+- Branch: `docs/<topic>` (e.g. `docs/generalize-skills`, `docs/add-new-skill`)
 
-### 2. Architect写 draft
+### 2. Architect writes the draft
 
-在 worktree 里修改 skill 文件，commit + push：
+Edit skill files inside the worktree, then commit + push:
 
 ```bash
 cd /workspace/blueprintflow/.worktrees/<topic>
-# 编辑 skill 文件...
+# edit skill files...
 git add -A
 git commit -m "docs(<scope>): <description>"
 git push -u origin docs/<topic>
 ```
 
-### 3. Architect提 PR
+### 3. Architect opens the PR
 
 ```bash
 gh pr create --repo codetreker/blueprintflow \
   --title "docs(<scope>): <description>" \
-  --body "## Summary\n<改了什么、为什么改>\n\n## 影响的 skill\n- <列出受影响的 skill>"
+  --body "## Summary\n<what changed and why>\n\n## Affected skills\n- <list affected skills>"
 ```
 
-### 4. 全员 review
+### 4. All-hands review
 
-Dev、PM、QA在 PR 上 review + comment：
+Dev, PM, and QA review and comment on the PR:
 
-- **Dev**：实施视角——规则能执行吗？有歧义吗？
-- **PM**：用户视角——新团队读得懂吗？认知负担大吗？
-- **QA**：验收视角——规则可验证吗？示例够吗？
-- **Architect**：一致性——跟其他 skill 矛盾吗？整体结构通吗？
-- **全员**：渐进式披露——这个 skill 是否需要拆 references？
+- **Dev**: implementation lens — can the rules be executed? Any ambiguity?
+- **PM**: user lens — can a new team member understand it? Cognitive load too high?
+- **QA**: acceptance lens — are the rules verifiable? Enough examples?
+- **Architect**: consistency — does it conflict with other skills? Does the overall structure hold up?
+- **All hands**: progressive disclosure — does this skill need to be split into references?
 
-**Review 标准**：见 `blueprintflow-pr-review-flow` Review 正模式段。核心：通读整体 + 换位思考 + 认真找问题才 LGTM。
+**Review standard**: see the "review do's" section in `blueprintflow-pr-review-flow`. Core: read the whole thing + put yourself in others' shoes + really hunt for problems before LGTM.
 
-**格式检查**：批量替换/rename 的 PR 必须检查 ASCII 图（时序图、表格、代码块缩进）有没有被误伤。diff 里出现大量纯空格变化 = 红旗。
+**Format check**: PRs that do bulk replace / rename must verify ASCII art (sequence diagrams, tables, code block indentation) wasn't damaged. A diff full of pure-whitespace changes is a red flag.
 
-Review comment 用 `gh pr comment` 或直接在 GitHub PR 页面。
+Review comments via `gh pr comment` or directly on the GitHub PR page.
 
-### 5. 达成一致后 Architect合并
+### 5. Once consensus is reached, the Architect merges
 
-全员无异议（或异议已解决）后：
+After everyone has signed off (or objections are resolved):
 
 ```bash
 gh pr merge <N> --repo codetreker/blueprintflow --squash
 ```
 
-### 6. Architect清理 worktree + branch
+### 6. Architect cleans up the worktree + branch
 
 ```bash
 cd /workspace/blueprintflow
@@ -74,24 +74,24 @@ git branch -d docs/<topic>
 git fetch origin --prune
 ```
 
-## 规则
+## Rules
 
-- **只有 Architect能开 PR 和合并**——其他角色通过 review comment 参与
-- **不直接推 main**——任何修改都走 PR
-- **PR 必须全员 vote 才能合并**——Architect、PM、Dev、QA、建军全部勾✅，缺任何一个 = 不合并
-- **整体阅读**——review 不能只看 diff，要看改完后的完整 skill 文件
-- **commit message 格式**：`docs(<skill-name>): <description>`
+- **Only the Architect can open PRs and merge** — other roles participate through review comments
+- **Never push to main directly** — every change goes through a PR
+- **PR can only merge after all-hands vote** — Architect, PM, Dev, QA, and Jianjun all ✅; missing any one = don't merge
+- **Read the whole thing** — review can't be diff-only; read the post-change skill file in full
+- **Commit message format**: `docs(<skill-name>): <description>`
 
-## 不适用
+## When it doesn't apply
 
-- 实战项目代码修改（走 blueprintflow-git-workflow）
-- 其他项目的 skill（走各项目自己的流程）
-- 纯讨论（在频道讨论，结论再走 PR 固化）
+- Business project code changes (use blueprintflow-git-workflow)
+- Skills in other projects (use that project's own flow)
+- Pure discussion (hold the discussion in the channel; only fix the conclusion through a PR)
 
-## 调用方式
+## How to invoke
 
-需要修改 blueprintflow skill 时：
+When you need to change a blueprintflow skill:
 ```
 follow skill skill-workflow
-Architect 开 worktree，写 draft，提 PR
+Architect creates the worktree, writes the draft, opens the PR
 ```

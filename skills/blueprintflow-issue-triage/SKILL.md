@@ -1,51 +1,51 @@
 ---
 name: blueprintflow-issue-triage
-description: "定时扫描 GitHub issues, Teamlead 先判分发到 Architect/PM/QA 做 triage (打 type/状态 label + 派 milestone), 是 blueprint-iteration 状态机的入口闸。触发: cron 周期到期 / 新 issue 进来未分类 / 用户提需求落 issue 后。反触发: 已有 `triaged` label 的 issue / closed 的 issue (wont-fix/archived) / type:question 等待用户回复中 / PR 维度卡点 (走 fast-cron / slow-cron)。"
+description: "A scheduled scan over GitHub issues. Teamlead first decides where each one goes — to Architect / PM / QA — and those roles do the triage (apply type / status labels + assign a milestone). This is the entry gate of the blueprint-iteration state machine. Use this skill whenever a cron interval triggers, a new issue arrives unclassified, or a user request lands as an issue. Don't use on issues that already have the `triaged` label, on closed issues (wont-fix / archived), on `type:question` issues waiting on the user, or for PR-level blockers (use fast-cron / slow-cron)."
 version: 1.0.0
 ---
 
 # Issue Triage
 
-GitHub issues 是 backlog SSOT (见 `blueprintflow-blueprint-iteration`), 但新 issue 进来不会自动分类。本 skill 定义 cron 扫 issue + Teamlead 先判分发 + 角色分类的闸。
+GitHub issues are the backlog SSOT (see `blueprintflow-blueprint-iteration`), but new issues don't classify themselves. This skill defines the gate where cron scans for issues, the Teamlead decides routing, and roles classify them.
 
-跟 `blueprintflow-teamlead-fast-cron-checkin` (PR 维度) / `blueprintflow-teamlead-slow-cron-checkin` (蓝图偏差 audit 维度) 平行不重叠 — issue-triage 是 **issue 维度**。
+It runs in parallel to and doesn't overlap with `blueprintflow-teamlead-fast-cron-checkin` (PR dimension) or `blueprintflow-teamlead-slow-cron-checkin` (blueprint-drift audit dimension) — issue-triage is the **issue dimension**.
 
-## 职责
+## Responsibility
 
-扫所有 open GitHub issues, 找出 untriaged 的 (没有 `triaged` label), Teamlead 先看, 判分发:
+Scan all open GitHub issues, find the untriaged ones (those without the `triaged` label), and have the Teamlead look first to decide routing:
 
-| issue 性质 | 分发给 | 看什么 |
+| Issue character | Routed to | What they look at |
 |---|---|---|
-| 代码改进 / tech-debt | Architect | 架构师审是不是 bug / 立场反转 / 加 backlog |
-| 新功能 / feature | PM | 产品立场审 / 用户价值 / 蓝图覆盖性 |
-| bug | QA | 复现 / 触发条件 / 影响面 |
-| 拿不准 | 升用户拍 + label `type:question` | — |
+| Code improvement / tech-debt | Architect | Architect decides if it's a bug / stance reversal / add to backlog |
+| New feature | PM | Product stance review / user value / blueprint coverage |
+| Bug | QA | Reproduction / trigger conditions / blast radius |
+| Unclear | Escalate to user + label `type:question` | — |
 
-三角色 triage 完成后:
-- 打 `type:*` (bug/feature/question/tech-debt)
-- 打**状态** label (`backlog`/`current-iteration`/`next-iteration`/`wont-fix`/`archived`)
-- 加 `triaged` label 标记已处理
+After the three roles finish triaging:
+- Apply `type:*` (bug / feature / question / tech-debt)
+- Apply a **status** label (`backlog` / `current-iteration` / `next-iteration` / `wont-fix` / `archived`)
+- Apply the `triaged` label to mark it processed
 
-## Cron 配置
+## Cron config
 
-**默认频次**: 3h (跟 fast-cron 15m / slow-cron 2-4h 同体系, issue 流入比 PR 慢, 3h 够)
+**Default frequency**: 3h (consistent with the system — fast-cron 15m / slow-cron 2-4h. Issue inflow is slower than PR flow, so 3h is enough)
 
-**AGENTS.md 可覆盖**:
+**AGENTS.md can override**:
 
 ```yaml
 issue-triage:
-  cron: 3h           # 默认 3 小时, 项目可改
-  scope: open-only   # 仅扫 open issue
+  cron: 3h           # default 3 hours, project can change
+  scope: open-only   # only scan open issues
 ```
 
-## 扫描范围
+## Scan scope
 
-- 全 open issue
-- **跳过已有 `triaged` label 的** (避免 re-triage 浪费)
-- 跳过 `wont-fix` / `archived` 标 close 的 (已闭账)
-- 跳过 `type:question` 等待用户回复中的 (避免反复扫直到用户回)
+- All open issues
+- **Skip ones already labeled `triaged`** (avoid wasted re-triage)
+- Skip ones closed with `wont-fix` / `archived` (already settled)
+- Skip `type:question` ones waiting on user reply (avoid scanning over and over until the user replies)
 
-GitHub CLI 例:
+GitHub CLI example:
 
 ```bash
 gh issue list --state open --json number,title,labels,body --limit 1000 \
@@ -53,89 +53,89 @@ gh issue list --state open --json number,title,labels,body --limit 1000 \
                     | select((.labels | map(.name) | index("type:question")) | not)]'
 ```
 
-## `triaged` label 引入
+## Introducing the `triaged` label
 
-新加的 **ops label**, 跟 `type:*` / 状态 / 优先级 不是一个维度。
+This is a new **ops label**, on a different dimension than `type:*` / status / priority.
 
-- 含义: 这个 issue 已经被 Teamlead + Architect/PM/QA 看过 + 分类过, 不需要再 triage
-- 何时打: 三角色 triage 完成后, 打 type + 状态 label 同步打 `triaged`
-- 何时去: 一般不去。如果 issue 重新需要分类 (e.g. 用户 follow-up 改了诉求), 移除 `triaged` 让下次 cron 重扫
+- Meaning: this issue has been seen and classified by Teamlead + Architect/PM/QA, no need to triage it again
+- When to apply: after the three roles finish triaging, alongside the type + status labels
+- When to remove: usually never. If an issue genuinely needs to be re-triaged (e.g. a user follow-up changed the request), remove `triaged` so the next cron picks it up
 
-**反约束**: triage 完成后必须打 `triaged`, 否则下次 cron 会重扫同一 issue 浪费。
+**Anti-constraint**: after triage finishes, `triaged` must be applied; otherwise the next cron rescans the same issue and wastes context.
 
-## Triage 流程示例
+## Triage flow example
 
 ```
-[T+0] 用户开 issue: "登录页 logo 偏左 5px"
-       label: (无)
+[T+0] User opens issue: "login page logo is 5px off-center"
+       label: (none)
 
-[T+1h] cron 触发, Teamlead 扫 open issues
-       → 看到此 issue 无 triaged label, 进 untriaged 列
-       → Teamlead 判: 这是 UI bug → 分发给 QA
+[T+1h] Cron triggers, Teamlead scans open issues
+       → Sees this issue, no triaged label, in untriaged list
+       → Teamlead decides: this is a UI bug → routed to QA
 
-[T+1h05] QA 复现 + 评估影响面
-       → 打 label: type:bug, current-iteration, p2-normal, triaged
-       → 派 patch milestone (issue link in PR via Closes gh#NNN)
+[T+1h05] QA reproduces + assesses blast radius
+       → applies labels: type:bug, current-iteration, p2-normal, triaged
+       → dispatches a patch milestone (issue link in PR via Closes gh#NNN)
 
-[T+1h] 另一 issue: "我想加协作多端实时同步"
-       → Teamlead 判: 大功能 → 分发给 PM
+[T+1h] Another issue: "I want collaborative real-time multi-device sync"
+       → Teamlead decides: large feature → routed to PM
 
-[T+1h10] PM 审产品立场
-       → 蓝图当前版无此模块, 价值高但需立场讨论
-       → 打 label: type:feature, backlog, p1-high, triaged
-       → body 补 "为什么入这: 新模块, 等下一版讨论挑入"
+[T+1h10] PM reviews the product stance
+       → Current blueprint version doesn't have this module; high value but needs stance discussion
+       → applies labels: type:feature, backlog, p1-high, triaged
+       → body addendum: "why this lands here: new module, defer to next-version discussion"
 ```
 
-## 报告格式 (跟 fast/slow cron 一致)
+## Report format (consistent with fast/slow cron)
 
-短行风格:
+Short-line style:
 
-- 有 untriaged: `[issue-triage cron] N open issues, M untriaged 派分发: X→Architect / Y→PM / Z→QA, 无 hard blocker`
-- 全 triaged: `[issue-triage cron] N open issues, 全 triaged, 无 hard blocker`
-- 卡点: `[issue-triage cron] N open issues, M untriaged, K 个 ≥24h 未分发 → 派 Teamlead 处理`
+- Has untriaged: `[issue-triage cron] N open issues, M untriaged routed: X→Architect / Y→PM / Z→QA, no hard blocker`
+- All triaged: `[issue-triage cron] N open issues, all triaged, no hard blocker`
+- Stuck: `[issue-triage cron] N open issues, M untriaged, K of them ≥24h unrouted → dispatch Teamlead to handle`
 
-## 流转规则 (引 blueprint-iteration)
+## State transitions (refer to blueprint-iteration)
 
-triage 后续走 `blueprintflow-blueprint-iteration` 的状态机:
+After triage, the flow continues per `blueprintflow-blueprint-iteration`'s state machine:
 
-- `type:bug` + 当前蓝图覆盖 → `current-iteration` + 派 patch / bugfix milestone (link issue 走 `Closes gh#NNN`)
-- `type:feature` / `type:tech-debt` → `backlog` 等下一版讨论
-- 拿不准 → label `type:question` 升 Teamlead + 用户拍
+- `type:bug` + covered by current blueprint → `current-iteration` + dispatch a patch / bugfix milestone (link the issue via `Closes gh#NNN`)
+- `type:feature` / `type:tech-debt` → `backlog`, wait for next-version discussion
+- Unclear → label `type:question`, escalate to Teamlead + user decision
 
-issue-triage 主管 **入闸 (Teamlead 分发 + 角色分类)**, blueprint-iteration 主管 **状态机后续 (流转 / 挑入下一版 / freeze)**。
+issue-triage owns the **entry gate (Teamlead routing + role classification)**; blueprint-iteration owns the **downstream state machine (transitions / picking into the next version / freeze)**.
 
-## 跟其他 cron skill 边界
+## Boundaries with other cron skills
 
-| skill | 维度 | 频率 | 做什么 |
+| skill | Dimension | Frequency | What it does |
 |---|---|---|---|
-| `teamlead-fast-cron-checkin` | PR | 15m | idle 角色派活 + PR 卡点扫 |
-| `teamlead-slow-cron-checkin` | 蓝图偏差 / 文档一致性 | 2-4h | drift audit + 翻牌延迟纠正 |
-| `issue-triage` (本 skill) | issue | 3h | 扫 untriaged + Teamlead 分发 + 角色分类 |
+| `teamlead-fast-cron-checkin` | PR | 15m | Dispatch idle roles + scan for PR blockers |
+| `teamlead-slow-cron-checkin` | Blueprint drift / doc consistency | 2-4h | Drift audit + correcting late status flips |
+| `issue-triage` (this skill) | issue | 3h | Scan untriaged + Teamlead routing + role classification |
 
-3 个独立, 不重叠。
+Three independent, no overlap.
 
-## 反模式
+## Anti-patterns
 
-- ❌ Teamlead 自己 triage 不分发 (用户拍 Teamlead 是分发, 不下场判类型 — 跟 team-roles "协调不动手" 立场一致)
-- ❌ Architect/PM/QA 越界 triage 别人的领域 (代码改进给 PM 看 / 新功能给 QA 看 / bug 给 Architect 看)
-- ❌ triage 完忘打 `triaged` label (cron 会重扫同 issue 浪费 context)
-- ❌ triage 把 issue 直接 close 了不留 reason (要打 `wont-fix` 或 `archived` label, body 留一句 "为什么不做")
-- ❌ triage 完没派 milestone / 没 link `Closes gh#NNN` (current-iteration issue 跟 PR 断链)
-- ❌ 全 cron 一过就把所有 untriaged 挤给一个角色 (按性质分发, 不一刀切)
+- ❌ Teamlead triaging themselves instead of routing (the user's call: Teamlead routes, doesn't classify — consistent with the team-roles "coordinate, don't do" stance)
+- ❌ Architect / PM / QA stepping into someone else's lane (code improvement to PM / new feature to QA / bug to Architect)
+- ❌ Forgetting the `triaged` label after triage (cron will rescan the same issue and waste context)
+- ❌ Closing the issue during triage without a reason (apply `wont-fix` or `archived` and put a one-liner in the body for "why we won't do it")
+- ❌ Triage finishes but no milestone dispatched / no `Closes gh#NNN` linked (current-iteration issue disconnected from PR)
+- ❌ Cron fires and dumps every untriaged issue onto a single role (route by character — don't slice it all one way)
 
-## 调用方式
+## How to invoke
 
-cron prompt:
+Cron prompt:
 
 ```
 [issue triage · 3h]
 follow skill blueprintflow-issue-triage
 ```
 
-新 issue 进来场景 (cron 之外的即时触发):
+Inline trigger when a new issue arrives (outside cron):
 
 ```
-新 issue gh#NNN 进来
+new issue gh#NNN arrived
 follow skill blueprintflow-issue-triage
-Teamlead 判 → 分发 → 角色分类 → 打 triaged
+Teamlead decides → route → role classifies → apply triaged
 ```

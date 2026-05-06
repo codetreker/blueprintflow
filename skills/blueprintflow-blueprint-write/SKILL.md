@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-blueprint-write
-description: "Part of the Blueprintflow methodology. Write brainstorm's converged stances into docs/blueprint/ — the product shape source of truth. Use after brainstorm converges, for first blueprint draft, or adding a module chapter. Don't use if brainstorm isn't settled, for typo patches on frozen blueprints, or stance reversals (use blueprint-iteration)."
+description: "Part of the Blueprintflow methodology. Use when brainstorm has converged stances or a new module chapter is starting - writes them into docs/blueprint/ as the product-shape source of truth."
 version: 1.0.0
 ---
 

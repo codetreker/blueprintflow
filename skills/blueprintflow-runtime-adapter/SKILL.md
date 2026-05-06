@@ -1,69 +1,68 @@
 ---
 name: blueprintflow-runtime-adapter
-description: "Blueprintflow 运行时适配层, 按 agent 环境能力组合给出通讯/文件/调度/观察/沉默检测的具体操作方式 (e.g. tmux 布局 + 通讯 API / cron 实现 / idle 检测路径)。触发: 首次启动 blueprintflow 团队需确认运行模式 / 切换 agent 环境 (本地 ↔ 云 / 通讯通道更换) / 沉默检测协议拿不准。反触发: 蓝图/Phase/milestone 业务流程 (各自走对应 skill) / 已配好运行时直接派活 / 单文件 commit / hotfix。"
+description: "Blueprintflow's runtime adaptation layer. Given an agent environment's capabilities, this skill spells out the concrete way to do communication, file operations, scheduling, observation, and silence detection (tmux layout + messaging API / cron implementation / idle detection paths). Use this skill whenever a blueprintflow team is being brought up for the first time and the run mode needs confirming, when switching agent environments (local ↔ cloud, changing comms channel), or when unsure about the silence detection protocol. Don't use for blueprint / Phase / milestone business flows (each has its own skill), when the runtime is already configured and you're just dispatching work, for a single-file commit, or for a hotfix."
 version: 1.0.0
 ---
 
 # Runtime Adapter
 
-Blueprintflow 的规则（蓝图先 freeze、4 件套、立场漂移防御、一 milestone 一 PR）跟运行环境无关。但**怎么执行**这些规则，取决于 agent 环境的能力。
+Blueprintflow's rules (freeze the blueprint first, the four-piece set, the stance-drift defenses, one milestone one PR) do not depend on the runtime environment. But **how you carry out** those rules does depend on what the agent environment can do.
 
-本 skill 集中管理运行时差异——其他 skill 只写"做什么"（如"通知 Dev 开始实施"），本 skill 定义"怎么做"。
+This skill is where runtime differences are kept in one place. Other skills only describe "what to do" (e.g. "notify Dev to start implementing"); this skill defines "how to do it".
 
-## 能力维度
+## Capability dimensions
 
-5 个能力维度决定你的运行模式：
+Five capability dimensions decide your run mode:
 
-| 能力 | 说明 |
+| Capability | Meaning |
 |------|------|
-| **持久化 session** | agent 能长期运行，保持上下文，接收消息 |
-| **跨 agent 通讯** | agent 之间能互发消息（不只是父子返回值） |
-| **共享文件系统** | 多 agent 能访问同一个文件系统 / worktree |
-| **定时调度** | 能创建定时任务（cron / heartbeat） |
-| **并行多角色** | 能同时运行多个角色 agent |
+| **Persistent session** | The agent can run for a long time, hold context, and receive messages |
+| **Cross-agent messaging** | Agents can send messages to each other (not just parent ↔ child return values) |
+| **Shared file system** | Multiple agents can reach the same file system / worktree |
+| **Scheduled jobs** | You can create timed jobs (cron / heartbeat) |
+| **Parallel multi-role** | Multiple role agents can run at the same time |
 
-## 词汇表
+## Vocabulary
 
-规则 skill 里的通用描述 → 本 adapter 给出具体命令：
+Generic phrases used in the rule skills → the concrete commands this adapter gives:
 
-| 通用描述 | 含义 |
+| Generic phrase | Meaning |
 |---------|------|
-| **通知 \<Role\>** | 派活、报告完成、review 通知等任何跨角色消息 |
-| **创建 worktree** | Teamlead 为 milestone 创建工作目录 |
-| **提交代码** | 角色在 worktree 里 commit + push |
-| **启动巡检** | 设置 fast-cron (idle 派活) 和 slow-cron (偏差 audit) |
-| **查看角色状态** | Teamlead 检查各角色是否在工作、是否 idle |
+| **Notify \<Role\>** | Any cross-role message: dispatch work, report completion, request review, etc. |
+| **Create worktree** | Teamlead creates the working directory for a milestone |
+| **Commit code** | A role does `commit` + `push` inside a worktree |
+| **Start cron checks** | Set up fast-cron (idle dispatch) and slow-cron (drift audit) |
+| **Check role status** | Teamlead checks whether each role is working or idle |
 
 ---
 
-## 核心规则（所有环境通用）
+## Core rules (apply everywhere)
 
-无论什么环境，以下规则始终适用：
-- 蓝图先 freeze 再开工
-- 4 件套（spec / stance / acceptance / content-lock）
-- 立场漂移 5 层防御
-- 一 milestone 一 PR
-- 立场写不出反约束 = 不成立
-- PR 合并永远不 admin bypass（标准 squash merge）
+No matter the environment, the following rules always apply:
+- Freeze the blueprint before starting work
+- The four-piece set (spec / stance / acceptance / content-lock)
+- The five-layer stance-drift defense
+- One milestone, one PR
+- A stance you can't write a counter-constraint for is not a real stance
+- Never use admin bypass to merge a PR (standard squash merge)
 
-## 环境适配（按需加载）
+## Environment adapters (load on demand)
 
-启动 blueprintflow 时，确认我的运行环境，**只读对应的那一个适配文件**：
+When you start blueprintflow, confirm your runtime environment and **read only the matching adapter file**:
 
-| 我的环境 | 适配文件 | 状态 |
+| My environment | Adapter file | Status |
 |-------------|---------|------|
-| **Claude Code** | `references/claude-code.md`（区分 team+tmux / team无tmux / 无team） | ✅ 已验证 |
-| **OpenClaw** | `references/openclaw.md`（区分同实例 / 跨实例） | ✅ 已验证 |
-| **Codex** | `references/codex.md` | ⚠️ 未实跑验证 |
-| **其他** | `references/basic.md` | ✅ 通用 |
+| **Claude Code** | `references/claude-code.md` (separates team+tmux / team without tmux / no team) | Verified |
+| **OpenClaw** | `references/openclaw.md` (separates same-instance / cross-instance) | Verified |
+| **Codex** | `references/codex.md` | Not yet verified in real runs |
+| **Other** | `references/basic.md` | Generic |
 
-读完适配文件后，后续 skill 里的通用描述按对照表执行。切换 agent 环境时重新选择。
+After reading the adapter file, follow the lookup table whenever a later skill uses one of the generic phrases. When the agent environment changes, pick the adapter file again.
 
-## 调用方式
+## How to invoke
 
-首次启动 blueprintflow 时：
+The first time you bring up blueprintflow:
 ```
 follow skill blueprintflow-runtime-adapter
-确认运行模式 → 加载对照表
+confirm the run mode → load the lookup table
 ```
-

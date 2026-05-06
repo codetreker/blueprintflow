@@ -1,148 +1,157 @@
-# Claude Code 适配
+# Claude Code adapter
 
 ### Claude Code
 
-Claude Code 有 3 种配置组合。按以下决策树确认你的配置：
+Claude Code has three configuration combinations. Use the decision tree below to confirm yours:
 
 ```
-我有 team mode 吗？
-├─ 没有 → 「无 team mode」配置（见下方第 3 段）
-└─ 有 → 我在 tmux 里运行吗？
-    ├─ 没有 → 「Team mode 无 tmux」配置（见下方第 2 段）
-    └─ 有 → 「Team mode + tmux」配置（见下方第 1 段）
+Do I have team mode?
+├─ No → "No team mode" config (see section 3 below)
+└─ Yes → Am I running inside tmux?
+    ├─ No → "Team mode without tmux" config (see section 2 below)
+    └─ Yes → "Team mode + tmux" config (see section 1 below)
 ```
 
-确认后只读对应的配置段。
+Once confirmed, read only the matching section.
 
-#### Team mode + tmux（全能力）
+#### Team mode + tmux (full capability)
 
-每个 teammate 都是**独立的 Claude Code 进程** (`claude --agent-id <name>@<team>` 启动), 各自独立 context window 和 token 配额. lead spawn teammate 时, Claude Code 自动起 child claude 进程并加入共享 mailbox; 在 tmux session 内, 默认显示模式是 split-pane, 每 teammate 自动占一个 pane.
+Multiple Claude Code sessions talk to each other through team mode, and tmux manages the panes.
 
-通讯走 `SendMessage` (背后是文件 mailbox `~/.claude/teams/<team>/inboxes/<name>.json` — 实测观察, 实验功能内部实现可能随版本变), 不是 tmux send-keys.
+**Capabilities:** persistent / cross-agent messaging / shared FS / scheduled jobs / parallel multi-role — all available.
 
-**能力：** ✅ 持久化 ✅ 跨 agent 通讯 ✅ 共享 fs ✅ 定时调度 ✅ 并行多角色
-
-| 通用描述 | 具体命令 |
+| Generic phrase | Concrete command |
 |---------|---------|
-| 起团 | lead 在 tmux session 内: `TeamCreate({team_name})` + `Agent({team_name, name, subagent_type, run_in_background: true, prompt})` × N. Claude Code 自动起 child claude 进程并布局到 tmux pane |
-| 通知 \<Role\> | `SendMessage("role_name", content)` |
-| 创建 worktree | `cd <repo> && git worktree add .worktrees/<milestone> -b feat/<milestone> origin/main` |
-| 提交代码 | 在 worktree 里 `git add && git commit && git push` |
-| 启动 fast-cron | `CronCreate({cron: "7,22,37,52 * * * *", prompt: "...", durable: false})` |
-| 启动 slow-cron | `CronCreate({cron: "17 */2 * * *", prompt: "...", durable: false})` |
-| 查看角色状态 | 看 tmux pane 输出 / `SendMessage` 问 |
-| 开 PR | `gh pr create` (Teamlead 唯一) |
+| Notify \<Role\> | `SendMessage("role_name", content)` |
+| Create worktree | `cd <repo> && git worktree add .worktrees/<milestone> -b feat/<milestone> origin/main` |
+| Commit code | Inside the worktree: `git add && git commit && git push` |
+| Start fast-cron | `CronCreate({cron: "7,22,37,52 * * * *", prompt: "...", durable: false})` |
+| Start slow-cron | `CronCreate({cron: "17 */2 * * *", prompt: "...", durable: false})` |
+| Check role status | Look at the tmux pane output / ask via `SendMessage` |
+| Open PR | `gh pr create` (Teamlead only) |
 | Merge PR | `gh pr merge <N> --squash` |
 
-**display mode 设置** (`~/.claude/settings.json`):
+**Rule fit:** all rules apply.
 
-- `teammateMode: "auto"` (默认) — 在 tmux session 内自动用 split-pane, 否则用 in-process
-- `teammateMode: "tmux"` — 强制 split-pane (要求 tmux 或 iTerm2)
-- `teammateMode: "in-process"` — 单 terminal, 用 Shift+Down 在不同 teammate 之间切换 (teammate 仍是独立 instance, 只是显示叠在一个 terminal 里)
+#### Team mode without tmux (e.g. Windows)
 
-**前置**: agent teams 是实验功能, 必须开 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` (env 或 settings.json), 需要 Claude Code v2.1.32+.
+Multiple Claude Code sessions still talk through team mode, but there's no tmux (e.g. on Windows).
 
-**规则适配：** 全部规则适用。
+**Capabilities:** persistent / cross-agent messaging / shared FS / scheduled jobs are available; parallel multi-role works but you have to manage multiple terminal windows by hand.
 
-**反模式**: ❌ 把 teammate 跟 subagent 当成同一个东西. subagent 是 lead session 内 spawn 的 Task, 跟 lead 共享 context, 只能 report 回 lead; teammate 是独立 Claude Code 进程, 各自 1M context, 互相通过 mailbox 直接通讯. 不要互换术语, 也不要假设 teammate 能看到 lead 的对话历史.
-
-#### Team mode 无 tmux（如 Windows）
-
-多个 Claude Code session 通过 team mode 通讯，但没有 tmux（如 Windows 环境）。
-
-**能力：** ✅ 持久化 ✅ 跨 agent 通讯 ✅ 共享 fs ✅ 定时调度 ⚠️ 并行多角色（需手动管理多终端）
-
-| 通用描述 | 具体命令 |
+| Generic phrase | Concrete command |
 |---------|---------|
-| 通知 \<Role\> | `SendMessage("role_name", content)` |
-| 创建 worktree | `cd <repo> && git worktree add .worktrees/<milestone> -b feat/<milestone> origin/main` |
-| 提交代码 | 在 worktree 里 `git add && git commit && git push` |
-| 启动 fast-cron | `CronCreate({cron: "7,22,37,52 * * * *", prompt: "...", durable: false})` |
-| 启动 slow-cron | `CronCreate({cron: "17 */2 * * *", prompt: "...", durable: false})` |
-| 查看角色状态 | `SendMessage` 问（没有 tmux pane 可看） |
-| 开 PR | `gh pr create` (Teamlead 唯一) |
+| Notify \<Role\> | `SendMessage("role_name", content)` |
+| Create worktree | `cd <repo> && git worktree add .worktrees/<milestone> -b feat/<milestone> origin/main` |
+| Commit code | Inside the worktree: `git add && git commit && git push` |
+| Start fast-cron | `CronCreate({cron: "7,22,37,52 * * * *", prompt: "...", durable: false})` |
+| Start slow-cron | `CronCreate({cron: "17 */2 * * *", prompt: "...", durable: false})` |
+| Check role status | Ask via `SendMessage` (no tmux pane to look at) |
+| Open PR | `gh pr create` (Teamlead only) |
 | Merge PR | `gh pr merge <N> --squash` |
 
-**规则适配：**
-- ⚠️ **查看角色状态**：没有 tmux pane 一览全局，需要逐个 `SendMessage` 问。workflow skill 里的 tmux 布局段不适用
-- 其他规则全部适用
+**Rule fit:**
+- **Check role status**: there's no tmux pane to see everything at once, so you have to ask each role one by one through `SendMessage`. The tmux layout section in the workflow skill does not apply here.
+- All other rules apply.
 
-#### 无 team mode（单 session）
+#### No team mode (single session)
 
-单个 Claude Code session，没有 team mode。
+A single Claude Code session, no team mode.
 
-**能力：** ✅ 持久化 ❌ 跨 agent 通讯 ✅ 共享 fs ✅ 定时调度 ❌ 并行多角色
+**Capabilities:** persistent / shared FS / scheduled jobs are available; cross-agent messaging and parallel multi-role are not.
 
-| 通用描述 | 具体命令 |
+| Generic phrase | Concrete command |
 |---------|---------|
-| 通知 \<Role\> | 不需要 — 单 session 串行切换角色 |
-| 创建 worktree | `cd <repo> && git worktree add .worktrees/<milestone> -b feat/<milestone> origin/main` |
-| 提交代码 | 在 worktree 里 `git add && git commit && git push` |
-| 启动 fast-cron | `CronCreate({cron: "7,22,37,52 * * * *", prompt: "...", durable: false})` — cron 触发时由当前 session 执行自检 |
-| 启动 slow-cron | `CronCreate({cron: "17 */2 * * *", prompt: "...", durable: false})` — 偏差 audit 由当前 session 执行 |
-| 查看角色状态 | 不需要 — 自己就是所有角色 |
-| 开 PR | `gh pr create` (Teamlead 唯一) |
+| Notify \<Role\> | Not needed — a single session switches roles serially |
+| Create worktree | `cd <repo> && git worktree add .worktrees/<milestone> -b feat/<milestone> origin/main` |
+| Commit code | Inside the worktree: `git add && git commit && git push` |
+| Start fast-cron | `CronCreate({cron: "7,22,37,52 * * * *", prompt: "...", durable: false})` — when cron fires, the current session runs the self-check |
+| Start slow-cron | `CronCreate({cron: "17 */2 * * *", prompt: "...", durable: false})` — the drift audit is run by the current session |
+| Check role status | Not needed — you are all the roles |
+| Open PR | `gh pr create` (Teamlead only) |
 | Merge PR | `gh pr merge <N> --squash` |
 
-**规则适配：**
-- ❌ **并行多角色**：单 session 串行切换，一次一个角色
-- ⚠️ **Ping 协议**：不适用（没有其他 agent 可 ping）
-- ⚠️ **并行 review subagent**：不支持并行，串行 review
-- ⚠️ **4 角色联签**：单 session 按角色逐一签字
+**Rule fit:**
+- **Parallel multi-role**: not possible. A single session switches roles serially, one role at a time.
+- **Ping protocol**: does not apply (no other agent to ping).
+- **Parallel review subagents**: not supported. Reviews run serially.
+- **Four-role co-signoff**: a single session signs off for each role one after another.
 
 ---
 
+## Teammate vs subagent — they are not the same thing
+
+A common confusion in Claude Code: people mix up "teammate" with "subagent". They look similar on the surface but are completely different topologies.
+
+- **Every teammate is its own Claude Code process.** Architect, PM, Dev, QA, Teamlead — each runs as its own Claude Code instance with its own session, its own context, and its own tool budget. They communicate through `SendMessage` / `TaskCreate`, not through return values.
+- **In-process vs tmux is a display mode, not a spawn topology.** Whether the teammate's pane is mounted inside the same tmux window or in a separate terminal does not change the fact that it is a separate Claude Code process. Tmux just decides where you see the output.
+- **Subagents are different.** A subagent is spawned inside a single Claude Code process by the parent agent, runs to completion, and returns. It is a tool call, not a teammate. It has no persistent session, no cross-agent messaging, and dies when the task ends.
+
+So the right mental model is:
+
+| Concept | What it is | Lifecycle | Communicates via |
+|---|---|---|---|
+| **Teammate** | A separate Claude Code process per role | Long-lived session | `SendMessage` / `TaskCreate` |
+| **Subagent** | A child task inside one Claude Code process | One-shot, returns to parent | Return value |
+
+This matters for the rules:
+- "One milestone, one PR; everyone stacks commits in the same worktree" assumes teammates that are persistent and can pull / commit independently. Subagents cannot replace this.
+- "Ping/Pong silence detection" applies to teammates only, because subagents have a built-in completion signal — when they return, they are done.
+- "Parallel review" via subagents is allowed (the parent fans out review subagents), but a teammate is the one who finally signs off.
+
+If you find yourself using a subagent where the rule says "Notify \<Role\>", you have collapsed the topology. Step back and dispatch through `SendMessage` to the teammate instead.
+
 ---
 
-## Ping/Pong 沉默检测（仅 team mode）
+## Ping / Pong silence detection (team mode only)
 
-派活给 persistent agent 后, 如 10min 内无消息回报, 启动 ping 协议:
+After dispatching work to a persistent agent, if there's no message back within 10 minutes, start the ping protocol:
 
-1. **第一次 ping** (≤10min 沉默): 通知 "ping. 5min 内回 pong + 当前进度一句话"
-2. **第二次 ping** (≤15min 沉默): 通知 "再次 ping. 是否在干活? 5min 内回报或我 shutdown."
-3. **Kill + 重 spawn** (≤20min 沉默): shutdown_request → spawn 新 subagent 接活
+1. **First ping** (≤10 min of silence): send "ping. Reply pong + one-line current progress within 5 min."
+2. **Second ping** (≤15 min of silence): send "ping again. Are you still working? Reply within 5 min or I shut you down."
+3. **Kill + respawn** (≤20 min of silence): `shutdown_request` → spawn a fresh subagent to take over.
 
-**阈值可调**：10min 是默认, e2e 调试 30min 沉默正常, schema migration 10min 异常。用户拍板可豁免。
+**Threshold is tunable.** 10 min is the default. e2e debugging often takes 30 min of silence, which is normal. Schema migration silence of 10 min is unusual. The user can grant exceptions.
 
-**不适用**：subagent 有自己的完成信号, 不用 ping。
+**Doesn't apply** to subagents. Subagents have their own completion signal, no ping needed.
 
-## 如果你检测到缺少能力
+## If you detect a missing capability
 
-如果你发现当前环境缺少 team mode 或 tmux，把下面的提示发给用户，帮他们升级：
+If you find that the current environment is missing team mode or tmux, send the prompt below to the user to help them upgrade:
 
-### 缺少 Team mode
+### Missing team mode
 
-> **检测到：** 当前 Claude Code 未启用 agent teams。
+> **Detected:** Agent teams is not enabled in this Claude Code.
 >
-> **影响：** 无法多角色并行协作——所有角色只能串行切换，没有跨 agent 通讯（SendMessage），Ping 协议和并行 review 不可用。
+> **Impact:** No multi-role parallel collaboration — all roles can only run serially, no cross-agent messaging (`SendMessage`), the ping protocol and parallel reviews are not available.
 >
-> **如何启用：**
+> **How to enable:**
 >
-> Agent teams 默认关闭，需要手动开启。两种方式任选其一：
+> Agent teams is off by default. You can turn it on either way:
 >
-> **方式 1：环境变量**
+> **Option 1: environment variable**
 > ```bash
 > export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
 > claude
 > ```
 >
-> **方式 2：settings.json**
+> **Option 2: settings.json**
 > ```bash
-> # 编辑 ~/.claude/settings.json，添加：
+> # Edit ~/.claude/settings.json and add:
 > # "env": { "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1" }
 > ```
 >
-> 启用后 Claude Code 会获得 TeamCreate / SendMessage / TaskCreate 等团队协作工具。需要 Claude Code v2.1.32+。
+> Once enabled, Claude Code gets the team-collaboration tools — `TeamCreate` / `SendMessage` / `TaskCreate` and so on. Requires Claude Code v2.1.32+.
 >
-> 参考：https://code.claude.com/docs/en/agent-teams
+> Reference: https://code.claude.com/docs/en/agent-teams
 
-### 缺少 tmux（Linux / macOS）
+### Missing tmux (Linux / macOS)
 
-> **检测到：** 当前环境没有 tmux。
+> **Detected:** This environment doesn't have tmux.
 >
-> **影响：** 无法用 tmux 管理多个角色 pane——看不到所有角色的实时输出，起团布局不可用。Team mode 通讯不受影响。
+> **Impact:** You can't manage multiple role panes through tmux — you can't watch every role's output at once, and the team-startup layout isn't available. Team-mode messaging itself still works.
 >
-> **如何安装：**
+> **How to install:**
 > ```bash
 > # macOS
 > brew install tmux
@@ -151,12 +160,13 @@ Claude Code 有 3 种配置组合。按以下决策树确认你的配置：
 > sudo apt install tmux
 > ```
 >
-> **安装后的推荐起团方式：**
+> **Recommended way to bring up the team after install:**
 > ```bash
 > tmux new-session -s blueprintflow
-> # 分多个 pane，每个跑 claude（需先设 CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1）
+> # Split panes, run claude in each one
+> # (set CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 first)
 > tmux split-window -h
 > tmux split-window -v
 > ```
 >
-> ⚠️ Windows 不原生支持 tmux。可以用 WSL (Windows Subsystem for Linux) 获得支持，或使用"Team mode 无 tmux"配置继续工作。
+> Note: Windows doesn't support tmux natively. Use WSL (Windows Subsystem for Linux) to get it, or stay on the "Team mode without tmux" config.

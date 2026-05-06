@@ -141,28 +141,31 @@ version: 1.0.0
 
 ### 起团命令骨架
 
+> 前置: settings.json 开 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`. tmux session 内 `teammateMode` 默认 auto = split-pane.
+
 ```bash
+# 1. 起 tmux 画布, 切好 2x3 网格
 SESSION=blueprintflow
-tmux new-session -d -s $SESSION -x 220 -y 60   # 大画布
-# 左半屏 Teamlead
-tmux send-keys -t $SESSION:0 'claude' Enter
-# 右半屏切 2x3
+tmux new-session -d -s $SESSION -x 220 -y 60
 tmux split-window -h -p 60 -t $SESSION:0
 tmux split-window -v -p 66 -t $SESSION:0.1
 tmux split-window -v -p 50 -t $SESSION:0.2
 tmux split-window -h -t $SESSION:0.1
 tmux split-window -h -t $SESSION:0.3
 tmux split-window -h -t $SESSION:0.5
-for p in 1 2 3 4 5 6; do
-  tmux send-keys -t $SESSION:0.$p 'claude' Enter
-done
-# pane 命名 (status line 显示)
+
+# 2. 给 pane 命名 (status line 显示)
 tmux set-option -t $SESSION pane-border-status top
 tmux select-pane -t $SESSION:0.0 -T 'teamlead'
 tmux select-pane -t $SESSION:0.1 -T 'architect'
-# ... architect/pm/dev-a/dev-c/qa 等
+# ... pm / dev-a / dev-b / qa / security 等
+
+# 3. 只在 Teamlead pane 起 claude
+tmux send-keys -t $SESSION:0 'claude' Enter
 tmux attach -t $SESSION
 ```
+
+进 Teamlead session 后, lead 用 `TeamCreate` 建 team + `Agent({team_name, name, subagent_type, run_in_background: true, prompt})` 逐个 spawn 角色. Claude Code 会自己起 child claude 进程并填入剩余 pane — 不需要手动给每个 pane `tmux send-keys 'claude'`. 通讯走 `SendMessage(to: "<role>", ...)`, 背后是 `~/.claude/teams/<team>/inboxes/<name>.json` 文件 mailbox.
 
 ### 窗格反模式
 

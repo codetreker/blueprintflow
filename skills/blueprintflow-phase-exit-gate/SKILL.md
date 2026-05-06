@@ -61,9 +61,9 @@ The Architect writes two documents in the worktree and commits them together:
 
 ### Step 2: Four-role review and signoff
 
-Reviews go through PR comments — same pattern as a milestone PR. No new branches, no new PRs.
+Reviews go through PR comments — same pattern as a milestone PR. No new branches, no new PRs. Each role has a specific review focus (see `references/` for detailed checklists):
 
-- **Architect**: LGTM their own readiness review in the PR comments
+- **Dev**: Verify implementation coverage — every milestone's acceptance criteria maps to merged code, no gaps between what was planned and what shipped
 - **QA**: Verify acceptance is fully flipped, REG counts add up, anchored to acceptance templates
 - **PM**: Verify product rules haven't drifted, scope boundaries held, anchored to the rules cross-check table
 - **Teamlead**: Final signoff (coordination + confirmation that all four pieces are in place)

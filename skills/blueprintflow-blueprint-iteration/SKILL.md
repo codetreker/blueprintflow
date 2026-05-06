@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-blueprint-iteration
-description: "Part of the Blueprintflow methodology. Rules for evolving the blueprint after its first freeze — 3-state machine, version numbers, change routing, freeze cuts. Use when opening a next-version discussion, routing a change (bug vs non-bug), or freezing blueprint-next. Don't use for first blueprint draft (use blueprint-write), milestone splitting, or typo commits."
+description: "Part of the Blueprintflow methodology. Use when the blueprint is already frozen and a change suggestion arrives - routes it through the 3-state machine (current / next / backlog) to evolve safely."
 version: 1.0.0
 ---
 

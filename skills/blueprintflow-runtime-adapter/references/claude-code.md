@@ -22,6 +22,57 @@ Messaging goes through `SendMessage` (backed by a file mailbox `~/.claude/teams/
 
 **Capabilities:** persistent / cross-agent messaging / shared FS / scheduled jobs / parallel multi-role — all available.
 
+##### Recommended layout (6 roles + Teamlead)
+
+```
+┌─────────────────┬──────────────┬──────────────┐
+│                 │  Architect   │  PM          │
+│   Teamlead      ├──────────────┼──────────────┤
+│   (tall left)   │  Dev-A       │  Dev-B/C     │
+│                 ├──────────────┼──────────────┤
+│                 │  QA          │  Security   │
+└─────────────────┴──────────────┴──────────────┘
+```
+
+- **Teamlead takes the entire left column** (the coordination thread, biggest field of view)
+- **6 roles in a 2×3 grid on the right** (each cell equal height, names visible at a glance)
+- Security is required as an independent role and must take a cell (Architect can't double up); Designer is added per project need
+
+##### Team-startup command skeleton
+
+```bash
+# 1. Create tmux canvas + split into layout
+SESSION=blueprintflow
+tmux new-session -d -s $SESSION -x 220 -y 60
+# Right half split into 2x3 grid (empty panes)
+tmux split-window -h -p 60 -t $SESSION:0
+tmux split-window -v -p 66 -t $SESSION:0.1
+tmux split-window -v -p 50 -t $SESSION:0.2
+tmux split-window -h -t $SESSION:0.1
+tmux split-window -h -t $SESSION:0.3
+tmux split-window -h -t $SESSION:0.5
+
+# 2. Name panes (shown in status line)
+tmux set-option -t $SESSION pane-border-status top
+tmux select-pane -t $SESSION:0.0 -T 'teamlead'
+tmux select-pane -t $SESSION:0.1 -T 'architect'
+# ... pm / dev-a / dev-b / qa / security
+
+# 3. Start claude only in Teamlead pane
+tmux send-keys -t $SESSION:0 'claude' Enter
+tmux attach -t $SESSION
+```
+
+After entering the Teamlead session, the lead uses team mode tools to create the team and spawn roles — Claude Code auto-starts child claude processes and fills the remaining panes. No need to manually run `claude` in each pane. Messaging goes through mailbox notifications (see the table below), not tmux send-keys.
+
+##### Pane anti-patterns
+
+- ❌ Splitting everything left/right (7 thin columns, content invisible)
+- ❌ Teamlead in the same row as the roles (the coordination thread gets drowned)
+- ❌ Panes left unnamed (status line just says `bash`, can't tell who's who)
+- ❌ One window per session (slow to switch windows, can't see the full picture)
+- ❌ Running `claude` in every pane manually (lead spawns teammates via team mode tools)
+
 | Generic phrase | Concrete command |
 |---------|---------|
 | Start team | Lead inside the tmux session: `TeamCreate({team_name})` + `Agent({team_name, name, subagent_type, run_in_background: true, prompt})` × N. Claude Code auto-starts child claude processes and lays them out in tmux panes |

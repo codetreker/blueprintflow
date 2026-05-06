@@ -1,96 +1,107 @@
 ---
 name: blueprintflow-brainstorm
-description: "通过 Architect+PM+Teamlead 多轮讨论锁立场/概念/反约束, 是 blueprint-write 前置, 把模糊 idea 收敛成可落蓝图的核心立场。触发: 用户提\"我想做 X\"但产品立场未定 / 现有蓝图无该模块章节 / 团队对方向有分歧需对齐 / 新产品起步。反触发: typo/dep bump/lint 等机械 PR / 已有蓝图段落清楚的小补丁 / hotfix 紧急路径 / 实施中的 milestone 拆段问题 (走 phase-plan 或 4 件套)。"
+description: "Part of the Blueprintflow methodology. Multi-round Architect + PM + Teamlead discussion that converges a fuzzy idea into core stances, concept model, and constraints for the blueprint. Use when starting a new product/module, stances conflict, or a major blueprint rewrite is needed. Don't use for mechanical PRs, small patches, hotfixes, or milestone-splitting."
 version: 1.0.0
 ---
 
 # Brainstorm
 
-模糊产品 idea → 可写蓝图的核心立场 + 概念模型 + 反约束。Teamlead 主持 PM + Architect (按需 + Designer / Security), 多轮讨论 (通常 5-15 轮), 每轮锁 1-2 个概念。
+Take a fuzzy product idea and converge it into the core stances, concept model, and constraints a blueprint can be built on. Teamlead facilitates, PM and Architect drive the discussion (with Designer or Security pulled in as needed). Usually 5-15 rounds; each round locks down one or two concepts.
 
-> **实战案例（Borgee）：** 跑了 11 轮 brainstorm，锁 14 条核心立场。
+> **Real example (Borgee):** Ran 11 rounds of brainstorm and locked 14 core stances.
 
-## 何时用
+## When to use
 
-- 新产品起步 (跟 `blueprintflow:blueprint-write` 配套)
-- 新模块加入 (e.g. CV-2 加 anchor 对话)
-- 现有立场冲突 (实施暴露立场没拍清楚)
-- 蓝图改动 (大改之前必经)
+- A new product is starting up (paired with `blueprintflow:blueprint-write`)
+- A new module is being added (e.g. adding a conversation module to an existing product)
+- Existing stances are in conflict (execution exposed that the stance was never really settled)
+- A major blueprint change (always go through brainstorm before a big rewrite)
 
-## 不用的场景
+## When not to use
 
-- 实施细节技术选型 (e.g. SQLite vs Postgres) — 这是 spec brief 的事, 不是 brainstorm
-- 已锁立场的 milestone 实施 (跟 `blueprintflow:milestone-fourpiece` 走)
+- Implementation-level technical choices (e.g. SQLite vs Postgres) — that belongs in the spec brief, not in brainstorm
+- A milestone whose stance is already locked (use `blueprintflow:milestone-fourpiece`)
 
-## 多轮讨论结构
+## Multi-round structure
 
-### 轮 1: 范围划定
-Teamlead 抛 3 题, PM + Architect 各答 ≤ 200 字:
-- Q1: 这模块的**一等概念**是什么? (≤ 3 个)
-- Q2: 跟现有概念 (org / agent / channel) 关系?
-- Q3: 反向边界 — 什么**不是**这模块的事?
+### Round 1: scope
 
-### 轮 2-N: 立场争论
-每轮挑 1-2 个具体立场展开, PM 给用户视角, Architect 给可行性, Teamlead 仲裁:
-- 立场 X 写得清吗? (能否写出 "X 是, Y 不是" 反约束)
-- 跟其他立场冲突? 选哪个?
-- v0 / v1 边界拍清楚吗?
+Teamlead poses three questions. PM and Architect each answer in ≤200 words:
 
-每轮产出 ≤ 5 行立场草稿, 入下轮基线。
+- Q1: What are the **first-class concepts** of this module? (≤3)
+- Q2: How do they relate to existing concepts (org / agent / channel)?
+- Q3: Reverse boundary — what is **not** part of this module?
 
-### 末轮: 立场 freeze
-Teamlead 总结 5-7 立场 + 反约束, PM + Architect 双签字, 进 `blueprintflow:blueprint-write` 落地。
+### Rounds 2-N: stance debate
 
-## Teamlead 主持原则
+Each round picks one or two concrete stances and works them through. PM brings the user perspective, Architect brings feasibility, Teamlead arbitrates:
 
-### 不替别人答
-- 派活给 PM/Architect, 自己只仲裁
-- 仲裁基准: 跟现有立场冲突? v0/v1 边界? 反约束写不写得出?
+- Is stance X clearly written? (Can you write a "X is, Y isn't" constraint?)
+- Does it conflict with another stance? Which one wins?
+- Are the v0 / v1 boundaries clearly nailed down?
 
-### 推动落地
-- 每轮强制产出 ≤ 5 行立场草稿 (写不出 = 不成立, 退轮)
-- 不允许 "等更多信息" 拖延 (信息永远不够, 拍立场)
+Each round produces a stance draft of ≤5 lines, which becomes the baseline for the next round.
 
-### 收敛 5-7 立场
-- 不要无限扩展 (太多立场记不住, 实施漂)
-- 10-15 立场是产品级总数, 单模块 5-7 立场已够
+### Final round: stance freeze
 
-## 立场写法 (强约束)
+Teamlead summarizes 5-7 stances and their constraints. PM and Architect both sign off, then it goes into `blueprintflow:blueprint-write` to be written down.
 
-每条立场必须含:
-- **一句话主张** (≤ 30 字, 用户能复述)
-- **反约束** (X 是, Y 不是, 防漂移)
-- **关键场景** (一个 demo 能跑出来的例子)
-- **v0/v1 边界** (现在做到哪, 以后做到哪)
+## Teamlead facilitation principles
 
-> **立场示例（沉默胜于假 loading）：**
-- 主张: 不显示 spinner / 进度条 / "正在思考..."
-- 反约束: agent 处理时 UI 静止, 不 fake 进度; 真完成才显示结果
-- 场景: agent 编辑 artifact, 用户看不到中间态, 直到 commit
-- v0: 全静默; v1 视用户反馈考虑加 "thinking" subject 提示 (但仍不 fake)
+### Don't answer for others
 
-## 多轮讨论的反模式
+- Assign the work to PM and Architect; only arbitrate
+- Arbitration criteria: does this conflict with existing stances? Are v0/v1 boundaries clear? Can a constraint actually be written?
 
-- ❌ 第一轮就想锁全部立场 (不收敛, 拖死)
-- ❌ Teamlead 替 PM 答用户立场 (没经过用户视角讨论, 实施侧立场漂)
-- ❌ 每轮不出立场草稿 (空谈)
-- ❌ 立场写抽象空话 (反约束写不出 → 退轮重写)
-- ❌ 实施细节抢戏 (e.g. 讨论用 SQLite 还是 Postgres) — Teamlead 必须打断, 拉回立场
+### Push toward closure
 
-## 产出 checklist
+- Every round must produce a ≤5-line stance draft (if it can't be written, the stance doesn't exist — fail the round)
+- No "let's wait for more information" stalling (information will never be enough — make the call)
 
-brainstorm 完结时:
-- [ ] 5-7 立场全有 "主张 + 反约束 + 场景 + v0/v1 边界"
-- [ ] 反约束能机器化 (反向 grep / 反向断言)
-- [ ] PM + Architect 双签字
-- [ ] 入 `blueprintflow:blueprint-write` 写蓝图
+### Converge to 5-7 stances
 
-## 调用方式
+- Don't expand without limit (too many stances are unmemorable, execution drifts)
+- 10-15 stances is product-level total; for a single module 5-7 is enough
 
-新模块 / 新立场:
+## How to write a stance (hard rule)
+
+Each stance must contain:
+
+- **A one-sentence claim** (≤30 words, something a user could repeat)
+- **A constraint** (X is, Y isn't, to prevent drift)
+- **A key scenario** (a demo example you can actually run)
+- **v0/v1 boundary** (what's done now, what's left for later)
+
+> **Stance example (silence beats fake loading):**
+> - Claim: don't show spinner / progress bar / "thinking..."
+> - Constraint: while the agent is processing the UI stays still, no fake progress; only show the result when it's actually done
+> - Scenario: agent edits an artifact, the user sees no intermediate state until commit
+> - v0: fully silent; v1 may consider a "thinking" subject hint based on user feedback (still no fake progress)
+
+## Anti-patterns in multi-round discussion
+
+- ❌ Trying to lock all stances in round 1 (no convergence, drags forever)
+- ❌ Teamlead answering the user-side stance for PM (no real user perspective, execution drifts)
+- ❌ Producing no stance draft in a round (just talk)
+- ❌ Stances written as abstract platitudes (if you can't write a constraint, redo the round)
+- ❌ Implementation details hijacking the discussion (e.g. SQLite vs Postgres) — Teamlead must cut it off and pull back to stance
+
+## Output checklist
+
+When brainstorm wraps up:
+
+- [ ] All 5-7 stances have "claim + constraint + scenario + v0/v1 boundary"
+- [ ] Constraints can be checked by machine (reverse grep / reverse assertion)
+- [ ] PM and Architect both signed off
+- [ ] Hand off to `blueprintflow:blueprint-write` to write the blueprint
+
+## How to invoke
+
+For a new module or new stance:
+
 ```
 follow skill blueprintflow-brainstorm
-开始多轮讨论 (Teamlead + PM + Architect)
+start multi-round discussion (Teamlead + PM + Architect)
 ```
 
-讨论收敛后接 `blueprintflow:blueprint-write`。
+When the discussion converges, hand off to `blueprintflow:blueprint-write`.

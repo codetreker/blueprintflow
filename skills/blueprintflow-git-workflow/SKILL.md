@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-git-workflow
-description: "Part of the Blueprintflow methodology. Git rules: one milestone = one worktree + one branch + one PR. All roles stack commits under .worktrees/<milestone>; only Teamlead opens PRs and removes worktrees. Use when creating/cleaning worktrees or clarifying work directories. Don't use for blueprint/Phase docs on main, hotfix branches, or skill repo updates."
+description: "Part of the Blueprintflow methodology. Use when starting a milestone or cleaning up after merge - enforces one-milestone-one-worktree-one-branch-one-PR with Teamlead as sole opener and cleaner."
 version: 1.0.0
 ---
 

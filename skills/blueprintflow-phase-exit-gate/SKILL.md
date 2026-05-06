@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-phase-exit-gate
-description: "The final gate when wrapping up a Phase. Confirms every milestone in the Phase is finished and gets four roles to sign off before the project moves to the next Phase."
+description: "The final gate when wrapping up a Phase. Confirms every milestone in the Phase is finished and gets four roles to sign off before the project moves to the next Phase. Used inside blueprintflow when a Phase is wrapping up. Triggers: every milestone in the Phase is merged, acceptance flipped to ✅, REG status updated; or Teamlead decides to wrap up. Don't use: there's still an in-flight milestone in this Phase / single-milestone wrap-up (handled inside that milestone's own PR) / blueprint version bump (use blueprint-iteration)."
 version: 1.0.0
 ---
 

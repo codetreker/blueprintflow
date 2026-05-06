@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-teamlead-fast-cron-checkin
-description: Teamlead 15 分钟快节奏巡检: 扫 idle 角色立即派活 + 扫 PR mergeStateStatus/statusCheckRollup 处理卡点 (≥2 DIRTY 派 batch agent / ≥2h block 升最高优先级) + merge gate 三联签判定, 反 idle 反空转。触发: 每 15 分钟 cron 自动触发 / 收到 idle_notification 但需真验证 / Teamlead 主动巡检 PR 卡点。反触发: 蓝图层立场审 / Phase 闸验收 (走 phase-exit-gate) / 单 milestone 内 review 路径 / 慢节奏蓝图偏差 audit (走 slow-cron)。
+description: "Teamlead 15 分钟快节奏巡检: 扫 idle 角色立即派活 + 扫 PR mergeStateStatus/statusCheckRollup 处理卡点 (≥2 DIRTY 派 batch agent / ≥2h block 升最高优先级) + merge gate 三联签判定, 反 idle 反空转。触发: 每 15 分钟 cron 自动触发 / 收到 idle_notification 但需真验证 / Teamlead 主动巡检 PR 卡点。反触发: 蓝图层立场审 / Phase 闸验收 (走 phase-exit-gate) / 单 milestone 内 review 路径 / 慢节奏蓝图偏差 audit (走 slow-cron)。"
 version: 1.0.0
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-skill-workflow
-description: Blueprintflow skill 仓库自身的更新流程: worktree → PR → 全员 vote → 合并 (skill 仓库自治, 不混业务项目流程)。触发: 新增 / 修改 / 删除 blueprintflow skill / 改 skill 反约束 / 加 lazy reference / 改 skill description / skill description 优化批量改。反触发: 业务项目实施 (走 milestone-fourpiece + implementation-design) / 业务项目蓝图迭代 (走 blueprint-iteration) / 单业务 PR review (走 pr-review-flow) / hotfix 紧急路径。
+description: "Blueprintflow skill 仓库自身的更新流程: worktree → PR → 全员 vote → 合并 (skill 仓库自治, 不混业务项目流程)。触发: 新增 / 修改 / 删除 blueprintflow skill / 改 skill 反约束 / 加 lazy reference / 改 skill description / skill description 优化批量改。反触发: 业务项目实施 (走 milestone-fourpiece + implementation-design) / 业务项目蓝图迭代 (走 blueprint-iteration) / 单业务 PR review (走 pr-review-flow) / hotfix 紧急路径。"
 version: 1.0.0
 ---
 

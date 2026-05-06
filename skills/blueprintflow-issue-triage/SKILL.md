@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-issue-triage
-description: 定时扫描 GitHub issues, Teamlead 先判分发到 Architect/PM/QA 做 triage (打 type/状态 label + 派 milestone), 是 blueprint-iteration 状态机的入口闸。触发: cron 周期到期 / 新 issue 进来未分类 / 用户提需求落 issue 后。反触发: 已有 `triaged` label 的 issue / closed 的 issue (wont-fix/archived) / type:question 等待用户回复中 / PR 维度卡点 (走 fast-cron / slow-cron)。
+description: "定时扫描 GitHub issues, Teamlead 先判分发到 Architect/PM/QA 做 triage (打 type/状态 label + 派 milestone), 是 blueprint-iteration 状态机的入口闸。触发: cron 周期到期 / 新 issue 进来未分类 / 用户提需求落 issue 后。反触发: 已有 `triaged` label 的 issue / closed 的 issue (wont-fix/archived) / type:question 等待用户回复中 / PR 维度卡点 (走 fast-cron / slow-cron)。"
 version: 1.0.0
 ---
 

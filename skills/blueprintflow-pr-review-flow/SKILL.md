@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-pr-review-flow
-description: PR open 到 merged 的标准流程: 双 review 路径 (Architect 架构 + QA acceptance + 涉敏感加 Security) + Security checklist (12 类 lazy reference) + 三联签 merge gate (CI + LGTM + 任务完成度) + 标准 squash, 永不 admin/ruleset bypass。触发: PR open 后派 review / 收 LGTM 后 merge / merge 前 CI fail 处理。反触发: PR 还未 open (走 milestone-fourpiece + implementation-design) / 实施未完 (走 4 件套 / design review) / draft PR 未 ready / 蓝图层立场审查 (走 brainstorm)。
+description: "PR open 到 merged 的标准流程: 双 review 路径 (Architect 架构 + QA acceptance + 涉敏感加 Security) + Security checklist (12 类 lazy reference) + 三联签 merge gate (CI + LGTM + 任务完成度) + 标准 squash, 永不 admin/ruleset bypass。触发: PR open 后派 review / 收 LGTM 后 merge / merge 前 CI fail 处理。反触发: PR 还未 open (走 milestone-fourpiece + implementation-design) / 实施未完 (走 4 件套 / design review) / draft PR 未 ready / 蓝图层立场审查 (走 brainstorm)。"
 version: 1.0.0
 ---
 

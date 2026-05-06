@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-blueprint-write
-description: 把 brainstorm 收敛的立场落成 docs/blueprint/ 蓝图文档, 定义产品形状的 source of truth (含立场 + 反约束 + 边界 + grep 锚)。触发: brainstorm 已收敛, 立场拍板待落地 / 首版蓝图起草 / 蓝图新模块章节落地。反触发: brainstorm 立场未定 (先走 brainstorm) / 已 freeze 蓝图的字面 patch (直接 commit, 走 blueprint-iteration patch 规则) / 立场反转 (走 blueprint-iteration 开 next 版) / 实施期 spec brief / 文案锁。
+description: "把 brainstorm 收敛的立场落成 docs/blueprint/ 蓝图文档, 定义产品形状的 source of truth (含立场 + 反约束 + 边界 + grep 锚)。触发: brainstorm 已收敛, 立场拍板待落地 / 首版蓝图起草 / 蓝图新模块章节落地。反触发: brainstorm 立场未定 (先走 brainstorm) / 已 freeze 蓝图的字面 patch (直接 commit, 走 blueprint-iteration patch 规则) / 立场反转 (走 blueprint-iteration 开 next 版) / 实施期 spec brief / 文案锁。"
 version: 1.0.0
 ---
 

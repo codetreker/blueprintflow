@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-phase-plan
-description: 蓝图 freeze 后把模块/立场拆成按价值闭环分期的 Phase (0/1/2/3/4+), 每 Phase 定退出 gate + 防偏离闸门 + milestone 列表。触发: 蓝图首版 freeze 后首次起 execution-plan / 蓝图 next 版 freeze 后重排 Phase / 卡死 milestone 评估踢回 backlog 后重排。反触发: 蓝图未 freeze (先走 blueprint-write) / Phase 内 milestone 拆段 (走 4 件套) / 单 milestone 实施细节 / 已有 execution-plan 字面 patch (直接 commit)。
+description: "蓝图 freeze 后把模块/立场拆成按价值闭环分期的 Phase (0/1/2/3/4+), 每 Phase 定退出 gate + 防偏离闸门 + milestone 列表。触发: 蓝图首版 freeze 后首次起 execution-plan / 蓝图 next 版 freeze 后重排 Phase / 卡死 milestone 评估踢回 backlog 后重排。反触发: 蓝图未 freeze (先走 blueprint-write) / Phase 内 milestone 拆段 (走 4 件套) / 单 milestone 实施细节 / 已有 execution-plan 字面 patch (直接 commit)。"
 version: 1.0.0
 ---
 

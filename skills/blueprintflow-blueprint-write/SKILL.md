@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-blueprint-write
-description: "Take the stances that came out of brainstorm and write them down as the blueprint documents in docs/blueprint/, the source of truth for the product's shape (stances + constraints + boundaries + grep anchors). Trigger: brainstorm has converged and stances are settled, ready to write down / drafting the first version of the blueprint / writing a new module chapter into the blueprint. Don't trigger: brainstorm hasn't settled yet (use brainstorm first) / a literal patch on a frozen blueprint (just commit, follow the patch rules in blueprint-iteration) / a stance reversal (use blueprint-iteration to open the next version) / a spec brief or content lock during execution."
+description: "Take stances that came out of brainstorm and write them down as the blueprint documents in docs/blueprint/, the source of truth for the product's shape (stances + constraints + boundaries + grep anchors). Use this skill whenever brainstorm has converged and stances are ready to be written down, the first version of the blueprint is being drafted, or a new module chapter is being added to the blueprint. Don't use when brainstorm hasn't settled yet (use brainstorm first), for a literal patch on a frozen blueprint (just commit, follow blueprint-iteration patch rules), for a stance reversal (use blueprint-iteration to open the next version), or for a spec brief or content lock during execution."
 version: 1.0.0
 ---
 

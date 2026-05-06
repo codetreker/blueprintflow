@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-team-roles
-description: "Part of the Blueprintflow methodology. Prompt templates for 6 roles (Architect/PM/Dev/QA/Designer/Security) plus Teamlead. Security must be independent — never merged into Architect. Use when spawning agents, confirming role boundaries, or arbitrating role conflicts. Don't use when the assignee is already known, prompts are loaded, or for single-file/hotfix work."
+description: "Part of the Blueprintflow methodology. Use when spawning the team or arbitrating role boundaries - provides prompt templates for the 6 roles + Teamlead and enforces Security as an independent role."
 version: 1.0.0
 ---
 

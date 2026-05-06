@@ -1,87 +1,87 @@
 ---
 name: blueprintflow-blueprint-iteration
-description: "蓝图首版 freeze 后的演进规则 (3 状态机 + 版本号 + 变更流转 + freeze 切版)。触发: 当前迭代验收过开下一版讨论 / 收到变更建议判 bug vs 非 bug / blueprint-next 收敛要 freeze。反触发: 蓝图首版起草 (走 blueprint-write) / 实施期 milestone 拆段 / 当前蓝图字面 typo 直 commit。"
+description: "Rules for evolving the blueprint after the first version is frozen — 3-state machine, version numbers, change routing, freeze and version cut. Use this skill whenever the current iteration has passed acceptance and the next-version discussion is opening, a change suggestion comes in and someone needs to decide bug vs not-bug, or blueprint-next has converged and is ready to freeze. Don't use when drafting the first version of the blueprint (use blueprint-write), when splitting a milestone during execution, or for a literal typo on the current blueprint (just commit)."
 version: 1.0.0
 ---
 
 # Blueprint Iteration
 
-蓝图不是一锤子 freeze 之后永久不动, 但也不允许当前版直接立场反转改。本 skill 定义蓝图落地后的演进规则: 3 状态机 + 版本号 + 变更流转判定。
+The blueprint isn't frozen once and never touched again, but you also can't reverse a stance directly on the current version. This skill defines how the blueprint evolves after it's been written down: a 3-state machine, version numbers, and how change suggestions are routed.
 
-适用阶段: 蓝图首版已 freeze + 至少一个 Phase 已实施。早期 brainstorm + 首版 blueprint-write 阶段不走本 skill。
+When this applies: the first version of the blueprint is already frozen and at least one Phase has been executed. The early brainstorm + first-version blueprint-write stage doesn't go through this skill.
 
-## 3 状态机
+## 3-state machine
 
-| 状态 | 位置 | 含义 |
-|------|-----|-----|
-| 当前蓝图 | `docs/blueprint/` (repo 内) | frozen, 自带版本号, 实施 PR 锚点都指向这里 |
-| 下一版蓝图 | `docs/blueprint-next/` (repo 内) | 草拟期, 4 角色 + Teamlead/用户讨论中 |
-| Backlog | **GitHub issues** (label `backlog`) | 未规划, 持续积累, 不进当前迭代 |
+| State | Where it lives | Meaning |
+|-------|----------------|---------|
+| Current blueprint | `docs/blueprint/` (in repo) | Frozen, carries a version number, every execution PR anchors here |
+| Next-version blueprint | `docs/blueprint-next/` (in repo) | Draft state, four roles + Teamlead/user discussing |
+| Backlog | **GitHub issues** (label `backlog`) | Unplanned, accumulates over time, not in the current iteration |
 
-3 状态独立, 不混。当前蓝图允许 patch (字面/锚/反约束), 但**不允许立场反转** — 立场反转必走 `blueprint-next/`。
+The three states are independent and don't mix. The current blueprint allows patches (literal / anchor / constraint), but **stance reversals are not allowed** — those go to `blueprint-next/`.
 
-> **为什么 backlog 走 GitHub issues**:
-> - **Fork-friendly**: GitHub issues 跟着 origin 仓库走, 不污染 fork。fork 拿到的是干净蓝图 + 实施代码, 上游内部讨论 (噪音/敏感) 留在 origin。
-> - **协作原生**: comment / label / assign / link PR 全是 GitHub 原生能力, 不重发明。
-> - **可搜索 / 可 link**: PR `Closes gh#NNN` 直 link 真因, 不靠手写交叉引用。
+> **Why the backlog lives in GitHub issues:**
+> - **Fork-friendly**: GitHub issues stay with the origin repo and don't pollute forks. A fork gets a clean blueprint plus implementation code; upstream internal discussion (noise / sensitive material) stays at origin.
+> - **Native collaboration**: comments / labels / assignees / linked PRs are all GitHub-native, no need to reinvent.
+> - **Searchable / linkable**: PRs use `Closes gh#NNN` to link directly to the root cause, instead of hand-written cross references.
 
-## Backlog: GitHub issues SSOT
+## Backlog: GitHub issues as SSOT
 
-Backlog 真账走 GitHub issues, label `backlog` 标记。
+The backlog's source of truth is GitHub issues, marked with the `backlog` label.
 
-### Tag 体系 (3 维度)
+### Tag system (3 dimensions)
 
-每个 issue 必带至少一个 type + 一个状态 label。优先级 label 项目可选。
+Each issue must carry at least one type label and one status label. Priority labels are project-optional.
 
-**类型** (必须 1 个):
-- `type:bug` — 当前蓝图设计如此但实施漂 / 蓝图 typo / 反约束漏锚
-- `type:feature` — 新立场 / 新模块 / 新需求
-- `type:question` — 拿不准 bug 还是 feature, 待 Architect/Teamlead 判
-- `type:tech-debt` — 实施期欠的技术债 (refactor / 测试覆盖 / 文档跟不上)
+**Type** (required, pick one):
+- `type:bug` — current blueprint says X but execution drifted / blueprint typo / constraint anchor missing
+- `type:feature` — new stance / new module / new requirement
+- `type:question` — unsure whether bug or feature, needs Architect / Teamlead to call
+- `type:tech-debt` — technical debt accrued during execution (refactor / test coverage / docs lagging)
 
-**状态** (必须 1 个):
-- `backlog` — 未规划, 等下一版讨论挑
-- `current-iteration` — 已纳入当前迭代 (bug fix / patch milestone)
-- `next-iteration` — 已纳入下一版蓝图 (blueprint-next 阶段)
-- `archived` — 历史保留, 不再处理 (上下文价值)
-- `wont-fix` — 评估过决定不做, close
+**Status** (required, pick one):
+- `backlog` — unplanned, waiting for the next-version discussion to pick it up
+- `current-iteration` — pulled into the current iteration (bugfix / patch milestone)
+- `next-iteration` — pulled into the next-version blueprint (blueprint-next stage)
+- `archived` — kept for history, not handled (context value)
+- `wont-fix` — evaluated and decided not to do, closed
 
-**优先级 (项目可选)**:
+**Priority (project-optional)**:
 - `p0-blocker` / `p1-high` / `p2-normal` / `p3-low`
 
-### Issue 流转规则
+### Issue routing rules
 
-新 issue 进来的 **入闸 triage** 走 `blueprintflow-issue-triage` (cron 扫 + Teamlead 先判分发 + Architect/PM/QA 角色分类 + 打 `triaged` label)。本 skill 主管 triage 之后的**状态机流转**:
+New issues come in through **the entry-point triage**, which is `blueprintflow-issue-triage` (cron scan + Teamlead first call + Architect/PM/QA role classification + `triaged` label). This skill governs the **state-machine routing after triage**:
 
 ```
-issue triaged (label 已打) → 状态机流转:
-  ├── type:bug + 当前蓝图覆盖 → label `current-iteration` + 派 patch / bugfix milestone
-  ├── type:feature / type:tech-debt → label `backlog` 等下一版
-  └── type:question → 升 Teamlead + 用户拍
+issue triaged (label applied) → state-machine routing:
+  ├── type:bug + covered by current blueprint → label `current-iteration` + assign patch / bugfix milestone
+  ├── type:feature / type:tech-debt → label `backlog`, wait for next version
+  └── type:question → escalate to Teamlead + user calls
 
-下一版讨论开始 → 扫所有 label `backlog` issues (人工一条条评):
-  ├── 挑入 → 移 label `backlog` → `next-iteration`
-  ├── 不要 → label `wont-fix` + close
-  └── 留 → 留 label `backlog` (但 issue body 更新 "为什么继续留")
+Next-version discussion opens → scan all `backlog` issues (review one by one):
+  ├── Pulled in → move label from `backlog` → `next-iteration`
+  ├── Rejected → label `wont-fix` + close
+  └── Kept → keep `backlog` (but update issue body with "why still kept")
 ```
 
-### Backlog issue body 必写字段
+### Required fields in a backlog issue body
 
-每个 backlog issue body 必含 (反 "光标题不够"):
+Every backlog issue body must contain (against "the title alone isn't enough"):
 
-- **来源**: 谁提的 / 哪个 PR # 触发的 / 哪次讨论
-- **为什么入这**: 不是 bug 的真因 — 新立场 / 新模块 / 优先级低 / 暂不确定
-- **不在范围**: 跟当前迭代的边界 (避免后续误塞当前)
+- **Source**: who proposed it / which PR # triggered it / which discussion
+- **Why it goes here**: the real reason it isn't a bug — new stance / new module / low priority / not yet sure
+- **Out of scope**: the boundary against the current iteration (so it doesn't get mistakenly stuffed back in)
 
-### 反约束
+### Constraints
 
-- 每个 issue 落 backlog 必有 "为什么入这" 说明, body 不能只标题
-- **不自动清理**, 每次下一版讨论开始时**人工扫所有 `backlog` label issues** 一次 (清理良机错过就堆积)
-- bug fix issue 必须 link 当前迭代的 patch / bugfix milestone (issue 跟 PR 双向可追)
+- Every issue dropped into the backlog must explain "why it goes here"; the body can't be just a title
+- **No automatic cleanup**, but **manually scan all `backlog` issues** every time a next-version discussion opens (miss this window and the backlog piles up)
+- A bugfix issue must link to the current iteration's patch / bugfix milestone (issue and PR are bidirectionally traceable)
 
-## 版本号 (蓝图自带, 不在 AGENTS.md)
+## Version numbers (the blueprint carries them, not AGENTS.md)
 
-蓝图版本号写在 `docs/blueprint/` 的 frontmatter:
+The blueprint version number lives in the frontmatter under `docs/blueprint/`:
 
 ```yaml
 ---
@@ -93,162 +93,162 @@ prev: vN.M-1
 
 ### Major bump (vN.M → v(N+1).0)
 
-立场反转 / 重命名 / 删模块 / 方向性大转。
+Stance reversal / rename / module removal / direction shift.
 
-例: 原蓝图 "本地优先无服务器" → 改成 "服务端优先 + 本地缓存"。
+Example: original blueprint was "local-first, no server" → changed to "server-first with local cache".
 
 ### Minor bump (vN.M → vN.(M+1))
 
-一组新需求加入, 没反转旧立场。
+A batch of new requirements added without reversing any old stance.
 
-例: 原蓝图有 A/B/C 三模块, 新加 D 模块, A/B/C 不动。
+Example: original blueprint had modules A/B/C; module D is added; A/B/C don't change.
 
-### Patch (不设版号)
+### Patch (no version number)
 
-字面 / 锚 / 反约束补丁。直接 commit, 无上限, 不 bump 版号。
+Literal / anchor / constraint patches. Just commit. No upper limit, no version bump.
 
-例: spec brief grep 锚补一条 / 反约束多写一句 / typo / §X.Y 引用修齐。
+Example: spec brief grep anchor adds one line / a constraint gains another sentence / typo / §X.Y reference fix-up.
 
-### 经验法则 (Architect 一句话)
+### Rule of thumb (Architect's one-liner)
 
-> 看到这版蓝图的人, 跟看 v(N-1) 的人沟通会**误解**吗?
+> If someone reading this version of the blueprint talks to someone who read v(N-1), will they **misunderstand each other**?
 >
-> - 会 → **major** (立场冲突, 沟通会撞)
-> - 不会, 只是不知道新东西 → **minor** (新增, 旧的还成立)
-> - 不影响理解 → **patch** (补漏, 不 bump 版号)
+> - Yes → **major** (stances conflict, communication collides)
+> - No, they just don't know about the new thing → **minor** (additive, the old still holds)
+> - Doesn't affect understanding → **patch** (filling gaps, no version bump)
 
-## 变更流转判定 (Architect 一句话)
+## Change-routing decision (Architect's one-liner)
 
-每条变更建议 (issue / PR comment / 用户提的需求) 进来, Architect 先判:
+For every change suggestion (issue / PR comment / user request), the Architect decides first:
 
-- **真 bug** (蓝图设计如此但实施漂 / 蓝图 typo / 反约束漏锚) → 加进**当前迭代**作为 patch 或 bugfix milestone, issue label `current-iteration` + `type:bug`
-- **不是 bug** (新立场 / 新模块 / 立场反转) → 入 **backlog**, issue label `backlog` + `type:feature` 或 `type:tech-debt`
-- 拿不准 → label `type:question` + 升 Teamlead
+- **Real bug** (current blueprint says X but execution drifted / blueprint typo / constraint anchor missing) → goes into the **current iteration** as a patch or bugfix milestone, issue labeled `current-iteration` + `type:bug`
+- **Not a bug** (new stance / new module / stance reversal) → goes into the **backlog**, issue labeled `backlog` + `type:feature` or `type:tech-debt`
+- Unsure → label `type:question` + escalate to Teamlead
 
-**默认走 backlog**。举证责任在 "这是 bug" 那边, 反 "啥都塞当前迭代" 拖死实施。
+**Default is backlog.** The burden of proof sits on "this is a bug", to push back against "stuff everything into the current iteration" and stall execution.
 
-## 当前蓝图 patch 规则
+## Current-blueprint patch rules
 
-- ✅ 允许 patch — 字面 / 锚补 / 反约束 / typo, 不 bump 版号, 直接 commit, 无上限
-- ❌ 不允许立场反转 — 必走 `blueprint-next/`, freeze 时一次性切
+- ✅ Patches allowed — literal / anchor fix-ups / constraints / typos, no version bump, just commit, no upper limit
+- ❌ Stance reversals not allowed — must go through `blueprint-next/` and be cut over at freeze time
 
-患者: 当前 patch 写多了发现实际是立场反转 → 立刻拉 `blueprint-next/`, 把 patch 退回去。
+Failure case: you've written so many patches you realize this is actually a stance reversal → immediately pull a `blueprint-next/` and back out the patches.
 
-### Patch / bugfix milestone PR 必 link 真因
+### Patch / bugfix milestone PRs must link the root cause
 
-patch / bugfix milestone PR body 用 GitHub `Closes gh#NNN` 语法 link 来源 issue:
+Patch / bugfix milestone PR bodies use GitHub's `Closes gh#NNN` syntax to link the originating issue:
 
 ```
 ## Summary
-修齐 §X.Y 立场漂移 (issue 报的真因)
+Fix §X.Y stance drift (root cause reported in the issue)
 
 Closes gh#NNN
 ```
 
-效果:
-- merge 后 issue 自动 close
-- 蓝图迭代真因可追 (PR ↔ issue 双向 link)
-- backlog issue 转 `current-iteration` 后实施完闭环留痕
+Effects:
+- The issue closes automatically when merged
+- The blueprint iteration's root cause stays traceable (PR ↔ issue bidirectional link)
+- After a backlog issue moves to `current-iteration` and the work lands, the loop is closed and recorded
 
-## Backlog 扫描 (下一版讨论开始时)
+## Backlog scan (when the next-version discussion opens)
 
-`gh issue list -l backlog --limit 1000` 拉所有 backlog issues, 一条条评:
+`gh issue list -l backlog --limit 1000` pulls every backlog issue. Go through them one by one:
 
-- 挑入 → label 改 `next-iteration`, 移出 `backlog`
-- 不要 → label 加 `wont-fix`, close
-- 留 → 留 `backlog`, 但 issue body 更新 "为什么继续留"
+- Pulled in → change label to `next-iteration`, remove `backlog`
+- Rejected → add `wont-fix`, close
+- Kept → keep `backlog`, but update the issue body with "why still kept"
 
-这是 backlog 集中梳理时机, 错过就堆积。
+This is the moment for backlog cleanup; miss it and it piles up.
 
-## 迭代生命周期
+## Iteration lifecycle
 
 ```
-当前迭代验收过
+Current iteration passes acceptance
    ↓
-Teamlead 提醒用户 "可开下一版讨论"
+Teamlead reminds the user "next-version discussion can open"
    ↓
-用户没回应 → AGENTS.md reminder-period 重复提醒
+User doesn't respond → AGENTS.md reminder-period repeats the reminder
    ↓
-用户拍开始
+User says go
    ↓
-扫 GitHub issues label `backlog` (清理 + 挑选, 移 `next-iteration`) + brainstorm
+Scan GitHub issues with label `backlog` (clean up + pick, move to `next-iteration`) + brainstorm
    ↓
-落 docs/blueprint-next/ + 迁移分析
+Write docs/blueprint-next/ + migration analysis
    ↓
-4 角色 + Teamlead/用户讨论
+Four roles + Teamlead/user discuss
    ↓
-用户拍板 (或用户授权 Teamlead 拍板)
+User signs off (or user authorizes Teamlead to sign off)
    ↓
 Freeze:
-  - blueprint-next/ → blueprint/ 替换
-  - 旧版 git tag (blueprint-vN.M) 留历史
-  - 写 docs/blueprint/<version>/source-issues.md (link 被挑入的 issue #, 没挑的不写, fork 可追溯)
-  - 被挑入的 issues label 从 `next-iteration` 改 `current-iteration`, 派 milestone 后实施
-  - 留 `backlog` 的 issues 不动 (持续)
-  - 创空 blueprint-next/ 开启下一版讨论入口
+  - blueprint-next/ → blueprint/ replacement
+  - Old version gets a git tag (blueprint-vN.M) for history
+  - Write docs/blueprint/<version>/source-issues.md (link issue # that were pulled in; don't list those that weren't; forks can trace back)
+  - Issues pulled in change label from `next-iteration` to `current-iteration`, then get assigned milestones for execution
+  - Issues kept at `backlog` are untouched (still pending)
+  - Create an empty blueprint-next/ to open the entry point for the next-version discussion
 ```
 
-### source-issues.md 留痕
+### source-issues.md trail
 
-freeze 时把被挑入的 issue # 列进 `docs/blueprint/<version>/source-issues.md`:
+At freeze time, list the picked-in issue # in `docs/blueprint/<version>/source-issues.md`:
 
 ```markdown
 # Source issues for blueprint vN.M
 
-本版蓝图来源 issues (按主题分组):
+The issues this version of the blueprint draws from (grouped by topic):
 
-## 模块 X
-- gh#123 — 标题, 1 句话本版兑现什么
-- gh#125 — 标题, 1 句话本版兑现什么
+## Module X
+- gh#123 — title, one sentence on what this version delivers
+- gh#125 — title, one sentence on what this version delivers
 
-## 模块 Y
+## Module Y
 - gh#127 — ...
 ```
 
-效果:
-- 让 fork 用户能追溯本版蓝图来源 (即便 fork 拿不到上游 issues 历史, 也能看到原 # 自己去上游查)
-- 没挑入的 issue 不写 (噪音, 留 GitHub backlog 即可)
-- 跟蓝图同 version 一起 freeze, 不可改
+Effects:
+- Fork users can trace where this version of the blueprint came from (even if the fork can't see upstream issue history, they can see the original numbers and look them up upstream)
+- Issues that weren't picked aren't listed (noise — leave them in the GitHub backlog)
+- Frozen together with the blueprint version, immutable
 
-### 卡死保险
+### Stuck-milestone safety net
 
-单 milestone 卡 ≥2 周 → Architect + PM 评估踢回 backlog 或拆段, 不拖整迭代。
+If a single milestone is stuck for ≥2 weeks → Architect + PM evaluate, kick it back to backlog or split it; don't drag the whole iteration.
 
-## AGENTS.md 配置 (项目自定, 不在蓝图)
+## AGENTS.md config (project-defined, not in the blueprint)
 
 ```yaml
 blueprint-iteration:
-  reminder-period: 2w  # 用户没回应时多久提醒一次
+  reminder-period: 2w  # how often to remind the user when they haven't responded
 ```
 
-reminder-period 项目自定 (e.g. 2w / 1m), 不写死。版本号规则**不写在这** — 在蓝图自带 frontmatter。
+`reminder-period` is project-defined (e.g. 2w / 1m), not hardcoded. Version-number rules are **not written here** — they live in the blueprint frontmatter.
 
-## 反模式
+## Anti-patterns
 
-- ❌ 蓝图当前版直接立场反转改 (实施 PR 锚漂, 历史污染)
-- ❌ 没扫 GitHub `backlog` issues 直接开下一版讨论 (清理良机错过, backlog 越积越大)
-- ❌ 版本号写在 AGENTS.md (蓝图自带 frontmatter, 跟蓝图同 source of truth)
-- ❌ Backlog 走 repo 内 docs 目录而非 GitHub issues (反 fork-friendly, 上游讨论噪音跟 fork 走)
-- ❌ 自动清 backlog issues (人工讨论时清, 反 "误删用户真需求")
-- ❌ Backlog issue body 只写标题不写 "为什么入这" (后续扫描无法判)
-- ❌ Patch / bugfix milestone PR 不 link `Closes gh#NNN` (真因断链)
-- ❌ 单 milestone 卡死拖整迭代 (踢回 backlog issue 或拆段, 不僵)
-- ❌ 把 "新立场" 当 "bug" 塞当前迭代 (举证责任倒置, 拖延实施)
-- ❌ Patch 写多了发现是立场反转还硬塞当前 (立刻拉 next, 不硬塞)
+- ❌ Reversing a stance directly on the current blueprint (execution PR anchors drift, history gets polluted)
+- ❌ Opening the next-version discussion without scanning GitHub `backlog` issues (cleanup window missed, backlog grows)
+- ❌ Writing the version number in AGENTS.md (the blueprint owns its frontmatter, same source of truth)
+- ❌ Keeping the backlog in repo docs instead of GitHub issues (anti-fork-friendly, upstream noise follows the fork)
+- ❌ Auto-cleaning backlog issues (cleanup happens during human discussion, against "accidentally deleting a real user need")
+- ❌ Backlog issue body has only a title, no "why it goes here" (later scans can't judge it)
+- ❌ Patch / bugfix milestone PR doesn't link `Closes gh#NNN` (root-cause chain breaks)
+- ❌ A single stuck milestone drags the whole iteration (kick it back to a backlog issue or split it; don't lock up)
+- ❌ Treating "a new stance" as "a bug" and stuffing it into the current iteration (burden of proof inverted, execution stalls)
+- ❌ Writing many patches, realizing it's a stance reversal, and still cramming into the current version (immediately open next, don't cram)
 
-## 调用方式
+## How to invoke
 
-蓝图首版 freeze + 至少一个 Phase 实施过后:
+After the first blueprint version is frozen and at least one Phase has been executed:
 
 ```
 follow skill blueprintflow-blueprint-iteration
 
-# 场景 1: 收到变更建议 (issue / PR comment / 用户提)
-Architect 判 bug / 非 bug → label issue + 当前迭代 patch / backlog
+# Scenario 1: change suggestion comes in (issue / PR comment / user)
+Architect decides bug / not-bug → label issue + current-iteration patch / backlog
 
-# 场景 2: 当前迭代验收过
-Teamlead 提醒用户 → 用户拍 → 扫 GitHub `backlog` issues + 开 blueprint-next/
+# Scenario 2: current iteration passes acceptance
+Teamlead reminds user → user says go → scan GitHub `backlog` issues + open blueprint-next/
 
-# 场景 3: blueprint-next/ 讨论收敛
-4 角色 + 用户拍板 → freeze + tag + 写 source-issues.md + label 改 current-iteration
+# Scenario 3: blueprint-next/ discussion converges
+Four roles + user sign off → freeze + tag + write source-issues.md + relabel current-iteration
 ```

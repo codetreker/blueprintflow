@@ -16,12 +16,15 @@ Claude Code 有 3 种配置组合。按以下决策树确认你的配置：
 
 #### Team mode + tmux（全能力）
 
-多个 Claude Code session 通过 team mode 通讯，tmux 管理多 pane。
+每个 teammate 都是**独立的 Claude Code 进程** (`claude --agent-id <name>@<team>` 启动), 各自独立 context window 和 token 配额. lead spawn teammate 时, Claude Code 自动起 child claude 进程并加入共享 mailbox; 在 tmux session 内, 默认显示模式是 split-pane, 每 teammate 自动占一个 pane.
+
+通讯走 `SendMessage` (背后是文件 mailbox `~/.claude/teams/<team>/inboxes/<name>.json` — 实测观察, 实验功能内部实现可能随版本变), 不是 tmux send-keys.
 
 **能力：** ✅ 持久化 ✅ 跨 agent 通讯 ✅ 共享 fs ✅ 定时调度 ✅ 并行多角色
 
 | 通用描述 | 具体命令 |
 |---------|---------|
+| 起团 | lead 在 tmux session 内: `TeamCreate({team_name})` + `Agent({team_name, name, subagent_type, run_in_background: true, prompt})` × N. Claude Code 自动起 child claude 进程并布局到 tmux pane |
 | 通知 \<Role\> | `SendMessage("role_name", content)` |
 | 创建 worktree | `cd <repo> && git worktree add .worktrees/<milestone> -b feat/<milestone> origin/main` |
 | 提交代码 | 在 worktree 里 `git add && git commit && git push` |
@@ -31,7 +34,17 @@ Claude Code 有 3 种配置组合。按以下决策树确认你的配置：
 | 开 PR | `gh pr create` (Teamlead 唯一) |
 | Merge PR | `gh pr merge <N> --squash` |
 
+**display mode 设置** (`~/.claude/settings.json`):
+
+- `teammateMode: "auto"` (默认) — 在 tmux session 内自动用 split-pane, 否则用 in-process
+- `teammateMode: "tmux"` — 强制 split-pane (要求 tmux 或 iTerm2)
+- `teammateMode: "in-process"` — 单 terminal, 用 Shift+Down 在不同 teammate 之间切换 (teammate 仍是独立 instance, 只是显示叠在一个 terminal 里)
+
+**前置**: agent teams 是实验功能, 必须开 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` (env 或 settings.json), 需要 Claude Code v2.1.32+.
+
 **规则适配：** 全部规则适用。
+
+**反模式**: ❌ 把 teammate 跟 subagent 当成同一个东西. subagent 是 lead session 内 spawn 的 Task, 跟 lead 共享 context, 只能 report 回 lead; teammate 是独立 Claude Code 进程, 各自 1M context, 互相通过 mailbox 直接通讯. 不要互换术语, 也不要假设 teammate 能看到 lead 的对话历史.
 
 #### Team mode 无 tmux（如 Windows）
 

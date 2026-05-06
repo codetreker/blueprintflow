@@ -77,6 +77,13 @@ Full role prompt templates in `blueprintflow:team-roles`.
 
 ## Stages + skill index
 
+### Stage 0: confirm your runtime
+**Goal**: know what your agent environment can and can't do before starting anything else
+
+0. **blueprintflow:runtime-adapter** — read this first. It tells you which communication, scheduling, and display commands to use based on your environment (Claude Code team mode + tmux / team mode without tmux / single session / OpenClaw / Codex / basic). Every later stage assumes you already know your runtime config.
+
+Output: you know your config (team mode? tmux? how to create crons? how to notify roles?)
+
 ### Stage 1: concept lock-in
 **Goal**: fuzzy idea → core stances + concept model + constraints a blueprint can be built on
 
@@ -193,6 +200,7 @@ tmux attach -t $SESSION
 ## Bootstrap
 
 ```
+0. blueprintflow:runtime-adapter  — confirm environment config (team mode? tmux? cron commands?)
 1. blueprintflow:team-roles      — spawn 6 roles (as needed)
 2. blueprintflow:brainstorm      — lock concepts + stances
 3. blueprintflow:blueprint-write — write the blueprint

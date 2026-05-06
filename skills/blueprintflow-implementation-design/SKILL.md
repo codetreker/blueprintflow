@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-implementation-design
-description: "After the four-piece set is in place but before any code is written, Dev writes an implementation design (data flow, data model, API contract, edge cases, alternative approaches, integration points). Architect + PM + Security + QA review it; only when all four are ✅ does coding start. The design doc lives in the same milestone PR as the four-piece set, implementation, and closure, not a separate PR. Use this skill whenever a milestone where the four-piece set is ready is about to start writing code, for an important refactor, or for a cross-module change. Don't use for a non-code milestone (docs-only, config-only, wording adjustments), when the four-piece set isn't in place (do that first), when design review has already passed and implementation is in progress (design is frozen, just code), for typos, or for hotfix urgent path."
+description: "Part of the Blueprintflow methodology. Dev writes an implementation design (data flow, API contract, edge cases, alternatives) after the four-piece set is ready but before coding. Four roles must approve before code starts. Lives in the same milestone PR. Use for code milestones, refactors, cross-module changes. Don't use for docs-only milestones, typos, or hotfixes."
 version: 1.0.0
 ---
 

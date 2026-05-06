@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-blueprint-iteration
-description: "Rules for evolving the blueprint after the first version is frozen — 3-state machine, version numbers, change routing, freeze and version cut. Use this skill whenever the current iteration has passed acceptance and the next-version discussion is opening, a change suggestion comes in and someone needs to decide bug vs not-bug, or blueprint-next has converged and is ready to freeze. Don't use when drafting the first version of the blueprint (use blueprint-write), when splitting a milestone during execution, or for a literal typo on the current blueprint (just commit)."
+description: "Part of the Blueprintflow methodology. Rules for evolving the blueprint after its first freeze — 3-state machine, version numbers, change routing, freeze cuts. Use when opening a next-version discussion, routing a change (bug vs non-bug), or freezing blueprint-next. Don't use for first blueprint draft (use blueprint-write), milestone splitting, or typo commits."
 version: 1.0.0
 ---
 

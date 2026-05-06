@@ -194,14 +194,14 @@ Start checkin (specific commands in the blueprintflow-runtime-adapter table):
 - Fast cron looks at the PR queue + idle dispatch; slow cron looks at blueprint / PROGRESS / flip delay; issue-triage cron scans GitHub issues for untriaged items — the three rails cover everything
 
 **Stopping**:
-- workflow session ends → durable: false makes them disappear automatically
-- Need to pause checkin (e.g. don't dispatch during brainstorm) → use `CronDelete` to remove explicitly; don't let them dispatch blindly
+- When the workflow session ends, crons should stop automatically (non-persistent by default)
+- Need to pause checkin (e.g. don't dispatch during brainstorm) → explicitly remove the cron jobs; don't let them dispatch blindly
 
 **Anti-patterns**:
 - ❌ Starting only fast cron and not slow → long-term drift accumulates with no audit
 - ❌ Starting fast + slow but not issue-triage → GitHub issues pile up untriaged, blueprint-iteration state machine starves
 - ❌ Starting cron but the prompt doesn't cite `blueprintflow:teamlead-{fast,slow}-cron-checkin` → cron behavior uncontrolled
-- ❌ durable: true without user signoff → leaks across sessions, dispatches into the wrong project
+- ❌ Making crons persist across sessions without user signoff → leaks into the wrong project
 
 ## Cross-project use
 

@@ -1,7 +1,7 @@
 ---
 name: blueprintflow-blueprint-iteration
 description: "Part of the Blueprintflow methodology. Use when the blueprint is already frozen and a change suggestion arrives - routes it through the 3-state machine (current / next / backlog) to evolve safely."
-version: 1.0.0
+version: 1.1.0
 ---
 
 # Blueprint Iteration

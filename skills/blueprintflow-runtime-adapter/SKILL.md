@@ -1,7 +1,7 @@
 ---
 name: blueprintflow-runtime-adapter
 description: "Part of the Blueprintflow methodology. Use when bringing up a team or switching agent environments - maps environment capabilities (messaging, files, scheduling, silence detection) to concrete operations."
-version: 1.0.0
+version: 1.1.0
 ---
 
 # Runtime Adapter

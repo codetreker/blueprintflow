@@ -1,7 +1,7 @@
 ---
 name: blueprintflow-blueprint-write
 description: "Part of the Blueprintflow methodology. Use when brainstorm has converged stances or a new module chapter is starting - writes them into docs/blueprint/ as the product-shape source of truth."
-version: 1.0.0
+version: 1.1.0
 ---
 
 # Blueprint Write

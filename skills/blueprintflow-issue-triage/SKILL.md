@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-issue-triage
-description: "Part of the Blueprintflow methodology. Scheduled scan of GitHub issues — Teamlead routes each to Architect/PM/QA for triage (labels + milestone assignment), the entry gate of the blueprint-iteration state machine. Use on cron trigger or new unclassified issues. Don't use on already-triaged, closed, or waiting-on-user issues, or PR-level blockers."
+description: "Part of the Blueprintflow methodology. Use on cron tick or when new untriaged GitHub issues arrive - Teamlead routes each to Architect/PM/QA, who apply type+status labels as the entry gate to blueprint iteration."
 version: 1.0.0
 ---
 

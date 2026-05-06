@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-phase-plan
-description: "After the blueprint is frozen, break the modules and stances into Phases (0/1/2/3/4+), each one closing a value loop. Each Phase gets exit gates, drift-prevention gates, and a milestone list. Use this skill whenever the first execution plan is being drafted after the first blueprint version is frozen, when Phases are being re-planned after the next blueprint version is frozen, or when re-planning after a stuck milestone is kicked back to backlog. Don't use when the blueprint isn't frozen yet (use blueprint-write first), when splitting milestones inside a Phase (use the four-piece flow), for single-milestone implementation details, or for a literal patch on an existing execution-plan (just commit)."
+description: "Part of the Blueprintflow methodology. Break frozen blueprint into value-loop Phases (0/1/2/3/4+), each with exit gates, drift-prevention gates, and a milestone list. Use after blueprint freeze or after re-planning. Don't use if blueprint isn't frozen (use blueprint-write), for in-Phase milestone splitting (use fourpiece), or for literal patches."
 version: 1.0.0
 ---
 

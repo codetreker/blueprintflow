@@ -124,59 +124,18 @@ Output: every milestone merged + acceptance template ⚪→🟢 flipped + REG-* 
 
 Output: new blueprint version frozen + old version git-tagged for history + source-issues.md to record provenance
 
-## Pane layout when starting the team (tmux only)
+## Team startup layout
 
-> The following only applies if your environment has tmux. For other environments see `blueprintflow-runtime-adapter`.
+How you lay out the team on screen depends on your runtime. See `blueprintflow-runtime-adapter` for concrete commands (tmux pane layout, display mode settings, etc.).
 
-When starting the team in tmux, lay the panes out sensibly — don't pile everyone into one flat row where you can't tell who's doing what.
+General principle: Teamlead gets the biggest field of view (coordination thread), roles are visible at a glance, and every pane/window is named so you can tell who's who.
 
-### Recommended layout (6 roles + Teamlead)
+### Layout anti-patterns
 
-```
-┌─────────────────┬──────────────┬──────────────┐
-│                 │  Architect   │  PM          │
-│   Teamlead      ├──────────────┼──────────────┤
-│   (tall left)   │  Dev-A       │  Dev-B/C     │
-│                 ├──────────────┼──────────────┤
-│                 │  QA          │  Designer    │
-└─────────────────┴──────────────┴──────────────┘
-```
-
-- **Teamlead takes the entire left column** (the coordination thread, biggest field of view)
-- **6 roles in a 2×3 grid on the right** (each cell equal height, names visible at a glance)
-- Security is required as an independent role and must take a cell (Architect can't double up); Designer is added per project need — without new visual components there's no need to allocate a cell
-
-### Team-spawn command skeleton
-
-```bash
-SESSION=blueprintflow
-tmux new-session -d -s $SESSION -x 220 -y 60   # large canvas
-# left half — Teamlead
-tmux send-keys -t $SESSION:0 'claude' Enter
-# right half split into 2x3
-tmux split-window -h -p 60 -t $SESSION:0
-tmux split-window -v -p 66 -t $SESSION:0.1
-tmux split-window -v -p 50 -t $SESSION:0.2
-tmux split-window -h -t $SESSION:0.1
-tmux split-window -h -t $SESSION:0.3
-tmux split-window -h -t $SESSION:0.5
-for p in 1 2 3 4 5 6; do
-  tmux send-keys -t $SESSION:0.$p 'claude' Enter
-done
-# pane names (shown in status line)
-tmux set-option -t $SESSION pane-border-status top
-tmux select-pane -t $SESSION:0.0 -T 'teamlead'
-tmux select-pane -t $SESSION:0.1 -T 'architect'
-# ... architect/pm/dev-a/dev-c/qa, etc
-tmux attach -t $SESSION
-```
-
-### Pane anti-patterns
-
-- ❌ Splitting everything left/right (7 thin columns, content invisible)
-- ❌ Teamlead in the same row as the roles (the coordination thread gets drowned)
-- ❌ Panes left unnamed (status line just says `bash`, can't tell who's who)
-- ❌ One window per session (slow to switch windows, can't see the full picture)
+- ❌ All roles in one flat row (too narrow to read)
+- ❌ Teamlead crammed into the same row as roles (coordination thread gets drowned)
+- ❌ Unnamed panes/windows (can't tell who's who)
+- ❌ One window per role with no overview (slow to switch, can't see the full picture)
 
 ## Key protocols
 

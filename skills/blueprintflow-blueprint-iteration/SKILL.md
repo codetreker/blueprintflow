@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-blueprint-iteration
-description: 蓝图首版 freeze 后的演进规则 (3 状态机 + 版本号 + 变更流转 + freeze 切版)。触发: 当前迭代验收过开下一版讨论 / 收到变更建议判 bug vs 非 bug / blueprint-next 收敛要 freeze。反触发: 蓝图首版起草 (走 blueprint-write) / 实施期 milestone 拆段 / 当前蓝图字面 typo 直 commit。
+description: "蓝图首版 freeze 后的演进规则 (3 状态机 + 版本号 + 变更流转 + freeze 切版)。触发: 当前迭代验收过开下一版讨论 / 收到变更建议判 bug vs 非 bug / blueprint-next 收敛要 freeze。反触发: 蓝图首版起草 (走 blueprint-write) / 实施期 milestone 拆段 / 当前蓝图字面 typo 直 commit。"
 version: 1.0.0
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-team-roles
-description: Blueprintflow 6 角色 (Architect/PM/Dev/QA/Designer/Security) prompt 模板 + Teamlead 职责定义, Security 必备独立角色不允许 Architect 兼任, 满编 8 人配置示例 (3 Dev + Architect + PM + QA + Security + Teamlead), 实际可灵活合并但 Security 必独立。触发: 起团 spawn agents / 确认某角色职责边界 / 派活前选合适角色 / 角色冲突仲裁。反触发: 已知道派给谁的具体派活动作 (直接通讯) / 角色 prompt 模板已加载 / 单文件机械改动 / 不需多角色协作的 hotfix。
+description: "Blueprintflow 6 角色 (Architect/PM/Dev/QA/Designer/Security) prompt 模板 + Teamlead 职责定义, Security 必备独立角色不允许 Architect 兼任, 满编 8 人配置示例 (3 Dev + Architect + PM + QA + Security + Teamlead), 实际可灵活合并但 Security 必独立。触发: 起团 spawn agents / 确认某角色职责边界 / 派活前选合适角色 / 角色冲突仲裁。反触发: 已知道派给谁的具体派活动作 (直接通讯) / 角色 prompt 模板已加载 / 单文件机械改动 / 不需多角色协作的 hotfix。"
 version: 1.0.0
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-milestone-fourpiece
-description: Milestone 实施前建立 4 件基线文档 (Architect spec brief / PM stance + content lock / QA acceptance template), 锁立场 + 拆段 + 验收 + 文案, 跟 implementation design + 实施 + e2e + closure 全在同一 milestone PR 内。触发: Phase plan 拆完 milestone, 启动具体 milestone / Teamlead 唯一创建 .worktrees/<milestone> 派活给 Architect/PM/QA。反触发: 蓝图层立场未定 (走 brainstorm / blueprint-write) / Phase 拆段 (走 phase-plan) / 已有 4 件套进 implementation design (走 implementation-design) / docs-only / hotfix 紧急路径。
+description: "Milestone 实施前建立 4 件基线文档 (Architect spec brief / PM stance + content lock / QA acceptance template), 锁立场 + 拆段 + 验收 + 文案, 跟 implementation design + 实施 + e2e + closure 全在同一 milestone PR 内。触发: Phase plan 拆完 milestone, 启动具体 milestone / Teamlead 唯一创建 .worktrees/<milestone> 派活给 Architect/PM/QA。反触发: 蓝图层立场未定 (走 brainstorm / blueprint-write) / Phase 拆段 (走 phase-plan) / 已有 4 件套进 implementation design (走 implementation-design) / docs-only / hotfix 紧急路径。"
 version: 1.0.0
 ---
 

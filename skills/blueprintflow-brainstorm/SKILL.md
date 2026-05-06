@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-brainstorm
-description: 通过 Architect+PM+Teamlead 多轮讨论锁立场/概念/反约束, 是 blueprint-write 前置, 把模糊 idea 收敛成可落蓝图的核心立场。触发: 用户提"我想做 X"但产品立场未定 / 现有蓝图无该模块章节 / 团队对方向有分歧需对齐 / 新产品起步。反触发: typo/dep bump/lint 等机械 PR / 已有蓝图段落清楚的小补丁 / hotfix 紧急路径 / 实施中的 milestone 拆段问题 (走 phase-plan 或 4 件套)。
+description: "通过 Architect+PM+Teamlead 多轮讨论锁立场/概念/反约束, 是 blueprint-write 前置, 把模糊 idea 收敛成可落蓝图的核心立场。触发: 用户提\"我想做 X\"但产品立场未定 / 现有蓝图无该模块章节 / 团队对方向有分歧需对齐 / 新产品起步。反触发: typo/dep bump/lint 等机械 PR / 已有蓝图段落清楚的小补丁 / hotfix 紧急路径 / 实施中的 milestone 拆段问题 (走 phase-plan 或 4 件套)。"
 version: 1.0.0
 ---
 

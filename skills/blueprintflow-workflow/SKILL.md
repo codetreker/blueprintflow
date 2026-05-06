@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-workflow
-description: Blueprintflow 多 agent 协作做产品的工作流方法论入口, 覆盖概念→蓝图→Phase→milestone→PR→闸全生命周期, 是其他 blueprintflow skill 的导航。触发: 新产品启动 / 大功能起步 / 团队首次接入 blueprintflow / 不确定该走哪个具体 skill。反触发: 已在 milestone 实施中按 4 件套或 implementation design 推进 / 单文件 typo / dep bump / hotfix 紧急路径 / 已明确知道走哪个具体 skill。
+description: "Blueprintflow 多 agent 协作做产品的工作流方法论入口, 覆盖概念→蓝图→Phase→milestone→PR→闸全生命周期, 是其他 blueprintflow skill 的导航。触发: 新产品启动 / 大功能起步 / 团队首次接入 blueprintflow / 不确定该走哪个具体 skill。反触发: 已在 milestone 实施中按 4 件套或 implementation design 推进 / 单文件 typo / dep bump / hotfix 紧急路径 / 已明确知道走哪个具体 skill。"
 version: 1.0.0
 ---
 

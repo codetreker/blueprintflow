@@ -12,13 +12,13 @@ description: "Part of the Blueprintflow methodology. Use on cron tick or when ne
 Cron prompt:
 ```
 [issue triage · 3h]
-Spawn a subagent, then follow skill blueprintflow-issue-triage to execute.
+follow skill blueprintflow-issue-triage
 ```
 
 Inline trigger (when a new issue arrives outside the cron cycle):
 ```
 new issue gh#NNN arrived
-Spawn a subagent, then follow skill blueprintflow-issue-triage to execute.
+follow skill blueprintflow-issue-triage
 Teamlead decides → route → role classifies → set native type + apply triaged
 ```
 

@@ -12,7 +12,7 @@ description: "Part of the Blueprintflow methodology. Use on 2-4h cron tick or wh
 Cron prompt:
 ```
 [drift audit · 2 hours]
-Spawn a subagent, then follow skill blueprintflow-teamlead-slow-cron-checkin to execute.
+follow skill blueprintflow-teamlead-slow-cron-checkin
 ```
 
 ## What to do when this cron fires

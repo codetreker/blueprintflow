@@ -178,7 +178,7 @@ General principle: Teamlead gets the biggest field of view (coordination thread)
 ```
 Start checkin (specific commands in the blueprintflow-runtime-adapter table):
   Frequency: every 15 minutes
-  Body: "[auto check-in · 15 min] Spawn a subagent, then follow skill blueprintflow-teamlead-fast-cron-checkin to execute."
+  Body: "[auto check-in · 15 min] follow skill blueprintflow-teamlead-fast-cron-checkin"
 
 Start checkin (specific commands in the blueprintflow-runtime-adapter table):
   Frequency: every 30 minutes
@@ -186,7 +186,7 @@ Start checkin (specific commands in the blueprintflow-runtime-adapter table):
 
 Start checkin (specific commands in the blueprintflow-runtime-adapter table):
   Frequency: every 2 hours
-  Body: "[drift audit · 2 hours] Spawn a subagent, then follow skill blueprintflow-teamlead-slow-cron-checkin to execute."
+  Body: "[drift audit · 2 hours] follow skill blueprintflow-teamlead-slow-cron-checkin"
 
 Start checkin (specific commands in the blueprintflow-runtime-adapter table):
   Frequency: every 3 hours

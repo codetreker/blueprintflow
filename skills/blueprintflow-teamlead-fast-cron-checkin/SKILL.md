@@ -12,7 +12,7 @@ description: "Part of the Blueprintflow methodology. Use on 15-min cron tick or 
 Cron prompt:
 ```
 [auto check-in · 15 min]
-Spawn a subagent, then follow skill blueprintflow-teamlead-fast-cron-checkin to execute.
+follow skill blueprintflow-teamlead-fast-cron-checkin
 ```
 
 ## What to do when this cron fires

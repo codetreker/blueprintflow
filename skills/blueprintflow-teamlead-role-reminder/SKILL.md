@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-teamlead-role-reminder
-description: "Part of the Blueprintflow methodology. 30-min cron that reminds the Teamlead of their core responsibilities and runs a self-check to catch role drift (doing work instead of coordinating, blocking on subagents, forgetting to broadcast retractions)."
+description: "Part of the Blueprintflow methodology. 30-min cron that reminds the Teamlead to re-read their role definition and check if they've drifted from coordinating into doing."
 ---
 
 # Teamlead Role Reminder
@@ -15,4 +15,6 @@ follow skill blueprintflow-teamlead-role-reminder
 
 ## What to do when this cron fires
 
-Read `references/execution.md` for the 5-point self-check: doing others' work, blocking on subagent, forgot to broadcast, merging without reading PR, lost role awareness.
+1. Re-read your role: `blueprintflow-team-roles` → Teamlead section (responsibilities + anti-patterns).
+2. Re-read how work flows: `blueprintflow-workflow` → Stage 3 + Stage 4.
+3. Ask yourself: **am I coordinating, or have I started doing someone else's work?** If yes → stop and dispatch.

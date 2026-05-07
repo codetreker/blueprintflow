@@ -142,17 +142,13 @@ When a PR is blocked, **look at the type of block first**, then decide who to as
 
 ## How to invoke
 
-Set the cron prompt body to (kept short — Teamlead reads this skill, not an inline copy):
+Set the cron prompt body to (kept short — a self-reminder pointing at this skill):
 
 ```
-[fast-cron · 15 min] You are Teamlead. Coordinate, don't write code. Read blueprintflow-teamlead-fast-cron-checkin, dispatch a general-purpose subagent (run_in_background: true) with that skill's PR-queue scan + idle-role check. When subagent reports, you decide dispatch. Before any `gh pr merge`: run `gh pr view <N> --json body | jq -r .body | grep -cE "^- \[ \]"` — must be 0.
+[fast-cron · 15 min] You are Teamlead. Your job: dispatch idle roles, run the merge gate, coordinate — don't write code yourself. Follow blueprintflow-teamlead-fast-cron-checkin. If you don't remember the steps, re-read the skill.
 ```
 
-**Why short + subagent + self-reminder**:
-- The cron fires while Teamlead is mid-coordination. Inlining the full skill body bloats Teamlead's main context every tick and duplicates the skill (skill is the source of truth; cron is a pointer).
-- The actual scan (PR queue + idle check) is read-only inspection — that's subagent work, not Teamlead's. `run_in_background: true` means Teamlead's main thread keeps coordinating while the subagent inspects.
-- The self-reminder ("you coordinate" + the merge-gate grep) is the one-line refresh that catches the drifts Teamlead falls into most: running Bash directly, merging without checking the acceptance checkboxes.
-- This matches `blueprintflow-team-roles`: Teamlead coordinates, doesn't run Bash / Write / Edit. The subagent is the inspection arm.
+The cron prompt is a pointer, not a procedure. All HOW (subagent dispatch, merge-gate grep, dispatch priority, when waiting counts as legit idle) lives in this skill body — the "Teamlead self-reminder" section above is what Teamlead reads first every tick. Don't inline procedure steps into the cron prompt body; that bloats Teamlead's main context every tick and duplicates the skill, so when the procedure evolves there are now two places to keep in sync.
 
 ## Companion
 

@@ -92,13 +92,13 @@ Confirm PROGRESS.md matches reality:
 
 ## How to invoke
 
-Set the cron prompt body to (kept short — Teamlead reads this skill, not an inline copy):
+Set the cron prompt body to (kept short — a self-reminder pointing at this skill):
 
 ```
-[slow-cron · 2 h] You are Teamlead. Coordinate, don't write code. Read blueprintflow-teamlead-slow-cron-checkin, dispatch a general-purpose subagent (run_in_background: true) with that skill's six audit categories (PROGRESS / blueprint drift / docs/current / delayed flips / open-PR completeness / triaged-no-type queue). When subagent reports, you decide dispatch.
+[slow-cron · 2 h] You are Teamlead. Your job: audit drift (PROGRESS / blueprint / docs/current / flips / open-PR completeness / triaged-no-type queue), coordinate — don't run audits yourself. Follow blueprintflow-teamlead-slow-cron-checkin. If you don't remember the steps, re-read the skill.
 ```
 
-**Why short + subagent**: same reasoning as fast-cron — inlining the skill body bloats Teamlead's main context every tick; the audit is read-only inspection that fits a `run_in_background: true` subagent so Teamlead's main thread stays free for coordination. See `blueprintflow-teamlead-fast-cron-checkin §How to invoke` for the full why.
+The cron prompt is a pointer, not a procedure. All HOW (the six audit categories, dispatch priority, what to flag) lives in this skill body. Don't inline procedure steps into the cron prompt body; the skill is the single source of truth.
 
 ## Companion
 

@@ -172,10 +172,10 @@ Three independent, no overlap.
 
 ## How to invoke
 
-Cron prompt body (kept short — Teamlead reads this skill, not an inline copy):
+Set the cron prompt body to (kept short — a self-reminder pointing at this skill):
 
 ```
-[issue-triage · 3 h] You are Teamlead. Coordinate, don't classify yourself. Read blueprintflow-issue-triage, dispatch a general-purpose subagent (run_in_background: true) to scan untriaged GitHub issues. Subagent returns the routing list (which issue → Architect / PM / QA); you SendMessage the routing decisions to those roles.
+[issue-triage · 3 h] You are Teamlead. Your job: route untriaged issues to Architect / PM / QA — don't classify them yourself. Follow blueprintflow-issue-triage. If you don't remember the steps, re-read the skill.
 ```
 
 Inline trigger when a new issue arrives (outside cron):
@@ -183,7 +183,7 @@ Inline trigger when a new issue arrives (outside cron):
 ```
 new issue gh#NNN arrived
 follow skill blueprintflow-issue-triage
-Teamlead decides → route → role classifies → set native type + apply triaged
+Teamlead routes → role classifies → set native type + apply triaged
 ```
 
-**Why short + subagent**: same reasoning as fast-cron — the scan (`gh issue list` + filter untriaged) is read-only inspection that fits a `run_in_background: true` subagent. Teamlead's job is **routing the result**, not running the scan in the main context. The self-reminder "coordinate, don't classify yourself" guards against the most common drift: Teamlead seeing one untriaged issue and reflexively classifying it instead of routing to the right role.
+The cron prompt is a pointer, not a procedure. All HOW (routing table, native type field, triaged-no-type queue, status labels) lives in this skill body. Don't inline procedure steps into the cron prompt body; the skill is the single source of truth.

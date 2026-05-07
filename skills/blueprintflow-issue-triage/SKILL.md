@@ -20,13 +20,6 @@ follow skill blueprintflow-issue-triage
 Teamlead decides → route → role classifies → set native type + apply triaged
 ```
 
-**Companion crons (all must be running):**
-- `blueprintflow-teamlead-fast-cron-checkin` — 15 min, idle dispatch + merge gate
-- `blueprintflow-teamlead-role-reminder` — 30 min, Teamlead self-check
-- `blueprintflow-teamlead-slow-cron-checkin` — 2-4 h, blueprint drift audit
-
-**Stopping:** same rules as the other crons.
-
 ## What to do when this cron fires
 
 Read `references/execution.md` for the full execution logic: native issue type field usage, Teamlead routing table, scan scope, triaged label, user review queue, walkthrough example, downstream state machine, and anti-patterns.

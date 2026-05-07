@@ -13,13 +13,6 @@ description: "Part of the Blueprintflow methodology. 30-min cron that reminds th
 follow skill blueprintflow-teamlead-role-reminder
 ```
 
-**Companion crons (all must be running):**
-- `blueprintflow-teamlead-fast-cron-checkin` — 15 min, idle dispatch + merge gate
-- `blueprintflow-teamlead-slow-cron-checkin` — 2-4 h, blueprint drift audit
-- `blueprintflow-issue-triage` — 3 h, GitHub issue scan
-
-**Stopping:** same rules as the other crons.
-
 ## What to do when this cron fires
 
 Read `references/execution.md` for the 5-point self-check: doing others' work, blocking on subagent, forgot to broadcast, merging without reading PR, lost role awareness.

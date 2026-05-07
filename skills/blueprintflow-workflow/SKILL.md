@@ -178,19 +178,19 @@ General principle: Teamlead gets the biggest field of view (coordination thread)
 ```
 Start checkin (specific commands in the blueprintflow-runtime-adapter table):
   Frequency: every 15 minutes
-  Body: "[auto-checkin · 15 min] Phase progress + idle dispatch check (follow blueprintflow-teamlead-fast-cron-checkin)"
+  Body: "[auto check-in · 15 min] Spawn a subagent, then follow skill blueprintflow-teamlead-fast-cron-checkin to execute."
 
 Start checkin (specific commands in the blueprintflow-runtime-adapter table):
   Frequency: every 30 minutes
-  Body: "[role reminder · 30 min] Teamlead self-check: am I coordinating or doing? (follow blueprintflow-teamlead-role-reminder)"
+  Body: see blueprintflow-teamlead-role-reminder SKILL.md for the <system reminder> block
 
 Start checkin (specific commands in the blueprintflow-runtime-adapter table):
   Frequency: every 2 hours
-  Body: "[drift audit · 2 h] blueprint / docs/current / flip-delay check (follow blueprintflow-teamlead-slow-cron-checkin)"
+  Body: "[drift audit · 2 hours] Spawn a subagent, then follow skill blueprintflow-teamlead-slow-cron-checkin to execute."
 
 Start checkin (specific commands in the blueprintflow-runtime-adapter table):
   Frequency: every 3 hours
-  Body: "[issue triage · 3 h] scan GitHub issues, route untriaged to Architect/PM/QA (follow blueprintflow-issue-triage)"
+  Body: "[issue triage · 3h] follow skill blueprintflow-issue-triage"
 ```
 
 **Why required**:

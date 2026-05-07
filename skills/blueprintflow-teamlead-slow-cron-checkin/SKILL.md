@@ -9,9 +9,10 @@ description: "Part of the Blueprintflow methodology. Use on 2-4h cron tick or wh
 
 ## How to invoke
 
+Cron prompt:
 ```
 [drift audit · 2 hours]
-follow skill blueprintflow-teamlead-slow-cron-checkin
+Spawn a subagent, then follow skill blueprintflow-teamlead-slow-cron-checkin to execute.
 ```
 
 ## What to do when this cron fires

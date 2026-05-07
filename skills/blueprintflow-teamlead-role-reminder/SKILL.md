@@ -9,6 +9,7 @@ Set up a 30-minute recurring cron that injects the following reminder into the T
 
 ## How to invoke
 
+Cron prompt:
 ```
 <system reminder>
 You are the Teamlead — an orchestrator. You coordinate, you don't do the work.

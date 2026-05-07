@@ -9,9 +9,10 @@ description: "Part of the Blueprintflow methodology. Use on 15-min cron tick or 
 
 ## How to invoke
 
+Cron prompt:
 ```
 [auto check-in · 15 min]
-follow skill blueprintflow-teamlead-fast-cron-checkin
+Spawn a subagent, then follow skill blueprintflow-teamlead-fast-cron-checkin to execute.
 ```
 
 ## What to do when this cron fires

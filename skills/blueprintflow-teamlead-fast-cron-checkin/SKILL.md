@@ -145,7 +145,7 @@ When a PR is blocked, **look at the type of block first**, then decide who to as
 Set the cron prompt body to (kept short — the cron tick fires into Teamlead's main context every 15 min; bloating that context is wasteful):
 
 ```
-[fast-cron · 15 min] cron 触发. You are the Teamlead — orchestrator, not implementer; coordinate, don't write code or investigate CI logs yourself. Dispatch a general-purpose subagent (run_in_background: true) to follow blueprintflow-teamlead-fast-cron-checkin (PR queue scan + idle-role dispatch + merge-gate). Re-read the skill if you've forgotten what that involves.
+[fast-cron · 15 min] cron 触发. Read blueprintflow-teamlead-fast-cron-checkin "Teamlead self-reminder" section first (who you are + duties + merge gate + CI fail routing + subagent rule), then dispatch a general-purpose subagent (run_in_background: true) to follow that skill (PR queue scan + idle-role dispatch). Re-read the skill if you've forgotten what that involves.
 ```
 
 ### Why this prompt is short and dispatches a subagent (固化, 别再回头改)
@@ -154,10 +154,10 @@ This is the design — don't simplify it back, don't expand it further:
 
 1. **Short**: the cron fires every 15 min into Teamlead's main context. Inlining HOW (dispatch priority / merge-gate grep / PR-blocked routing) bloats main context every tick + duplicates this skill (skill is the source of truth).
 2. **Subagent**: the actual work (PR queue scan / idle role check) is read-only inspection. That fits a subagent. `run_in_background: true` means Teamlead's main thread stays free for coordination while the subagent inspects. Reading the subagent's summary then deciding dispatch is the orchestrator's job; running the scan is not.
-3. **Identity self-reminder ("you coordinate, don't write code")**: fast-cron is the cron Teamlead lands on most often, and the merge gate fires here. The drift Teamlead hits over and over: running Bash directly, opening CI logs to investigate, merging without the acceptance grep. The self-reminder catches all three.
-4. **"Re-read the skill"**: if Teamlead forgets the steps, the skill body is the source of truth — not a bigger prompt.
+3. **Points at "Teamlead self-reminder" section, doesn't inline it**: this skill body has a "Teamlead self-reminder (read first every tick)" section near the top. The cron prompt directs Teamlead to read that section instead of re-stating it inline. Why: the section evolves (new drift patterns get added there), but the prompt body is fixed in the cron config — if we inline, the prompt drifts from the skill. Pointer is the source-of-truth fix.
+4. **"Re-read the skill"**: if Teamlead forgets the steps after the self-reminder, the rest of the skill body is the source of truth — not a bigger prompt.
 
-The slow-cron and issue-triage prompts intentionally drop the identity reminder because their drift profile is different. Don't propagate the identity reminder there — see those skills' "Why" sections.
+The slow-cron and issue-triage prompts intentionally don't reference the self-reminder section because their drift profile is different (slow-cron is a single-job audit; issue-triage is routing). Don't propagate the reference there — see those skills' "Why" sections.
 
 ## Companion
 

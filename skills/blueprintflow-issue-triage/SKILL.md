@@ -172,10 +172,10 @@ Three independent, no overlap.
 
 ## How to invoke
 
-Set the cron prompt body to (kept short — a self-reminder pointing at this skill):
+Cron prompt body:
 
 ```
-[issue-triage · 3 h] You are Teamlead. Your job: route untriaged issues to Architect / PM / QA — don't classify them yourself. Follow blueprintflow-issue-triage. If you don't remember the steps, re-read the skill.
+[issue-triage · 3 h] follow blueprintflow-issue-triage
 ```
 
 Inline trigger when a new issue arrives (outside cron):
@@ -186,4 +186,4 @@ follow skill blueprintflow-issue-triage
 Teamlead routes → role classifies → set native type + apply triaged
 ```
 
-The cron prompt is a pointer, not a procedure. All HOW (routing table, native type field, triaged-no-type queue, status labels) lives in this skill body. Don't inline procedure steps into the cron prompt body; the skill is the single source of truth.
+The cron prompt is a pointer; all HOW lives in this skill body. The role/duty self-reminder lives only in `blueprintflow-teamlead-fast-cron-checkin`. Issue-triage is a focused single-job scan and doesn't need to repeat the identity reminder.

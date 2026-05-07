@@ -92,13 +92,13 @@ Confirm PROGRESS.md matches reality:
 
 ## How to invoke
 
-Set the cron prompt body to (kept short — a self-reminder pointing at this skill):
+Set the cron prompt body to:
 
 ```
-[slow-cron · 2 h] You are Teamlead. Your job: audit drift (PROGRESS / blueprint / docs/current / flips / open-PR completeness / triaged-no-type queue), coordinate — don't run audits yourself. Follow blueprintflow-teamlead-slow-cron-checkin. If you don't remember the steps, re-read the skill.
+[slow-cron · 2 h] follow blueprintflow-teamlead-slow-cron-checkin
 ```
 
-The cron prompt is a pointer, not a procedure. All HOW (the six audit categories, dispatch priority, what to flag) lives in this skill body. Don't inline procedure steps into the cron prompt body; the skill is the single source of truth.
+The cron prompt is a pointer; all HOW lives in this skill body. The role/duty self-reminder lives only in `blueprintflow-teamlead-fast-cron-checkin` — that's where Teamlead first lands every tick. Slow-cron is a focused single-job audit and doesn't need to repeat the identity reminder.
 
 ## Companion
 

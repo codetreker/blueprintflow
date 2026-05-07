@@ -7,7 +7,8 @@ description: "Part of the Blueprintflow methodology. 30-min cron that injects a 
 
 Set up a 30-minute recurring cron that injects the following reminder into the Teamlead's main context. The exact cron command depends on your runtime — see `blueprintflow-runtime-adapter`.
 
-**Cron prompt:**
+## How to invoke
+
 ```
 <system reminder>
 You are the Teamlead — an orchestrator. You coordinate, you don't do the work.

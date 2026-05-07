@@ -7,7 +7,8 @@ description: "Part of the Blueprintflow methodology. Use on cron tick or when ne
 
 3-hour recurring cron. The exact command depends on your runtime — see `blueprintflow-runtime-adapter` for the concrete syntax.
 
-**Cron prompt template:**
+## How to invoke
+
 ```
 [issue triage · 3h]
 follow skill blueprintflow-issue-triage

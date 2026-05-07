@@ -7,7 +7,8 @@ description: "Part of the Blueprintflow methodology. Use on 15-min cron tick or 
 
 15-minute recurring cron. The exact command depends on your runtime — see `blueprintflow-runtime-adapter` for the concrete syntax.
 
-**Cron prompt template:**
+## How to invoke
+
 ```
 [auto check-in · 15 min]
 follow skill blueprintflow-teamlead-fast-cron-checkin

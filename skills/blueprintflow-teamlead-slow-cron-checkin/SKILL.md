@@ -7,7 +7,8 @@ description: "Part of the Blueprintflow methodology. Use on 2-4h cron tick or wh
 
 2-4 hour recurring cron. The exact command depends on your runtime — see `blueprintflow-runtime-adapter` for the concrete syntax.
 
-**Cron prompt template:**
+## How to invoke
+
 ```
 [drift audit · 2 hours]
 follow skill blueprintflow-teamlead-slow-cron-checkin

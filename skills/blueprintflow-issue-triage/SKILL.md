@@ -28,13 +28,31 @@ Listing the type IDs available in your repo:
 gh api graphql -f query='query { repository(owner: "<o>", name: "<r>") { issueTypes(first: 20) { nodes { id name } } } }'
 ```
 
-Listing "triaged but no native type" issues (the user's review queue):
+Listing "triaged but no native type" issues (the user's review queue — see "User review queue" below for cadence):
+
+`gh issue list --json type` is **not** supported (the CLI only exposes a fixed set of fields and `type` is not one of them). Use GraphQL instead:
+
 ```bash
-gh issue list --state open --label triaged --json number,title,labels --limit 1000 \
-  | jq '[.[] | select(.type == null or .type.name == null)]'
+gh api graphql -f query='query($owner:String!, $repo:String!) { repository(owner:$owner, name:$repo) { issues(first:100, states:OPEN, filterBy:{labels:["triaged"]}) { nodes { number title issueType { name } } } } }' -f owner=<o> -f repo=<r> \
+  | jq '[.data.repository.issues.nodes[] | select(.issueType == null)]'
 ```
 
 If the repo has not enabled native issue types, ask the user / org admin to enable them before running triage. Don't fall back to `type:*` labels.
+
+## User review queue ("triaged but no native type")
+
+When a triager can't classify an issue (genuinely unclear whether Bug / Feature / Task), the rule is: **apply `triaged` only, don't set a type, don't set a status**. These accumulate into a queue that the user reviews manually.
+
+To prevent this queue from growing unchecked:
+
+- The **slow-cron audit** (`blueprintflow-teamlead-slow-cron-checkin`) includes a check for the size of this queue. If it exceeds a project-defined threshold (default 5), the cron flags it in the report so the user knows to review.
+- The user's expected cadence is **whenever the slow-cron flags it, or weekly review at minimum** — projects can override via `AGENTS.md`:
+  ```yaml
+  issue-triage:
+    triaged-no-type-threshold: 5      # flag in slow-cron when queue exceeds this
+    triaged-no-type-review: weekly    # expected user review cadence
+  ```
+- When the user reviews, they either set the native type (which moves the issue into the regular routing flow) or close it as `wont-fix` if it's not actionable.
 
 ## Responsibility
 

@@ -98,6 +98,7 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 | [blueprintflow-implementation-design](skills/blueprintflow-implementation-design/SKILL.md) | 实施 | 4 件套后写代码前 Dev 出实现方案设计 + 4 角色 review |
 | [blueprintflow-git-workflow](skills/blueprintflow-git-workflow/SKILL.md) | 实施 | 一 milestone 一 worktree 一 PR |
 | [blueprintflow-pr-review-flow](skills/blueprintflow-pr-review-flow/SKILL.md) | Review | 双 review + 标准 squash merge |
+| [blueprintflow-e2e-verification](skills/blueprintflow-e2e-verification/SKILL.md) | Review | UI 改动的 QA 验收必须走三个角度：代码改动是否按预期工作 / 产品是否好用 / 设计是否合理 |
 | [blueprintflow-teamlead-fast-cron-checkin](skills/blueprintflow-teamlead-fast-cron-checkin/SKILL.md) | 巡检 | 15min idle 派活 |
 | [blueprintflow-teamlead-slow-cron-checkin](skills/blueprintflow-teamlead-slow-cron-checkin/SKILL.md) | 巡检 | 2-4h 偏差 audit |
 | [blueprintflow-issue-triage](skills/blueprintflow-issue-triage/SKILL.md) | 巡检 | 3h cron 扫 GitHub issues, Teamlead 先判分发到 Architect/PM/QA |

@@ -104,6 +104,8 @@ For each PR, dispatch dual reviews immediately:
 | QA acceptance template / status flip PR | Architect (architecture) | PM (stance, only when v0 stance is involved) | — |
 | Sensitive write actions (auth/admin) PR | + Security | | |
 
+> **For client-facing UI / frontend PRs**: QA's signoff is not just code-level acceptance — it walks the three lines defined in `blueprintflow-e2e-verification` (code-level acceptance + product usability + design reasonableness) before LGTM. Skipping the usability or design line is exactly how UI bugs reach users.
+
 LGTM command (author cannot self-approve):
 ```
 gh pr comment <num> --body "LGTM (reason ≤30 chars)"

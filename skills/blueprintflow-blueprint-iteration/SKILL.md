@@ -30,15 +30,15 @@ The backlog's source of truth is GitHub issues, marked with the `backlog` label.
 
 ### Tag system (3 dimensions)
 
-Each issue must carry at least one type label and one status label. Priority labels are project-optional.
+Each issue must carry a **native issue type** + at least one status label. Priority labels are project-optional. The native type comes from GitHub's built-in issue type field (Bug / Feature / Task), not from `type:*` labels.
 
-**Type** (required, pick one):
-- `type:bug` — current blueprint says X but execution drifted / blueprint typo / constraint anchor missing
-- `type:feature` — new stance / new module / new requirement
-- `type:question` — unsure whether bug or feature, needs Architect / Teamlead to call
-- `type:tech-debt` — technical debt accrued during execution (refactor / test coverage / docs lagging)
+**Type** (required, native field — set via GraphQL `updateIssueIssueType`):
+- **Bug** — current blueprint says X but execution drifted / blueprint typo / constraint anchor missing
+- **Feature** — new stance / new module / new requirement
+- **Task** — technical debt accrued during execution (refactor / test coverage / docs lagging)
+- For "unsure whether bug or feature, needs Architect / Teamlead to call", **don't set a type yet** — apply only the `triaged` label. The user reviews "triaged but no native type" issues periodically and decides type manually
 
-**Status** (required, pick one):
+**Status** (required, label, pick one):
 - `backlog` — unplanned, waiting for the next-version discussion to pick it up
 - `current-iteration` — pulled into the current iteration (bugfix / patch milestone)
 - `next-iteration` — pulled into the next-version blueprint (blueprint-next stage)
@@ -50,13 +50,13 @@ Each issue must carry at least one type label and one status label. Priority lab
 
 ### Issue routing rules
 
-New issues come in through **the entry-point triage**, which is `blueprintflow-issue-triage` (cron scan + Teamlead first call + Architect/PM/QA role classification + `triaged` label). This skill governs the **state-machine routing after triage**:
+New issues come in through **the entry-point triage**, which is `blueprintflow-issue-triage` (cron scan + Teamlead first call + Architect/PM/QA role classification + native type set + `triaged` label). This skill governs the **state-machine routing after triage**:
 
 ```
-issue triaged (label applied) → state-machine routing:
-  ├── type:bug + covered by current blueprint → label `current-iteration` + assign patch / bugfix milestone
-  ├── type:feature / type:tech-debt → label `backlog`, wait for next version
-  └── type:question → escalate to Teamlead + user calls
+issue triaged (native type + triaged label applied) → state-machine routing:
+  ├── Bug + covered by current blueprint → label `current-iteration` + assign patch / bugfix milestone
+  ├── Feature / Task → label `backlog`, wait for next version
+  └── (no type yet, only `triaged` label) → user reviews periodically + decides type
 
 Next-version discussion opens → scan all `backlog` issues (review one by one):
   ├── Pulled in → move label from `backlog` → `next-iteration`
@@ -119,9 +119,9 @@ Example: spec brief grep anchor adds one line / a constraint gains another sente
 
 For every change suggestion (issue / PR comment / user request), the Architect decides first:
 
-- **Real bug** (current blueprint says X but execution drifted / blueprint typo / constraint anchor missing) → goes into the **current iteration** as a patch or bugfix milestone, issue labeled `current-iteration` + `type:bug`
-- **Not a bug** (new stance / new module / stance reversal) → goes into the **backlog**, issue labeled `backlog` + `type:feature` or `type:tech-debt`
-- Unsure → label `type:question` + escalate to Teamlead
+- **Real bug** (current blueprint says X but execution drifted / blueprint typo / constraint anchor missing) → goes into the **current iteration** as a patch or bugfix milestone, issue type set to **Bug** + label `current-iteration`
+- **Not a bug** (new stance / new module / stance reversal) → goes into the **backlog**, issue type set to **Feature** or **Task** + label `backlog`
+- Unsure → apply `triaged` only (no native type, no status); the user reviews "triaged but no native type" issues periodically and decides
 
 **Default is backlog.** The burden of proof sits on "this is a bug", to push back against "stuff everything into the current iteration" and stall execution.
 

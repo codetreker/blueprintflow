@@ -24,7 +24,7 @@ A complete UI E2E verification has **three lines**, not one. Skipping any one me
 ### Line 1: Code-level correctness (PR acceptance)
 Verify each acceptance criterion from the PR description really reproduces and really passes.
 
-- Use real user actions (form fill / button click) — not API / cURL / `page.evaluate(fetch)`
+- The verification action itself must be a real UI operation (form fill / button click) — API / cURL / `page.evaluate(fetch)` calls can supplement evidence (e.g. confirm the backend really stored the data), but they must not **substitute for** the UI operation itself
 - Capture concrete evidence: DOM truths, computed styles, network responses, console state
 - This is the line most QAs already do well; it's the **necessary** condition
 
@@ -54,7 +54,7 @@ Warning signals — ask yourself out loud:
 Operating points:
 
 - **Screenshots are triggers, not evidence**: after capturing, you must **review every image with your own eyes** — capturing alone is not the deliverable
-- **Look for problems actively in each screenshot** (mark at least 3 candidate issues per image, even if you ultimately decide they aren't bugs):
+- **Look for problems actively in each screenshot** — for every image, scan at least 3 of the dimensions below (alignment / spacing / sizing / direction / hierarchy / semantics) and write down anything that catches your eye. The action is "scan 3 dimensions"; the output is "anything that caught your eye, even if you ultimately decide it isn't a bug". An empty output after a real scan is fine — what's not fine is skipping the scan.
   - **Alignment**: are elements on the same row baseline-aligned? are elements in the same column edge-aligned?
   - **Spacing**: is there appropriate breathing room between elements? nothing stuck-together, nothing drifting apart absurdly?
   - **Sizing**: do icon / button / text sizes match the visual hierarchy? are proportions to neighboring elements correct?
@@ -103,10 +103,12 @@ After the PR-described acceptance is reproduced, **mandatory** to add these 7 it
 □ 5. Multi-viewport screenshots compared: narrow mobile (320) /
      tablet (768) / laptop (1280) / desktop (1920) + the specific
      width the user reported
-□ 6. Each screenshot eye-reviewed; per image, mark at least 3
-     candidate issue points (alignment / spacing / sizing /
-     direction / hierarchy / semantics) — write them down even if
-     you decide they aren't bugs
+□ 6. Each screenshot eye-reviewed; per image, scan at least 3 of
+     the dimensions (alignment / spacing / sizing / direction /
+     hierarchy / semantics) — the action is the scan, not the
+     count of issues. Write down anything that caught your eye,
+     even if you ultimately decide it's not a bug. Empty output
+     after a real scan is fine; skipping the scan is not.
 □ 7. "Designer perspective" self-check: "Would a designer who
      doesn't know the implementation wince at this UI? Compared
      with the most-used products in your product's category (for
@@ -144,4 +146,6 @@ This skill is not bound to any specific product type. Adapt the concrete pixel w
 
 ## Tone (rigid, not flexible)
 
-This skill is **rigid**. Do not adapt away the three-line structure or the operating checklist. The temptation is "the change is small, I'll just verify Line 1" — that temptation is exactly how UI bugs reach users. If you feel the urge to skip Line 2 or Line 3, that is the moment you most need them.
+**Scope first**: this skill only applies to client-facing UI / frontend changes. Backend-only PRs (no UI surface touched) **skip this entire skill** — verification follows whatever the project's normal backend QA practice is. The rigid rule below only kicks in once you've decided the PR is in scope.
+
+Once in scope, this skill is **rigid**. Do not adapt away the three-line structure or the operating checklist. The temptation is "the change is small, I'll just verify Line 1" — that temptation is exactly how UI bugs reach users. If you feel the urge to skip Line 2 or Line 3, that is the moment you most need them.

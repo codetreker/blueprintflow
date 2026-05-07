@@ -186,4 +186,4 @@ follow skill blueprintflow-issue-triage
 Teamlead routes → role classifies → set native type + apply triaged
 ```
 
-The cron prompt is a pointer; all HOW lives in this skill body. The role/duty self-reminder lives only in `blueprintflow-teamlead-fast-cron-checkin`. Issue-triage is a focused single-job scan and doesn't need to repeat the identity reminder.
+The cron prompt is a pointer; all HOW lives in this skill body.

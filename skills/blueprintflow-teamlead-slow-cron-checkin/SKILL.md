@@ -98,7 +98,7 @@ Set the cron prompt body to:
 [slow-cron · 2 h] follow blueprintflow-teamlead-slow-cron-checkin
 ```
 
-The cron prompt is a pointer; all HOW lives in this skill body. The role/duty self-reminder lives only in `blueprintflow-teamlead-fast-cron-checkin` — that's where Teamlead first lands every tick. Slow-cron is a focused single-job audit and doesn't need to repeat the identity reminder.
+The cron prompt is a pointer; all HOW lives in this skill body.
 
 ## Companion
 

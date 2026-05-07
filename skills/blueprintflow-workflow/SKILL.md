@@ -172,21 +172,13 @@ General principle: Teamlead gets the biggest field of view (coordination thread)
 
 ## Activation protocol (cron required)
 
-**When workflow activates, Teamlead must start all three crons**:
+**When workflow activates, Teamlead must start all three crons.** Each cron skill defines its own prompt template — see each skill's "How to invoke":
 
-```
-Start checkin (specific commands in the blueprintflow-runtime-adapter table):
-  Frequency: every 15 minutes
-  Body: "[auto-checkin · 15 min] Phase progress + idle dispatch check (follow blueprintflow-teamlead-fast-cron-checkin)"
+- Fast cron (15 min): `blueprintflow-teamlead-fast-cron-checkin`
+- Slow cron (2-4 h): `blueprintflow-teamlead-slow-cron-checkin`
+- Issue triage (3 h): `blueprintflow-issue-triage`
 
-Start checkin (specific commands in the blueprintflow-runtime-adapter table):
-  Frequency: every 2 hours
-  Body: "[drift audit · 2 h] blueprint / docs/current / flip-delay check (follow blueprintflow-teamlead-slow-cron-checkin)"
-
-Start checkin (specific commands in the blueprintflow-runtime-adapter table):
-  Frequency: every 3 hours
-  Body: "[issue triage · 3 h] scan GitHub issues, route untriaged to Architect/PM/QA (follow blueprintflow-issue-triage)"
-```
+Use the runtime-specific cron commands from `blueprintflow-runtime-adapter`. Don't invent your own prompt body — copy the one in the skill so cron behavior stays controlled.
 
 **Why required**:
 - Agents don't clock in; **without a cron prod, they go idle**. Active-check frequency on long projects drops to 0.
@@ -200,7 +192,7 @@ Start checkin (specific commands in the blueprintflow-runtime-adapter table):
 **Anti-patterns**:
 - ❌ Starting only fast cron and not slow → long-term drift accumulates with no audit
 - ❌ Starting fast + slow but not issue-triage → GitHub issues pile up untriaged, blueprint-iteration state machine starves
-- ❌ Starting cron but the prompt doesn't cite `blueprintflow:teamlead-{fast,slow}-cron-checkin` → cron behavior uncontrolled
+- ❌ Writing your own cron prompt body instead of copying the skill's "How to invoke" → cron behavior drifts from the skill
 - ❌ Making crons persist across sessions without user signoff → leaks into the wrong project
 
 ## Cross-project use

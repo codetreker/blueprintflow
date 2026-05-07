@@ -172,11 +172,10 @@ Three independent, no overlap.
 
 ## How to invoke
 
-Cron prompt:
+Cron prompt body (kept short — Teamlead reads this skill, not an inline copy):
 
 ```
-[issue triage · 3h]
-follow skill blueprintflow-issue-triage
+[issue-triage · 3 h] You are Teamlead. Coordinate, don't classify yourself. Read blueprintflow-issue-triage, dispatch a general-purpose subagent (run_in_background: true) to scan untriaged GitHub issues. Subagent returns the routing list (which issue → Architect / PM / QA); you SendMessage the routing decisions to those roles.
 ```
 
 Inline trigger when a new issue arrives (outside cron):
@@ -186,3 +185,5 @@ new issue gh#NNN arrived
 follow skill blueprintflow-issue-triage
 Teamlead decides → route → role classifies → set native type + apply triaged
 ```
+
+**Why short + subagent**: same reasoning as fast-cron — the scan (`gh issue list` + filter untriaged) is read-only inspection that fits a `run_in_background: true` subagent. Teamlead's job is **routing the result**, not running the scan in the main context. The self-reminder "coordinate, don't classify yourself" guards against the most common drift: Teamlead seeing one untriaged issue and reflexively classifying it instead of routing to the right role.

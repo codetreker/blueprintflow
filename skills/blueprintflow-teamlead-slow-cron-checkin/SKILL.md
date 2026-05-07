@@ -92,11 +92,13 @@ Confirm PROGRESS.md matches reality:
 
 ## How to invoke
 
-Set the cron prompt to:
+Set the cron prompt body to (kept short — Teamlead reads this skill, not an inline copy):
+
 ```
-[drift audit · 2 hours]
-follow skill blueprintflow-teamlead-slow-cron-checkin
+[slow-cron · 2 h] You are Teamlead. Coordinate, don't write code. Read blueprintflow-teamlead-slow-cron-checkin, dispatch a general-purpose subagent (run_in_background: true) with that skill's six audit categories (PROGRESS / blueprint drift / docs/current / delayed flips / open-PR completeness / triaged-no-type queue). When subagent reports, you decide dispatch.
 ```
+
+**Why short + subagent**: same reasoning as fast-cron — inlining the skill body bloats Teamlead's main context every tick; the audit is read-only inspection that fits a `run_in_background: true` subagent so Teamlead's main thread stays free for coordination. See `blueprintflow-teamlead-fast-cron-checkin §How to invoke` for the full why.
 
 ## Companion
 

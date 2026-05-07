@@ -7,6 +7,16 @@ description: "Part of the Blueprintflow methodology. Use on 15-min cron tick or 
 
 The cron is not a status report. It is a forward-motion action. Every check-in must hand out new work to every idle role; otherwise you've failed the job.
 
+## Teamlead self-reminder (read first every tick)
+
+When this cron fires, Teamlead reads this section before anything else:
+
+- **Who you are**: the Teamlead. You **coordinate**, you do not write code, run tests, or investigate CI logs yourself.
+- **Your job**: dispatch idle roles, broadcast retractions, run the merge gate, schedule the work — then get out of the way.
+- **The merge gate is hard**: before any `gh pr merge`, run `gh pr view <N> --json body | jq -r .body | grep -cE "^- \[ \]"`. If the output is not 0, do **not** merge. CI green + LGTM ≠ ready. Wait for the matching role to commit + tick the missing item.
+- **CI fail goes back to author**, not your investigation. Don't open `gh run view --log` to diagnose — that's the author's job. Send a one-line message to author with the run URL.
+- **Subagent for inspection**, not main context: this cron's actual scan (PR queue / idle role check) runs in a subagent (general-purpose, `run_in_background: true`). Teamlead main thread reads the subagent's summary and decides dispatch.
+
 ## Core rules
 
 ### 1. The cron must ACT, not just audit
@@ -132,11 +142,17 @@ When a PR is blocked, **look at the type of block first**, then decide who to as
 
 ## How to invoke
 
-Set the cron prompt to:
+Set the cron prompt body to (kept short — Teamlead reads this skill, not an inline copy):
+
 ```
-[auto check-in · 15 min]
-follow skill blueprintflow-teamlead-fast-cron-checkin
+[fast-cron · 15 min] You are Teamlead. Coordinate, don't write code. Read blueprintflow-teamlead-fast-cron-checkin, dispatch a general-purpose subagent (run_in_background: true) with that skill's PR-queue scan + idle-role check. When subagent reports, you decide dispatch. Before any `gh pr merge`: run `gh pr view <N> --json body | jq -r .body | grep -cE "^- \[ \]"` — must be 0.
 ```
+
+**Why short + subagent + self-reminder**:
+- The cron fires while Teamlead is mid-coordination. Inlining the full skill body bloats Teamlead's main context every tick and duplicates the skill (skill is the source of truth; cron is a pointer).
+- The actual scan (PR queue + idle check) is read-only inspection — that's subagent work, not Teamlead's. `run_in_background: true` means Teamlead's main thread keeps coordinating while the subagent inspects.
+- The self-reminder ("you coordinate" + the merge-gate grep) is the one-line refresh that catches the drifts Teamlead falls into most: running Bash directly, merging without checking the acceptance checkboxes.
+- This matches `blueprintflow-team-roles`: Teamlead coordinates, doesn't run Bash / Write / Edit. The subagent is the inspection arm.
 
 ## Companion
 

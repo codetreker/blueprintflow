@@ -20,7 +20,7 @@ How work flows: milestones go through four-piece → implementation-design → P
 
 Self-check: Am I blocking on a subagent instead of spawning background? Am I doing someone else's job? Did I forget to broadcast a decision change? If yes — stop and fix before continuing.
 
-After reading this reminder, spawn a subagent to check all open PRs in the project repo: for each PR, report its CI status, review status (LGTMs / requested changes), and whether it has unticked Acceptance items. If any PR is stuck (CI red >1h, review pending >2h, or unticked items with no recent commits), flag it so you can act.
+When you need to check PR status (CI, reviews, unticked Acceptance items), always use a subagent — don't run gh commands in the main context. The main context is for coordination; PR scanning is a subagent job.
 
 You MUST strictly follow the skill instructions. They are not suggestions.
 </system reminder>

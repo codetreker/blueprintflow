@@ -43,6 +43,25 @@ Under the new protocol — one milestone, one PR — PRs are opened early and ev
 - Implementation is all in, but docs/current sync hasn't been patched → assign Dev to patch.
 - The four-piece spec is in an old PR on main and was not cherry-picked into the milestone worktree → assign the Architect to commit it into the worktree.
 
+### 6. "Triaged but no native type" review-queue audit
+
+`blueprintflow-issue-triage` allows a triager to apply only the `triaged` label (no native type, no status) when an issue is genuinely unclear. These accumulate into the user's manual review queue. Slow-cron checks the queue size:
+
+```bash
+gh api graphql -f query='query($owner:String!, $repo:String!) { repository(owner:$owner, name:$repo) { issues(first:100, states:OPEN, filterBy:{labels:["triaged"]}) { nodes { number title issueType { name } } } } }' -f owner=<o> -f repo=<r> \
+  | jq '[.data.repository.issues.nodes[] | select(.issueType == null)] | length'
+```
+
+- If the count ≤ project threshold (default 5) → no flag, normal.
+- If > threshold → flag in the cron report so the user knows to review. Don't escalate to Teamlead — these need human judgment, not coordination.
+- AGENTS.md can override the threshold:
+  ```yaml
+  issue-triage:
+    triaged-no-type-threshold: 5
+  ```
+
+The user's expected cadence is "whenever slow-cron flags + weekly review at minimum". Slow-cron only surfaces the count; the user decides each issue's type manually (which moves it into regular routing).
+
 ## PROGRESS accuracy check
 
 Confirm PROGRESS.md matches reality:

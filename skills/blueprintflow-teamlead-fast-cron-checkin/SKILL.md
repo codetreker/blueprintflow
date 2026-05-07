@@ -33,6 +33,24 @@ Look for new work in this order:
 - c) **forward**: the next milestone (spec / acceptance / implementation / stance)
 - d) **maintenance**: REG audit / docs lint / out-of-date blueprint
 
+### 3.1 If a role goes idle, scan `current-iteration` issues first
+
+Before reaching for the default dispatch list, query open issues with the `current-iteration` status label and pick the highest-priority one that fits the idle role. These represent triaged work that has already been decided to ship in the current iteration — they take precedence over the default per-role queue, which is more about ongoing maintenance.
+
+```bash
+gh issue list --state open --label current-iteration --json number,title,labels,assignees --limit 100 \
+  | jq 'sort_by([.labels[].name] | map(select(test("^p[0-9]"))) | .[0] // "p9-none")'
+```
+
+For each idle role:
+1. Filter `current-iteration` issues by native type or content fit (Bug → Dev/QA, Feature → PM/Architect/Dev, Task → Architect/Dev).
+2. Pick the highest-priority one (`p0-blocker` > `p1-high` > `p2-normal` > `p3-low`).
+3. Skip if already assigned (`assignees` non-empty) or already linked to an open PR (search `Closes #<n>` in PR bodies).
+4. Dispatch as a milestone (one milestone, one PR; link the issue via `Closes gh#NNN`) or as a focused task in the current worktree.
+5. Only if the `current-iteration` queue is empty, fall back to the default dispatch list below.
+
+If a `current-iteration` issue has been sitting for more than 24h with no assignee + no linked PR, that's a stuck signal — flag it in the cron report and the Teamlead investigates (likely an unblock or scope-clarification problem, not idle dispatch).
+
 ### 4. cron output format
 - One sentence reporting current forward motion (PR # + one-line goal).
 - Hard blockers (PR check failing for too long / review unanswered for too long) listed separately with details.
@@ -105,6 +123,8 @@ When a PR is blocked, **look at the type of block first**, then decide who to as
 - Using "waiting for review feedback" as an idle excuse (the waiter who isn't in a wait state needs new work).
 - Treating audit as forward motion (audit + dispatch is forward motion).
 - Assuming "parallel will conflict" and refusing to parallelize (under the new protocol — one milestone, one worktree — multiple milestones run in parallel naturally).
+- **Skipping the `current-iteration` queue and going straight to the default dispatch list** — if there are open `current-iteration` issues, an idle role should pick one up before reaching for maintenance work (see §3.1).
+- **A `current-iteration` issue sitting for >24h with no assignee + no linked PR** — that's stuck, not parked. Flag it and unblock.
 - **"CI is green so merge"** — you must first read the PR body's Acceptance / Test plan and confirm every item is ticked (see §5).
 - **"subagent LGTM = merge signal"** — a subagent doesn't audit task completion. The Teamlead reads the PR body in person.
 - **CI fail → grab a subagent** — the author knows their own milestone best. Send it back to the author (see "PR BLOCKED routing").

@@ -5,9 +5,34 @@ description: "Part of the Blueprintflow methodology. Use on 15-min cron tick or 
 
 # Teamlead fast-cron check-in
 
-The cron is not a status report. It is a forward-motion action. Every check-in must hand out new work to every idle role; otherwise you've failed the job.
+---
 
-## Core rules
+## Part 1: How to invoke this cron
+
+Set up a 15-minute recurring cron. The exact command depends on your runtime — see `blueprintflow-runtime-adapter` for the concrete syntax.
+
+**Cron prompt template:**
+```
+[auto check-in · 15 min]
+follow skill blueprintflow-teamlead-fast-cron-checkin
+```
+
+**Frequency:** every 15 minutes. This is the heartbeat of forward motion.
+
+**Stopping:**
+- When the workflow session ends, crons should stop automatically (non-persistent by default)
+- Need to pause (e.g. during brainstorm) → explicitly remove the cron; don't let it dispatch blindly
+
+**Companion crons (all must be running):**
+- `blueprintflow-teamlead-role-reminder` — 30 min, Teamlead self-check ("am I coordinating or doing?")
+- `blueprintflow-teamlead-slow-cron-checkin` — 2-4 h, blueprint drift audit
+- `blueprintflow-issue-triage` — 3 h, GitHub issue scan
+
+---
+
+## Part 2: What to do when this cron fires
+
+The cron is not a status report. It is a forward-motion action. Every check-in must hand out new work to every idle role; otherwise you've failed the job.
 
 ### 1. The cron must ACT, not just audit
 Every idle role must walk away with new work. Only two exceptions:
@@ -51,7 +76,7 @@ For each idle role:
 
 If a `current-iteration` issue has been sitting for more than 24h with no assignee + no linked PR, that's a stuck signal — flag it in the cron report and the Teamlead investigates (likely an unblock or scope-clarification problem, not idle dispatch).
 
-### 4. cron output format
+### 4. Cron output format
 - One sentence reporting current forward motion (PR # + one-line goal).
 - Hard blockers (PR check failing for too long / review unanswered for too long) listed separately with details.
 
@@ -129,15 +154,3 @@ When a PR is blocked, **look at the type of block first**, then decide who to as
 - **"subagent LGTM = merge signal"** — a subagent doesn't audit task completion. The Teamlead reads the PR body in person.
 - **CI fail → grab a subagent** — the author knows their own milestone best. Send it back to the author (see "PR BLOCKED routing").
 - Treating the review dispatch as the only merge gate — review is a quality check; **task completion + CI + LGTM is the three-way signoff that lets you merge**.
-
-## How to invoke
-
-Set the cron prompt to:
-```
-[auto check-in · 15 min]
-follow skill blueprintflow-teamlead-fast-cron-checkin
-```
-
-## Companion
-
-- The slow-paced drift audit goes through `blueprintflow:teamlead-slow-cron-checkin`. The two don't overlap.

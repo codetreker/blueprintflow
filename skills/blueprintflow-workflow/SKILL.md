@@ -165,19 +165,24 @@ General principle: Teamlead gets the biggest field of view (coordination thread)
 3. blueprintflow:blueprint-write — write the blueprint
 4. blueprintflow:phase-plan      — split into Phases
 5. (loop) blueprintflow:milestone-fourpiece + blueprintflow:pr-review-flow + blueprintflow:teamlead-fast-cron-checkin
-6. (periodic) blueprintflow:teamlead-slow-cron-checkin
-7. (periodic) blueprintflow:issue-triage
-8. (Phase wrap-up) blueprintflow:phase-exit-gate
+6. (periodic) blueprintflow:teamlead-role-reminder
+7. (periodic) blueprintflow:teamlead-slow-cron-checkin
+8. (periodic) blueprintflow:issue-triage
+9. (Phase wrap-up) blueprintflow:phase-exit-gate
 ```
 
 ## Activation protocol (cron required)
 
-**When workflow activates, Teamlead must start all three crons**:
+**When workflow activates, Teamlead must start all four crons**:
 
 ```
 Start checkin (specific commands in the blueprintflow-runtime-adapter table):
   Frequency: every 15 minutes
   Body: "[auto-checkin · 15 min] Phase progress + idle dispatch check (follow blueprintflow-teamlead-fast-cron-checkin)"
+
+Start checkin (specific commands in the blueprintflow-runtime-adapter table):
+  Frequency: every 30 minutes
+  Body: "[role reminder · 30 min] Teamlead self-check: am I coordinating or doing? (follow blueprintflow-teamlead-role-reminder)"
 
 Start checkin (specific commands in the blueprintflow-runtime-adapter table):
   Frequency: every 2 hours
@@ -191,15 +196,16 @@ Start checkin (specific commands in the blueprintflow-runtime-adapter table):
 **Why required**:
 - Agents don't clock in; **without a cron prod, they go idle**. Active-check frequency on long projects drops to 0.
 - Under large requirements and long durations, no proactive dispatch = invisible delay (when the user asks "why did this stop?", that's this trigger firing)
-- Fast cron looks at the PR queue + idle dispatch; slow cron looks at blueprint / PROGRESS / flip delay; issue-triage cron scans GitHub issues for untriaged items — the three rails cover everything
+- Fast cron handles dispatch + merge gates; role-reminder catches Teamlead drift; slow cron audits blueprint consistency; issue-triage scans the backlog — the four rails cover everything
 
 **Stopping**:
 - When the workflow session ends, crons should stop automatically (non-persistent by default)
 - Need to pause checkin (e.g. don't dispatch during brainstorm) → explicitly remove the cron jobs; don't let them dispatch blindly
 
 **Anti-patterns**:
-- ❌ Starting only fast cron and not slow → long-term drift accumulates with no audit
+- ❌ Starting only fast cron and not the others → long-term drift accumulates, Teamlead drifts into doing work, issues pile up
 - ❌ Starting fast + slow but not issue-triage → GitHub issues pile up untriaged, blueprint-iteration state machine starves
+- ❌ Skipping role-reminder → Teamlead unconsciously starts doing Dev/QA work, blocks on subagents
 - ❌ Starting cron but the prompt doesn't cite `blueprintflow:teamlead-{fast,slow}-cron-checkin` → cron behavior uncontrolled
 - ❌ Making crons persist across sessions without user signoff → leaks into the wrong project
 

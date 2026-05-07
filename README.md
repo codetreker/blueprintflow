@@ -100,6 +100,7 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 | [blueprintflow-pr-review-flow](skills/blueprintflow-pr-review-flow/SKILL.md) | Review | 双 review + 标准 squash merge |
 | [blueprintflow-e2e-verification](skills/blueprintflow-e2e-verification/SKILL.md) | Review | UI 改动的 QA 验收必须走三个角度：代码改动是否按预期工作 / 产品是否好用 / 设计是否合理 |
 | [blueprintflow-teamlead-fast-cron-checkin](skills/blueprintflow-teamlead-fast-cron-checkin/SKILL.md) | 巡检 | 15min idle 派活 |
+| [blueprintflow-teamlead-role-reminder](skills/blueprintflow-teamlead-role-reminder/SKILL.md) | 巡检 | 30min Teamlead 职责自检 |
 | [blueprintflow-teamlead-slow-cron-checkin](skills/blueprintflow-teamlead-slow-cron-checkin/SKILL.md) | 巡检 | 2-4h 偏差 audit |
 | [blueprintflow-issue-triage](skills/blueprintflow-issue-triage/SKILL.md) | 巡检 | 3h cron 扫 GitHub issues, Teamlead 先判分发到 Architect/PM/QA |
 | [blueprintflow-phase-exit-gate](skills/blueprintflow-phase-exit-gate/SKILL.md) | 收尾 | Phase 4 联签 + closure |

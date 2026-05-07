@@ -98,16 +98,6 @@ Set the cron prompt body to:
 [slow-cron · 2 h] cron 触发. Dispatch a general-purpose subagent (run_in_background: true) to follow blueprintflow-teamlead-slow-cron-checkin (drift audit: PROGRESS / blueprint / docs/current / flips / open-PR completeness / triaged-no-type queue). Re-read the skill if you've forgotten what that involves.
 ```
 
-### Why this prompt is short and dispatches a subagent (固化, 别再回头改)
-
-This is the design — don't simplify it back, don't expand it further:
-
-1. **Short**: same reason as fast-cron — the cron fires every 2h into Teamlead's main context; bloating it is wasteful.
-2. **Subagent**: the actual work (six-category audit) is read-only inspection. Subagent does the scan + summarizes; Teamlead reads the summary and decides dispatch.
-3. **No identity self-reminder**: slow-cron is a single-job drift audit. The Teamlead drift profile here is "miss the audit", not "merge without grep" or "investigate CI in main context". The fast-cron's identity reminder already covers Teamlead's general drift; repeating it here would just be noise on a different cron tick.
-
-Don't propagate fast-cron's identity reminder into this prompt — that was tried and rejected (脱裤子放屁: writing "you coordinate, don't write code" into a prompt that's already not asking Teamlead to write code).
-
 ## Companion
 
 - Fast-paced idle dispatch goes through `blueprintflow:teamlead-fast-cron-checkin`. The two don't overlap.

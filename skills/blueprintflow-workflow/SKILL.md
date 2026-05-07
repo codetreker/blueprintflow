@@ -105,21 +105,22 @@ Output: PROGRESS.md ready, Phase 1/2/3+ split clearly
 5. **blueprintflow:milestone-fourpiece** — the 4 pieces are stacked as commits in the same worktree by everyone (spec / stance / acceptance / content-lock all in the same PR)
 6. **blueprintflow:implementation-design** — after the 4 pieces and before code, Dev writes the implementation design; Architect/PM/Security/QA review and only release to write code once all 4 sign off
 7. **blueprintflow:pr-review-flow** — PR (opened by Teamlead) goes through dual review + Security checklist + standard squash merge (never admin/ruleset bypass)
+8. **blueprintflow:e2e-verification** — for any client-facing UI / frontend change, QA's signoff inside `pr-review-flow` walks the three lines (code-level acceptance + product usability + design reasonableness) before LGTM
 
 Output: every milestone merged + acceptance template ⚪→🟢 flipped + REG-* registered
 
 ### Stage 4: ongoing push + Phase exit
 **Goal**: idle dispatch + drift correction + issue triage + Phase exit gate
 
-8. **blueprintflow:teamlead-fast-cron-checkin** — 15-min cron, dispatches work to idle roles (PR dimension)
-9. **blueprintflow:teamlead-slow-cron-checkin** — 2-4 h cron, drift audit (blueprint-drift dimension)
-10. **blueprintflow:issue-triage** — 3 h cron, scans GitHub issues; Teamlead first-call-and-route to Architect/PM/QA (issue dimension, parallel and non-overlapping with fast/slow cron)
-11. **blueprintflow:phase-exit-gate** — Phase wrap-up four-role signoff + closure announcement
+9. **blueprintflow:teamlead-fast-cron-checkin** — 15-min cron, dispatches work to idle roles (PR dimension)
+10. **blueprintflow:teamlead-slow-cron-checkin** — 2-4 h cron, drift audit (blueprint-drift dimension)
+11. **blueprintflow:issue-triage** — 3 h cron, scans GitHub issues; Teamlead first-call-and-route to Architect/PM/QA (issue dimension, parallel and non-overlapping with fast/slow cron)
+12. **blueprintflow:phase-exit-gate** — Phase wrap-up four-role signoff + closure announcement
 
 ### Stage 5: blueprint iteration (after all Phases pass)
 **Goal**: current blueprint accepted → evolve to the next blueprint version (3-state machine + version-number management)
 
-12. **blueprintflow:blueprint-iteration** — 3-state machine (current/next/GitHub issues backlog) + major/minor version numbers + change routing (real bug into current patch / non-bug into backlog) + freeze + tag cutover
+13. **blueprintflow:blueprint-iteration** — 3-state machine (current/next/GitHub issues backlog) + major/minor version numbers + change routing (real bug into current patch / non-bug into backlog) + freeze + tag cutover
 
 Output: new blueprint version frozen + old version git-tagged for history + source-issues.md to record provenance
 

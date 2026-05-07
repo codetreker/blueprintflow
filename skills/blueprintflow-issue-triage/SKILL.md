@@ -5,6 +5,38 @@ description: "Part of the Blueprintflow methodology. Use on cron tick or when ne
 
 # Issue Triage
 
+---
+
+## Part 1: How to invoke this cron
+
+Set up a 3-hour recurring cron. The exact command depends on your runtime — see `blueprintflow-runtime-adapter` for the concrete syntax.
+
+**Cron prompt template:**
+```
+[issue triage · 3h]
+follow skill blueprintflow-issue-triage
+```
+
+**Inline trigger** (when a new issue arrives outside the cron cycle):
+```
+new issue gh#NNN arrived
+follow skill blueprintflow-issue-triage
+Teamlead decides → route → role classifies → set native type + apply triaged
+```
+
+**Frequency:** every 3 hours. This is the issue dimension, parallel to fast-cron (PR dimension) and slow-cron (drift dimension).
+
+**Stopping:** same rules as the other crons.
+
+**Companion crons (all must be running):**
+- `blueprintflow-teamlead-fast-cron-checkin` — 15 min, idle dispatch + merge gate
+- `blueprintflow-teamlead-role-reminder` — 30 min, Teamlead self-check
+- `blueprintflow-teamlead-slow-cron-checkin` — 2-4 h, blueprint drift audit
+
+---
+
+## Part 2: What to do when this cron fires
+
 GitHub issues are the backlog SSOT (see `blueprintflow-blueprint-iteration`), but new issues don't classify themselves. This skill defines the gate where cron scans for issues, the Teamlead decides routing, and roles classify them.
 
 It runs in parallel to and doesn't overlap with `blueprintflow-teamlead-fast-cron-checkin` (PR dimension) or `blueprintflow-teamlead-slow-cron-checkin` (blueprint-drift audit dimension) — issue-triage is the **issue dimension**.
@@ -170,19 +202,3 @@ Three independent, no overlap.
 - ❌ Cron fires and dumps every untriaged issue onto a single role (route by character — don't slice it all one way)
 - ❌ A current-iteration issue triaged but no milestone dispatched after the triage cron — current-iteration means "execute now", not "park" (the next fast-cron should pick it up; if it doesn't, Teamlead unblocks it)
 
-## How to invoke
-
-Cron prompt:
-
-```
-[issue triage · 3h]
-follow skill blueprintflow-issue-triage
-```
-
-Inline trigger when a new issue arrives (outside cron):
-
-```
-new issue gh#NNN arrived
-follow skill blueprintflow-issue-triage
-Teamlead decides → route → role classifies → set native type + apply triaged
-```

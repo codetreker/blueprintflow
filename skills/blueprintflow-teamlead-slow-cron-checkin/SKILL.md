@@ -5,6 +5,31 @@ description: "Part of the Blueprintflow methodology. Use on 2-4h cron tick or wh
 
 # Teamlead slow-cron check-in
 
+---
+
+## Part 1: How to invoke this cron
+
+Set up a 2-4 hour recurring cron. The exact command depends on your runtime — see `blueprintflow-runtime-adapter` for the concrete syntax.
+
+**Cron prompt template:**
+```
+[drift audit · 2 hours]
+follow skill blueprintflow-teamlead-slow-cron-checkin
+```
+
+**Frequency:** every 2-4 hours. This is the drift-correction rail.
+
+**Stopping:** same rules as fast-cron — session end auto-stops; explicit remove to pause.
+
+**Companion crons (all must be running):**
+- `blueprintflow-teamlead-fast-cron-checkin` — 15 min, idle dispatch + merge gate
+- `blueprintflow-teamlead-role-reminder` — 30 min, Teamlead self-check
+- `blueprintflow-issue-triage` — 3 h, GitHub issue scan
+
+---
+
+## Part 2: What to do when this cron fires
+
 `blueprintflow:teamlead-fast-cron-checkin` pushes idle dispatches forward; slow-cron pushes drift correction. They don't overlap.
 
 ## Four audit categories (priority order)
@@ -89,15 +114,3 @@ Confirm PROGRESS.md matches reality:
 - Treating audit as forward motion (audit must end in dispatch, otherwise it's wasted).
 - Running all four categories before producing any output (any single finding triggers immediate dispatch — don't wait for the rest).
 - Mixing it with fast-cron's idle dispatch (slow-cron is dedicated to audit, fast-cron is dedicated to idle).
-
-## How to invoke
-
-Set the cron prompt to:
-```
-[drift audit · 2 hours]
-follow skill blueprintflow-teamlead-slow-cron-checkin
-```
-
-## Companion
-
-- Fast-paced idle dispatch goes through `blueprintflow:teamlead-fast-cron-checkin`. The two don't overlap.

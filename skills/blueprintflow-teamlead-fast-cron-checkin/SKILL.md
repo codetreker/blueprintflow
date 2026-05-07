@@ -142,13 +142,13 @@ When a PR is blocked, **look at the type of block first**, then decide who to as
 
 ## How to invoke
 
-Set the cron prompt body to (kept short — a self-reminder pointing at this skill):
+Set the cron prompt body to:
 
 ```
-[fast-cron · 15 min] You are Teamlead. Your job: dispatch idle roles, run the merge gate, coordinate — don't write code yourself. Follow blueprintflow-teamlead-fast-cron-checkin. If you don't remember the steps, re-read the skill.
+[fast-cron · 15 min] You are the Teamlead — orchestrator, not implementer. Dispatch a subagent (run_in_background: true) to follow blueprintflow-teamlead-fast-cron-checkin. Re-read the skill if you've forgotten what that involves.
 ```
 
-The cron prompt is a pointer, not a procedure. All HOW (subagent dispatch, merge-gate grep, dispatch priority, when waiting counts as legit idle) lives in this skill body — the "Teamlead self-reminder" section above is what Teamlead reads first every tick. Don't inline procedure steps into the cron prompt body; that bloats Teamlead's main context every tick and duplicates the skill, so when the procedure evolves there are now two places to keep in sync.
+The cron prompt is identity + delegation + pointer. All HOW (the self-reminder bullets above, dispatch priority, merge-gate grep, PR-blocked routing) lives in this skill body.
 
 ## Companion
 

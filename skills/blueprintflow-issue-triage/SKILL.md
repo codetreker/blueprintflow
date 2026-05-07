@@ -175,7 +175,7 @@ Three independent, no overlap.
 Cron prompt body:
 
 ```
-[issue-triage · 3 h] You are the Teamlead — orchestrator, not implementer. Dispatch a subagent (run_in_background: true) to follow blueprintflow-issue-triage. Re-read the skill if you've forgotten what that involves.
+[issue-triage · 3 h] follow blueprintflow-issue-triage
 ```
 
 Inline trigger when a new issue arrives (outside cron):
@@ -186,4 +186,4 @@ follow skill blueprintflow-issue-triage
 Teamlead routes → role classifies → set native type + apply triaged
 ```
 
-The cron prompt is identity + delegation + pointer. All HOW (routing table, native type field, status labels) lives in this skill body.
+The cron prompt is a pointer; all HOW lives in this skill body.

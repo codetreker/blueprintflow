@@ -95,10 +95,10 @@ Confirm PROGRESS.md matches reality:
 Set the cron prompt body to:
 
 ```
-[slow-cron · 2 h] You are the Teamlead — orchestrator, not implementer. Dispatch a subagent (run_in_background: true) to follow blueprintflow-teamlead-slow-cron-checkin. Re-read the skill if you've forgotten what that involves.
+[slow-cron · 2 h] follow blueprintflow-teamlead-slow-cron-checkin
 ```
 
-The cron prompt is identity + delegation + pointer. All HOW (the six audit categories, dispatch priority, what to flag) lives in this skill body.
+The cron prompt is a pointer; all HOW lives in this skill body.
 
 ## Companion
 

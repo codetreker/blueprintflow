@@ -172,13 +172,13 @@ Three independent, no overlap.
 
 ## How to invoke
 
-Cron prompt body:
+Set the cron prompt body to (this one runs in Teamlead's main context, NOT in a subagent — see "Why" below):
 
 ```
-[issue-triage · 3 h] follow blueprintflow-issue-triage
+[issue-triage · 3 h] cron 触发. Follow blueprintflow-issue-triage in your main context: scan untriaged issues, route each to Architect / PM / QA via SendMessage based on character. Re-read the skill if you've forgotten what that involves.
 ```
 
-Inline trigger when a new issue arrives (outside cron):
+Inline trigger when a new issue arrives outside the cron:
 
 ```
 new issue gh#NNN arrived
@@ -186,4 +186,12 @@ follow skill blueprintflow-issue-triage
 Teamlead routes → role classifies → set native type + apply triaged
 ```
 
-The cron prompt is a pointer; all HOW lives in this skill body.
+### Why this runs in main context, not a subagent (固化, 别再回头改)
+
+This is the design — don't try to "make it consistent with fast/slow-cron" by moving it into a subagent. It's intentionally different:
+
+1. **The work is routing, not inspection**. fast-cron + slow-cron's actual work is read-only scan → summary → Teamlead decides dispatch. Issue-triage's actual work is "read each untriaged issue, decide which role's character it fits, SendMessage route". The routing decision is part of the work itself, not something Teamlead does after the subagent reports.
+2. **SendMessage is a coordination tool, not an inspection tool**. A subagent could read issues, but to actually route them it would need to SendMessage in Teamlead's name — that's losing the routing decision context. Doing it in main context keeps the decision and the dispatch in the same place.
+3. **No identity self-reminder needed**. There's no merge gate, no "don't write code yourself" drift to catch in this cron — Teamlead is doing exactly what the orchestrator role calls for: routing.
+
+So this prompt is short + main-context, with no subagent indirection. Don't change it without reading this section first.

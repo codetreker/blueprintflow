@@ -73,6 +73,44 @@ digraph phase_plan_preflight {
 - ❌ Short-circuiting the four decision points with "or": you have to walk the graph in order (change volume → change type → team size → blueprint ready); each later condition depends on the earlier ones being confirmed
 - ❌ Permanently bypassing the 4-piece via hotfix / dep bump: a retro PR is required within 7 days (consistent with constraint 2)
 
+## When to start a new Phase vs add a wave
+
+Phase split is a **blueprint-level** action — you split into Phases when a blueprint version freezes. After Phases are split, work that comes later belongs to one of three categories:
+
+| Trigger | What it is | Where it lives |
+|---|---|---|
+| New blueprint version freezes (`blueprint-iteration`: next → current cutover) | Start a new **Phase N+1** with its own value loop + exit gate | Run the full phase-plan flow → `docs/tasks/phase-N-{name}/phase-plan.md` |
+| Current blueprint's "gap-to-target" rewrite (e.g. a `§3 with current state` table that documents work still pending) | A **milestone wave** under the existing Phase | `docs/tasks/<wave-name>/phase-plan.md` (no Phase number; the wave itself names the work) |
+| Ad-hoc bug / feature from a GitHub issue | A single milestone, no wave, no new Phase | `docs/tasks/<issue#>-<slug>/` |
+
+The distinguishing question is: **did the blueprint contract itself change?** A new blueprint version means the product-shape source of truth changed — that warrants a new Phase boundary with its own exit gate. Rewriting the gap table inside an existing blueprint chapter doesn't change the contract; it just builds toward the existing target. That's a wave.
+
+### Wave structure
+
+A wave is just a milestone set with a shared closure gate. You don't create a new `Phase 5` row in the project's overview; you create a folder under `docs/tasks/` that holds the wave's milestones, and the closure milestone (often the most demonstrable one — a release demo, a fault-tolerance proof) carries the gate signoffs.
+
+Wave folder layout:
+
+```
+docs/tasks/<wave-name>/
+├── phase-plan.md           # the wave's milestone list + closure gate
+├── <milestone-1>/
+├── <milestone-2>/
+└── ...
+```
+
+The closure milestone runs the same 4-role signoff (Dev / PM / QA / Security) the Phase exit gate uses, but applied to the wave's specific deliverable, not to a Phase boundary.
+
+### Why this distinction matters
+
+If you start a new Phase for every milestone wave, the Phase number loses its meaning (it just becomes a counter). Phases mark **blueprint-version transitions** so that dependents downstream (release notes, migration plans, quarterly reviews) can map "what was true at Phase N exit" to "what changed between Phase N and Phase N+1". A wave inside one blueprint version doesn't change what's true; it just fills in already-planned work.
+
+Anti-patterns:
+
+- ❌ Starting a Phase 5 for every gap-table rewrite (Phase counter inflation)
+- ❌ Treating an ad-hoc bug fix as a wave (overhead — a single milestone is enough)
+- ❌ Editing the `_archive`-d execution-plan.md to add a new Phase row (history is frozen; new Phases live in `docs/tasks/`)
+
 ## How to split Phases
 
 Split by **value loop**, not by technical layer:

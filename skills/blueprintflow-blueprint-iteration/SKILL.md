@@ -208,6 +208,12 @@ Effects:
 - Issues that weren't picked aren't listed (noise — leave them in the GitHub backlog)
 - Frozen together with the blueprint version, immutable
 
+### After cutover: trigger a new Phase
+
+When the next-version blueprint becomes the current version (cutover complete, old current archived under git tag), the Architect runs `blueprintflow:phase-plan` to split the new blueprint into Phase N+1 (where N is the previous Phase number). The new Phase has its own value loop, exit gate, and milestone list.
+
+This is the only path that creates a new Phase — milestone waves inside an existing blueprint version do not (see `blueprintflow:phase-plan` "When to start a new Phase vs add a wave").
+
 ### Stuck-milestone safety net
 
 If a single milestone is stuck for ≥2 weeks → Architect + PM evaluate, kick it back to backlog or split it; don't drag the whole iteration.

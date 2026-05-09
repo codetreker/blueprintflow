@@ -9,6 +9,15 @@ Phase exit is the last checkpoint when finishing a Phase. You confirm everything
 
 This is **not** the same as wrapping up a single milestone. A milestone wraps up inside its own PR. Phase exit is one level higher — it closes a whole stretch of work made up of multiple milestones.
 
+## Phase exit gate vs wave closure gate
+
+This skill governs **Phase exit** — the boundary between blueprint versions / major Phases. It runs when:
+
+- All milestones in the current Phase are merged + acceptance ✅
+- The next blueprint version is ready to cut over (or this is the project's final Phase before steady-state)
+
+It does NOT run for **wave closure** — when a milestone wave inside a Phase finishes, the wave's closure milestone (a release demo, a fault-tolerance proof) handles its own 4-role signoff, but it doesn't transition Phases. See `blueprintflow:phase-plan` "When to start a new Phase vs add a wave" for the distinction.
+
 ## Before starting the exit flow
 
 Make sure these are all in place first:

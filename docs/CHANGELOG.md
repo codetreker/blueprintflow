@@ -33,6 +33,13 @@ Skill changes (3 files, 3 sections added):
 
 A leaf can sit at the top level of `docs/tasks/` or nested inside a container (`docs/tasks/<wave>/<milestone>/`). See `blueprintflow-milestone-fourpiece` SKILL.md "Naming convention" for the worked example.
 
+### Phase / wave numbering rules
+
+- **Phase**: numbers only go up; no skip / no rollback / no split (1a / 1b) / no merge (1.5). A Phase that doesn't pass exit stays open as Phase N — work continues inside it.
+- **Wave**: uses a descriptive name as the folder ID (`borgee-helper-v1-release/`), not a number — waves inside a Phase have no required order, so numbering would imply sequence the model doesn't carry.
+
+See `blueprintflow-phase-plan` SKILL.md "Numbering rules" (H3 under "When to start a new Phase vs add a wave").
+
 ## v1.4.0 — 2026-05-09
 
 ### Default docs path upgrade

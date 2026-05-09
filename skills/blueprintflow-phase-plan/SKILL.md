@@ -113,6 +113,30 @@ Anti-patterns:
 - ❌ Treating an ad-hoc bug fix as a wave (overhead — a single milestone is enough)
 - ❌ Editing the `_archive`-d execution-plan.md to add a new Phase row (history is frozen; new Phases live in `docs/tasks/`)
 
+### Numbering rules
+
+**Phase numbers are monotonic and irreversible**:
+
+- Phase numbers only go up. After Phase N is opened, the next Phase is N+1, never N+2 (no skipping).
+- Phase exits don't roll back. If Phase N's exit gate doesn't pass, work continues inside Phase N — you don't drop back to Phase N-1.
+- Phase exits don't split or merge. Trying to split Phase 1 into 1a / 1b means the work that justified the original Phase boundary was wrong; instead, use waves to organize internal subdivisions while keeping Phase 1 as one boundary. Likewise, merging Phase 1 + 2 into "Phase 1.5" is an anti-pattern.
+- Phase numbers are historical markers — "Phase 1 closed = users can sign up and send messages" is a recorded fact, not a counter to increment.
+
+**Waves use names, not numbers**:
+
+- Inside a Phase, multiple waves may run with no required order between them. Numbering implies sequence, but waves don't need a sequence.
+- Use a descriptive name as the folder ID: `borgee-helper-v1-release/`, `mobile-onboarding-rebuild/`, `eu-data-residency-rollout/`.
+- Wave closure = the wave's whole folder moves to `docs/tasks/archived/<wave-name>/`.
+
+**Anti-patterns**:
+
+- ❌ Phase number skip (going from Phase 4 to Phase 6)
+- ❌ Phase number rollback (dropping back to Phase 3 because Phase 4 didn't pass exit)
+- ❌ Phase split (Phase 1a / Phase 1b)
+- ❌ Phase merge (Phase 1 + 2 = Phase 1.5)
+- ❌ Wave numbering (Wave-1 / Wave-2)
+- ❌ Wave name collision (two folders named the same wave)
+
 ## How to split Phases
 
 Split by **value loop**, not by technical layer:

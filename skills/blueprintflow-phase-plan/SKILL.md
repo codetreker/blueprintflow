@@ -101,7 +101,14 @@ docs/tasks/<wave-name>/
 
 `<wave-name>` and `phase-N-{name}` are **container folders**; the milestone subdirectories inside are **leaf folders**. See `blueprintflow-milestone-fourpiece` "Naming convention" for the leaf vs container split.
 
-The closure milestone runs the same 4-role signoff (Dev / PM / QA / Security) the Phase exit gate uses, but applied to the wave's specific deliverable, not to a Phase boundary.
+The closure milestone runs a 4-role signoff applied to the wave's specific deliverable, not to a Phase boundary. **The signoff roles are different from Phase exit**:
+
+| Gate type | Signoff roles | Why |
+|---|---|---|
+| **Phase exit** (`phase-exit-gate`) | Dev + PM + QA + Teamlead | Phase boundary = blueprint-version transition; Teamlead coordinates the handoff and the project moves into the next Phase |
+| **Wave closure** (closure milestone PR) | Dev + PM + QA + Security | Wave = implementation deliverable inside an existing blueprint; Security reviews the shipped code (not a Phase boundary), Dev signs off own implementation |
+
+Wave closure is just a regular milestone PR whose scope is the wave's full deliverable. It follows the normal `blueprintflow-milestone-fourpiece` + `blueprintflow-pr-review-flow` process — no separate skill needed. The 4-role signoff above is what `pr-review-flow` already requires for any milestone PR; the wave-closure framing simply notes that this particular milestone is the wave's closure.
 
 ### Why this distinction matters
 
@@ -125,7 +132,7 @@ Anti-patterns:
 **Waves use names, not numbers**:
 
 - Inside a Phase, multiple waves may run with no required order between them. Numbering implies sequence, but waves don't need a sequence.
-- Use a descriptive name as the folder ID: `borgee-helper-v1-release/`, `mobile-onboarding-rebuild/`, `eu-data-residency-rollout/`.
+- Use a descriptive name as the folder ID: `helper-v1-release/`, `mobile-onboarding-rebuild/`, `eu-data-residency-rollout/`.
 - Wave closure = the wave's whole folder moves to `docs/tasks/archived/<wave-name>/`.
 
 **Anti-patterns**:

@@ -47,7 +47,7 @@ When a milestone fully closes (acceptance ✅ + REG flipped + PROGRESS [x]), the
 
 - **Container folders** (`<phase-or-wave>`) — a group of related milestones with a shared closure gate
   - Phase (new blueprint version): `phase-N-{name}` (e.g. `phase-5-multi-host`)
-  - Wave (gap-table rewrite inside an existing blueprint version): the wave's name (e.g. `borgee-helper-v1-release`)
+  - Wave (gap-table rewrite inside an existing blueprint version): the wave's name (e.g. `helper-v1-release`)
   - Container folders hold a `phase-plan.md` at the top (the container's gate + milestone list) plus the milestone leaf folders inside
 
 Mixed example:
@@ -56,13 +56,22 @@ Mixed example:
 docs/tasks/
 ├── 698-agent-config-form-overlap/         # leaf (issue)
 ├── al-2a-content-lock/                    # leaf (blueprint milestone)
-├── borgee-helper-v1-release/              # container (wave)
+├── helper-v1-release/                     # container (wave)
 │   ├── phase-plan.md
-│   ├── HB-7-install-butler/               # leaf inside container
-│   ├── HB-8-manifest-signing/
-│   └── HB-14-devagent-demo/
+│   ├── install-butler/                    # leaf inside container
+│   ├── manifest-signing/
+│   └── devagent-demo/
 └── archived/
 ```
+
+> **Real example (Borgee):** Borgee uses `borgee-helper-v1-release/` (wave) holding `HB-7-install-butler/`, `HB-8-manifest-signing/`, `HB-14-devagent-demo/` (leaves), driven by issue #681 — see `docs/tasks/borgee-helper-v1-release/phase-plan.md`.
+
+### README.md vs container phase-plan.md
+
+- **`docs/tasks/README.md`** is the cross-folder index. It lists every entry directly inside `docs/tasks/` — both leaf folders (single milestones / issues) and container folders (phases / waves). It does NOT recursively list the milestones inside a container.
+- **`<container>/phase-plan.md`** is the container's own table of contents — it lists the milestones inside that container, the closure gate, and any container-specific context.
+
+When a Dev wants "everything inside wave X", they open `docs/tasks/<X>/phase-plan.md`. When they want "all in-flight work across the project", they open `docs/tasks/README.md`.
 
 Both leaf kinds share the same folder shape (spec / stance / acceptance / etc.) and the same one-folder-one-PR rules; only the folder name varies.
 

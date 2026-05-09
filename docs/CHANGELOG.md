@@ -1,5 +1,21 @@
 # Changelog
 
+## v1.4.2 — 2026-05-09
+
+### Wave container PR scope clarified
+
+`blueprintflow-phase-plan` SKILL.md "Wave structure" gets new subsections explaining:
+
+- What goes in a wave container PR (plan + placeholders, not full 4-piece)
+- What does NOT go in (leaf-level 4-piece — those live with each leaf milestone)
+- When the leaf milestone fills in its 4-piece (when the milestone actually starts)
+
+Surfaced by Borgee PR #720 (`borgee-helper-v1-release` wave): the team initially planned to add PM stance / Security pre-design / acceptance template at the container level, but realized the container is just `plan + placeholders` — full 4-piece belongs to each leaf milestone when it starts.
+
+### Plugin version
+
+- `plugin.json` bumped `1.4.1` → `1.4.2` (patch — documentation clarification, no behavior change)
+
 ## v1.4.1 — 2026-05-09
 
 ### Phase vs wave clarification (documentation patch)

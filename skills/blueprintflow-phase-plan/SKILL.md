@@ -101,6 +101,33 @@ docs/tasks/<wave-name>/
 
 `<wave-name>` and `phase-N-{name}` are **container folders**; the milestone subdirectories inside are **leaf folders**. See `blueprintflow-milestone-fourpiece` "Naming convention" for the leaf vs container split.
 
+#### What goes in the wave container PR
+
+The wave container itself is a milestone (one milestone, one PR — same rule). The container PR carries:
+
+1. **`phase-plan.md`** — the wave's table of contents: milestone list (entry / exit per milestone), dependency graph, closure gate definition
+2. **One subdirectory per planned milestone** — each holding a placeholder `spec.md` (≤30 lines: entry / exit / blueprint anchor). The full 4-piece for each milestone fills in later, when that milestone actually starts.
+3. **(Optional) container-level pre-work** — e.g. a Security pre-work doc when the wave touches sensitive paths (auth / API keys / runtime install). Only for waves where pre-work is genuinely worth doing up front.
+4. **`docs/tasks/README.md`** index entry pointing at the container
+
+#### What the container PR does NOT carry
+
+The container PR does **not** carry leaf-level 4-piece (PM stance / content-lock / acceptance template / Dev implementation design). Those live with each leaf milestone:
+
+- Drafting them at container time is too abstract — execution context only becomes concrete when the leaf milestone actually starts
+- Writing them in the container plus rewriting them in the leaf creates duplicates that drift apart
+- A heavy container PR is harder to review
+
+The container PR is intentionally light: **plan + placeholders**, not specifications.
+
+#### When does the leaf milestone fill in 4-piece?
+
+When a leaf milestone actually starts (Dev claims it, worktree opens), the four roles (Architect / PM / QA / Dev) write the leaf's 4-piece into the leaf folder using `blueprintflow-milestone-fourpiece`. Each leaf is its own PR; the wave container PR is already merged by then.
+
+Leaf milestone PR flow inside a wave is identical to any other milestone PR — `milestone-fourpiece` + `pr-review-flow` apply unchanged.
+
+#### Wave closure signoff
+
 The closure milestone runs a 4-role signoff applied to the wave's specific deliverable, not to a Phase boundary. **The signoff roles are different from Phase exit**:
 
 | Gate type | Signoff roles | Why |

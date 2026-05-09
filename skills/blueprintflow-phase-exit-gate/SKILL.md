@@ -85,6 +85,13 @@ Then the Teamlead squash merges the whole PR, removes the worktree, and deletes 
 
 PR title: `docs(qa): Phase N closure announcement`
 
+## Archiving closed milestones
+
+After a milestone's PR merges and acceptance is fully ✅:
+- The Teamlead (or whoever does the final merge) moves the milestone folder: `git mv docs/tasks/<milestone-or-issue> docs/tasks/archived/<milestone-or-issue>` as part of the closure PR (or a follow-up chore PR within 24h)
+- This keeps `docs/tasks/` showing only in-flight work; `docs/tasks/archived/` is the historical record
+- The cross-milestone index at `docs/tasks/README.md` should be updated to remove the archived entry from "Currently in flight"
+
 ## Anti-patterns
 
 - ❌ Vague language for DEFERRED gates ("same PR" or "later") instead of a real PR number

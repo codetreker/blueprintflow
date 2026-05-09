@@ -36,4 +36,4 @@ Affected skills (11 files, 22 path references): `blueprintflow-milestone-fourpie
 
 ### Plugin version
 
-- `plugin.json` bumped `1.2.1` → `1.4.0`. This also fixes a historical bug where the v1.3.x release tags landed in the marketplace but `main` plugin.json was never bumped past 1.2.1.
+- `plugin.json` bumped `1.3.1` → `1.4.0` (minor: new default doc layout is a feature). Note: between 1.2.1 and current, main was bumped through 1.3.0 (#51) + 1.3.1 (#52); this PR is the first 1.x → 1.4.x transition.

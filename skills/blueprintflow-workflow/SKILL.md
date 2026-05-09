@@ -96,7 +96,7 @@ Output: `docs/blueprint/` ready, concepts frozen, every later PR has to cite §X
 
 3. **blueprintflow:phase-plan** — Architect leads, writes `docs/tasks/README.md` (the milestone index) + execution-plan + Phase exit gates
 
-Output: PROGRESS.md ready, Phase 1/2/3+ split clearly
+Output: docs/tasks/README.md ready (cross-milestone index), per-milestone progress.md scaffolded, Phase 1/2/3+ split clearly
 
 ### Stage 3: milestone execution (the main field)
 **Goal**: each milestone = one worktree + one branch + one PR — Teamlead creates the worktree, everyone stacks commits, Teamlead is the only one who opens the PR, Teamlead removes the worktree after merge

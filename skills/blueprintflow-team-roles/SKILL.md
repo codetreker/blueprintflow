@@ -74,7 +74,7 @@ Once you know your role, only read the matching prompt file:
 
 ### Worktree protocol
 
-- All roles work inside the milestone worktree the Teamlead created (`<repo-root>/.worktrees/<milestone>`)
+- All roles work inside the milestone worktree the Teamlead created (`<repo-root>/.worktrees/<milestone-or-issue>`)
 - One milestone, one worktree, everyone stacks commits in it
 - No more `/tmp/` throwaway clones (deprecated, see `blueprintflow:git-workflow`)
 

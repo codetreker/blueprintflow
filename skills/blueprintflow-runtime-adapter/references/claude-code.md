@@ -77,7 +77,7 @@ After entering the Teamlead session, the lead uses team mode tools to create the
 |---------|---------|
 | Start team | Lead inside the tmux session: `TeamCreate({team_name})` + `Agent({team_name, name, subagent_type, run_in_background: true, prompt})` × N. Claude Code auto-starts child claude processes and lays them out in tmux panes |
 | Notify \<Role\> | `SendMessage("role_name", content)` |
-| Create worktree | `cd <repo> && git worktree add .worktrees/<milestone> -b feat/<milestone> origin/main` |
+| Create worktree | `cd <repo> && git worktree add .worktrees/<milestone-or-issue> -b feat/<milestone-or-issue> origin/main` |
 | Commit code | Inside the worktree: `git add && git commit && git push` |
 | Start fast-cron | `CronCreate({cron: "7,22,37,52 * * * *", prompt: "...", durable: false})` |
 | Start slow-cron | `CronCreate({cron: "17 */2 * * *", prompt: "...", durable: false})` |
@@ -106,7 +106,7 @@ Multiple Claude Code sessions still talk through team mode, but there's no tmux 
 | Generic phrase | Concrete command |
 |---------|---------|
 | Notify \<Role\> | `SendMessage("role_name", content)` |
-| Create worktree | `cd <repo> && git worktree add .worktrees/<milestone> -b feat/<milestone> origin/main` |
+| Create worktree | `cd <repo> && git worktree add .worktrees/<milestone-or-issue> -b feat/<milestone-or-issue> origin/main` |
 | Commit code | Inside the worktree: `git add && git commit && git push` |
 | Start fast-cron | `CronCreate({cron: "7,22,37,52 * * * *", prompt: "...", durable: false})` |
 | Start slow-cron | `CronCreate({cron: "17 */2 * * *", prompt: "...", durable: false})` |
@@ -127,7 +127,7 @@ A single Claude Code session, no team mode.
 | Generic phrase | Concrete command |
 |---------|---------|
 | Notify \<Role\> | Not needed — a single session switches roles serially |
-| Create worktree | `cd <repo> && git worktree add .worktrees/<milestone> -b feat/<milestone> origin/main` |
+| Create worktree | `cd <repo> && git worktree add .worktrees/<milestone-or-issue> -b feat/<milestone-or-issue> origin/main` |
 | Commit code | Inside the worktree: `git add && git commit && git push` |
 | Start fast-cron | `CronCreate({cron: "7,22,37,52 * * * *", prompt: "...", durable: false})` — when cron fires, the current session runs the self-check |
 | Start slow-cron | `CronCreate({cron: "17 */2 * * *", prompt: "...", durable: false})` — the drift audit is run by the current session |

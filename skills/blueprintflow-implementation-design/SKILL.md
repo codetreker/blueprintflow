@@ -49,7 +49,7 @@ The Architect's role at the architecture gate is during review, not as ghostwrit
 
 ## Output
 
-**Path**: `docs/tasks/<milestone>/design.md`
+**Path**: `docs/tasks/<milestone-or-issue>/design.md`
 
 **Length**: **no fixed length** — long enough to reflect the implementation, no longer.
 
@@ -162,7 +162,7 @@ Once a milestone's four-piece set is ready:
 
 ```
 follow skill blueprintflow-implementation-design
-dispatch Dev to write docs/tasks/<milestone>/design.md
+dispatch Dev to write docs/tasks/<milestone-or-issue>/design.md
 dispatch Architect/PM/Security/QA for the four-role review
 all ✅ → coding starts
 ```

@@ -8,7 +8,7 @@ description: "Part of the Blueprintflow methodology. Use when a milestone starts
 Each milestone goes in **one PR, merged once**: the 4 pieces + three execution segments + e2e + docs/current sync + REG flip + acceptance ⚪→✅ + PROGRESS [x] **all in the same PR**. No more splitting spec / acceptance / content lock / stance into 4 separate doc PRs, and no more splitting schema / server / client into 3 separate execution PRs.
 
 **Git workflow companion** (see `blueprintflow-git-workflow`):
-- Teamlead creates `.worktrees/<milestone>` + branch `feat/<milestone>`
+- Teamlead creates `.worktrees/<milestone-or-issue>` + branch `feat/<milestone-or-issue>`
 - The 4-piece authors (Architect / QA / PM) **don't open separate PRs** — everyone stacks commits in the same worktree
 - Once everyone has committed → Teamlead is the sole PR opener
 
@@ -16,10 +16,10 @@ Each milestone goes in **one PR, merged once**: the 4 pieces + three execution s
 
 ## Default doc layout: one folder per milestone
 
-All milestone artifacts live together under `docs/tasks/<milestone>/`:
+All milestone artifacts live together under `docs/tasks/<milestone-or-issue>/`:
 
 ```
-docs/tasks/<milestone>/
+docs/tasks/<milestone-or-issue>/
 ├── spec.md           # Architect spec brief (the §0-§4 four pieces)
 ├── stance.md         # PM stance checklist
 ├── content-lock.md   # PM content lock (client UI milestones only)
@@ -30,16 +30,26 @@ docs/tasks/<milestone>/
 
 Phase exit gate artifacts go under `docs/tasks/phase-N-exit/` (readiness-review.md / announcement.md). The cross-milestone index lives at `docs/tasks/README.md`.
 
-When a milestone fully closes (acceptance ✅ + REG flipped + PROGRESS [x]), the whole folder moves to `docs/tasks/archived/<milestone>/`. One move, one place to look.
+When a milestone fully closes (acceptance ✅ + REG flipped + PROGRESS [x]), the whole folder moves to `docs/tasks/archived/<milestone-or-issue>/`. One move, one place to look.
 
 **Why one folder per milestone**: the older layout split things by artifact type — acceptance templates lived in `docs/qa/acceptance-templates/`, spec briefs in `docs/implementation/modules/`, stance / content-lock in `docs/qa/<m>-*.md`. A single milestone's 5-6 artifacts ended up spread across 4-6 directories. Finding "everything about milestone X" meant grepping across the whole tree, and closing a milestone meant touching files in multiple directories. The new layout keeps the work unit intact: one milestone is one folder, and closing it is one folder move.
 
 **Project override**: projects can adjust paths via AGENTS.md / CLAUDE.md (the convention from `blueprintflow-workflow` still holds). The defaults below assume the new layout.
 
+## Naming convention
+
+`<milestone-or-issue>` is the folder name. What you fill in depends on where the work came from:
+
+- **Blueprint milestone**: use the blueprint code (e.g. `al-2a-content-lock`, `chn-4-cross-org`)
+- **Feature / bugfix from a GitHub issue**: use `<issue#>-<short-slug>` (e.g. `698-agent-config-form-overlap`, `716-e2e-real-ui-audit`)
+- Either way, the folder name describes *what the work is about*, not *which milestone code* — `m698-*` / `gh698-*` prefixes are anti-patterns
+
+Both kinds of work share the same folder shape (spec / stance / acceptance / etc.) and the same one-folder-one-PR rules; only the folder name varies.
+
 ## The 4 pieces
 
 ### 1. Architect spec brief
-**Path**: `docs/tasks/<milestone>/spec.md` (≤80 lines)
+**Path**: `docs/tasks/<milestone-or-issue>/spec.md` (≤80 lines)
 
 > **Note**: spec brief covers only §0-§4. §5+ sections (dispatch / self-review / changelog) are not allowed (see anti-patterns).
 
@@ -53,7 +63,7 @@ Structure:
 > **Real example (Borgee):** see RT-1 / CHN-1 / AL-3 / CV-1 / AL-4 spec briefs — each 50-80 lines, with schema + server + client segmentation.
 
 ### 2. PM stance checklist
-**Path**: `docs/tasks/<milestone>/stance.md` (≤80 lines)
+**Path**: `docs/tasks/<milestone-or-issue>/stance.md` (≤80 lines)
 
 Structure:
 - 5-7 stances, each one sentence anchored to §X.Y + constraint (X is, Y isn't) + v0/v1
@@ -61,7 +71,7 @@ Structure:
 - v0/v1 transition criteria (if needed, follow the same PR # lock rules as v1 transition)
 
 ### 3. QA acceptance template
-**Path**: `docs/tasks/<milestone>/acceptance.md` (≤50 lines)
+**Path**: `docs/tasks/<milestone-or-issue>/acceptance.md` (≤50 lines)
 
 Structure:
 - 1:1 aligned with the segmentation (§1 schema / §2 server / §3 client)
@@ -70,7 +80,7 @@ Structure:
 - Reverse-check anchors + exit conditions
 
 ### 4. PM content lock (only required for client UI milestones)
-**Path**: `docs/tasks/<milestone>/content-lock.md` (≤40 lines)
+**Path**: `docs/tasks/<milestone-or-issue>/content-lock.md` (≤40 lines)
 
 Structure:
 - DOM literal lock (data-* attributes / copy byte-identical)
@@ -81,7 +91,7 @@ If the milestone introduces new visual components, this links into the Designer'
 
 ## Step 5: Dev writes the implementation design before code
 
-Once the 4 pieces are in place, before splitting and starting execution, Dev writes an implementation design (`docs/tasks/<milestone>/design.md`). It's reviewed by Architect / PM / Security / QA, and **only released to write code once all 4 sign off ✅**.
+Once the 4 pieces are in place, before splitting and starting execution, Dev writes an implementation design (`docs/tasks/<milestone-or-issue>/design.md`). It's reviewed by Architect / PM / Security / QA, and **only released to write code once all 4 sign off ✅**.
 
 Scope:
 - ✅ Any milestone that touches code **must** go through it (any change to schema / server / client)
@@ -106,14 +116,14 @@ When the milestone starts (**Teamlead is the sole** worktree creator and dispatc
 ```bash
 # 1. Teamlead creates the worktree (one milestone, one worktree)
 cd <repo-root>
-git worktree add .worktrees/<milestone> -b feat/<milestone> origin/main
+git worktree add .worktrees/<milestone-or-issue> -b feat/<milestone-or-issue> origin/main
 ```
 
 ```
-2. Dispatch Architect (in .worktrees/<milestone>): spec brief, commit + push, no PR
+2. Dispatch Architect (in .worktrees/<milestone-or-issue>): spec brief, commit + push, no PR
 3. Dispatch PM (same worktree): stance checklist + content lock, commit + push, no PR
 4. Dispatch QA (same worktree): acceptance template, commit + push, no PR
-5. Dispatch Dev (same worktree): write implementation design (docs/tasks/<milestone>/design.md), commit + push
+5. Dispatch Dev (same worktree): write implementation design (docs/tasks/<milestone-or-issue>/design.md), commit + push
 6. Dispatch Architect / PM / Security / QA to review the design; only release once all ✅
 7. Dispatch Dev (same worktree): three execution segments + e2e + docs/current sync + REG/acceptance/PROGRESS flips, commit + push, no PR
 8. Everyone ready → Teamlead is the sole PR opener (gh pr create)
@@ -139,19 +149,19 @@ Worktree protocol:
 ```bash
 # Teamlead creates (sole)
 cd <repo-root>
-git worktree add .worktrees/<milestone> -b feat/<milestone> origin/main
+git worktree add .worktrees/<milestone-or-issue> -b feat/<milestone-or-issue> origin/main
 
 # Roles work (multiple people, multiple commits OK; everyone pushes the same branch)
-cd .worktrees/<milestone>
+cd .worktrees/<milestone-or-issue>
 # ... work ...
-git push origin feat/<milestone>
+git push origin feat/<milestone-or-issue>
 
 # Teamlead opens the sole PR (after every role is ready)
-gh pr create --title "feat(<milestone>): ..." --body "..."
+gh pr create --title "feat(<milestone-or-issue>): ..." --body "..."
 
 # After PR merge, Teamlead removes the worktree (sole)
 cd <repo-root>
-git worktree remove .worktrees/<milestone>
+git worktree remove .worktrees/<milestone-or-issue>
 ```
 
 ## Closure lands in the same PR; no follow-up
@@ -179,7 +189,7 @@ Code files are named by **actual functionality**, not by milestone number.
 - ❌ Skipping the 4 pieces and going straight to execution (stance drift can't be caught)
 - ❌ Splitting into multiple PRs (spec / schema / server / client / closure each their own PR — actually slower)
 - ❌ Execution PR doesn't cite spec § anchors (cross-PR drift can't be caught)
-- ❌ Using `/tmp/<work>` as a temporary clone (use `.worktrees/<milestone>` instead)
+- ❌ Using `/tmp/<work>` as a temporary clone (use `.worktrees/<milestone-or-issue>` instead)
 - ❌ One milestone on multiple branches (collisions + dirty history)
 - ❌ **spec brief writing §5/§6/§7 sections (dispatch / Architect self-review / changelog)**
 

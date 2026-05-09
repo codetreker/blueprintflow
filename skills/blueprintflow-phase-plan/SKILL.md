@@ -121,7 +121,7 @@ Gates 1+2 happen in the spec brief PR (`blueprintflow:milestone-fourpiece`), gat
 - **00-foundation/execution-plan.md** — 5 Phases + exit gates + 4 drift gates
 - **00-foundation/roadmap.md** — thumbnail + first-wave demo path
 - **00-foundation/how-to-write-milestone.md** — milestone template + acceptance four-choice
-- **<milestone>/** — one folder per milestone (spec / stance / content-lock / acceptance / design / progress, see `blueprintflow-milestone-fourpiece`)
+- **<milestone-or-issue>/** — one folder per work unit (spec / stance / content-lock / acceptance / design / progress, see `blueprintflow-milestone-fourpiece`)
 
 ## docs/tasks/README.md template
 

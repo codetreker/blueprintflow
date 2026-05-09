@@ -25,6 +25,15 @@ Path-mapping table:
 
 Affected skills (11 files, 22 path references): `blueprintflow-milestone-fourpiece`, `blueprintflow-git-workflow`, `blueprintflow-workflow`, `blueprintflow-team-roles` (pm / qa / architect references), `blueprintflow-phase-exit-gate`, `blueprintflow-implementation-design`, `blueprintflow-teamlead-slow-cron-checkin`, `blueprintflow-pr-review-flow`, `blueprintflow-phase-plan`.
 
+### Placeholder + naming convention
+
+- The folder placeholder is now `<milestone-or-issue>` (was `<milestone>` / `<m>`). The folder holds either a blueprint milestone or a feature/bugfix from a GitHub issue — both share the same shape (spec / stance / acceptance / etc.) and the same one-folder-one-PR rules; only the folder name varies.
+- Naming rule documented in `blueprintflow-milestone-fourpiece` SKILL.md:
+  - Blueprint milestone → blueprint code (e.g. `al-2a-content-lock`, `chn-4-cross-org`)
+  - Feature / bugfix from a GitHub issue → `<issue#>-<short-slug>` (e.g. `698-agent-config-form-overlap`, `716-e2e-real-ui-audit`)
+  - Anti-patterns: `m698-*` / `gh698-*` prefixes
+- All `<milestone>` / `<m>/` placeholders across the skill set updated for consistency (worktree paths, branch names, PR titles, doc paths). Specific named placeholders like `<milestone-a>` / `<milestone-b>` (used as worked examples of parallel work) are kept.
+
 ### Plugin version
 
 - `plugin.json` bumped `1.2.1` → `1.4.0`. This also fixes a historical bug where the v1.3.x release tags landed in the marketplace but `main` plugin.json was never bumped past 1.2.1.

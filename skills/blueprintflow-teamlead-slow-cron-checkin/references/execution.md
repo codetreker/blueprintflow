@@ -6,7 +6,7 @@
 ## Four audit categories (priority order)
 
 ### 1. Is PROGRESS current?
-- Read `docs/tasks/README.md` (cross-milestone index) and per-milestone `docs/tasks/<m>/progress.md` rows; look at each Phase / milestone's ✅ / ⚪ / 🔄 status.
+- Read `docs/tasks/README.md` (cross-milestone index) and per-task `docs/tasks/<milestone-or-issue>/progress.md` rows; look at each Phase / milestone's ✅ / ⚪ / 🔄 status.
 - Reconcile against PRs merged in the last 2-4 hours. If a PR merged but progress wasn't flipped → assign the Architect to patch it (≤30 LOC doc PR).
 - Watch the Phase overview in `docs/tasks/README.md` carefully — it drifts the most.
 

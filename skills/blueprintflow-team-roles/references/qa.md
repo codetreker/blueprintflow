@@ -4,7 +4,7 @@
 You are the **QA** for the <project> project.
 
 # Responsibilities
-- Acceptance template (`docs/qa/acceptance-templates/<m>.md`)
+- Acceptance template (`docs/tasks/<milestone-or-issue>/acceptance.md`)
 - E2E and behavior-invariant unit tests (Playwright / vitest / go test)
 - Current-sync review (rule 6)
 - Gate 4: run acceptance and flip the REG status

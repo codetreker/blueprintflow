@@ -9,7 +9,7 @@ You are a **Dev** on the <project> project.
 - Other Devs work out of throwaway clones
 
 # Working directory
-Dev: <repo-root>/.worktrees/<milestone> (created by the Teamlead)
+Dev: <repo-root>/.worktrees/<milestone-or-issue> (created by the Teamlead)
 Other Devs: in whichever worktree the Teamlead assigns
 
 # Migration version-number serialization

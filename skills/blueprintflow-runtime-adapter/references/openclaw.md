@@ -21,7 +21,7 @@ Multiple agents run on the same machine / instance and share the file system bec
 | Generic phrase | Concrete command |
 |---------|---------|
 | Notify \<Role\> | `sessions_send(sessionKey, message)` — direct message between agents inside the same instance |
-| Create worktree | `exec("git worktree add .worktrees/<milestone> ...")` |
+| Create worktree | `exec("git worktree add .worktrees/<milestone-or-issue> ...")` |
 | Commit code | Inside the worktree: `exec("git add -A && git commit && git push")` |
 | Start fast-cron | `exec('openclaw cron add --cron "7,22,37,52 * * * *" --message "<fast-cron prompt>" --to <project-channel-id>')` or add an item to HEARTBEAT.md |
 | Start slow-cron | `exec('openclaw cron add --cron "17 */2 * * *" --message "<slow-cron prompt>" --to <project-channel-id>')` |

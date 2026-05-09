@@ -115,15 +115,15 @@ Gates 1+2 happen in the spec brief PR (`blueprintflow:milestone-fourpiece`), gat
 
 ## Deliverables
 
-**Path**: `docs/implementation/`
+**Path**: `docs/tasks/`
 
-- **PROGRESS.md** — single source of progress truth, updated on every PR / Phase gate state change
+- **README.md** — cross-milestone index + Phase overview, single source of progress truth, updated on every PR / Phase gate state change
 - **00-foundation/execution-plan.md** — 5 Phases + exit gates + 4 drift gates
 - **00-foundation/roadmap.md** — thumbnail + first-wave demo path
 - **00-foundation/how-to-write-milestone.md** — milestone template + acceptance four-choice
-- **modules/** — N module outlines, each milestone broken down to PR scale (≤500 lines)
+- **<milestone-or-issue>/** — one folder per work unit (spec / stance / content-lock / acceptance / design / progress, see `blueprintflow-milestone-fourpiece`)
 
-## PROGRESS.md template
+## docs/tasks/README.md template
 
 ```
 | Phase | Status | Exit condition | Notes |

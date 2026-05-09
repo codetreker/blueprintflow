@@ -47,12 +47,12 @@ worktree: `.worktrees/phase-N-exit/`. branch: `docs/phase-N-exit`.
 
 The Architect writes two documents in the worktree and commits them together:
 
-- `docs/qa/phase-N-readiness-review.md` (≤100 lines) — "Is the Phase ready to exit?"
+- `docs/tasks/phase-N-exit/readiness-review.md` (≤100 lines) — "Is the Phase ready to exit?"
   - Status of each gate: SIGNED / PARTIAL / DEFERRED, with PR anchors
   - Final call: ✅ ready or ⚠️ still has blockers
   - Prerequisites for the next Phase, plus any handoff points
 
-- `docs/qa/phase-N-exit-announcement.md` (≤80 lines) — the closure announcement
+- `docs/tasks/phase-N-exit/announcement.md` (≤80 lines) — the closure announcement
   - §1 Three sections (SIGNED / PARTIAL / DEFERRED) listing what's in each
   - §2-§5 Each gate, anchored to PR # / commit SHA + acceptance template
   - §7 Four signoff slots (placeholder, waiting for the four roles)
@@ -84,6 +84,13 @@ Once all four roles have signed and all placeholder PRs are merged, the Architec
 Then the Teamlead squash merges the whole PR, removes the worktree, and deletes the branch.
 
 PR title: `docs(qa): Phase N closure announcement`
+
+## Archiving closed milestones
+
+After a milestone's PR merges and acceptance is fully ✅:
+- The Teamlead (or whoever does the final merge) moves the milestone folder: `git mv docs/tasks/<milestone-or-issue> docs/tasks/archived/<milestone-or-issue>` as part of the closure PR (or a follow-up chore PR within 24h)
+- This keeps `docs/tasks/` showing only in-flight work; `docs/tasks/archived/` is the historical record
+- The cross-milestone index at `docs/tasks/README.md` should be updated to remove the archived entry from "Currently in flight"
 
 ## Anti-patterns
 

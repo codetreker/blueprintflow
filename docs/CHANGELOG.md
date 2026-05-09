@@ -1,0 +1,39 @@
+# Changelog
+
+## v1.4.0 — 2026-05-09
+
+### Default docs path upgrade
+
+- Milestone artifacts default path changed from the older split layout (`docs/qa/<m>-*.md` + `docs/implementation/{modules,design}/<m>.md`) to the consolidated layout `docs/tasks/<m>/{spec,design,stance,content-lock,acceptance,progress}.md`.
+- Cross-milestone index moves from `docs/implementation/PROGRESS.md` to `docs/tasks/README.md`; per-milestone progress goes into `docs/tasks/<m>/progress.md`.
+- Phase exit artifacts move from `docs/qa/phase-N-{readiness-review,exit-announcement}.md` to `docs/tasks/phase-N-exit/{readiness-review,announcement}.md`.
+- Closed milestones move as a whole folder to `docs/tasks/archived/<m>/`.
+- Projects can still override paths via AGENTS.md / CLAUDE.md (this convention is unchanged).
+
+Path-mapping table:
+
+| Old path | New path |
+|---|---|
+| `docs/implementation/modules/<m>-spec.md` | `docs/tasks/<m>/spec.md` |
+| `docs/implementation/design/<m>.md` | `docs/tasks/<m>/design.md` |
+| `docs/qa/<m>-stance-checklist.md` | `docs/tasks/<m>/stance.md` |
+| `docs/qa/<m>-content-lock.md` | `docs/tasks/<m>/content-lock.md` |
+| `docs/qa/acceptance-templates/<m>.md` | `docs/tasks/<m>/acceptance.md` |
+| `docs/implementation/PROGRESS.md` | `docs/tasks/README.md` (index) + `docs/tasks/<m>/progress.md` (per-milestone) |
+| `docs/qa/phase-N-readiness-review.md` | `docs/tasks/phase-N-exit/readiness-review.md` |
+| `docs/qa/phase-N-exit-announcement.md` | `docs/tasks/phase-N-exit/announcement.md` |
+
+Affected skills (11 files, 22 path references): `blueprintflow-milestone-fourpiece`, `blueprintflow-git-workflow`, `blueprintflow-workflow`, `blueprintflow-team-roles` (pm / qa / architect references), `blueprintflow-phase-exit-gate`, `blueprintflow-implementation-design`, `blueprintflow-teamlead-slow-cron-checkin`, `blueprintflow-pr-review-flow`, `blueprintflow-phase-plan`.
+
+### Placeholder + naming convention
+
+- The folder placeholder is now `<milestone-or-issue>` (was `<milestone>` / `<m>`). The folder holds either a blueprint milestone or a feature/bugfix from a GitHub issue — both share the same shape (spec / stance / acceptance / etc.) and the same one-folder-one-PR rules; only the folder name varies.
+- Naming rule documented in `blueprintflow-milestone-fourpiece` SKILL.md:
+  - Blueprint milestone → blueprint code (e.g. `al-2a-content-lock`, `chn-4-cross-org`)
+  - Feature / bugfix from a GitHub issue → `<issue#>-<short-slug>` (e.g. `698-agent-config-form-overlap`, `716-e2e-real-ui-audit`)
+  - Anti-patterns: `m698-*` / `gh698-*` prefixes
+- All `<milestone>` / `<m>/` placeholders across the skill set updated for consistency (worktree paths, branch names, PR titles, doc paths). Specific named placeholders like `<milestone-a>` / `<milestone-b>` (used as worked examples of parallel work) are kept.
+
+### Plugin version
+
+- `plugin.json` bumped `1.3.1` → `1.4.0` (minor: new default doc layout is a feature). Note: between 1.2.1 and current, main was bumped through 1.3.0 (#51) + 1.3.1 (#52); this PR is the first 1.x → 1.4.x transition.

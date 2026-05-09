@@ -94,9 +94,9 @@ Output: `docs/blueprint/` ready, concepts frozen, every later PR has to cite §X
 ### Stage 2: execution plan
 **Goal**: blueprint → Phase split + exit gates + 4 drift-prevention gates
 
-3. **blueprintflow:phase-plan** — Architect leads, writes `docs/implementation/PROGRESS.md` + execution-plan + Phase exit gates
+3. **blueprintflow:phase-plan** — Architect leads, writes `docs/tasks/README.md` (the milestone index) + execution-plan + Phase exit gates
 
-Output: PROGRESS.md ready, Phase 1/2/3+ split clearly
+Output: docs/tasks/README.md ready (cross-milestone index), per-milestone progress.md scaffolded, Phase 1/2/3+ split clearly
 
 ### Stage 3: milestone execution (the main field)
 **Goal**: each milestone = one worktree + one branch + one PR — Teamlead creates the worktree, everyone stacks commits, Teamlead is the only one who opens the PR, Teamlead removes the worktree after merge
@@ -139,7 +139,7 @@ General principle: Teamlead gets the biggest field of view (coordination thread)
 
 ## Key protocols
 
-- **Git workflow** (see `blueprintflow-git-workflow`): Teamlead is the sole creator of `.worktrees/<milestone>` + branch `feat/<milestone>`. Everyone stacks commits in the same worktree. **Roles don't open PRs; Teamlead is the sole PR opener.** After merge, Teamlead removes the worktree.
+- **Git workflow** (see `blueprintflow-git-workflow`): Teamlead is the sole creator of `.worktrees/<milestone-or-issue>` + branch `feat/<milestone-or-issue>`. Everyone stacks commits in the same worktree. **Roles don't open PRs; Teamlead is the sole PR opener.** After merge, Teamlead removes the worktree.
 - **One milestone, one PR**: 4 pieces + three execution segments + e2e + docs/current sync + REG flip + acceptance ⚪→✅ + PROGRESS [x] **all in the same PR**. No splitting into multiple PRs. No closure follow-up.
 - **PR merge never admin-bypasses / never disables ruleset** (hard red line, see pr-review-flow): CI must really pass, flaky tests get fixed not skipped (PR template lint false positives / e2e flakiness / coverage thresholds — fix them, don't skip them)
 - **PR template top: 4 lines of bare metadata**: `Blueprint: §X.Y` / `Touches:` / `Current sync:` / `Stage: v0|v1` (or h2-section style)
@@ -213,5 +213,5 @@ Start checkin (specific commands in the blueprintflow-runtime-adapter table):
 
 It's named `blueprintflow:` but the workflow is general:
 - Role names default to English (Architect/PM/Dev/QA/Designer/Security); custom aliases allowed
-- Path / doc structure (`docs/blueprint/`, `docs/implementation/`, `docs/qa/`) is a convention; projects may adjust
+- Path / doc structure (`docs/blueprint/`, `docs/tasks/<milestone-or-issue>/`) is a convention; projects may adjust via AGENTS.md / CLAUDE.md
 - worktree / migration / lint protocols are core; don't change them

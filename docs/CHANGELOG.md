@@ -24,6 +24,15 @@ Skill changes (3 files, 3 sections added):
 
 - `plugin.json` bumped `1.4.0` → `1.4.1` (patch: documentation clarification, no flow change)
 
+### Naming convention follow-up
+
+`docs/tasks/` has two layers:
+
+- **Leaf folder** (`<milestone-or-issue>`) — a single milestone or single GitHub issue
+- **Container folder** (`<phase-or-wave>`) — Phase (`phase-N-{name}`) or wave (e.g. `borgee-helper-v1-release`); holds `phase-plan.md` plus leaf subfolders
+
+A leaf can sit at the top level of `docs/tasks/` or nested inside a container (`docs/tasks/<wave>/<milestone>/`). See `blueprintflow-milestone-fourpiece` SKILL.md "Naming convention" for the worked example.
+
 ## v1.4.0 — 2026-05-09
 
 ### Default docs path upgrade

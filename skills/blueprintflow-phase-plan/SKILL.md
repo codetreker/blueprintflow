@@ -94,10 +94,12 @@ Wave folder layout:
 ```
 docs/tasks/<wave-name>/
 ├── phase-plan.md           # the wave's milestone list + closure gate
-├── <milestone-1>/
+├── <milestone-1>/          # leaf folder, normal milestone structure
 ├── <milestone-2>/
 └── ...
 ```
+
+`<wave-name>` and `phase-N-{name}` are **container folders**; the milestone subdirectories inside are **leaf folders**. See `blueprintflow-milestone-fourpiece` "Naming convention" for the leaf vs container split.
 
 The closure milestone runs the same 4-role signoff (Dev / PM / QA / Security) the Phase exit gate uses, but applied to the wave's specific deliverable, not to a Phase boundary.
 

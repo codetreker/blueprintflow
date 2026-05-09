@@ -38,13 +38,33 @@ When a milestone fully closes (acceptance ✅ + REG flipped + PROGRESS [x]), the
 
 ## Naming convention
 
-`<milestone-or-issue>` is the folder name. What you fill in depends on where the work came from:
+`docs/tasks/` holds two kinds of folders:
 
-- **Blueprint milestone**: use the blueprint code (e.g. `al-2a-content-lock`, `chn-4-cross-org`)
-- **Feature / bugfix from a GitHub issue**: use `<issue#>-<short-slug>` (e.g. `698-agent-config-form-overlap`, `716-e2e-real-ui-audit`)
-- Either way, the folder name describes *what the work is about*, not *which milestone code* — `m698-*` / `gh698-*` prefixes are anti-patterns
+- **Leaf folders** (`<milestone-or-issue>`) — a single piece of work
+  - Blueprint milestone: use the blueprint code (e.g. `al-2a-content-lock`, `chn-4-cross-org`)
+  - GitHub issue: use `<issue#>-<short-slug>` (e.g. `698-agent-config-form-overlap`, `716-e2e-real-ui-audit`)
+  - Anti-pattern: `m698-*` / `gh698-*` prefixes — folder name describes *what the work is about*, not *which milestone code*
 
-Both kinds of work share the same folder shape (spec / stance / acceptance / etc.) and the same one-folder-one-PR rules; only the folder name varies.
+- **Container folders** (`<phase-or-wave>`) — a group of related milestones with a shared closure gate
+  - Phase (new blueprint version): `phase-N-{name}` (e.g. `phase-5-multi-host`)
+  - Wave (gap-table rewrite inside an existing blueprint version): the wave's name (e.g. `borgee-helper-v1-release`)
+  - Container folders hold a `phase-plan.md` at the top (the container's gate + milestone list) plus the milestone leaf folders inside
+
+Mixed example:
+
+```
+docs/tasks/
+├── 698-agent-config-form-overlap/         # leaf (issue)
+├── al-2a-content-lock/                    # leaf (blueprint milestone)
+├── borgee-helper-v1-release/              # container (wave)
+│   ├── phase-plan.md
+│   ├── HB-7-install-butler/               # leaf inside container
+│   ├── HB-8-manifest-signing/
+│   └── HB-14-devagent-demo/
+└── archived/
+```
+
+Both leaf kinds share the same folder shape (spec / stance / acceptance / etc.) and the same one-folder-one-PR rules; only the folder name varies.
 
 ## The 4 pieces
 

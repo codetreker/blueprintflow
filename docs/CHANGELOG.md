@@ -1,5 +1,29 @@
 # Changelog
 
+## v1.4.1 — 2026-05-09
+
+### Phase vs wave clarification (documentation patch)
+
+After Phases are split, work that comes later was ambiguous: should every batch of milestones become "Phase N+1", or are some batches just waves inside the existing Phase? v1.4.0 didn't say. This patch writes the rule down.
+
+The distinguishing question is: **did the blueprint contract itself change?** Three categories:
+
+| Trigger | What it is | Where it lives |
+|---|---|---|
+| New blueprint version freezes (`blueprint-iteration`: next → current cutover) | Start a new Phase N+1 with its own value loop + exit gate | Run the full phase-plan flow |
+| Current blueprint's "gap-to-target" rewrite (e.g. a `§3 with current state` table) | A milestone wave under the existing Phase | `docs/tasks/<wave-name>/phase-plan.md`, no Phase number |
+| Ad-hoc bug / feature from a GitHub issue | A single milestone | `docs/tasks/<issue#>-<slug>/` |
+
+Skill changes (3 files, 3 sections added):
+
+- `blueprintflow-phase-plan` — new H2 "When to start a new Phase vs add a wave" between the preflight check and "How to split Phases" (covers the trigger table, wave folder layout, why the distinction matters, and three anti-patterns including Phase counter inflation)
+- `blueprintflow-blueprint-iteration` — new H3 "After cutover: trigger a new Phase" inside the iteration lifecycle, naming `blueprintflow:phase-plan` as the only path that creates a new Phase
+- `blueprintflow-phase-exit-gate` — new H2 "Phase exit gate vs wave closure gate" near the top, separating Phase exit (blueprint-version transition) from wave closure (milestone-set deliverable)
+
+### Plugin version
+
+- `plugin.json` bumped `1.4.0` → `1.4.1` (patch: documentation clarification, no flow change)
+
 ## v1.4.0 — 2026-05-09
 
 ### Default docs path upgrade

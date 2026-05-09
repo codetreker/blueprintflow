@@ -79,6 +79,7 @@ git fetch origin --prune
 - **Never push to main directly** — every change goes through a PR
 - **PR can only merge after all-hands vote** — Architect, PM, Dev, QA, and Jianjun all ✅; missing any one = don't merge
 - **Read the whole thing** — review can't be diff-only; read the post-change skill file in full
+- **No LGTM with open issues** — if you found a problem during review, the verdict is NOT LGTM. The author fixes it, then you re-review the fix and only then give LGTM. "LGTM with minor issues" or "LGTM, not blocking" does not exist — every issue blocks until resolved
 - **Bump plugin version on every content change** — update `version` in `.claude-plugin/plugin.json` (this controls whether users receive updates). Patch bump (e.g. 1.1.0 → 1.1.1) for fixes/tweaks, minor bump (e.g. 1.1.x → 1.2.0) for new skills or significant rewrites. Do this in the same PR, not as a follow-up
 - **Commit message format**: `docs(<skill-name>): <description>`
 

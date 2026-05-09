@@ -30,9 +30,9 @@ Every role involved in the milestone (Dev / Architect / QA / PM / Designer / Sec
 | Role | What they do in the worktree |
 |---|---|
 | Dev | Write code (server / client / e2e) + unit tests + screenshots |
-| Architect | Write the spec brief (`docs/implementation/modules/<milestone>-spec.md`) |
-| QA | Write the acceptance template (`docs/qa/acceptance-templates/<milestone>.md`) + flip acceptance ⚪→✅ |
-| PM | Write stance checklist + content lock (`docs/qa/<milestone>-{stance,content-lock}.md`) + stance reverse-checks |
+| Architect | Write the spec brief (`docs/tasks/<milestone>/spec.md`) |
+| QA | Write the acceptance template (`docs/tasks/<milestone>/acceptance.md`) + flip acceptance ⚪→✅ |
+| PM | Write stance checklist + content lock (`docs/tasks/<milestone>/{stance,content-lock}.md`) + stance reverse-checks |
 | Designer (UI) | Visual reference + design system anchor |
 | Security | auth/admin/cross-org path review (committed) |
 

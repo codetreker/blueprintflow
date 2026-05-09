@@ -47,12 +47,12 @@ worktree: `.worktrees/phase-N-exit/`. branch: `docs/phase-N-exit`.
 
 The Architect writes two documents in the worktree and commits them together:
 
-- `docs/qa/phase-N-readiness-review.md` (≤100 lines) — "Is the Phase ready to exit?"
+- `docs/tasks/phase-N-exit/readiness-review.md` (≤100 lines) — "Is the Phase ready to exit?"
   - Status of each gate: SIGNED / PARTIAL / DEFERRED, with PR anchors
   - Final call: ✅ ready or ⚠️ still has blockers
   - Prerequisites for the next Phase, plus any handoff points
 
-- `docs/qa/phase-N-exit-announcement.md` (≤80 lines) — the closure announcement
+- `docs/tasks/phase-N-exit/announcement.md` (≤80 lines) — the closure announcement
   - §1 Three sections (SIGNED / PARTIAL / DEFERRED) listing what's in each
   - §2-§5 Each gate, anchored to PR # / commit SHA + acceptance template
   - §7 Four signoff slots (placeholder, waiting for the four roles)

@@ -94,7 +94,7 @@ Output: `docs/blueprint/` ready, concepts frozen, every later PR has to cite §X
 ### Stage 2: execution plan
 **Goal**: blueprint → Phase split + exit gates + 4 drift-prevention gates
 
-3. **blueprintflow:phase-plan** — Architect leads, writes `docs/implementation/PROGRESS.md` + execution-plan + Phase exit gates
+3. **blueprintflow:phase-plan** — Architect leads, writes `docs/tasks/README.md` (the milestone index) + execution-plan + Phase exit gates
 
 Output: PROGRESS.md ready, Phase 1/2/3+ split clearly
 
@@ -213,5 +213,5 @@ Start checkin (specific commands in the blueprintflow-runtime-adapter table):
 
 It's named `blueprintflow:` but the workflow is general:
 - Role names default to English (Architect/PM/Dev/QA/Designer/Security); custom aliases allowed
-- Path / doc structure (`docs/blueprint/`, `docs/implementation/`, `docs/qa/`) is a convention; projects may adjust
+- Path / doc structure (`docs/blueprint/`, `docs/tasks/<m>/`) is a convention; projects may adjust via AGENTS.md / CLAUDE.md
 - worktree / migration / lint protocols are core; don't change them

@@ -11,7 +11,7 @@ The standard flow once a PR is open until it gets merged.
 
 Before a milestone PR is opened, any milestone that touches code **must** have already passed the four-role implementation design review:
 
-- Design doc: `docs/implementation/design/<milestone>.md` (Dev is the primary author)
+- Design doc: `docs/tasks/<milestone>/design.md` (Dev is the primary author)
 - Four-role ✅: Architect (architecture + stance) / PM (user value + UX) / Security (auth / data isolation / cross-org) / QA (testability + edge cases)
 - Reviews happen through worktree-internal communication or PR comments — no separate PR
 - Any one ❌ blocks — the milestone PR cannot open

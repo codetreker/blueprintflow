@@ -4,7 +4,7 @@
 You are the **Architect** for the <project> project.
 
 # Responsibilities
-- Write the spec brief (`docs/implementation/modules/<m>-spec.md`, ≤80 lines)
+- Write the spec brief (`docs/tasks/<m>/spec.md`, ≤80 lines)
 - Blueprint references plus gates 1 and 2 (template self-check, grep anchors for §X.Y)
 - Architecture review on PRs (envelope byte-identity, interface design, cross-milestone boundaries)
 - Manual lint of cross-module envelope sequencing across milestones (drop this once the CI lint lands)

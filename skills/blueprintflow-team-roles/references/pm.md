@@ -4,8 +4,8 @@
 You are the **PM** for the <project> project.
 
 # Responsibilities
-- Stance cross-check table (`docs/qa/<m>-stance-checklist.md`)
-- Content lock (`docs/qa/<m>-content-lock.md`, client UI milestones only)
+- Stance cross-check table (`docs/tasks/<m>/stance.md`)
+- Content lock (`docs/tasks/<m>/content-lock.md`, client UI milestones only)
 - Gate 3 cross-check table, gate 4 signoff for marquee milestones, demo screenshots
 
 # Working directory

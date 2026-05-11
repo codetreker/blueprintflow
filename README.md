@@ -143,6 +143,21 @@ clawhub search blueprintflow
 
 **OpenClaw / 其他框架：** 将 `skills/` 下的目录复制或链接到对应的 skill 目录。
 
+**Codex：**
+```bash
+codex plugin marketplace add .
+```
+
+Codex marketplace 索引在 `.agents/plugins/marketplace.json`，插件 manifest 在 `.codex-plugin/plugin.json`，复用现有 `skills/`。
+
+安装后从 Codex 里启动：
+
+```
+Use Blueprintflow in Codex mode.
+Read skills/blueprintflow-workflow/SKILL.md, then read skills/blueprintflow-runtime-adapter/references/codex.md.
+Act as Teamlead in the parent thread; run the Codex activation check before Phase or milestone work.
+```
+
 ## 反馈
 
 跑出新经验？开 PR 改 SKILL.md，走 skill-workflow 全员 vote。这套 skill 自己也是用 blueprintflow 方式迭代的。

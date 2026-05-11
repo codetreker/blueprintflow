@@ -43,7 +43,7 @@ Read **only** the matching adapter file:
 |---|---|---|
 | Claude Code | `references/claude-code.md` | Verified |
 | OpenClaw | `references/openclaw.md` | Verified |
-| Codex | `references/codex.md` | Not yet verified |
+| Codex | `references/codex.md` | Codex CLI / App / cloud task |
 | Other | `references/basic.md` | Generic |
 
 ## How to invoke

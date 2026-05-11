@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.5.0 — 2026-05-11
+
+### Codex native packaging and adapter draft
+
+- Added `.codex-plugin/plugin.json` so Blueprintflow can be installed as a Codex plugin while reusing the existing `skills/` directory.
+- Added `.agents/plugins/marketplace.json` as the repo Codex marketplace index.
+- Reworked `blueprintflow-runtime-adapter/references/codex.md` around Codex CLI, Codex App automations, cloud-task usage, activation checks, sleeper-subagent heartbeat fallback, role context reuse, and subagent capacity checks (`max_depth = 2`, `max_threads >= 24` for full team mode).
+- Documented optional target-project `.codex/agents/` role templates without installing project-local Codex config from the marketplace repo.
+- README now includes a Codex startup prompt.
+
+### Plugin version
+
+- `plugin.json` bumped `1.4.16` → `1.5.0` (minor: new Codex native packaging and runtime adapter support).
+
 ## v1.4.2 — 2026-05-09
 
 ### Wave container PR scope clarified

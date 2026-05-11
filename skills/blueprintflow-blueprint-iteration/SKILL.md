@@ -1,6 +1,6 @@
 ---
 name: blueprintflow-blueprint-iteration
-description: "Part of the Blueprintflow methodology. Use when the blueprint is already frozen and a change suggestion arrives - routes it through the 3-state machine (current / next / backlog) to evolve safely."
+description: "Part of the Blueprintflow methodology. Defines how the blueprint evolves after freeze: 3-state machine (current / next / backlog), versioning rules, patch constraints, and the freeze-to-next lifecycle."
 ---
 
 # Blueprint Iteration
@@ -40,28 +40,14 @@ Version lives in `docs/blueprint/` frontmatter (`frozen: <date>`, `prev: vN.M-1`
 
 ## Iteration lifecycle
 
-Read `references/lifecycle.md` for the full flow: current iteration passes acceptance → user opens next-version discussion → scan backlog → write blueprint-next → four-role discussion → freeze + tag + source-issues.md → relabel issues → trigger Phase N+1.
-
-## AGENTS.md config
-
-```yaml
-blueprint-iteration:
-  reminder-period: 2w  # how often to remind user when they haven't responded
-```
-
-Project-defined, not hardcoded. Version numbers live in blueprint frontmatter, not here.
+Read `references/lifecycle.md` for the full flow: current iteration passes acceptance → user opens next-version discussion → scan backlog → write blueprint-next → four-role discussion → freeze + tag + source-issues.md → relabel issues → trigger Phase N+1. Reminder period is project-defined in AGENTS.md (`reminder-period: 2w` default).
 
 ## Anti-patterns
 
 - ❌ Reversing a stance on the current blueprint (PR anchors drift)
-- ❌ Opening next-version discussion without scanning `backlog` issues
 - ❌ Version number in AGENTS.md (blueprint owns its frontmatter)
-- ❌ Backlog in repo docs instead of GitHub issues (anti-fork-friendly)
-- ❌ Auto-cleaning backlog (cleanup during human discussion only)
-- ❌ Backlog issue body = title only, no "why it goes here"
 - ❌ Patch PR without `Closes gh#NNN` (root-cause chain breaks)
 - ❌ Stuck milestone dragging the whole iteration (kick to backlog or split)
-- ❌ Treating "new stance" as "bug" (burden of proof inverted)
 - ❌ Cramming many patches that are actually a stance reversal
 
 ## How to invoke
@@ -69,7 +55,6 @@ Project-defined, not hardcoded. Version numbers live in blueprint frontmatter, n
 ```
 follow skill blueprintflow-blueprint-iteration
 
-# Change suggestion → Architect decides bug/not-bug → route
 # Current iteration done → scan backlog → open blueprint-next
 # blueprint-next converges → freeze + tag + source-issues.md
 ```

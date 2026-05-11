@@ -20,6 +20,19 @@ Multi-agent collaboration for building products: concept → blueprint → Phase
 
 Core principle: **freeze the blueprint before building**. Changes go through PR + 4-role review (= engineering change order).
 
+Engineering practices that map across:
+- **Phase by value loop** (foundation / main structure / finishing) — not by technical layer
+- **Phase-end signoff** (4-role signoff = acceptance report + carry-over gate)
+- **Quality-gate trail** (rule 6 / migration versioning = engineering archive)
+- **PM on site throughout** (stance reverse-check = construction can't drift from requirements)
+
+### When to use
+
+- New product / major feature / large refactor starting from concept
+- Multi-agent collaboration (≥3 roles)
+- Stance / blueprint / execution / acceptance on separate but interlocked tracks
+- High demand for cross-milestone drift control
+
 ### When this doesn't apply
 
 - Hackathon / one-off script / single-PR fix — too heavyweight

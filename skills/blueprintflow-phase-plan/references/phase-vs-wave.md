@@ -31,6 +31,8 @@ docs/tasks/<wave-name>/
 
 Leaf-level 4-piece (PM stance / content-lock / acceptance / design) — those live with each leaf milestone when it starts. Container PR is **plan + placeholders**, not specifications.
 
+Each leaf milestone is its own PR; the wave container PR is already merged by then. Leaf milestone PR flow inside a wave is identical to any other milestone PR — `milestone-fourpiece` + `pr-review-flow` apply unchanged.
+
 ### Wave closure signoff
 
 | Gate type | Signoff roles | Why |

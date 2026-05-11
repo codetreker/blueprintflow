@@ -5,23 +5,21 @@ description: "Part of the Blueprintflow methodology. Use on cron tick or when ne
 
 # Issue Triage
 
-3-hour recurring cron. The exact command depends on your runtime — see `blueprintflow-runtime-adapter` for the concrete syntax.
+3-hour recurring cron. Runtime syntax → `blueprintflow-runtime-adapter`.
 
 ## How to invoke
 
-Cron prompt:
+Cron:
 ```
 [issue triage · 3h]
 follow skill blueprintflow-issue-triage
 ```
 
-Inline trigger (when a new issue arrives outside the cron cycle):
+Inline (new issue arrives outside cron):
 ```
-new issue gh#NNN arrived
-follow skill blueprintflow-issue-triage
-Teamlead decides → route → role classifies → set native type + apply triaged
+new issue gh#NNN arrived → follow skill blueprintflow-issue-triage
 ```
 
-## What to do when this cron fires
+## Execution
 
-Read `references/execution.md` for the full execution logic: native issue type field usage, Teamlead routing table, scan scope, triaged label, user review queue, walkthrough example, downstream state machine, and anti-patterns.
+Read `references/execution.md` — covers native issue type field usage, Teamlead routing table, scan scope, triaged label, user review queue, walkthrough example, downstream state machine, and anti-patterns.

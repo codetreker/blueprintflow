@@ -1,32 +1,28 @@
-# Basic mode (subagent / single agent)
+# Basic Mode (single agent / subagent)
 
-**The minimum viable setup any coding agent can run.**
+Minimum viable setup for any coding agent.
 
-**Capabilities:** persistent at the task level / shared FS sometimes / cross-agent messaging not available / scheduled jobs not available / parallel multi-role not available.
+**Capabilities**: persistent (task-level) ✅ / shared FS sometimes / cross-agent messaging ❌ / scheduled jobs ❌ / parallel multi-role ❌
 
-**How to do things:**
+## Lookup table
 
 | Generic phrase | How |
-|---------|---------|
-| Notify \<Role\> | Not needed — a single agent switches roles serially, context is passed internally |
+|---|---|
+| Notify \<Role\> | Not needed — single agent switches roles serially |
 | Create worktree | `git worktree add` locally |
 | Commit code | Local commit + push |
-| Start fast-cron | Skip — the single agent self-checks for idle after each task |
-| Start slow-cron | Skip — run a drift audit every N tasks |
-| Check role status | Not needed — the single agent knows what it's doing |
+| Start fast-cron | Skip — self-check for idle after each task |
+| Start slow-cron | Skip — drift audit every N tasks |
+| Check role status | Not needed — you know what you're doing |
 | Open PR | `gh pr create` |
 | Merge PR | `gh pr merge <N> --squash` |
 
-**Rule fit:**
+## Rule fit
 
-| Rule | How you carry it out here |
-|------|---------------|
-| Code commits | The single agent commits in role order. Before switching roles, commit whatever the previous role was doing. |
-| Cron checks | No cron. Self-check for idle after each task. |
-| Ping protocol | Doesn't apply (you are the only one). |
-| Review | Serial review: first as Architect, then as QA. |
-| Co-signoff | Sign off for each role one after another. |
-
-> Core rules are in the entry SKILL.md, "Core rules" section.
-
----
+| Rule | Adaptation |
+|---|---|
+| Code commits | Commit in role order; commit before switching roles |
+| Cron checks | No cron — self-check after each task |
+| Ping protocol | N/A (you are the only one) |
+| Review | Serial: first as Architect, then QA |
+| Co-signoff | Sign off for each role sequentially |

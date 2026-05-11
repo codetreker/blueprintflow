@@ -3,18 +3,17 @@ name: blueprintflow-teamlead-slow-cron-checkin
 description: "Part of the Blueprintflow methodology. Use on 2-4h cron tick or when drift signals appear - Teamlead audits blueprint drift, docs/current sync, delayed acceptance flips, and stale worktrees."
 ---
 
-# Teamlead slow-cron check-in
+# Teamlead Slow-Cron Check-in
 
-2-4 hour recurring cron. The exact command depends on your runtime — see `blueprintflow-runtime-adapter` for the concrete syntax.
+2-4 hour recurring cron. Runtime syntax → `blueprintflow-runtime-adapter`.
 
 ## How to invoke
 
-Cron prompt:
 ```
 [drift audit · 2 hours]
 follow skill blueprintflow-teamlead-slow-cron-checkin
 ```
 
-## What to do when this cron fires
+## Execution
 
-Read `references/execution.md` for the full execution logic: 6 audit categories (PROGRESS accuracy, blueprint drift, docs/current sync, delayed flips, open-PR task completion, triaged-no-type queue), output format, and anti-patterns.
+Read `references/execution.md` — covers 6 audit categories (PROGRESS accuracy, blueprint drift, docs/current sync, delayed flips, open-PR task completion, triaged-no-type queue), output format, and anti-patterns.

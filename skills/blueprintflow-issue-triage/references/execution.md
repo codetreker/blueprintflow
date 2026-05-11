@@ -143,7 +143,6 @@ Three independent, no overlap.
 - ❌ Triage done but no milestone dispatched / no `Closes gh#NNN`
 - ❌ Dumping all issues onto one role
 - ❌ `current-iteration` issue with no milestone after triage (means "now", not "park")
-- ❌ Opening next-version discussion without scanning `backlog` issues first (cleanup window missed)
 - ❌ Backlog in repo docs instead of GitHub issues (anti-fork-friendly, upstream noise follows the fork)
 - ❌ Auto-cleaning backlog issues (cleanup happens during human discussion only)
 - ❌ Treating "new stance" as "bug" and stuffing it into current iteration (default is backlog, burden of proof on "this is a bug")

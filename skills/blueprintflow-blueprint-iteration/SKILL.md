@@ -51,6 +51,7 @@ Read `references/lifecycle.md` for the full flow: scan backlog → write bluepri
 - ❌ Patch PR without `Closes gh#NNN` (root-cause chain breaks)
 - ❌ Stuck milestone dragging the whole iteration (kick to backlog or split)
 - ❌ Cramming many patches that are actually a stance reversal
+- ❌ Opening next-version discussion without scanning `backlog` issues first (cleanup window missed)
 
 ## How to invoke
 

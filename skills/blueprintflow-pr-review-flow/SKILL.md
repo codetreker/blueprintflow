@@ -120,6 +120,8 @@ Subagents are read-only — they verify, they don't author (spec / stance / cont
 - ❌ Subagent review replacing persistent-role authoring
 - ❌ Merge report containing "admin" / "ruleset" / "bypass"
 
+> **Real example (Borgee):** While reviewing acceptance, QA noticed a field name didn't match the Architect's spec brief (a rename hadn't been propagated). Patched on the spot. This is dual-track review working — the spec was written in shape A, acceptance naturally written against shape A, and the drift surfaced.
+
 ## How to invoke
 
 ```

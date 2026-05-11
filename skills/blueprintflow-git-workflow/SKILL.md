@@ -5,172 +5,92 @@ description: "Part of the Blueprintflow methodology. Use when starting a milesto
 
 # Git Workflow (Milestone Protocol)
 
-A hard rule the user set on 2026-04-29. Pairs with `blueprintflow-pr-review-flow` (merge red lines) and `blueprintflow-milestone-fourpiece` (the four-piece set lands inside the implementation PR).
+Hard rules set on 2026-04-29. Pairs with `pr-review-flow` (merge red lines) and `milestone-fourpiece` (four-piece set lands inside the PR).
 
-## 🔒 Hard rules (non-negotiable)
+## 🔒 Hard rules
 
-### Rule 1: one milestone, one worktree, one branch
+### Rule 1: one milestone = one worktree + one branch
 
-When a milestone starts, the **Teamlead** (and only the Teamlead) creates:
-
+Teamlead (only) creates:
 ```bash
 cd <repo-root>
 git worktree add .worktrees/<milestone-or-issue> -b feat/<milestone-or-issue> origin/main
 ```
 
-- Path: `.worktrees/<milestone-or-issue>` (under the repo root's `.worktrees/`, not `/tmp/`)
-- Branch: `feat/<milestone-or-issue>` (e.g. `feat/<milestone-a>` / `feat/<milestone-b>` / `feat/<milestone-c>`)
-- Base: `origin/main` (when rebasing, also rebase onto main; don't stack on another milestone)
-- The whole milestone lifecycle **reuses the same worktree + the same branch**
+- Path: `.worktrees/<milestone-or-issue>` (not `/tmp/`)
+- Base: `origin/main` (rebase onto main, don't stack on another milestone)
+- Same worktree + same branch for the whole lifecycle
 
 ### Rule 2: every role works in the same worktree
 
-Every role involved in the milestone (Dev / Architect / QA / PM / Designer / Security) **stacks commits in the same worktree**:
-
-| Role | What they do in the worktree |
+| Role | Commits in the worktree |
 |---|---|
-| Dev | Write code (server / client / e2e) + unit tests + screenshots |
-| Architect | Write the spec brief (`docs/tasks/<milestone-or-issue>/spec.md`) |
-| QA | Write the acceptance template (`docs/tasks/<milestone-or-issue>/acceptance.md`) + flip acceptance ⚪→✅ |
-| PM | Write stance checklist + content lock (`docs/tasks/<milestone-or-issue>/{stance,content-lock}.md`) + stance reverse-checks |
-| Designer (UI) | Visual reference + design system anchor |
-| Security | auth/admin/cross-org path review (committed) |
+| Dev | Code + tests + screenshots |
+| Architect | `spec.md` in milestone folder |
+| QA | `acceptance.md` + flip ⚪→✅ |
+| PM | `stance.md` + `content-lock.md` |
+| Designer | Visual reference + design system |
+| Security | Auth/admin/cross-org review |
 
-**Every role can commit + push to the `feat/<milestone-or-issue>` branch.** No sub-branches, no stash, no cherry-pick. Everyone sees each other's commits, and cross-role review happens in sync.
+All push to `feat/<milestone-or-issue>`. No sub-branches, no stash, no cherry-pick.
 
 ### Rule 3: roles don't open PRs
 
-**No role** (including Dev) **may ever** run `gh pr create`. Permanently forbidden:
+No role runs `gh pr create`. The PR = the milestone's complete deliverable, not one role's output.
 
+### Rule 4: Teamlead opens the sole PR
+
+After all roles have committed:
 ```bash
-# ❌ Dev doesn't open
-gh pr create --title "feat(<milestone-or-issue>.1): schema"
-
-# ❌ Architect doesn't open
-gh pr create --title "docs(<milestone-or-issue>): spec brief v0"
-
-# ❌ QA doesn't open
-gh pr create --title "docs(qa): <milestone-or-issue> acceptance template"
-
-# ❌ PM doesn't open
-gh pr create --title "chore(<milestone-or-issue>): stance + content-lock"
-```
-
-The PR is the entry point for the milestone's complete deliverable, not for any single role's output. Roles opening separate PRs would:
-- Fragment the milestone (violates "one milestone, one PR")
-- Create write contention across multiple PRs on §5 totals / acceptance template / PROGRESS.md
-- Create closure follow-up tails
-
-### Rule 4: only the Teamlead creates the PR
-
-After everyone has committed + pushed + self-checked, **only the Teamlead** opens the PR:
-
-```bash
-cd <repo-root>/.worktrees/<milestone-or-issue>
 gh pr create --title "feat(<milestone-or-issue>): <summary>" --body "..."
 ```
 
-The PR body must contain the full four-piece set + the three implementation sections + e2e + closure (REG flip / acceptance ⚪→✅ / PROGRESS [x]) — per the `blueprintflow-milestone-fourpiece` protocol.
+Teamlead's check before opening: every role committed? docs/current synced? PROGRESS flipped?
 
-When opening the PR, the Teamlead's mental check:
-- Has every role committed to `feat/<milestone-or-issue>`? (Dev code + Architect spec + QA acceptance + PM stance/content-lock all present)
-- Is `docs/current` synced with the code?
-- Does the project's regression / registry math add up (where applicable)?
-- Has PROGRESS.md `[x]` been flipped?
-
-Any one missing → don't open the PR — send the missing role back to commit.
-
-### Rule 5: after the PR is merged, the Teamlead removes the worktree
+### Rule 5: Teamlead removes the worktree after merge
 
 ```bash
-cd <repo-root>
 git worktree remove .worktrees/<milestone-or-issue>
-git branch -d feat/<milestone-or-issue>  # if not auto-pruned
 ```
 
-Worktree lifecycle is entirely the Teamlead's. Roles don't touch worktrees (don't delete / don't switch branch / don't create new worktrees).
+Roles don't touch worktrees (don't delete / switch branch / create).
 
 ## Workflow timeline
 
 ```
-teamlead                roles (Dev+Architect+QA+PM+...)         GitHub
-   │                            │                                │
-   │── git worktree add ──────► │                                │
-   │   .worktrees/<milestone-or-issue>   │                                │
-   │   -b feat/<milestone-or-issue>      │                                │
-   │                            │                                │
-   │── dispatch to roles (work in worktree) ►│                   │
-   │                            │── commit + push ──────────────►│
-   │                            │    (Dev code / Architect spec /        │
-   │                            │     QA acceptance / PM stance) │
-   │                            │── cross-role review (commit  │
-   │                            │   comments + ping) ─────── │
-   │                            │── all roles self-check + commit │
-   │ ◄──────── ready signal ──── │                                │
-   │                                                             │
-   │── gh pr create ──────────────────────────────────────────►│
-   │                                                             │
-   │── dispatch review subagents (dual lens) ──────────────────►│
-   │                                                             │
-   │── standard squash merge (CI really passes) ───────────────►│
-   │   (never admin / never ruleset bypass — see pr-review-flow)│
-   │                                                             │
-   │── git worktree remove ──── cleanup                          │
+teamlead              roles                    GitHub
+   │                    │                        │
+   │─ worktree add ────►│                        │
+   │─ dispatch ────────►│                        │
+   │                    │─ commit + push ───────►│
+   │                    │─ cross-role review ────│
+   │◄── ready signal ───│                        │
+   │─ gh pr create ─────────────────────────────►│
+   │─ squash merge (never admin) ───────────────►│
+   │─ worktree remove ─ cleanup                  │
 ```
-
-## Anti-patterns
-
-### ❌ A role opens a PR by themselves
-Any role running `gh pr create` is overstepping. History:
-- Architect opening a standalone spec brief PR → forces the four-piece set into a serial chain
-- QA opening a standalone acceptance template PR → fragments the milestone
-- Dev splitting into .1 schema / .2 server / .3 client / .4 closure PRs → collisions + rebase nightmare
-
-### ❌ Two milestones sharing one worktree
-Worktree and milestone are 1:1. Not allowed:
-- One worktree carrying two milestones (e.g. `<milestone-b>` commits sneaking into `.worktrees/<milestone-a>`)
-- Cross-milestone branch (e.g. `feat/<milestone-a>-and-<milestone-b>`)
-- Worktree reuse (e.g. doing the next version of <milestone-c> in `.worktrees/<milestone-c>.2` — should remove the old worktree and create a new one, or stay on the same branch / same worktree the whole way)
-
-### ❌ Closure follow-up PR / spec drift follow-up PR
-Under the new protocol there is no follow-up PR. Status flip / literal sync / closure all happen inside the main PR. If drift is found after the main PR is merged → fix it incidentally in the next milestone's PR. No standalone follow-up.
-
-Exception (use sparingly): a real hard bug fix can be a standalone PR (e.g. `fix/ci-flaky-xyz`), but it **doesn't count as a milestone PR** and the Teamlead doesn't treat it as a milestone follow-up.
-
-### ❌ Teamlead writing code for a role
-Teamlead creates worktrees + dispatches + supervises + opens PRs + removes worktrees, **and doesn't write code / specs / acceptance / content lock**. Writing it is overstepping (same as a city engineer overseeing the contractor doesn't lay bricks).
-
-### ❌ Same worktree path reused with a different branch
-Dev-d gets <milestone-d> and starts `.worktrees/<milestone-d>` + branch `feat/<milestone-d>-server-client`; later Dev-e starts the same path with branch `feat/<milestone-d>` — the collision overwrites Dev-e's work directly. **A worktree path can only be created once at a time, by the Teamlead, and only one branch at a time.** Roles don't touch worktrees.
-
-### ❌ /tmp/ ad-hoc clones
-The `/tmp/<role>-<topic>-work` clone pattern is deprecated. Everything goes through `.worktrees/<milestone-or-issue>`.
-
-## Pairs with other skills
-
-- `blueprintflow-milestone-fourpiece` — the four-piece set lands inside the implementation PR (one milestone, one PR); the four-piece set is also written by committing into the worktree, not as a separate PR
-- `blueprintflow-pr-review-flow` — once the Teamlead opens the PR, it goes through dual review + standard squash (never admin/ruleset bypass)
-- `blueprintflow-workflow` — top-level timeline: concept → Phase → milestone (this skill) → exit gate
 
 ## Cross-milestone parallelism
 
-N milestones running at once = N worktrees + N branches. The Teamlead creates and removes each. Roles split across worktrees by dispatch:
+N milestones = N worktrees + N branches. A single Dev works in one worktree at a time. Different Devs run N milestones in parallel.
 
-```
-.worktrees/<milestone-a>    ← teamlead create, dev-c + Architect spec + QA acceptance commit
-.worktrees/<milestone-b>    ← teamlead create, dev-d + Architect + QA + PM commit
-.worktrees/<milestone-c>    ← teamlead create, dev-a + ...
-.worktrees/<milestone-d>    ← teamlead create, dev-b + ...
-```
+## Anti-patterns
 
-A single Dev can only work in one worktree at a time (worktree isolation; no two in-flight at once). Different Devs running N milestones in parallel is fine.
+- ❌ **A role opens a PR** — fragments the milestone, creates closure follow-up tails
+- ❌ **Two milestones sharing one worktree** — 1:1 only
+- ❌ **Closure follow-up PR** — status flip / sync / closure all land in the main PR
+- ❌ **Teamlead writing code** — creates + dispatches + supervises + opens + removes, doesn't build
+- ❌ **Same worktree path with different branch** — collision overwrites work
+- ❌ **`/tmp/` ad-hoc clones** — deprecated, use `.worktrees/`
+
+## Pairs with
+
+- `milestone-fourpiece` — four-piece set commits in the same worktree
+- `pr-review-flow` — dual review + squash merge after Teamlead opens PR
+- `workflow` — top-level lifecycle
 
 ## How to invoke
 
-When a milestone starts:
 ```
 follow skill blueprintflow-git-workflow
-teamlead creates .worktrees/<milestone-or-issue> + feat/<milestone-or-issue>
-dispatch to roles, all roles stack commits in the same worktree
-all roles ready → teamlead opens the PR → merged → teamlead removes the worktree
 ```

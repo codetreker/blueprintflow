@@ -135,15 +135,39 @@ Short-line style:
 - All triaged: `[issue-triage cron] N open issues, all triaged, no hard blocker`
 - Stuck: `[issue-triage cron] N open issues, M untriaged, K of them ≥24h unrouted → dispatch Teamlead to handle`
 
-## State transitions (refer to blueprint-iteration)
+## Post-triage routing (state machine)
 
-After triage, the flow continues per `blueprintflow-blueprint-iteration`'s state machine:
+After triage, issues enter the blueprint-iteration state machine:
 
-- Native type **Bug** + covered by current blueprint → `current-iteration` + dispatch a patch / bugfix milestone (link the issue via `Closes gh#NNN`)
-- Native type **Feature** or **Task** (tech-debt) → `backlog`, wait for next-version discussion
-- Unclear → apply `triaged` only (no native type, no status). The user reviews these periodically and decides type + routing manually
+```
+issue triaged → routing:
+  ├── Bug + covered by current blueprint → `current-iteration` + patch milestone
+  ├── Feature / Task → `backlog`, wait for next version
+  └── no type (only `triaged`) → user review queue
+```
 
-issue-triage owns the **entry gate (Teamlead routing + role classification)**; blueprint-iteration owns the **downstream state machine (transitions / picking into the next version / freeze)**.
+When the next-version discussion opens, scan all `backlog` issues:
+- Pulled in → move label `backlog` → `next-iteration`
+- Rejected → `wont-fix` + close
+- Kept → keep `backlog`, update issue body with "why still kept"
+
+### Backlog issue body requirements
+
+Every backlog issue body must contain:
+
+- **Source**: who proposed it / which PR # / which discussion
+- **Why it goes here**: why it isn't a bug — new stance / new module / low priority / not sure yet
+- **Out of scope**: boundary against the current iteration
+
+A title-only backlog issue is an anti-pattern — later scans can't judge it.
+
+### Backlog constraints
+
+- Every issue dropped into backlog must explain "why it goes here"
+- **No automatic cleanup** — manually scan all `backlog` issues every time a next-version discussion opens
+- Bugfix issues must link to the current iteration's patch milestone (bidirectional traceability via `Closes gh#NNN`)
+
+issue-triage owns the **entry gate** (Teamlead routing + role classification); `blueprint-iteration` owns the **downstream lifecycle** (version freeze / tag cutover / source-issues.md).
 
 ## Boundaries with other cron skills
 

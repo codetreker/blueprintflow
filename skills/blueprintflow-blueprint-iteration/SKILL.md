@@ -21,7 +21,7 @@ The three states don't mix. Current allows patches (literal / anchor / constrain
 
 ## Backlog
 
-GitHub issues are the backlog SSOT — fork-friendly, natively searchable, bidirectionally linkable to PRs. Read `references/backlog.md` for the full tag system (native types + status labels + routing rules).
+GitHub issues are the backlog SSOT. Tag system (native types + status labels + priority), routing rules, and issue body requirements are defined in `blueprintflow-issue-triage` (read its `references/execution.md` for the full spec).
 
 ## Change-routing decision
 

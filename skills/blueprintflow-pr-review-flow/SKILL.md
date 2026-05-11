@@ -97,6 +97,13 @@ Subagents are read-only — they verify, they don't author (spec / stance / cont
 
 - Read the whole file, then the diff
 - Put yourself in a first-time reader's shoes
+- Each role reviews from their specific angle:
+  - **Architect**: architectural consistency + cost reasonableness + cross-skill conflicts
+  - **PM**: user experience + cognitive load + can a new team member understand it
+  - **Dev**: executability + ambiguity + would I get stuck following this
+  - **QA**: verifiability + how do we know it's done right + enough examples
+  - **Security**: injection / XSS / SSRF + auth and least-privilege + sensitive data + dependency security
+  - **Performance**: algorithmic complexity + hot path + unnecessary IO/network + memory and concurrency
 - Before LGTM, find 3 things to challenge
 - Verify technical details against docs — don't trust the author
 - Check for unintended side effects (bulk replace breaking formatting, edits breaking references)

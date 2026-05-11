@@ -127,6 +127,10 @@ Without crons, agents go idle. Crons stop automatically when the session ends; e
 
 **Anti-patterns**: starting only some crons (drift/issues accumulate), cron prompt missing skill name (uncontrolled behavior), persistent crons without user signoff (leaks across projects).
 
+## Team layout principle
+
+Regardless of runtime: Teamlead gets the widest view (coordination thread), roles are visible at a glance, every pane/window is named. Concrete layout commands depend on your runtime — see `blueprintflow-runtime-adapter`.
+
 ## Cross-project use
 
 Role names, doc paths (`docs/blueprint/`, `docs/tasks/`), and project aliases are conventions — adjustable via AGENTS.md / CLAUDE.md. Worktree / migration / lint protocols are core and don't change.

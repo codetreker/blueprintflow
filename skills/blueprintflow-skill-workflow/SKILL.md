@@ -5,94 +5,69 @@ description: "Part of the Blueprintflow methodology. Use when adding, editing, o
 
 # Skill Workflow
 
-The update process for blueprintflow skills. All skill changes (add, edit, delete) go through this flow — never push to main directly.
+All skill changes (add, edit, delete) go through: **worktree → PR → all-hands review → merge**. Never push to main directly.
 
 ## Flow
 
-### 1. Architect creates worktree + branch
-
 ```bash
-cd /workspace/blueprintflow
-git fetch origin
+# 1. Create worktree
+cd /workspace/blueprintflow && git fetch origin
 git worktree add .worktrees/<topic> -b docs/<topic> origin/main
-```
 
-- Path: `.worktrees/<topic>`
-- Branch: `docs/<topic>` (e.g. `docs/generalize-skills`, `docs/add-new-skill`)
-
-### 2. Architect writes the draft
-
-Edit skill files inside the worktree, then commit + push:
-
-```bash
-cd /workspace/blueprintflow/.worktrees/<topic>
-# edit skill files...
-git add -A
-git commit -m "docs(<scope>): <description>"
+# 2. Edit + commit
+cd .worktrees/<topic>
+# ... edit skill files ...
+git add -A && git commit -m "docs(<scope>): <description>"
 git push -u origin docs/<topic>
-```
 
-### 3. Architect opens the PR
-
-```bash
+# 3. Open PR
 gh pr create --repo codetreker/blueprintflow \
   --title "docs(<scope>): <description>" \
-  --body "## Summary\n<what changed and why>\n\n## Affected skills\n- <list affected skills>"
-```
+  --body "## Summary\n<what + why>\n\n## Affected skills\n- ..."
 
-### 4. All-hands review
+# 4. All-hands review (see review table below)
 
-Dev, PM, and QA review and comment on the PR:
-
-- **Dev**: implementation lens — can the rules be executed? Any ambiguity?
-- **PM**: user lens — can a new team member understand it? Cognitive load too high?
-- **QA**: acceptance lens — are the rules verifiable? Enough examples?
-- **Architect**: consistency — does it conflict with other skills? Does the overall structure hold up?
-- **All hands**: progressive disclosure — does this skill need to be split into references?
-
-**Review standard**: see the "review do's" section in `blueprintflow-pr-review-flow`. Core: read the whole thing + put yourself in others' shoes + really hunt for problems before LGTM.
-
-**Format check**: PRs that do bulk replace / rename must verify ASCII art (sequence diagrams, tables, code block indentation) wasn't damaged. A diff full of pure-whitespace changes is a red flag.
-
-Review comments via `gh pr comment` or directly on the GitHub PR page.
-
-### 5. Once consensus is reached, the Architect merges
-
-After everyone has signed off (or objections are resolved):
-
-```bash
+# 5. Merge (after all ✅)
 gh pr merge <N> --repo codetreker/blueprintflow --squash
-```
 
-### 6. Architect cleans up the worktree + branch
-
-```bash
+# 6. Clean up
 cd /workspace/blueprintflow
 git worktree remove .worktrees/<topic>
-git branch -d docs/<topic>
 git fetch origin --prune
 ```
 
+## Review
+
+| Role | Lens | Question to answer |
+|---|---|---|
+| Dev | Implementation | Can these rules be executed without ambiguity? |
+| PM | User | Can a new team member understand this on first read? |
+| QA | Acceptance | Are the rules verifiable? Are there enough examples? |
+| Architect | Consistency | Does it conflict with other skills? Does the structure hold? |
+| All | Progressive disclosure | Should any section move to references/? |
+
+**Format check**: bulk replace / rename PRs must verify ASCII art, tables, and code block indentation weren't damaged.
+
+**Review standard**: see `blueprintflow-pr-review-flow` for the full review protocol. Core: read the whole thing + put yourself in others' shoes + hunt for problems before LGTM.
+
 ## Rules
 
-- **Only the Architect can open PRs and merge** — other roles participate through review comments
-- **Never push to main directly** — every change goes through a PR
-- **PR can only merge after all-hands vote** — Architect, PM, Dev, QA, and Jianjun all ✅; missing any one = don't merge
-- **Read the whole thing** — review can't be diff-only; read the post-change skill file in full
-- **No LGTM with open issues** — if you found a problem during review, the verdict is NOT LGTM. The author fixes it, then you re-review the fix and only then give LGTM. "LGTM with minor issues" or "LGTM, not blocking" does not exist — every issue blocks until resolved
-- **Bump plugin version on every content change** — update `version` in `.claude-plugin/plugin.json` (this controls whether users receive updates). Patch bump (e.g. 1.1.0 → 1.1.1) for fixes/tweaks, minor bump (e.g. 1.1.x → 1.2.0) for new skills or significant rewrites. Do this in the same PR, not as a follow-up
-- **Commit message format**: `docs(<skill-name>): <description>`
+- **Only the Architect opens PRs and merges**
+- **Never push to main directly**
+- **All-hands vote required** — Architect + PM + Dev + QA + Jianjun all ✅; any missing = don't merge
+- **Read the whole file** — not just the diff
+- **No LGTM with open issues** — found a problem = NOT LGTM; author fixes, re-review, then LGTM. "LGTM, not blocking" does not exist
+- **Bump `plugin.json` version** — patch for fixes, minor for new skills. Same PR, not follow-up
+- **Commit format**: `docs(<skill-name>): <description>`
 
 ## When it doesn't apply
 
-- Business project code changes (use blueprintflow-git-workflow)
-- Skills in other projects (use that project's own flow)
-- Pure discussion (hold the discussion in the channel; only fix the conclusion through a PR)
+- Business project code → `blueprintflow-git-workflow`
+- Skills in other projects → that project's own flow
+- Pure discussion → channel; only conclusions go through PR
 
 ## How to invoke
 
-When you need to change a blueprintflow skill:
 ```
-follow skill skill-workflow
-Architect creates the worktree, writes the draft, opens the PR
+follow skill blueprintflow-skill-workflow
 ```

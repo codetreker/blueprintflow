@@ -5,102 +5,67 @@ description: "Part of the Blueprintflow methodology. Multi-round Architect + PM 
 
 # Brainstorm
 
-Take a fuzzy product idea and converge it into the core stances, concept model, and constraints a blueprint can be built on. Teamlead facilitates, PM and Architect drive the discussion (with Designer or Security pulled in as needed). Usually 5-15 rounds; each round locks down one or two concepts.
+Converge a fuzzy idea into core stances, concept model, and constraints. Teamlead facilitates, PM + Architect drive (Designer or Security pulled in as needed). Usually 5-15 rounds; each locks 1-2 concepts.
 
-> **Real example (Borgee):** Ran 11 rounds of brainstorm and locked 14 core stances.
+## When to use / not use
 
-## When to use
-
-- A new product is starting up (paired with `blueprintflow:blueprint-write`)
-- A new module is being added (e.g. adding a conversation module to an existing product)
-- Existing stances are in conflict (execution exposed that the stance was never really settled)
-- A major blueprint change (always go through brainstorm before a big rewrite)
-
-## When not to use
-
-- Implementation-level technical choices (e.g. SQLite vs Postgres) — that belongs in the spec brief, not in brainstorm
-- A milestone whose stance is already locked (use `blueprintflow:milestone-fourpiece`)
+| Use | Don't use |
+|---|---|
+| New product starting up (→ `blueprintflow-blueprint-write`) | Implementation choices (SQLite vs Postgres → spec brief) |
+| New module added to existing product | Milestone with stance already locked (→ `blueprintflow-milestone-fourpiece`) |
+| Existing stances in conflict | Mechanical PRs, small patches, hotfixes |
+| Major blueprint rewrite | — |
 
 ## Multi-round structure
 
-### Round 1: scope
+| Round | Focus | Output |
+|---|---|---|
+| **1: Scope** | Q1: first-class concepts (≤3)? Q2: relation to existing concepts? Q3: what's NOT in this module? | PM + Architect each answer ≤200 words |
+| **2-N: Stance debate** | Pick 1-2 stances per round. Can you write "X is, Y isn't"? Conflicts? v0/v1 boundaries? | ≤5-line stance draft per round |
+| **Final: Freeze** | Teamlead summarizes 5-7 stances + constraints | PM + Architect sign off → `blueprintflow-blueprint-write` |
 
-Teamlead poses three questions. PM and Architect each answer in ≤200 words:
+## Teamlead facilitation
 
-- Q1: What are the **first-class concepts** of this module? (≤3)
-- Q2: How do they relate to existing concepts (org / agent / channel)?
-- Q3: Reverse boundary — what is **not** part of this module?
+| Principle | Detail |
+|---|---|
+| Don't answer for others | Assign to PM/Architect, only arbitrate (conflict? v0/v1 clear? constraint writable?) |
+| Push toward closure | Every round produces ≤5-line stance draft. "Wait for more info" = not allowed |
+| Converge to 5-7 | Too many stances → unmemorable, execution drifts. 10-15 = product total; 5-7 per module |
 
-### Rounds 2-N: stance debate
-
-Each round picks one or two concrete stances and works them through. PM brings the user perspective, Architect brings feasibility, Teamlead arbitrates:
-
-- Is stance X clearly written? (Can you write a "X is, Y isn't" constraint?)
-- Does it conflict with another stance? Which one wins?
-- Are the v0 / v1 boundaries clearly nailed down?
-
-Each round produces a stance draft of ≤5 lines, which becomes the baseline for the next round.
-
-### Final round: stance freeze
-
-Teamlead summarizes 5-7 stances and their constraints. PM and Architect both sign off, then it goes into `blueprintflow:blueprint-write` to be written down.
-
-## Teamlead facilitation principles
-
-### Don't answer for others
-
-- Assign the work to PM and Architect; only arbitrate
-- Arbitration criteria: does this conflict with existing stances? Are v0/v1 boundaries clear? Can a constraint actually be written?
-
-### Push toward closure
-
-- Every round must produce a ≤5-line stance draft (if it can't be written, the stance doesn't exist — fail the round)
-- No "let's wait for more information" stalling (information will never be enough — make the call)
-
-### Converge to 5-7 stances
-
-- Don't expand without limit (too many stances are unmemorable, execution drifts)
-- 10-15 stances is product-level total; for a single module 5-7 is enough
-
-## How to write a stance (hard rule)
+## Stance format (hard rule)
 
 Each stance must contain:
 
-- **A one-sentence claim** (≤30 words, something a user could repeat)
-- **A constraint** (X is, Y isn't, to prevent drift)
-- **A key scenario** (a demo example you can actually run)
-- **v0/v1 boundary** (what's done now, what's left for later)
+| Element | Requirement |
+|---|---|
+| Claim | ≤30 words, something a user could repeat |
+| Constraint | "X is, Y isn't" — prevents drift |
+| Key scenario | A demo example you can actually run |
+| v0/v1 boundary | What's done now, what's left for later |
 
-> **Stance example (silence beats fake loading):**
-> - Claim: don't show spinner / progress bar / "thinking..."
-> - Constraint: while the agent is processing the UI stays still, no fake progress; only show the result when it's actually done
-> - Scenario: agent edits an artifact, the user sees no intermediate state until commit
-> - v0: fully silent; v1 may consider a "thinking" subject hint based on user feedback (still no fake progress)
+**Worked example** — "silence beats fake loading":
+- Claim: don't show spinner / progress bar / "thinking..."
+- Constraint: UI stays still while agent processes; only show result when done
+- Scenario: agent edits artifact, user sees no intermediate state until commit
+- v0: fully silent; v1 may add "thinking" hint (still no fake progress)
 
-## Anti-patterns in multi-round discussion
+## Anti-patterns
 
-- ❌ Trying to lock all stances in round 1 (no convergence, drags forever)
-- ❌ Teamlead answering the user-side stance for PM (no real user perspective, execution drifts)
-- ❌ Producing no stance draft in a round (just talk)
-- ❌ Stances written as abstract platitudes (if you can't write a constraint, redo the round)
-- ❌ Implementation details hijacking the discussion (e.g. SQLite vs Postgres) — Teamlead must cut it off and pull back to stance
+- ❌ Locking all stances in round 1 (no convergence, drags)
+- ❌ Teamlead answering PM's user-side stance (no real perspective)
+- ❌ Round produces no stance draft (just talk)
+- ❌ Abstract platitudes (can't write constraint → redo round)
+- ❌ Implementation details hijacking discussion (Teamlead cuts it off)
 
 ## Output checklist
 
-When brainstorm wraps up:
-
-- [ ] All 5-7 stances have "claim + constraint + scenario + v0/v1 boundary"
-- [ ] Constraints can be checked by machine (reverse grep / reverse assertion)
-- [ ] PM and Architect both signed off
-- [ ] Hand off to `blueprintflow:blueprint-write` to write the blueprint
+- [ ] All 5-7 stances have claim + constraint + scenario + v0/v1
+- [ ] Constraints machine-checkable (reverse grep / assertion)
+- [ ] PM + Architect signed off
+- [ ] Handed off to `blueprintflow-blueprint-write`
 
 ## How to invoke
 
-For a new module or new stance:
-
 ```
 follow skill blueprintflow-brainstorm
-start multi-round discussion (Teamlead + PM + Architect)
 ```
-
-When the discussion converges, hand off to `blueprintflow:blueprint-write`.

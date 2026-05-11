@@ -46,7 +46,6 @@ Read `references/lifecycle.md` for the full flow: scan backlog → write bluepri
 
 ## Anti-patterns
 
-- ❌ Reversing a stance on the current blueprint (PR anchors drift)
 - ❌ Version number in AGENTS.md (blueprint owns its frontmatter)
 - ❌ Patch PR without `Closes gh#NNN` (root-cause chain breaks)
 - ❌ Stuck milestone dragging the whole iteration (kick to backlog or split)

@@ -17,7 +17,7 @@ The blueprint evolves after freeze through a 3-state machine. Stance reversals a
 | Next-version | `docs/blueprint-next/` | Draft, four roles + user discussing |
 | Backlog | GitHub issues (`backlog` label) | Unplanned, accumulates, not in current iteration |
 
-The three states don't mix. Current allows patches (literal / anchor / constraint), **not stance reversals**.
+The three states don't mix. Current allows patches (literal / anchor / constraint), **not stance reversals**. Change suggestions enter these states via `blueprintflow-issue-triage`.
 
 ## Version numbers
 

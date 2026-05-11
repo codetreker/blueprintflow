@@ -23,17 +23,9 @@ The three states don't mix. Current allows patches (literal / anchor / constrain
 
 GitHub issues are the backlog SSOT. Tag system (native types + status labels + priority), routing rules, and issue body requirements are defined in `blueprintflow-issue-triage` (read its `references/execution.md` for the full spec).
 
-## Change-routing decision
+## Change routing
 
-For every change suggestion, the Architect decides:
-
-| Decision | Route to | Issue type + label |
-|---|---|---|
-| **Real bug** (blueprint says X, execution drifted) | Current iteration patch | Bug + `current-iteration` |
-| **Not a bug** (new stance / module / reversal) | Backlog | Feature or Task + `backlog` |
-| **Unsure** | User review queue | `triaged` only (no type, no status) |
-
-**Default is backlog.** Burden of proof sits on "this is a bug".
+Change arrives → route per `blueprintflow-issue-triage`. Default is backlog (burden of proof sits on "this is a bug").
 
 ## Version numbers
 

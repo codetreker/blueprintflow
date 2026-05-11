@@ -52,6 +52,8 @@ Two documents, committed together:
 
 Each role commits one line into §7 (role / ✅ / date / PR anchor) in the same worktree. No separate branch or PR.
 
+> **Detailed checklists**: see `references/dev-review.md`, `references/qa-review.md`, `references/pm-review.md`, `references/teamlead-review.md` for per-role signoff checklists. Only read your own role's file.
+
 ### Step 3: Placeholder PRs land first
 
 DEFERRED gates' placeholder PRs must merge before the exit PR. Otherwise anchors are broken.

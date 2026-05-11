@@ -19,14 +19,6 @@ The blueprint evolves after freeze through a 3-state machine. Stance reversals a
 
 The three states don't mix. Current allows patches (literal / anchor / constraint), **not stance reversals**.
 
-## Backlog
-
-GitHub issues are the backlog SSOT. Tag system (native types + status labels + priority), routing rules, and issue body requirements are defined in `blueprintflow-issue-triage` (read its `references/execution.md` for the full spec).
-
-## Change routing
-
-Change arrives → route per `blueprintflow-issue-triage`. Default is backlog (burden of proof sits on "this is a bug").
-
 ## Version numbers
 
 Version lives in `docs/blueprint/` frontmatter (`frozen: <date>`, `prev: vN.M-1`).

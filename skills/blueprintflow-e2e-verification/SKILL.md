@@ -47,9 +47,13 @@ Skipping any line = QA didn't do their job. **Rigid**: "the change is small, I'l
 
 Scan ≥3 dimensions per image. Empty output after real scan = fine. Skipping the scan = not fine.
 
-### Line 3 comparison reference
+### Line 3 self-check questions
 
-Pick the product in your category that your team uses daily. Compare your UI's polish against it. Don't list brand names — find the right reference per category.
+- "Compared with the most-used product in this category, where does this look amateur?"
+- "Is this element's size / spacing / color intentional, or did nobody tune it?"
+- "If I show this screenshot to a designer, where will their eyes land first?"
+
+Pick the product in your category that your team uses daily as the comparison reference.
 
 ## Operating checklist
 

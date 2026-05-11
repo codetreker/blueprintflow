@@ -40,7 +40,9 @@ Version lives in `docs/blueprint/` frontmatter (`frozen: <date>`, `prev: vN.M-1`
 
 ## Iteration lifecycle
 
-Read `references/lifecycle.md` for the full flow: current iteration passes acceptance → user opens next-version discussion → scan backlog → write blueprint-next → four-role discussion → freeze + tag + source-issues.md → relabel issues → trigger Phase N+1. Reminder period is project-defined in AGENTS.md (`reminder-period: 2w` default).
+When the current iteration passes acceptance, the next-version discussion opens. Its primary input is **GitHub issues labeled `backlog`** — these are scanned one by one to decide what gets pulled into the next blueprint version.
+
+Read `references/lifecycle.md` for the full flow: scan backlog → write blueprint-next → four-role discussion → freeze + tag + source-issues.md → relabel issues → trigger Phase N+1. Reminder period is project-defined in AGENTS.md (`reminder-period: 2w` default).
 
 ## Anti-patterns
 

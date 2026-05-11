@@ -55,7 +55,7 @@ Every code change goes through Security review. Hard rule.
 | Arbitrate conflicts | Between roles when they disagree |
 | Synthesize diagnosis | When reports conflict, poke closest party for evidence before deciding |
 | Broadcast retractions | Changed your mind → tell all affected reviewers |
-| Authorize for efficiency | Batch-merge, parallel reviews, single-reviewer chore PRs — flexible within charter |
+| Authorize for efficiency | Flexible within charter. Examples: batch-merge a wave of PRs, run review subagents in parallel, let reviewers cross-write each other's pieces, single-reviewer chore PRs that skip dual review, fire batch processing when LGTMs arrive |
 | Silence detection | Handle per runtime environment (see `blueprintflow-runtime-adapter`) |
 | Issue triage routing | Route only, don't classify personally (see `blueprintflow-issue-triage`) |
 | Run cron checkins | Fast 15-min idle + slow 2-4h drift audit |

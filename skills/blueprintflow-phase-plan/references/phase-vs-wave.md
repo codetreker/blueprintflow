@@ -42,6 +42,8 @@ Wave closure = a regular milestone PR (scope = wave's full deliverable). Follows
 
 ## Numbering rules
 
+Phase numbers are historical markers, not counters — downstream dependents (release notes, migration plans, quarterly reviews) rely on mapping "what was true at Phase N exit" to "what changed between Phase N and Phase N+1".
+
 | Rule | Phase | Wave |
 |---|---|---|
 | ID format | `phase-N-{name}` (number) | `<descriptive-name>` (name, no number) |
@@ -55,3 +57,4 @@ Wave closure = a regular milestone PR (scope = wave's full deliverable). Follows
 - ❌ Phase number skip / rollback / split (1a/1b) / merge (1.5)
 - ❌ Wave numbering (Wave-1 / Wave-2 — implies sequence that doesn't exist)
 - ❌ Wave name collision
+- ❌ Editing archived execution-plan to add a new Phase row (history is frozen; new Phases live in `docs/tasks/`)

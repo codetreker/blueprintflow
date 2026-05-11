@@ -23,7 +23,11 @@ docs/tasks/<milestone-or-issue>/
 └── progress.md       # per-milestone progress
 ```
 
-Closed milestone → whole folder moves to `docs/tasks/archived/`. Phase exit artifacts → `docs/tasks/phase-N-exit/`. Cross-milestone index → `docs/tasks/README.md`.
+Other locations in `docs/tasks/`:
+- Phase exit artifacts: `docs/tasks/phase-N-exit/` (readiness-review.md / announcement.md)
+- Cross-milestone index: `docs/tasks/README.md`
+
+When a milestone fully closes (acceptance ✅ + REG flipped + PROGRESS [x]), the whole folder moves to `docs/tasks/archived/`.
 
 ## Naming convention
 

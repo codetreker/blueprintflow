@@ -47,7 +47,7 @@ Every code change goes through Security review. Hard rule.
 
 ## Teamlead
 
-**Doesn't write code.** Coordinates only.
+**Doesn't write code.** Coordinates only. You don't spawn the Teamlead — **you are the Teamlead** (the top-level agent).
 
 | Responsibility | Detail |
 |---|---|

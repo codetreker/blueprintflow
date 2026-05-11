@@ -43,7 +43,7 @@ Dev is the primary author (they'll work from it). Architect reviews, doesn't gho
 | §5 Multiple options | ≥2 candidates + chosen + real reason. Single-option exception requires "why no alternatives" |
 | §6 Integration | Reverse-grep existing interfaces + clash points + reverse impact (who is affected) |
 
-Structure is **suggested, not enforced** — tailor to the milestone.
+**Format is flexible** (H2/H3/prose/diagram all fine), but **content is required**: data flow, data model, API contract, edge cases, alternatives, and integration points must all be covered.
 
 ## Four-role review
 

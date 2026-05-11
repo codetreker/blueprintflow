@@ -38,6 +38,8 @@ Anti-pattern: `m698-*` / `gh698-*` prefixes. Folder name describes the work, not
 
 Container folders hold `phase-plan.md` + leaf subfolders. See `blueprintflow-phase-plan` references/phase-vs-wave.md for container vs leaf details.
 
+**Two-level index**: `docs/tasks/README.md` lists top-level entries (non-recursive). `<container>/phase-plan.md` lists milestones inside that container. README references containers by name, doesn't duplicate their milestone list.
+
 ## The 4 pieces
 
 | # | Piece | Owner | Path | Length |

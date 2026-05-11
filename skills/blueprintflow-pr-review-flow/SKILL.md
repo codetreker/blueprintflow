@@ -9,7 +9,7 @@ The standard flow from PR open to merged.
 
 ## Pre-requisite: implementation design ✅
 
-Code milestones must have passed the four-role design review before the PR opens. Design doc at `docs/tasks/<milestone-or-issue>/design.md`. Full spec in `blueprintflow-implementation-design`. Non-code milestones skip this step.
+Code milestones must have passed the four-role design review before the PR opens. Design doc lives in the milestone's leaf folder as `design.md` (see `blueprintflow-milestone-fourpiece` for folder layout). Full spec in `blueprintflow-implementation-design`. Non-code milestones skip this step.
 
 ## 🚫 Permanently forbidden (hard red line)
 

@@ -66,6 +66,8 @@ Gates 1+2 in spec brief PR, gate 3 in stance + acceptance, gate 4 at demo signof
 | Phase 3+ | TODO | G3.x + PM signoff | waiting |
 ```
 
+After every PR merge, update the matching milestone row ⚪→✅ immediately.
+
 ## Anti-patterns
 
 - ❌ Splitting by technical layer (no value loop)

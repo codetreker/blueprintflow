@@ -9,7 +9,7 @@ Once the blueprint is ready, the Architect leads. Break the project into Phases,
 
 ## Preflight check
 
-Before using this skill, run `references/preflight.md` to confirm it applies. The decision graph checks: single-file change? mechanical PR type? team <3? blueprint missing? If any → skip the 4-piece flow.
+Before using this skill, read `references/preflight.md` to confirm it applies. The decision graph checks: single-file change? mechanical PR type? team <3? blueprint missing? If any → skip the 4-piece flow.
 
 ## Phase vs wave
 

@@ -50,6 +50,31 @@ Every teammate = independent Claude Code process (`claude --agent-id <name>@<tea
 
 Teamlead = left column (coordination, biggest view). 6 roles in 2×3 grid.
 
+### Team-startup command skeleton
+
+```bash
+SESSION=blueprintflow
+tmux new-session -d -s $SESSION -x 220 -y 60
+# Right half split into 2x3 grid
+tmux split-window -h -p 60 -t $SESSION:0
+tmux split-window -v -p 66 -t $SESSION:0.1
+tmux split-window -v -p 50 -t $SESSION:0.2
+tmux split-window -h -t $SESSION:0.1
+tmux split-window -h -t $SESSION:0.3
+tmux split-window -h -t $SESSION:0.5
+
+# Name panes
+tmux set-option -t $SESSION pane-border-status top
+tmux select-pane -t $SESSION:0.0 -T 'teamlead'
+# ... architect / pm / dev-a / dev-b / qa / security
+
+# Start claude only in Teamlead pane
+tmux send-keys -t $SESSION:0 'claude' Enter
+tmux attach -t $SESSION
+```
+
+Lead spawns teammates via team tools — Claude Code auto-starts child processes in remaining panes.
+
 ### Display modes (`~/.claude/settings.json`)
 
 | Mode | Behavior |

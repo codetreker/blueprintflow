@@ -21,7 +21,7 @@ QA = **the user's proxy**. Code-level correctness (PR acceptance ✅) is necessa
 
 | Line | Core question | Required actions |
 |---|---|---|
-| **1. Code-level** | Does each acceptance criterion really pass? | Real UI operations (form fill / click), not API/cURL substitutes. Capture DOM/network evidence |
+| **1. Code-level** | Does each acceptance criterion really pass? | Real UI operations (form fill / click). API/cURL **can supplement** (e.g. confirm backend stored data) but **cannot substitute** for UI ops. Capture DOM/network evidence |
 | **2. Usability** | Can a real user complete an everyday task? | Walk full task flow, probe unmentioned paths, repeat N times, refresh/recover, send real data |
 | **3. Design** | Would a designer wince? | Screenshot every viewport, scan ≥3 dimensions per image, re-evaluate components you've seen before |
 
@@ -88,6 +88,12 @@ Pick the product in your category that your team uses daily as the comparison re
 - ❌ Re-looking at a component without re-evaluating it
 - ❌ API/cURL substituting for real UI operations
 - ❌ Verifying on empty state only
+
+## Cross-product applicability
+
+- **Any user-visible surface** (web / desktop / mobile / extension / CLI UI) follows the three lines
+- **Core daily flow**: every product has one (chat → send message, notes → create note, canvas → create card). Verify any change by walking that flow
+- **Comparison reference**: the product in your category your team uses daily — don't hardcode brand names
 
 ## Relationship to other skills
 

@@ -5,119 +5,79 @@ description: "Part of the Blueprintflow methodology. Wraps up a Phase: confirms 
 
 # Phase Exit Gate
 
-Phase exit is the last checkpoint when finishing a Phase. You confirm everything that was supposed to happen actually happened, four roles sign off, and only then can the project move into the next Phase.
+Phase exit = last checkpoint when finishing a Phase. Confirm everything planned actually shipped, four roles sign off, then move to next Phase.
 
-This is **not** the same as wrapping up a single milestone. A milestone wraps up inside its own PR. Phase exit is one level higher — it closes a whole stretch of work made up of multiple milestones.
+**Not** the same as closing a single milestone (that happens in its own PR). Phase exit is one level higher — closes a whole stretch of milestones.
 
-## Phase exit gate vs wave closure gate
+## Phase exit vs wave closure
 
-This skill governs **Phase exit** — the boundary between blueprint versions / major Phases. It runs when:
+| | Phase exit (this skill) | Wave closure |
+|---|---|---|
+| **When** | All milestones merged + acceptance ✅, next blueprint version ready | A milestone wave inside a Phase finishes |
+| **Scope** | Transitions between Phases / blueprint versions | Wave's closure milestone handles its own signoff |
+| **Governed by** | This skill | `blueprintflow-phase-plan` |
 
-- All milestones in the current Phase are merged + acceptance ✅
-- The next blueprint version is ready to cut over (or this is the project's final Phase before steady-state)
+## Prerequisites
 
-It does NOT run for **wave closure** — when a milestone wave inside a Phase finishes, the wave's closure milestone (a release demo, a fault-tolerance proof) handles its own 4-role signoff, but it doesn't transition Phases. See `blueprintflow:phase-plan` "When to start a new Phase vs add a wave" for the distinction.
+All must be true before starting the exit flow:
 
-## Before starting the exit flow
+| Check | Requirement |
+|---|---|
+| PROGRESS.md | Every done milestone checked off. Confirm unchecked items one by one — fix before starting |
+| Machine-checkable gates | Every `G<Phase>.<n>` is SIGNED, anchored to commit SHA |
+| Carry-overs | Each carry-over anchored to a **placeholder PR number** in next Phase. "We'll get to it later" ≠ anchored |
+| Conditionally complete | Acceptable: N gates SIGNED + M gates PARTIAL (condition + closure path) + K gates DEFERRED (locked to placeholder PR). Announcement says "conditionally complete", not "complete" |
 
-Make sure these are all in place first:
+## Flow
 
-### 1. PROGRESS.md is honest
-
-Every milestone that's done should be checked off. For anything not checked, confirm one by one: was it actually done and someone forgot to flip the status, or is it really not done? Fix PROGRESS first, then start the exit flow. Don't carry inconsistencies into the gate.
-
-### 2. Machine-checkable gates all green
-
-Every strict check in the Phase (the `G<Phase>.<n>` ones) is SIGNED, anchored to a commit SHA.
-
-### 3. Carry-overs are properly anchored
-
-It's OK if some things in the Phase didn't get fully done — but **every carry-over must be anchored to a placeholder PR number in the next Phase** (rule 6). Vague language like "we'll get to it later" doesn't count. If there's no placeholder PR yet, open one before running the exit flow.
-
-### 4. "Conditionally complete" is fine
-
-You don't have to wait for every gate to be strictly ✅. This combination is acceptable:
-
-- N gates strictly ✅
-- M gates PARTIAL (with a condition signoff and a closure path attached)
-- K gates DEFERRED (locked to a placeholder PR in the next Phase)
-
-The announcement title says "conditionally complete", not "complete". This is honesty, not slack.
-
-> **Real example (Borgee):** Phase 2 exit was 5 SIGNED + 3 PARTIAL + 2 DEFERRED → "conditionally complete".
-
-## How it works
-
-The whole Phase exit goes through **one** PR — not four separate PRs for the four signoffs (that would conflict with the "one milestone, one PR" rule). All four roles commit and review inside the same worktree, just like a regular milestone PR.
-
-worktree: `.worktrees/phase-N-exit/`. branch: `docs/phase-N-exit`.
+One PR, one worktree (`.worktrees/phase-N-exit/`, branch `docs/phase-N-exit`). Not four separate PRs.
 
 ### Step 1: Architect drafts
 
-The Architect writes two documents in the worktree and commits them together:
+Two documents, committed together:
 
-- `docs/tasks/phase-N-exit/readiness-review.md` (≤100 lines) — "Is the Phase ready to exit?"
-  - Status of each gate: SIGNED / PARTIAL / DEFERRED, with PR anchors
-  - Final call: ✅ ready or ⚠️ still has blockers
-  - Prerequisites for the next Phase, plus any handoff points
+| Document | Content | Limit |
+|---|---|---|
+| `docs/tasks/phase-N-exit/readiness-review.md` | Gate status (SIGNED/PARTIAL/DEFERRED) with PR anchors, final call, next-Phase prerequisites | ≤100 lines |
+| `docs/tasks/phase-N-exit/announcement.md` | §1 three-bucket summary, §2-§5 per-gate with PR/SHA anchors, §7 four signoff slots, §8 changelog | ≤80 lines |
 
-- `docs/tasks/phase-N-exit/announcement.md` (≤80 lines) — the closure announcement
-  - §1 Three sections (SIGNED / PARTIAL / DEFERRED) listing what's in each
-  - §2-§5 Each gate, anchored to PR # / commit SHA + acceptance template
-  - §7 Four signoff slots (placeholder, waiting for the four roles)
-  - §8 Changelog v1.0
+### Step 2: Four-role review + signoff
 
-### Step 2: Four-role review and signoff
+| Role | Review focus |
+|---|---|
+| Dev | Implementation coverage — acceptance criteria maps to merged code, no gaps |
+| QA | Acceptance fully flipped, REG counts add up, anchored to templates |
+| PM | Product rules haven't drifted, scope boundaries held |
+| Teamlead | Final signoff — all four pieces in place |
 
-Reviews go through PR comments — same pattern as a milestone PR. No new branches, no new PRs. Each role has a specific review focus (see `references/` for detailed checklists):
+Each role commits one line into §7 (role / ✅ / date / PR anchor) in the same worktree. No separate branch or PR.
 
-- **Dev**: Verify implementation coverage — every milestone's acceptance criteria maps to merged code, no gaps between what was planned and what shipped
-- **QA**: Verify acceptance is fully flipped, REG counts add up, anchored to acceptance templates
-- **PM**: Verify product rules haven't drifted, scope boundaries held, anchored to the rules cross-check table
-- **Teamlead**: Final signoff (coordination + confirmation that all four pieces are in place)
-
-After approving, each role **commits a single line into the announcement's §7** (their role / ✅ / date / PR anchor) directly in the same worktree. No separate branch, no separate PR.
+> **Detailed checklists**: see `references/dev-review.md`, `references/qa-review.md`, `references/pm-review.md`, `references/teamlead-review.md` for per-role signoff checklists. Only read your own role's file.
 
 ### Step 3: Placeholder PRs land first
 
-If any DEFERRED gate is anchored to a placeholder PR in the next Phase, those placeholder PRs must be merged before merging the Phase exit PR. Otherwise the announcement references PRs that don't exist yet, and the anchors are broken.
+DEFERRED gates' placeholder PRs must merge before the exit PR. Otherwise anchors are broken.
 
-### Step 4: Announcement closes + next Phase starts
+### Step 4: Closure + next Phase
 
-Once all four roles have signed and all placeholder PRs are merged, the Architect commits one more section into the same PR — §9 Closure Announcement:
-
-- Date
-- Carry-over details (where each DEFERRED gate is anchored)
-- Signal that the next Phase is unblocked
-
-Then the Teamlead squash merges the whole PR, removes the worktree, and deletes the branch.
-
-PR title: `docs(qa): Phase N closure announcement`
+Architect commits §9 (date, carry-over details, next Phase unblocked). Teamlead squash merges. PR title: `docs(qa): Phase N closure announcement`.
 
 ## Archiving closed milestones
 
-After a milestone's PR merges and acceptance is fully ✅:
-- The Teamlead (or whoever does the final merge) moves the milestone folder: `git mv docs/tasks/<milestone-or-issue> docs/tasks/archived/<milestone-or-issue>` as part of the closure PR (or a follow-up chore PR within 24h)
-- This keeps `docs/tasks/` showing only in-flight work; `docs/tasks/archived/` is the historical record
-- The cross-milestone index at `docs/tasks/README.md` should be updated to remove the archived entry from "Currently in flight"
+After a milestone's PR merges and acceptance is ✅:
+- `git mv docs/tasks/<milestone-or-issue> docs/tasks/archived/<milestone-or-issue>` (in closure PR or chore PR within 24h)
+- Update `docs/tasks/README.md` — remove from "Currently in flight"
 
 ## Anti-patterns
 
-- ❌ Vague language for DEFERRED gates ("same PR" or "later") instead of a real PR number
-- ❌ Forcing every gate to be strictly ✅ before allowing exit, dragging the Phase forever — "conditionally complete" is honest, not slack
-- ❌ Four separate PRs, one per role signoff — conflicts with "one milestone, one PR"; Phase exit is one event, one PR
-- ❌ Merging the Phase exit PR before placeholder PRs land (anchored PRs don't exist, broken references)
-- ❌ Splitting the announcement into v1 / v2 across two PRs (same root cause as the "four PRs" anti-pattern: one event, fragmented commits)
+- ❌ Vague DEFERRED anchors ("same PR" / "later") instead of real PR numbers
+- ❌ Forcing every gate to strict ✅, dragging the Phase forever
+- ❌ Four separate PRs for four signoffs (one event = one PR)
+- ❌ Merging exit PR before placeholder PRs land
+- ❌ Splitting announcement across multiple PRs
 
 ## How to invoke
 
-When the Phase enters its wrap-up window (all strict gates ✅, carry-overs anchored to placeholder PRs):
-
 ```
 follow skill blueprintflow-phase-exit-gate
-Architect drafts readiness review + announcement →
-four roles review in PR comments and commit their signoff lines →
-all placeholder PRs merge →
-Architect commits §9 closure →
-Teamlead squash merges
 ```

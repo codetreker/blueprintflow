@@ -1,5 +1,5 @@
 {
   "name": "blueprintflow",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "description": "Blueprint-driven multi-agent collaboration workflow with team roles, milestone four-piece, PR review flow, and Phase exit gates"
 }

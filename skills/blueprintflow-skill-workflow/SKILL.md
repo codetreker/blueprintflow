@@ -48,6 +48,8 @@ git fetch origin --prune
 
 **Format check**: bulk replace / rename PRs must verify ASCII art, tables, and code block indentation weren't damaged.
 
+**Review standard**: see `blueprintflow-pr-review-flow` for the full review protocol. Core: read the whole thing + put yourself in others' shoes + hunt for problems before LGTM.
+
 ## Rules
 
 - **Only the Architect opens PRs and merges**

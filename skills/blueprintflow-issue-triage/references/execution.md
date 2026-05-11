@@ -1,168 +1,154 @@
 # Issue triage execution logic
 
+GitHub issues are the backlog SSOT. This skill defines the gate: cron scans → Teamlead routes → roles classify → state machine routing.
 
-GitHub issues are the backlog SSOT (see `blueprintflow-blueprint-iteration`), but new issues don't classify themselves. This skill defines the gate where cron scans for issues, the Teamlead decides routing, and roles classify them.
+Runs in parallel to fast-cron (PR dimension) and slow-cron (drift dimension) — this is the **issue dimension**.
 
-It runs in parallel to and doesn't overlap with `blueprintflow-teamlead-fast-cron-checkin` (PR dimension) or `blueprintflow-teamlead-slow-cron-checkin` (blueprint-drift audit dimension) — issue-triage is the **issue dimension**.
+## Native issue type field
 
-## Use the GitHub native issue type field, not labels
+Use GitHub's built-in issue type (Bug / Feature / Task), not `type:*` labels.
 
-GitHub repositories have a built-in **issue type** field (Bug / Feature / Task, plus any custom types defined at the org level). This skill uses the **native type field**, not `type:*` labels.
+| Action | Command |
+|---|---|
+| Set type | `gh api graphql -f query='mutation { updateIssueIssueType(input: {issueId: "ID", issueTypeId: "TID"}) { issue { number } } }'` |
+| Read type | `gh api /repos/<o>/<r>/issues/<n> --jq '.type.name'` |
+| List type IDs | `gh api graphql -f query='query { repository(owner: "<o>", name: "<r>") { issueTypes(first: 20) { nodes { id name } } } }'` |
+| List "triaged no type" | GraphQL query filtering `issueType == null` on `triaged` label (see below) |
 
-- Set type via GraphQL `updateIssueIssueType` mutation (`gh api graphql -f query='mutation { updateIssueIssueType(input: {issueId: "ID", issueTypeId: "TID"}) { issue { number } } }'`)
-- Tech-debt issues → use **Task** (the native "specific piece of work" type fits this category)
-- Unclear issues (need user clarification) → **don't set a type**, only apply the `triaged` label. The user periodically reviews "triaged but no native type" issues to decide
-- The native type renders in the issue header (with an icon) and is queryable via GraphQL filters; labels are not the right tool for this taxonomy
-
-Reading the type:
-```bash
-gh api /repos/<o>/<r>/issues/<n> --jq '.type.name'
-```
-
-Listing the type IDs available in your repo:
-```bash
-gh api graphql -f query='query { repository(owner: "<o>", name: "<r>") { issueTypes(first: 20) { nodes { id name } } } }'
-```
-
-Listing "triaged but no native type" issues (the user's review queue — see "User review queue" below for cadence):
-
-`gh issue list --json type` is **not** supported (the CLI only exposes a fixed set of fields and `type` is not one of them). Use GraphQL instead:
+- Tech-debt → **Task**
+- Unclear → don't set type, only `triaged` label. User reviews periodically
+- `gh issue list --json type` is NOT supported — use GraphQL
 
 ```bash
+# "Triaged but no native type" queue
 gh api graphql -f query='query($owner:String!, $repo:String!) { repository(owner:$owner, name:$repo) { issues(first:100, states:OPEN, filterBy:{labels:["triaged"]}) { nodes { number title issueType { name } } } } }' -f owner=<o> -f repo=<r> \
   | jq '[.data.repository.issues.nodes[] | select(.issueType == null)]'
 ```
 
-If the repo has not enabled native issue types, ask the user / org admin to enable them before running triage. Don't fall back to `type:*` labels.
+If native types not enabled → ask user/org admin to enable. Don't fall back to labels.
 
-## User review queue ("triaged but no native type")
+## User review queue
 
-When a triager can't classify an issue (genuinely unclear whether Bug / Feature / Task), the rule is: **apply `triaged` only, don't set a type, don't set a status**. These accumulate into a queue that the user reviews manually.
-
-To prevent this queue from growing unchecked:
-
-- The **slow-cron audit** (`blueprintflow-teamlead-slow-cron-checkin`) includes a check for the size of this queue. If it exceeds a project-defined threshold (default 5), the cron flags it in the report so the user knows to review.
-- The user's expected cadence is **whenever the slow-cron flags it, or weekly review at minimum** — projects can override via `AGENTS.md`:
-  ```yaml
-  issue-triage:
-    triaged-no-type-threshold: 5      # flag in slow-cron when queue exceeds this
-    triaged-no-type-review: weekly    # expected user review cadence
-  ```
-- When the user reviews, they either set the native type (which moves the issue into the regular routing flow) or close it as `wont-fix` if it's not actionable.
-
-## Responsibility
-
-Scan all open GitHub issues, find the untriaged ones (those without the `triaged` label), and have the Teamlead look first to decide routing:
-
-| Issue character | Routed to | What they look at |
-|---|---|---|
-| Code improvement / tech-debt | Architect | Architect decides if it's a bug / stance reversal / add to backlog |
-| New feature | PM | Product stance review / user value / blueprint coverage |
-| Bug | QA | Reproduction / trigger conditions / blast radius |
-| Unclear | Apply `triaged` only (no native type) — user reviews these periodically | — |
-
-After the three roles finish triaging:
-- Set the **native issue type** (Bug / Feature / Task)
-- Apply a **status** label (`backlog` / `current-iteration` / `next-iteration` / `wont-fix` / `archived`)
-- Apply a **priority** label if the project uses them (`p0-blocker` / `p1-high` / `p2-normal` / `p3-low`)
-- Apply the `triaged` label to mark it processed
-
-## Cron config
-
-**Default frequency**: 3h (consistent with the system — fast-cron 15m / slow-cron 2-4h. Issue inflow is slower than PR flow, so 3h is enough)
-
-**AGENTS.md can override**:
+"Triaged but no type" issues accumulate. Slow-cron audits queue size (threshold default 5). User cadence: weekly or when flagged.
 
 ```yaml
+# AGENTS.md override
 issue-triage:
-  cron: 3h           # default 3 hours, project can change
-  scope: open-only   # only scan open issues
+  triaged-no-type-threshold: 5
+  triaged-no-type-review: weekly
 ```
+
+## Routing table
+
+| Issue character | Routed to | What they check |
+|---|---|---|
+| Code improvement / tech-debt | Architect | Bug vs stance reversal vs backlog |
+| New feature | PM | Product stance / user value / blueprint coverage |
+| Bug | QA | Reproduction / trigger / blast radius |
+| Unclear | `triaged` only | User reviews periodically |
+
+After triage, apply: **native type** + **status label** + **priority label** (if used) + **`triaged` label**.
+
+## Status labels
+
+| Label | Meaning |
+|---|---|
+| `backlog` | Unplanned, waiting for next-version discussion |
+| `current-iteration` | Pulled into current iteration (bugfix / patch) |
+| `next-iteration` | Pulled into next-version blueprint |
+| `archived` | Kept for history |
+| `wont-fix` | Decided not to do, closed |
+
+**Priority** (project-optional): `p0-blocker` / `p1-high` / `p2-normal` / `p3-low`
 
 ## Scan scope
 
-- All open issues
-- **Skip ones already labeled `triaged`** (avoid wasted re-triage). This includes "triaged but no native type" — those are in the user's manual review queue, the cron should not touch them again
-- Skip ones closed with `wont-fix` / `archived` (already settled)
-
-GitHub CLI example:
+- All open issues without `triaged` label (including "triaged no type" — those are in user queue, cron skips them)
+- Skip `wont-fix` / `archived`
 
 ```bash
 gh issue list --state open --json number,title,labels,body --limit 1000 \
   | jq '[.[] | select((.labels | map(.name) | index("triaged")) | not)]'
 ```
 
-## Introducing the `triaged` label
+## The `triaged` label
 
-This is an **ops label**, on a different dimension than status / priority.
+Ops label (separate dimension from status/priority). Applied after triage finishes. Usually never removed — only if a user follow-up changes the request.
 
-- Meaning: this issue has been seen and classified by Teamlead + Architect/PM/QA, no need to triage it again
-- When to apply: after the three roles finish triaging, alongside setting the native type + status + priority
-- When to remove: usually never. If an issue genuinely needs to be re-triaged (e.g. a user follow-up changed the request), remove `triaged` so the next cron picks it up
+## Post-triage routing
 
-**Anti-constraint**: after triage finishes, `triaged` must be applied; otherwise the next cron rescans the same issue and wastes context.
+```
+issue triaged → routing:
+  ├── Bug + current blueprint covers it → `current-iteration` + patch milestone
+  ├── Feature / Task → `backlog`
+  └── no type (only `triaged`) → user review queue
+```
+
+When next-version discussion opens, scan all `backlog` issues:
+- Pulled in → `backlog` → `next-iteration`
+- Rejected → `wont-fix` + close
+- Kept → keep `backlog`, update body with "why still kept"
+
+### Backlog issue body requirements
+
+Every backlog issue must contain:
+- **Source**: who proposed / which PR # / which discussion
+- **Why here**: why not a bug — new stance / module / low priority / unsure
+- **Out of scope**: boundary against current iteration
+
+### Backlog constraints
+
+- Every backlog issue explains "why it goes here" — title-only is an anti-pattern
+- No automatic cleanup — manual scan every time next-version discussion opens
+- Bugfix issues must link `Closes gh#NNN` (bidirectional traceability)
+
+issue-triage owns the **entry gate**; `blueprint-iteration` owns the **downstream lifecycle** (freeze / tag / source-issues.md).
 
 ## Triage flow example
 
-```
-[T+0] User opens issue: "login page logo is 5px off-center"
-       native type: (none), labels: (none)
+| Time | Event | Action |
+|---|---|---|
+| T+0 | User opens "login logo 5px off-center" | — |
+| T+1h | Cron fires, Teamlead scans | UI bug → route to QA |
+| T+1h05 | QA reproduces | Type: Bug, labels: `current-iteration` + `p2-normal` + `triaged`. Dispatch patch milestone |
+| T+1h | User opens "collaborative multi-device sync" | — |
+| T+1h10 | PM reviews | New module, not in blueprint. Type: Feature, labels: `backlog` + `p1-high` + `triaged` |
 
-[T+1h] Cron triggers, Teamlead scans open issues
-       → Sees this issue, no triaged label, in untriaged list
-       → Teamlead decides: this is a UI bug → routed to QA
+## Cron config
 
-[T+1h05] QA reproduces + assesses blast radius
-       → sets native type: Bug
-       → applies labels: current-iteration, p2-normal, triaged
-       → dispatches a patch milestone (issue link in PR via Closes gh#NNN)
-
-[T+1h] Another issue: "I want collaborative real-time multi-device sync"
-       → Teamlead decides: large feature → routed to PM
-
-[T+1h10] PM reviews the product stance
-       → Current blueprint version doesn't have this module; high value but needs stance discussion
-       → sets native type: Feature
-       → applies labels: backlog, p1-high, triaged
-       → body addendum: "why this lands here: new module, defer to next-version discussion"
+Default 3h. Override in AGENTS.md:
+```yaml
+issue-triage:
+  cron: 3h
+  scope: open-only
 ```
 
-## Report format (consistent with fast/slow cron)
+## Boundaries
 
-Short-line style:
-
-- Has untriaged: `[issue-triage cron] N open issues, M untriaged routed: X→Architect / Y→PM / Z→QA, no hard blocker`
-- All triaged: `[issue-triage cron] N open issues, all triaged, no hard blocker`
-- Stuck: `[issue-triage cron] N open issues, M untriaged, K of them ≥24h unrouted → dispatch Teamlead to handle`
-
-## State transitions (refer to blueprint-iteration)
-
-After triage, the flow continues per `blueprintflow-blueprint-iteration`'s state machine:
-
-- Native type **Bug** + covered by current blueprint → `current-iteration` + dispatch a patch / bugfix milestone (link the issue via `Closes gh#NNN`)
-- Native type **Feature** or **Task** (tech-debt) → `backlog`, wait for next-version discussion
-- Unclear → apply `triaged` only (no native type, no status). The user reviews these periodically and decides type + routing manually
-
-issue-triage owns the **entry gate (Teamlead routing + role classification)**; blueprint-iteration owns the **downstream state machine (transitions / picking into the next version / freeze)**.
-
-## Boundaries with other cron skills
-
-| skill | Dimension | Frequency | What it does |
-|---|---|---|---|
-| `teamlead-fast-cron-checkin` | PR | 15m | Dispatch idle roles + scan for PR blockers |
-| `teamlead-slow-cron-checkin` | Blueprint drift / doc consistency | 2-4h | Drift audit + correcting late status flips |
-| `issue-triage` (this skill) | issue | 3h | Scan untriaged + Teamlead routing + role classification |
+| Skill | Dimension | Frequency |
+|---|---|---|
+| fast-cron | PR | 15m |
+| slow-cron | Drift | 2-4h |
+| issue-triage | Issue | 3h |
 
 Three independent, no overlap.
 
 ## Anti-patterns
 
-- ❌ Teamlead triaging themselves instead of routing (the user's call: Teamlead routes, doesn't classify — consistent with the team-roles "coordinate, don't do" stance)
-- ❌ Architect / PM / QA stepping into someone else's lane (code improvement to PM / new feature to QA / bug to Architect)
-- ❌ Forgetting the `triaged` label after triage (cron will rescan the same issue and waste context)
-- ❌ Using `type:bug` / `type:feature` / `type:tech-debt` / `type:question` labels instead of the native type field (deprecated — labels duplicate the native taxonomy and don't get the rendering / filtering support GitHub provides)
-- ❌ Closing the issue during triage without a reason (apply `wont-fix` or `archived` and put a one-liner in the body for "why we won't do it")
-- ❌ Triage finishes but no milestone dispatched / no `Closes gh#NNN` linked (current-iteration issue disconnected from PR)
-- ❌ Cron fires and dumps every untriaged issue onto a single role (route by character — don't slice it all one way)
-- ❌ A current-iteration issue triaged but no milestone dispatched after the triage cron — current-iteration means "execute now", not "park" (the next fast-cron should pick it up; if it doesn't, Teamlead unblocks it)
+- ❌ Teamlead classifying instead of routing
+- ❌ Roles stepping into others' lanes
+- ❌ Forgetting `triaged` label (cron rescans)
+- ❌ Using `type:*` labels instead of native type (deprecated)
+- ❌ Closing without reason (use `wont-fix` + one-liner)
+- ❌ Triage done but no milestone dispatched / no `Closes gh#NNN`
+- ❌ Dumping all issues onto one role
+- ❌ `current-iteration` issue with no milestone after triage (means "now", not "park")
+- ❌ Backlog in repo docs instead of GitHub issues (anti-fork-friendly, upstream noise follows the fork)
+- ❌ Auto-cleaning backlog issues (cleanup happens during human discussion only)
+- ❌ Treating "new stance" as "bug" and stuffing it into current iteration (default is backlog, burden of proof on "this is a bug")
 
+## Report format
+
+- Has untriaged: `[issue-triage] N open, M untriaged routed: X→Architect / Y→PM / Z→QA`
+- All triaged: `[issue-triage] N open, all triaged`
+- Stuck: `[issue-triage] N open, M untriaged ≥24h → dispatch Teamlead`

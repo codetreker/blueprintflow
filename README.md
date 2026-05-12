@@ -88,24 +88,24 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 
 | Skill | 触发 | 用途 |
 |---|---|---|
-| [bf-workflow](skills/bf-workflow/SKILL.md) | 起步 | 总览 + 何时用 + 角色 + 阶段索引 |
-| [bf-team-roles](skills/bf-team-roles/SKILL.md) | 起团 | 6 角色 prompt 模板 |
-| [bf-brainstorm](skills/bf-brainstorm/SKILL.md) | 讨论 | 多轮讨论锁立场 + 反约束 |
-| [bf-blueprint-write](skills/bf-blueprint-write/SKILL.md) | 立项 | 蓝图模板（立场 / 概念 / v0/v1 边界） |
-| [bf-phase-plan](skills/bf-phase-plan/SKILL.md) | 规划 | Phase 拆分 + 退出 gate |
-| [bf-blueprint-iteration](skills/bf-blueprint-iteration/SKILL.md) | 演进 | 蓝图首版 freeze 后的迭代 (3 状态机 + 版本号 + GitHub issues backlog) |
-| [bf-milestone-fourpiece](skills/bf-milestone-fourpiece/SKILL.md) | 实施 | 4 件套（spec / stance / acceptance / content-lock） |
-| [bf-implementation-design](skills/bf-implementation-design/SKILL.md) | 实施 | 4 件套后写代码前 Dev 出实现方案设计 + 4 角色 review |
-| [bf-git-workflow](skills/bf-git-workflow/SKILL.md) | 实施 | 一 milestone 一 worktree 一 PR |
-| [bf-pr-review-flow](skills/bf-pr-review-flow/SKILL.md) | Review | 双 review + 标准 squash merge |
-| [bf-e2e-verification](skills/bf-e2e-verification/SKILL.md) | Review | UI 改动的 QA 验收必须走三个角度：代码改动是否按预期工作 / 产品是否好用 / 设计是否合理 |
-| [bf-teamlead-fast-cron-checkin](skills/bf-teamlead-fast-cron-checkin/SKILL.md) | 巡检 | 15min idle 派活 |
-| [bf-teamlead-role-reminder](skills/bf-teamlead-role-reminder/SKILL.md) | 巡检 | 30min Teamlead 职责自检 |
-| [bf-teamlead-slow-cron-checkin](skills/bf-teamlead-slow-cron-checkin/SKILL.md) | 巡检 | 2-4h 偏差 audit |
-| [bf-issue-triage](skills/bf-issue-triage/SKILL.md) | 巡检 | 3h cron 扫 GitHub issues, Teamlead 先判分发到 Architect/PM/QA |
-| [bf-phase-exit-gate](skills/bf-phase-exit-gate/SKILL.md) | 收尾 | Phase 4 联签 + closure |
-| [bf-runtime-adapter](skills/bf-runtime-adapter/SKILL.md) | 起步 | 运行时适配（通讯/文件/调度的模式对照表） |
-| [bf-skill-workflow](skills/bf-skill-workflow/SKILL.md) | 更新 | Skill 自身的 PR 流程 |
+| [bf-workflow](plugins/blueprintflow/skills/bf-workflow/SKILL.md) | 起步 | 总览 + 何时用 + 角色 + 阶段索引 |
+| [bf-team-roles](plugins/blueprintflow/skills/bf-team-roles/SKILL.md) | 起团 | 6 角色 prompt 模板 |
+| [bf-brainstorm](plugins/blueprintflow/skills/bf-brainstorm/SKILL.md) | 讨论 | 多轮讨论锁立场 + 反约束 |
+| [bf-blueprint-write](plugins/blueprintflow/skills/bf-blueprint-write/SKILL.md) | 立项 | 蓝图模板（立场 / 概念 / v0/v1 边界） |
+| [bf-phase-plan](plugins/blueprintflow/skills/bf-phase-plan/SKILL.md) | 规划 | Phase 拆分 + 退出 gate |
+| [bf-blueprint-iteration](plugins/blueprintflow/skills/bf-blueprint-iteration/SKILL.md) | 演进 | 蓝图首版 freeze 后的迭代 (3 状态机 + 版本号 + GitHub issues backlog) |
+| [bf-milestone-fourpiece](plugins/blueprintflow/skills/bf-milestone-fourpiece/SKILL.md) | 实施 | 4 件套（spec / stance / acceptance / content-lock） |
+| [bf-implementation-design](plugins/blueprintflow/skills/bf-implementation-design/SKILL.md) | 实施 | 4 件套后写代码前 Dev 出实现方案设计 + 4 角色 review |
+| [bf-git-workflow](plugins/blueprintflow/skills/bf-git-workflow/SKILL.md) | 实施 | 一 milestone 一 worktree 一 PR |
+| [bf-pr-review-flow](plugins/blueprintflow/skills/bf-pr-review-flow/SKILL.md) | Review | 双 review + 标准 squash merge |
+| [bf-e2e-verification](plugins/blueprintflow/skills/bf-e2e-verification/SKILL.md) | Review | UI 改动的 QA 验收必须走三个角度：代码改动是否按预期工作 / 产品是否好用 / 设计是否合理 |
+| [bf-teamlead-fast-cron-checkin](plugins/blueprintflow/skills/bf-teamlead-fast-cron-checkin/SKILL.md) | 巡检 | 15min idle 派活 |
+| [bf-teamlead-role-reminder](plugins/blueprintflow/skills/bf-teamlead-role-reminder/SKILL.md) | 巡检 | 30min Teamlead 职责自检 |
+| [bf-teamlead-slow-cron-checkin](plugins/blueprintflow/skills/bf-teamlead-slow-cron-checkin/SKILL.md) | 巡检 | 2-4h 偏差 audit |
+| [bf-issue-triage](plugins/blueprintflow/skills/bf-issue-triage/SKILL.md) | 巡检 | 3h cron 扫 GitHub issues, Teamlead 先判分发到 Architect/PM/QA |
+| [bf-phase-exit-gate](plugins/blueprintflow/skills/bf-phase-exit-gate/SKILL.md) | 收尾 | Phase 4 联签 + closure |
+| [bf-runtime-adapter](plugins/blueprintflow/skills/bf-runtime-adapter/SKILL.md) | 起步 | 运行时适配（通讯/文件/调度的模式对照表） |
+| [bf-skill-workflow](plugins/blueprintflow/skills/bf-skill-workflow/SKILL.md) | 更新 | Skill 自身的 PR 流程 |
 
 ## 起步
 
@@ -131,7 +131,7 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 
 # 方式 2：手动安装
 git clone https://github.com/codetreker/blueprintflow.git
-ln -s $(pwd)/blueprintflow/skills/* ~/.claude/skills/
+ln -s $(pwd)/blueprintflow/plugins/blueprintflow/skills/* ~/.claude/skills/
 ```
 
 **ClawHub：**
@@ -141,21 +141,30 @@ clawhub install bf-workflow
 clawhub search blueprintflow
 ```
 
-**OpenClaw / 其他框架：** 将 `skills/` 下的目录复制或链接到对应的 skill 目录。
+**OpenClaw / 其他框架：** 将 `plugins/blueprintflow/skills/` 下的目录复制或链接到对应的 skill 目录。
 
 **Codex：**
 ```bash
 codex plugin marketplace add codetreker/blueprintflow
-# 本地 dogfood 时也可以在仓库根目录运行：codex plugin marketplace add .
+# 然后在 Codex 的 plugin UI 中安装并启用 blueprintflow@blueprintflow。
+
+# 本地 dogfood 时也可以在仓库根目录运行：
+codex plugin marketplace add .
 ```
 
-Codex 直接读取仓库根目录的 `.codex-plugin/plugin.json`，并通过其中的 `skills: "./skills/"` 加载 `bf-*` skills。
+Codex marketplace 读取 `.agents/plugins/marketplace.json`，安装其中的 `./plugins/blueprintflow` 插件包；该包内含 `.codex-plugin/` 和 `skills/`，安装后加载 `blueprintflow:bf-*` skills。
+
+安装后可验证：
+
+```bash
+codex debug prompt-input 'test' | rg 'blueprintflow:bf-'
+```
 
 安装后从 Codex 里启动：
 
 ```
 Use Blueprintflow in Codex mode.
-Read skills/bf-workflow/SKILL.md, then read skills/bf-runtime-adapter/references/codex.md.
+Use blueprintflow:bf-workflow, then use blueprintflow:bf-runtime-adapter with the Codex reference.
 Act as Teamlead in the parent thread; run the Codex activation check before Phase or milestone work.
 ```
 

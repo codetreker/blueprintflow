@@ -2,20 +2,20 @@
 
 ## Project Structure & Module Organization
 
-Blueprintflow is a Markdown-first repository for Claude/OpenClaw/Codex skills, not an application runtime. Core skill packages live under `skills/bf-*/`; each package has a `SKILL.md` entrypoint and may include supporting material in `references/`. Project documentation lives in `README.md`, `docs/CHANGELOG.md`, and `docs/tasks/BOARD.md`. Plugin metadata is in `.claude-plugin/`, `.codex-plugin/`, and `.agents/plugins/`. Pull request process guidance is in `.github/pull_request_template.md`.
+Blueprintflow is a Markdown-first repository for Claude/OpenClaw/Codex skills, not an application runtime. The installable plugin package lives under `plugins/blueprintflow/`; skill packages live under `plugins/blueprintflow/skills/bf-*/`. Root marketplace indexes live in `.claude-plugin/marketplace.json` and `.agents/plugins/marketplace.json`. Project documentation lives in `README.md`, `docs/CHANGELOG.md`, and `docs/tasks/BOARD.md`. Pull request process guidance is in `.github/pull_request_template.md`.
 
 ## Build, Test, and Development Commands
 
 There is no package manager, build step, or automated test runner in this repo. Use lightweight validation commands before opening a PR:
 
 ```bash
-rg --files skills docs .github .claude-plugin
+rg --files plugins/blueprintflow docs .github .claude-plugin .agents scripts
 ```
 
 Lists tracked content areas and catches unexpected file placement.
 
 ```bash
-rg "TODO|FIXME|TBD" skills docs README.md
+rg "TODO|FIXME|TBD" plugins/blueprintflow/skills docs README.md
 ```
 
 Finds unresolved placeholders before review.
@@ -26,9 +26,22 @@ git diff --check
 
 Checks for whitespace errors in Markdown and JSON files.
 
+```bash
+scripts/validate-plugin-layout.sh
+```
+
+Verifies the single-source plugin package and both marketplace manifests.
+
+```bash
+scripts/validate-skills.sh
+scripts/validate-release-version.sh origin/main
+```
+
+Checks skill frontmatter/references and enforces version bumps for release-facing PR changes.
+
 ## Coding Style & Naming Conventions
 
-Write skill content in concise Markdown with clear headings, direct instructions, and executable examples. Keep skill directories named `skills/bf-<topic>/`, with the public entrypoint always named `SKILL.md`. Store longer role prompts, checklists, or execution notes in `references/*.md` rather than bloating the skill entrypoint. Keep JSON metadata formatted with two-space indentation. Prefer ASCII punctuation unless editing existing Chinese prose where full-width punctuation is already used.
+Write skill content in concise Markdown with clear headings, direct instructions, and executable examples. Keep skill directories named `plugins/blueprintflow/skills/bf-<topic>/`, with the public entrypoint always named `SKILL.md`. Store longer role prompts, checklists, or execution notes in `references/*.md` rather than bloating the skill entrypoint. Keep JSON metadata formatted with two-space indentation. Prefer ASCII punctuation unless editing existing Chinese prose where full-width punctuation is already used.
 
 ## Testing Guidelines
 
@@ -40,7 +53,7 @@ Git history uses short conventional prefixes such as `feat:`, `fix:`, `chore:`, 
 
 ## Version Metadata
 
-Release-facing version bumps must update both `.claude-plugin/plugin.json` and `.codex-plugin/plugin.json` to the same version. Treat the Claude manifest as the existing release source and the Codex manifest as the Codex packaging mirror; do not bump one without the other.
+Release-facing version bumps must update both `plugins/blueprintflow/.claude-plugin/plugin.json` and `plugins/blueprintflow/.codex-plugin/plugin.json` to the same version. CI enforces a semver increase when release-facing paths change and requires a matching `docs/CHANGELOG.md` entry. Do not add root `skills/`, `.codex-plugin/`, or `.claude-plugin/plugin.json`; root files are marketplace indexes only.
 
 ## Agent-Specific Instructions
 

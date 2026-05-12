@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.5.1 — 2026-05-12
+
+### Codex reasoning policy
+
+- Added Codex `reasoning_effort` guidance by task type: `low` for mechanical/sleeper work, `medium` for bounded validation, `high` for implementation or ambiguous architecture/QA/CI work, and `xhigh` for security review or high-impact planning.
+- Clarified that long-lived Teamlead and role coordinators inherit the current session effort, while short-lived helpers set effort by task type.
+
+### Plugin version
+
+- `plugin.json` bumped `1.5.0` → `1.5.1` (patch: Codex adapter guidance clarification).
+
 ## v1.5.0 — 2026-05-11
 
 ### Codex native packaging and adapter draft

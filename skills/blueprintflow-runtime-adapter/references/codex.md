@@ -19,6 +19,7 @@ Run before Phase or milestone work:
 | Repo instructions | Read target project's `AGENTS.md` | Ask before creating a short Blueprintflow section |
 | Role mode | Spawn fixed role coordinator subagents for active phase/task set | Use parent-thread serial lenses only when capacity is missing |
 | Subagent capacity | Require `max_depth = 2`; choose thread count from capacity table | Reduce concurrency or ask to update config |
+| Reasoning budget | Keep one model family; tune `reasoning_effort` by task type | Coordination uses default; helpers use `high` when unsure |
 | Role templates | Optional `.codex/agents/` in target project only | Use prompts from `team-roles/references/*.md` inline |
 | Checkins | App: create automations. CLI: spawn one-shot sleeper subagent. Cloud: caller-driven | Do not claim durable cron in CLI-only mode |
 
@@ -80,9 +81,31 @@ max_depth = 2
 
 Hard boundary: set `max_depth = 2` for Blueprintflow. With `max_depth < 2`, role coordinators cannot spawn helper/reviewer subagents and the run must downgrade to serial fallback.
 
+## Reasoning policy
+
+Use the current Codex model for all Blueprintflow agents. Do not switch models by role unless the user explicitly asks; set `reasoning_effort` by task type when spawning short-lived helpers.
+
+| Task type | Suggested effort | Notes |
+|---|---|---|
+| Routine coordination | inherit/default | Teamlead or role coordinator dispatch, status, handoff routing |
+| Bounded implementation | `high` | Production code changes inside bounded write scope |
+| Mechanical work | `low` | Search, rename, docs cleanup, formatting, `git status`, simple `git diff` summary |
+| Bounded validation | `medium` | Run a known test/CI command, reproduce one failure, apply a clear local fix |
+| Architecture / QA / ambiguous failure | `high` | Design tradeoffs, regression judgment, unclear CI/root cause, merge readiness |
+| Security review | `xhigh` | Threat modeling, trust boundaries, auth/data-flow risks |
+| High-impact planning | `xhigh` | Blueprint/phase/API/data-model changes or unclear multi-role tradeoffs |
+| Sleeper heartbeat | `low` | Sleep and return wakeup message only |
+
+Rules:
+
+- Long-lived Teamlead and role coordinators inherit the current session effort by default.
+- Coordinators coordinate; helpers execute bounded leaf work.
+- Use `medium` only for bounded validation or similarly clear non-production-code tasks.
+- If a helper discovers higher-risk work, report back and respawn with higher effort.
+
 ## Role coordinators
 
-Role definitions live in `blueprintflow-team-roles/references/*.md`. In Codex, keep stable role coordinator subagents and let them dispatch bounded helper/reviewer subagents.
+Role definitions and Teamlead/role-boundary rules live in `blueprintflow-team-roles`. Codex implements that model with stable role coordinator subagents.
 
 | Role | Coordinator task name |
 |---|---|

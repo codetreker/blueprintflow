@@ -61,13 +61,13 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 ## 4 层结构
 
 ```
-┌─ 概念层 ──────── brainstorm → blueprint-write
+┌─ 概念层 ──────── bf-brainstorm → bf-blueprint-write
 │      ↓
-├─ 计划层 ──────── phase-plan
+├─ 计划层 ──────── bf-phase-plan
 │      ↓
-├─ 实施层 ──────── git-workflow + milestone-fourpiece + pr-review-flow
+├─ 实施层 ──────── bf-git-workflow + bf-milestone-fourpiece + bf-pr-review-flow
 │      ↓
-└─ 协调层 ──────── fast-cron (idle 派活) + slow-cron (偏差 audit) + phase-exit-gate
+└─ 协调层 ──────── bf-teamlead-fast-cron-checkin + bf-teamlead-slow-cron-checkin + bf-phase-exit-gate
 ```
 
 ## 适用场景
@@ -82,43 +82,43 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 - 单 agent / 小任务（overhead 太重）
 - 纯 bug fix（走 PR review 即可）
 - Hackathon / 一次性脚本
-- 探索阶段没立场（先用 brainstorm 锁立场再走这套）
+- 探索阶段没立场（先用 bf-brainstorm 锁立场再走这套）
 
 ## Skills 清单
 
 | Skill | 触发 | 用途 |
 |---|---|---|
-| [blueprintflow-workflow](skills/blueprintflow-workflow/SKILL.md) | 起步 | 总览 + 何时用 + 角色 + 阶段索引 |
-| [blueprintflow-team-roles](skills/blueprintflow-team-roles/SKILL.md) | 起团 | 6 角色 prompt 模板 |
-| [blueprintflow-brainstorm](skills/blueprintflow-brainstorm/SKILL.md) | 讨论 | 多轮讨论锁立场 + 反约束 |
-| [blueprintflow-blueprint-write](skills/blueprintflow-blueprint-write/SKILL.md) | 立项 | 蓝图模板（立场 / 概念 / v0/v1 边界） |
-| [blueprintflow-phase-plan](skills/blueprintflow-phase-plan/SKILL.md) | 规划 | Phase 拆分 + 退出 gate |
-| [blueprintflow-blueprint-iteration](skills/blueprintflow-blueprint-iteration/SKILL.md) | 演进 | 蓝图首版 freeze 后的迭代 (3 状态机 + 版本号 + GitHub issues backlog) |
-| [blueprintflow-milestone-fourpiece](skills/blueprintflow-milestone-fourpiece/SKILL.md) | 实施 | 4 件套（spec / stance / acceptance / content-lock） |
-| [blueprintflow-implementation-design](skills/blueprintflow-implementation-design/SKILL.md) | 实施 | 4 件套后写代码前 Dev 出实现方案设计 + 4 角色 review |
-| [blueprintflow-git-workflow](skills/blueprintflow-git-workflow/SKILL.md) | 实施 | 一 milestone 一 worktree 一 PR |
-| [blueprintflow-pr-review-flow](skills/blueprintflow-pr-review-flow/SKILL.md) | Review | 双 review + 标准 squash merge |
-| [blueprintflow-e2e-verification](skills/blueprintflow-e2e-verification/SKILL.md) | Review | UI 改动的 QA 验收必须走三个角度：代码改动是否按预期工作 / 产品是否好用 / 设计是否合理 |
-| [blueprintflow-teamlead-fast-cron-checkin](skills/blueprintflow-teamlead-fast-cron-checkin/SKILL.md) | 巡检 | 15min idle 派活 |
-| [blueprintflow-teamlead-role-reminder](skills/blueprintflow-teamlead-role-reminder/SKILL.md) | 巡检 | 30min Teamlead 职责自检 |
-| [blueprintflow-teamlead-slow-cron-checkin](skills/blueprintflow-teamlead-slow-cron-checkin/SKILL.md) | 巡检 | 2-4h 偏差 audit |
-| [blueprintflow-issue-triage](skills/blueprintflow-issue-triage/SKILL.md) | 巡检 | 3h cron 扫 GitHub issues, Teamlead 先判分发到 Architect/PM/QA |
-| [blueprintflow-phase-exit-gate](skills/blueprintflow-phase-exit-gate/SKILL.md) | 收尾 | Phase 4 联签 + closure |
-| [runtime-adapter](skills/blueprintflow-runtime-adapter/SKILL.md) | 起步 | 运行时适配（通讯/文件/调度的模式对照表） |
-| [skill-workflow](skills/blueprintflow-skill-workflow/SKILL.md) | 更新 | Skill 自身的 PR 流程 |
+| [bf-workflow](skills/bf-workflow/SKILL.md) | 起步 | 总览 + 何时用 + 角色 + 阶段索引 |
+| [bf-team-roles](skills/bf-team-roles/SKILL.md) | 起团 | 6 角色 prompt 模板 |
+| [bf-brainstorm](skills/bf-brainstorm/SKILL.md) | 讨论 | 多轮讨论锁立场 + 反约束 |
+| [bf-blueprint-write](skills/bf-blueprint-write/SKILL.md) | 立项 | 蓝图模板（立场 / 概念 / v0/v1 边界） |
+| [bf-phase-plan](skills/bf-phase-plan/SKILL.md) | 规划 | Phase 拆分 + 退出 gate |
+| [bf-blueprint-iteration](skills/bf-blueprint-iteration/SKILL.md) | 演进 | 蓝图首版 freeze 后的迭代 (3 状态机 + 版本号 + GitHub issues backlog) |
+| [bf-milestone-fourpiece](skills/bf-milestone-fourpiece/SKILL.md) | 实施 | 4 件套（spec / stance / acceptance / content-lock） |
+| [bf-implementation-design](skills/bf-implementation-design/SKILL.md) | 实施 | 4 件套后写代码前 Dev 出实现方案设计 + 4 角色 review |
+| [bf-git-workflow](skills/bf-git-workflow/SKILL.md) | 实施 | 一 milestone 一 worktree 一 PR |
+| [bf-pr-review-flow](skills/bf-pr-review-flow/SKILL.md) | Review | 双 review + 标准 squash merge |
+| [bf-e2e-verification](skills/bf-e2e-verification/SKILL.md) | Review | UI 改动的 QA 验收必须走三个角度：代码改动是否按预期工作 / 产品是否好用 / 设计是否合理 |
+| [bf-teamlead-fast-cron-checkin](skills/bf-teamlead-fast-cron-checkin/SKILL.md) | 巡检 | 15min idle 派活 |
+| [bf-teamlead-role-reminder](skills/bf-teamlead-role-reminder/SKILL.md) | 巡检 | 30min Teamlead 职责自检 |
+| [bf-teamlead-slow-cron-checkin](skills/bf-teamlead-slow-cron-checkin/SKILL.md) | 巡检 | 2-4h 偏差 audit |
+| [bf-issue-triage](skills/bf-issue-triage/SKILL.md) | 巡检 | 3h cron 扫 GitHub issues, Teamlead 先判分发到 Architect/PM/QA |
+| [bf-phase-exit-gate](skills/bf-phase-exit-gate/SKILL.md) | 收尾 | Phase 4 联签 + closure |
+| [bf-runtime-adapter](skills/bf-runtime-adapter/SKILL.md) | 起步 | 运行时适配（通讯/文件/调度的模式对照表） |
+| [bf-skill-workflow](skills/bf-skill-workflow/SKILL.md) | 更新 | Skill 自身的 PR 流程 |
 
 ## 起步
 
 ```
-1. blueprintflow-workflow          — 看总览，决定是否适用
-2. blueprintflow-runtime-adapter    — 确认运行模式
-3. blueprintflow-team-roles        — spawn 角色（按需）
-4. blueprintflow-brainstorm        — 多轮讨论锁立场
-5. blueprintflow-blueprint-write   — 落蓝图
-6. blueprintflow-phase-plan        — 拆 Phase
-7. (循环) milestone-fourpiece + git-workflow + pr-review-flow
-8. (巡检) fast-cron + slow-cron
-9. (收尾) phase-exit-gate
+1. bf-workflow          — 看总览，决定是否适用
+2. bf-runtime-adapter    — 确认运行模式
+3. bf-team-roles        — spawn 角色（按需）
+4. bf-brainstorm        — 多轮讨论锁立场
+5. bf-blueprint-write   — 落蓝图
+6. bf-phase-plan        — 拆 Phase
+7. (循环) bf-milestone-fourpiece + bf-git-workflow + bf-pr-review-flow
+8. (巡检) bf-teamlead-fast-cron-checkin + bf-teamlead-slow-cron-checkin
+9. (收尾) bf-phase-exit-gate
 ```
 
 ## 安装
@@ -136,7 +136,7 @@ ln -s $(pwd)/blueprintflow/skills/* ~/.claude/skills/
 
 **ClawHub：**
 ```bash
-clawhub install blueprintflow-workflow
+clawhub install bf-workflow
 # 或安装全部
 clawhub search blueprintflow
 ```
@@ -154,10 +154,10 @@ Codex marketplace 索引在 `.agents/plugins/marketplace.json`，插件 manifest
 
 ```
 Use Blueprintflow in Codex mode.
-Read skills/blueprintflow-workflow/SKILL.md, then read skills/blueprintflow-runtime-adapter/references/codex.md.
+Read skills/bf-workflow/SKILL.md, then read skills/bf-runtime-adapter/references/codex.md.
 Act as Teamlead in the parent thread; run the Codex activation check before Phase or milestone work.
 ```
 
 ## 反馈
 
-跑出新经验？开 PR 改 SKILL.md，走 skill-workflow 全员 vote。这套 skill 自己也是用 blueprintflow 方式迭代的。
+跑出新经验？开 PR 改 SKILL.md，走 bf-skill-workflow 全员 vote。这套 skill 自己也是用 blueprintflow 方式迭代的。

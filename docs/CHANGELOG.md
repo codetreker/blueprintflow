@@ -1,5 +1,16 @@
 # Changelog
 
+## v2.0.1 — 2026-05-12
+
+### Codex root plugin install
+
+- Removed the repo-local `.agents/plugins/marketplace.json` collection index so Codex installs Blueprintflow from the root `.codex-plugin/plugin.json`.
+- Updated README Codex install instructions to use `codex plugin marketplace add codetreker/blueprintflow` for published installs.
+
+### Plugin version
+
+- `plugin.json` bumped `2.0.0` → `2.0.1` (patch: Codex install metadata fix).
+
 ## v2.0.0 — 2026-05-12
 
 ### Short skill names

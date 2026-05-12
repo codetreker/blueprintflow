@@ -145,10 +145,11 @@ clawhub search blueprintflow
 
 **Codex：**
 ```bash
-codex plugin marketplace add .
+codex plugin marketplace add codetreker/blueprintflow
+# 本地 dogfood 时也可以在仓库根目录运行：codex plugin marketplace add .
 ```
 
-Codex marketplace 索引在 `.agents/plugins/marketplace.json`，插件 manifest 在 `.codex-plugin/plugin.json`，复用现有 `skills/`。
+Codex 直接读取仓库根目录的 `.codex-plugin/plugin.json`，并通过其中的 `skills: "./skills/"` 加载 `bf-*` skills。
 
 安装后从 Codex 里启动：
 

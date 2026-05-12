@@ -22,6 +22,20 @@ Only read the prompt for your own role (progressive disclosure):
 | Designer | `references/designer.md` | Visual + interaction design |
 | Security | `references/security.md` | Auth / capability / data isolation |
 
+## Coordinator mode
+
+| Actor | Coordinates | Output |
+|---|---|---|
+| Teamlead | Cross-role priority, protocol, conflicts, final direction | Role tasks + integration decision |
+| Role agent | Role-specific task split, helper scope, evidence synthesis | Decisions, risks, handoff to Teamlead |
+| Helper/reviewer | Bounded leaf work only | Evidence, changed files/findings, blockers |
+
+Rules:
+
+- Role agents coordinate by default; helpers execute leaf work.
+- Helpers need explicit scope, files or commands, expected output, and write boundary.
+- If the runtime cannot spawn helpers, the role agent may do leaf work and must report the downgrade.
+
 ## Headcount
 
 Full setup: 3 Dev + 1 Architect + 1 PM + 1 QA + **1 Security (mandatory)** + 1 Teamlead. Add Designer when the project has significant new visual components.

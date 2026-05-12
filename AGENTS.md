@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-Blueprintflow is a Markdown-first repository for Claude/OpenClaw/Codex skills, not an application runtime. Core skill packages live under `skills/blueprintflow-*/`; each package has a `SKILL.md` entrypoint and may include supporting material in `references/`. Project documentation lives in `README.md`, `docs/CHANGELOG.md`, and `docs/tasks/BOARD.md`. Plugin metadata is in `.claude-plugin/`, `.codex-plugin/`, and `.agents/plugins/`. Pull request process guidance is in `.github/pull_request_template.md`.
+Blueprintflow is a Markdown-first repository for Claude/OpenClaw/Codex skills, not an application runtime. Core skill packages live under `skills/bf-*/`; each package has a `SKILL.md` entrypoint and may include supporting material in `references/`. Project documentation lives in `README.md`, `docs/CHANGELOG.md`, and `docs/tasks/BOARD.md`. Plugin metadata is in `.claude-plugin/`, `.codex-plugin/`, and `.agents/plugins/`. Pull request process guidance is in `.github/pull_request_template.md`.
 
 ## Build, Test, and Development Commands
 
@@ -28,7 +28,7 @@ Checks for whitespace errors in Markdown and JSON files.
 
 ## Coding Style & Naming Conventions
 
-Write skill content in concise Markdown with clear headings, direct instructions, and executable examples. Keep skill directories named `skills/blueprintflow-<topic>/`, with the public entrypoint always named `SKILL.md`. Store longer role prompts, checklists, or execution notes in `references/*.md` rather than bloating the skill entrypoint. Keep JSON metadata formatted with two-space indentation. Prefer ASCII punctuation unless editing existing Chinese prose where full-width punctuation is already used.
+Write skill content in concise Markdown with clear headings, direct instructions, and executable examples. Keep skill directories named `skills/bf-<topic>/`, with the public entrypoint always named `SKILL.md`. Store longer role prompts, checklists, or execution notes in `references/*.md` rather than bloating the skill entrypoint. Keep JSON metadata formatted with two-space indentation. Prefer ASCII punctuation unless editing existing Chinese prose where full-width punctuation is already used.
 
 ## Testing Guidelines
 

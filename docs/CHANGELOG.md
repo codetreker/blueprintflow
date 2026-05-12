@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.5.2 — 2026-05-12
+
+### Team role coordinator mode
+
+- Clarified the Teamlead / role agent / helper execution layers in `blueprintflow-team-roles` using a structured coordinator-mode table.
+- Added concise coordinator-mode guidance to Architect, PM, Dev, QA, Designer, and Security role prompts.
+- Standardized helper delegation: role agents split bounded helper/reviewer tasks, require evidence, and summarize decisions, risks, and handoff to Teamlead.
+- Replaced stale Dev prompt wording that suggested throwaway clones; Devs now use Teamlead-assigned `.worktrees/<milestone-or-issue>` worktrees.
+
+### Plugin version
+
+- `plugin.json` bumped `1.5.1` → `1.5.2` (patch: team role execution-boundary clarification).
+
 ## v1.5.1 — 2026-05-12
 
 ### Codex reasoning policy

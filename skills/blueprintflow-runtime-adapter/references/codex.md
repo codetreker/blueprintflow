@@ -1,25 +1,162 @@
-# Codex Adapter [not yet verified in real runs]
+# Codex Adapter
 
-**Capabilities**: persistent (session-level) ✅ / cross-agent messaging (via caller only) / shared FS ❌ (sandboxed) / scheduled jobs ❌ / parallel multi-role (caller spawns multiple sessions)
+## Capability matrix
 
-## Lookup table
+| Mode | Best fit | Persistent | Messaging | FS | Scheduling | Parallel roles |
+|---|---|---:|---|---|---|---|
+| CLI local session | One milestone / PR review | ✅ | Parent-routed | Local repo | Sleeper subagent | Subagents |
+| Codex App + automations | Long-running coordination | ✅ | Parent thread | Platform worktree | Automations | Subagents |
+| Cloud task | Bounded execution/review | Task-scoped | Task comments | Task worktree | Caller-driven | Per task |
 
-| Generic phrase | Concrete command |
+## Activation check
+
+Run before Phase or milestone work:
+
+| Check | Required action | If missing |
+|---|---|---|
+| Environment | Identify CLI / App automation / cloud task | Pick the closest mode above |
+| Skill access | Confirm this adapter loaded from plugin or repo path | Use explicit `skills/.../codex.md` path |
+| Repo instructions | Read target project's `AGENTS.md` | Ask before creating a short Blueprintflow section |
+| Role mode | Spawn fixed role coordinator subagents for active phase/task set | Use parent-thread serial lenses only when capacity is missing |
+| Subagent capacity | Require `max_depth = 2`; choose thread count from capacity table | Reduce concurrency or ask to update config |
+| Role templates | Optional `.codex/agents/` in target project only | Use prompts from `team-roles/references/*.md` inline |
+| Checkins | App: create automations. CLI: spawn one-shot sleeper subagent. Cloud: caller-driven | Do not claim durable cron in CLI-only mode |
+
+## Automation and checkins
+
+Codex CLI has no built-in cron. In CLI sessions, emulate Blueprintflow checkins with a one-shot sleeper subagent.
+
+| Need | Codex App | Codex CLI |
+|---|---|---|
+| Same conversation heartbeat | Thread automation attached to current thread | Sleeper subagent wakes parent thread |
+| Independent recurring sweep | Standalone/project automation | Not native in CLI; start a new parent session and re-read handoff files |
+| Skill trigger | Put `$blueprintflow-teamlead-fast-cron-checkin` or another `$skill-name` in automation prompt | Sleeper returns the skill trigger; parent runs the matching `SKILL.md` |
+| Custom cadence | Use App-supported schedule options | Parent chooses sleeper interval and respawns after each callback |
+| 15-min fast-cron | Confirm App supports this interval | Spawn 15-min sleeper subagent |
+| 2-4h slow-cron | Confirm App supports this interval | Spawn long sleeper only when thread budget allows |
+
+Sleeper heartbeat flow:
+
+| Step | Action |
 |---|---|
-| Notify \<Role\> | Relayed by caller |
-| Create worktree | `git worktree add` inside sandbox (each session independent) |
-| Commit code | Commit in sandbox, push to remote when done |
-| Start fast-cron | Not supported — caller triggers periodically |
-| Start slow-cron | Not supported — caller triggers periodically |
-| Check role status | Caller checks |
-| Open PR | Caller runs `gh pr create` after completion |
-| Merge PR | Caller runs `gh pr merge <N> --squash` |
+| 1 | Parent Teamlead spawns a bounded sleeper subagent |
+| 2 | Sleeper waits for the interval and returns only the wakeup message |
+| 3 | Parent runs the matching checkin skill |
+| 4 | Parent respawns the sleeper only if work remains open |
+
+Sleeper prompt:
+
+```text
+Sleep for 15 minutes, then return exactly:
+[auto check-in · 15 min] $blueprintflow-teamlead-fast-cron-checkin
+Do not inspect files, run tools, or make decisions.
+```
+
+| Constraint | Rule |
+|---|---|
+| Durability | Parent session must remain active; no guarantee after session exit |
+| Session exit | No active parent remains; a new run must re-read files/PRs/issues |
+| Thread cost | Sleeper occupies one `agents.max_threads` slot |
+| Looping | Sleeper is one-shot; parent must respawn it |
+| Authority | Sleeper only wakes parent; Teamlead makes decisions |
+| Nested use | Role-owned sleeper requires `agents.max_depth = 2` |
+
+## Subagent capacity
+
+| Team shape | Required config | Notes |
+|---|---|---|
+| Serial fallback | Below 8 threads or `max_depth < 2` | Parent serializes some roles; not full Blueprintflow team mode |
+| Coordinator roster | `max_threads = 12`, `max_depth = 2` | Parent + 6 role coordinators + limited helper headroom |
+| Full Blueprintflow team | `max_threads = 24`, `max_depth = 2` | 6 role coordinators × up to 4 helper/reviewer subagents |
+| Large parallel wave | `max_threads = 32+`, `max_depth = 2` | Use only when write scopes are disjoint |
+
+Recommended full-team target-project config:
+
+```toml
+[agents]
+max_threads = 24
+max_depth = 2
+```
+
+Hard boundary: set `max_depth = 2` for Blueprintflow. With `max_depth < 2`, role coordinators cannot spawn helper/reviewer subagents and the run must downgrade to serial fallback.
+
+## Role coordinators
+
+Role definitions live in `blueprintflow-team-roles/references/*.md`. In Codex, keep stable role coordinator subagents and let them dispatch bounded helper/reviewer subagents.
+
+| Role | Coordinator task name |
+|---|---|
+| Architect | `blueprintflow-architect` |
+| PM | `blueprintflow-pm` |
+| Dev | `blueprintflow-dev` |
+| QA | `blueprintflow-qa` |
+| Security | `blueprintflow-security` |
+| Writer/Operator | `blueprintflow-writer` |
+
+Rules:
+
+- Spawn one role coordinator per active role when thread capacity allows.
+- Keep role coordinator names stable; add a suffix only for long-lived phase/release/worktree scopes.
+- Keep role coordinators open while the phase or active task set is live; close them after handoff.
+- Coordinators delegate execution/review work to helper subagents instead of doing all work inline.
+- Name helpers with role plus task/milestone, for example `blueprintflow-dev:<task>`.
+- Helpers report bounded results to their coordinator; coordinators summarize decisions, risks, and handoff to Teamlead.
+- If capacity is insufficient, Teamlead runs missing roles as serial lenses and records the downgrade.
+
+## Operation mapping
+
+| Generic phrase | Codex operation |
+|---|---|
+| Notify `<Role>` | Parent Teamlead sends task to role coordinator; coordinator dispatches helpers |
+| Create worktree | CLI: `git worktree add .worktrees/<milestone-or-issue> -b feat/<milestone-or-issue> origin/main` |
+| Commit code | Parent reviews/integrates subagent patches before commit + push |
+| Start fast-cron | App automation prompt includes `$blueprintflow-teamlead-fast-cron-checkin`; CLI spawns 15-min sleeper subagent |
+| Start slow-cron | App automation prompt includes `$blueprintflow-teamlead-slow-cron-checkin`; CLI spawns long sleeper only when useful |
+| Start role-reminder | App automation prompt includes `$blueprintflow-teamlead-role-reminder`; CLI parent self-checks before implementation work |
+| Start issue-triage | App automation prompt includes `$blueprintflow-issue-triage`; CLI uses sleeper or explicit parent dispatch |
+| Check role status | Parent checks subagent completion, PR comments, issue state, and TODOs |
+| Open PR | Parent Teamlead only: `gh pr create` after four-piece + design + implementation + tests + closure flips |
+| Merge PR | Parent Teamlead or merge worker: `gh pr merge <N> --squash --delete-branch`; no admin bypass |
 
 ## Rule fit
 
-| Rule | Adaptation |
+| Rule | Codex adaptation |
 |---|---|
-| Stacking commits | Not possible (sandbox isolation) — each role commits + pushes independently; Teamlead confirms no conflict before PR |
-| Cron | Not supported — caller drives via heartbeat/schedule |
-| Ping protocol | N/A — sessions have completion signals |
-| Parallel review | Supported — caller spawns multiple sessions |
+| Role != session | Prefer stable role coordinator subagents; serial lenses are capacity fallback only |
+| Everyone stacks commits | Prefer parent-owned commits after coordinator review; helper write scopes must be disjoint |
+| Parallel review | Use read-only review subagents for Architect / QA / Security lenses |
+| Nested delegation | Allowed only with `agents.max_depth = 2` |
+| Cron checks | Codex App automations or CLI sleeper subagents; new CLI runs must rehydrate from files/PRs/issues |
+| Silence detection | No ping/pong for one-shot subagents; wait, timeout, close, or replace |
+
+## Role context reuse
+
+Resume is a runtime capability, not a Blueprintflow guarantee. Keep fixed role coordinators open across the phase or active task set when possible, but keep file-based handoff as the source of truth.
+
+| Mode | Use when | Boundary |
+|---|---|---|
+| Keep role coordinator open | Parent session is active and phase/task set remains open | Same role and long-lived scope only |
+| Resume role coordinator | Runtime exposes a resume mechanism and the role has ongoing work | Same role and long-lived scope only |
+| Spawn fresh role coordinator | Resume is unavailable or stale | Provide role prompt + phase/task files + latest parent summary |
+| File handoff | Always | `docs/tasks/<milestone-or-issue>/*` and PR comments must contain decisions needed after restart |
+
+Rules:
+
+- Do not rely on resumed memory for source-of-truth decisions.
+- Before closing or replacing a role coordinator, require a short handoff summary in the milestone docs or parent thread.
+- A resumed Dev/QA/Security agent still cannot open PRs or merge; parent Teamlead owns integration.
+- If resumed context conflicts with repo files, repo files win and the role re-reads the relevant skill + milestone docs.
+
+## Startup prompt
+
+```text
+Use Blueprintflow in Codex mode.
+Read skills/blueprintflow-workflow/SKILL.md, then read only skills/blueprintflow-runtime-adapter/references/codex.md.
+Act as Teamlead in the parent thread. Run the Codex activation check before Phase or milestone work.
+```
+
+## Optional project-local agents
+
+Blueprintflow's plugin installs skills, not consumer-project `.codex/agents` files.
+
+Target projects may add `.codex/agents/blueprintflow-<role>.toml` templates for frequent roles. Each template must say: no PR creation, no merge, parent Teamlead owns integration. Use role prompts from `blueprintflow-team-roles/references/*.md`.

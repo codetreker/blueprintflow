@@ -1,5 +1,20 @@
 # Changelog
 
+## v2.0.2 — 2026-05-12
+
+### Codex marketplace package layout
+
+- Moved the installable plugin package to `plugins/blueprintflow/` so Codex marketplace entries resolve to a real plugin subdirectory.
+- Restored `.agents/plugins/marketplace.json` with `source.local.path = "./plugins/blueprintflow"`, matching Codex marketplace expectations.
+- Removed duplicate root Codex plugin/skill content; `plugins/blueprintflow/skills/` is now the single source for public skills.
+- Pointed the Claude marketplace entry at the same `plugins/blueprintflow/` package to keep one installable package layout.
+- Added `scripts/validate-plugin-layout.sh` to catch duplicate root plugin content, marketplace path drift, and manifest version mismatches.
+- Added GitHub Actions CI for JSON metadata, single-source plugin layout, skill frontmatter/reference integrity, whitespace, and required release-version bumps.
+
+### Plugin version
+
+- `plugin.json` bumped `2.0.1` → `2.0.2` (patch: installable marketplace package layout fix).
+
 ## v2.0.1 — 2026-05-12
 
 ### Codex root plugin install

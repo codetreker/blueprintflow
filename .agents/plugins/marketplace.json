@@ -1,0 +1,20 @@
+{
+  "name": "blueprintflow",
+  "interface": {
+    "displayName": "Blueprintflow"
+  },
+  "plugins": [
+    {
+      "name": "blueprintflow",
+      "source": {
+        "source": "local",
+        "path": "./plugins/blueprintflow"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

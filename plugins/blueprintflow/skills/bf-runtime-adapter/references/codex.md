@@ -1,0 +1,110 @@
+# Codex Adapter
+
+## Modes
+
+| Mode | Use for | Scheduling | Parallelism |
+|---|---|---|---|
+| CLI local session | One milestone / PR review | Sleeper subagent | Subagents |
+| Codex App | Long-running coordination | App automations | Subagents |
+| Cloud task | Bounded execution/review | Caller-driven | Per task |
+
+## Activation Check
+
+Run before Phase or milestone work.
+
+| Check | Required |
+|---|---|
+| Skills | `blueprintflow:bf-*` active, or current checkout reference loaded |
+| Repo rules | Read target project `AGENTS.md` |
+| Roles | Parent is Teamlead; role agents are coordinators |
+| Capacity | `agents.max_depth = 2`; `agents.max_threads >= 24` for full team |
+| Reasoning | One model family; helper effort by task type |
+| Checkins | App automation or CLI sleeper; no durable CLI cron claim |
+
+## Capacity
+
+| Team shape | Config |
+|---|---|
+| Serial fallback | `<8` threads or `max_depth < 2` |
+| Coordinator roster | `max_threads = 12`, `max_depth = 2` |
+| Full team | `max_threads = 24`, `max_depth = 2` |
+| Large parallel wave | `max_threads = 32+`, `max_depth = 2` |
+
+```toml
+[agents]
+max_threads = 24
+max_depth = 2
+```
+
+## Role Coordinators
+
+| Role | Stable coordinator name |
+|---|---|
+| Architect | `bf-architect` |
+| PM | `bf-pm` |
+| Dev | `bf-dev` |
+| QA | `bf-qa` |
+| Security | `bf-security` |
+| Writer/Operator | `bf-writer` |
+
+Rules:
+- Coordinators coordinate; helpers execute bounded leaf work.
+- Keep coordinators open while the phase/task set is active.
+- Name helpers `bf-<role>:<task>`.
+- If capacity is insufficient, Teamlead runs missing roles as serial lenses and records the downgrade.
+
+## Reasoning Effort
+
+| Task type | Effort |
+|---|---|
+| Teamlead / role coordination | inherit/default |
+| Mechanical search, rename, formatting, sleep | `low` |
+| Bounded validation | `medium` |
+| Bounded implementation | `high` |
+| Architecture, QA judgment, unclear CI/root cause | `high` |
+| Security review | `xhigh` |
+| High-impact planning | `xhigh` |
+
+If unsure, use `high`. Sleeper helpers use `low`.
+
+## Checkins
+
+| Need | Codex App | Codex CLI |
+|---|---|---|
+| Fast checkin | Automation prompt with `$bf-teamlead-fast-cron-checkin` | 15-min sleeper subagent |
+| Slow checkin | Automation prompt with `$bf-teamlead-slow-cron-checkin` | Long sleeper only when useful |
+| Role reminder | Automation prompt with `$bf-teamlead-role-reminder` | Parent self-check before implementation |
+| Issue triage | Automation prompt with `$bf-issue-triage` | Sleeper or explicit parent dispatch |
+
+Sleeper prompt:
+
+```text
+Sleep for 15 minutes, then return exactly:
+[auto check-in · 15 min] $bf-teamlead-fast-cron-checkin
+Do not inspect files, run tools, or make decisions.
+```
+
+Sleeper constraints: one-shot; occupies one thread; parent must remain active; parent respawns only if work remains.
+
+## Operation Map
+
+| Blueprintflow phrase | Codex operation |
+|---|---|
+| Notify `<Role>` | Parent sends task to role coordinator |
+| Create worktree | `git worktree add .worktrees/<task> -b feat/<task> origin/main` |
+| Commit code | Parent reviews/integrates helper patches, then commits |
+| Check role status | Parent checks subagent state, PR comments, issues, TODOs |
+| Open PR | Parent Teamlead only: `gh pr create` |
+| Merge PR | Parent Teamlead/merge worker: `gh pr merge <N> --squash --delete-branch`; no admin bypass |
+
+## Startup Prompt
+
+```text
+Use Blueprintflow in Codex mode.
+Use bf-workflow, then this Codex adapter reference.
+Act as Teamlead in the parent thread and run the activation check before Phase or milestone work.
+```
+
+## Optional Local Agents
+
+Target projects may add `.codex/agents/bf-<role>.toml` templates. Each template must say: no PR creation, no merge; parent Teamlead owns integration. Use role prompts from `bf-team-roles/references/*.md`.

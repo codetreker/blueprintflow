@@ -7,6 +7,10 @@ description: "Part of the Blueprintflow methodology. Use when brainstorm has con
 
 `docs/blueprint/*.md` = source of truth for product shape. Every later PR cites a §X.Y anchor here. Once frozen, execution follows the blueprint.
 
+## Direct Invocation Guard
+
+If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's input; do nothing else in this skill until it routes back.
+
 ## Blueprint structure
 
 | File | Content |

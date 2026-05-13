@@ -7,6 +7,10 @@ description: "Part of the Blueprintflow methodology. Use when a milestone PR is 
 
 The standard flow from PR open to merged.
 
+## Direct Invocation Guard
+
+If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's input; do nothing else in this skill until it routes back.
+
 ## Pre-requisite: implementation design ✅
 
 Code milestones must have passed the four-role design review before the PR opens. Design doc lives in the milestone's leaf folder as `design.md` (see `bf-milestone-fourpiece` for folder layout). Full spec in `bf-implementation-design`. Non-code milestones skip this step.

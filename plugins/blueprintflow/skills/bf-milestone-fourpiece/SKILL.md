@@ -9,6 +9,10 @@ Each milestone = **one PR, merged once**. The 4 pieces + implementation + e2e + 
 
 **Git workflow**: Teamlead creates `.worktrees/<milestone-or-issue>` + branch. 4-piece authors stack commits in the same worktree. Teamlead is the sole PR opener. See `bf-git-workflow`.
 
+## Direct Invocation Guard
+
+If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's input; do nothing else in this skill until it routes back.
+
 ## Doc layout
 
 All milestone artifacts in one folder:

@@ -7,6 +7,10 @@ description: "Part of the Blueprintflow methodology. Use when starting a milesto
 
 Hard rules set on 2026-04-29. Pairs with `bf-pr-review-flow` (merge red lines) and `bf-milestone-fourpiece` (four-piece set lands inside the PR).
 
+## Direct Invocation Guard
+
+If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's input; do nothing else in this skill until it routes back.
+
 ## 🔒 Hard rules
 
 ### Rule 1: one milestone = one worktree + one branch

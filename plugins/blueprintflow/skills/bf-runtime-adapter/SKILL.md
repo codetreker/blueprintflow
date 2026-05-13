@@ -7,6 +7,10 @@ description: "Part of the Blueprintflow methodology. Use when bringing up a Blue
 
 Blueprintflow rules (blueprint freeze, four-piece set, stance-drift defenses, one-milestone-one-PR) are environment-independent. **How** you carry them out depends on the runtime. This skill centralizes runtime differences; other skills say "what to do", this one says "how".
 
+## Direct Invocation Guard
+
+If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's input; do nothing else in this skill until it routes back.
+
 ## Capability dimensions
 
 | Capability | Meaning |

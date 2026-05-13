@@ -9,6 +9,10 @@ QA = **the user's proxy**. Code-level correctness (PR acceptance ✅) is necessa
 
 **Scope**: client-facing UI / frontend changes only. Backend-only PRs skip this skill entirely.
 
+## Direct Invocation Guard
+
+If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's input; do nothing else in this skill until it routes back.
+
 ## Triggers
 
 - Any QA verification for UI / frontend / user-visible change

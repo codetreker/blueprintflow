@@ -7,6 +7,10 @@ description: "Part of the Blueprintflow methodology. Use on Teamlead role-remind
 
 30-minute recurring cron. Runtime syntax → `bf-runtime-adapter`.
 
+## Direct Invocation Guard
+
+If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's input; do nothing else in this skill until it routes back.
+
 ## How to invoke
 
 ```

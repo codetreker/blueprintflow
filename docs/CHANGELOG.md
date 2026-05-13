@@ -1,5 +1,18 @@
 # Changelog
 
+## v3.0.5 — 2026-05-13
+
+### Slim workflow entrypoint
+
+- Reworked `bf-workflow` as a single-file entry driver focused on runtime/team setup, Teamlead boundary, objective routing, and global hard rules.
+- Removed the four-state activation model in favor of a simpler boundary: no objective means active-but-idle after setup; a concrete objective routes to the owning child skill.
+- Deleted `bf-workflow` activation and overview references because their cron, runtime, role, lifecycle, and mental-model details are already owned by runtime, team, cron, lifecycle, or README documentation.
+- Kept the global safety rails in the entrypoint: no content inspection without an objective/role handoff, Teamlead does not do leaf work, Security is independent, one milestone maps to one worktree/branch/PR, CI cannot be bypassed, and `docs/current` sync remains required when applicable.
+
+### Plugin version
+
+- `plugin.json` bumped `3.0.4` → `3.0.5` (patch: slimmer `bf-workflow` entrypoint and removal of duplicate references).
+
 ## v3.0.4 — 2026-05-13
 
 ### Coordinator / worker boundary

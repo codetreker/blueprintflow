@@ -1,5 +1,19 @@
 # Changelog
 
+## v3.0.4 — 2026-05-13
+
+### Coordinator / worker boundary
+
+- Added a global `bf-workflow` coordinator/worker boundary that applies to Teamlead and every Role Coordinator across all `bf-*` skills.
+- Limited coordinator-local work to routing metadata, scope assignment, synthesis, gate enforcement, user decisions, and coordination state.
+- Required substantive inspection, role judgment, drafting, editing, testing, verification, and evidence collection to go through bounded workers/helpers, with explicit `serial fallback` when spawning is unavailable.
+- Added a global subagent reuse rule: continue relevant coordinator/helper threads when context is valid, and spawn fresh only for independence, materially different scope, stale/biased context, overload, parallelism, or required review separation.
+- Aligned `bf-team-roles` and the Codex adapter with the global boundary and context-reuse rule.
+
+### Plugin version
+
+- `plugin.json` bumped `3.0.3` → `3.0.4` (patch: global coordinator/worker boundary and subagent reuse clarification).
+
 ## v3.0.3 — 2026-05-13
 
 ### OpenAI skill display names

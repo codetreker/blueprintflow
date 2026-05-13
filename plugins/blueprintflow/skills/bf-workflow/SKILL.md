@@ -18,7 +18,52 @@ Blueprintflow coordinates multi-agent product work from concept to blueprint to 
 - No admin bypass merge; CI must really pass.
 - Code changes must sync `docs/current` using `bf-current-doc-standard` when the project uses that convention.
 
-If role/helper spawning is unavailable, Teamlead must declare `serial fallback` before doing role-lens work, label each lens explicitly, and record the downgrade.
+If role/helper spawning is unavailable, the coordinator must declare `serial fallback` before doing role-lens work, label each lens explicitly, and record the downgrade.
+
+## Coordinator / Worker Boundary
+
+This boundary applies to Teamlead and every Role Coordinator across all `bf-*` skills.
+
+Coordinators coordinate; workers do leaf work. A coordinator session must not perform leaf work directly, even when the leaf work belongs to that coordinator's role. If a task requires substantive project inspection, role judgment, drafting, editing, testing, or verification, the coordinator must spawn or reuse a worker/helper with a bounded scope and synthesize the returned evidence.
+
+Coordinator-local work is limited to:
+
+- Loading Blueprintflow skills and runtime adapters.
+- Reading repo-local coordination rules such as `AGENTS.md` / `CLAUDE.md`.
+- Reading routing metadata only, such as issue number/title/labels, PR number/title/status, file path lists, or existing role status.
+- Assigning role/worker scopes.
+- Synthesizing worker outputs.
+- Enforcing gates, asking the user for decisions, and recording coordination state.
+
+Leaf work includes:
+
+- Reading issue bodies/comments for classification or selection.
+- Reading blueprint/current/task docs for product or technical analysis.
+- Reading code for implementation or review.
+- Writing or editing docs/code.
+- Deciding backlog pull-in candidates from substantive content.
+- Drafting blueprint text.
+- Running tests, builds, audits, grep-based evidence collection, or verification commands.
+- Making PM/Architect/QA/Security judgments.
+
+Leaf work must be delegated to a worker/helper. If spawning is unavailable, use the `serial fallback` rule above.
+
+## Subagent Reuse
+
+Coordinators should reuse existing relevant subagents whenever their context is still valid.
+
+Default: continue the same role coordinator or worker thread for follow-up work in the same scope, especially when the task depends on prior findings, repo context, decisions, or partially completed analysis. Do not spawn one-off workers for every small follow-up when an existing scoped worker can continue safely.
+
+Spawn a fresh subagent only when:
+
+- The task needs independent judgment or blind review.
+- Prior context may bias the result.
+- The scope is materially different.
+- The old subagent is closed, stale, blocked, or overloaded.
+- Work must run in parallel and the existing subagent is already busy.
+- Security/review independence requires separation.
+
+When reusing a subagent, send a concise delta: what changed, what decision is needed now, and what output is expected. Do not ask it to rediscover context it already has unless stale context is a risk.
 
 ## Skill composition rule
 
@@ -27,7 +72,7 @@ When Blueprintflow is active, Blueprintflow is the controlling workflow for Blue
 Other implementation/process skills may still be used, but only inside the role and stage boundaries defined by Blueprintflow. If another skill says to explore context, write a design, implement, test, verify, or review:
 
 - Teamlead dispatches that leaf work to the appropriate role/helper.
-- Role agents may use the other skill within their assigned scope.
+- Role Coordinators dispatch role leaf work to helpers; role workers/helpers may use the other skill within their assigned scope.
 - Teamlead synthesizes role outputs and makes coordination decisions; Teamlead does not perform leaf work directly.
 - Security remains independent and cannot be merged into Architect.
 
@@ -57,7 +102,7 @@ Tell me the milestone, issue, PR, Phase, review, audit, or cron check-in you wan
 | State | Trigger | Teamlead may do |
 |---|---|---|
 | Standby | Workflow activated without a concrete objective | Load runtime/project coordination rules, report boundaries, wait for assignment |
-| Assigned | User names a milestone / issue / PR / Phase / review / audit / cron check-in | Run the relevant preflight, dispatch roles/helpers, inspect only assigned scope |
+| Assigned | User names a milestone / issue / PR / Phase / review / audit / cron check-in | Run coordination preflight, dispatch roles/helpers, inspect only routing metadata |
 | Running | Worktree / PR / review / cron flow is active | Coordinate roles, synthesize evidence, enforce gates |
 | Paused | User interrupts or asks to stop | Stop new tool work and close unneeded helpers |
 

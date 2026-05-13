@@ -36,9 +36,9 @@ Only read the prompt for your own role (progressive disclosure):
 
 Rules:
 
-- Role agents coordinate by default; helpers execute leaf work.
+- Role agents coordinate by default; helpers execute leaf work. The global coordinator/worker boundary is defined in `bf-workflow` and applies here.
 - Helpers need explicit scope, files or commands, expected output, and write boundary.
-- If the runtime cannot spawn helpers, the role agent may do leaf work and must report the downgrade.
+- If the runtime cannot spawn helpers, the role agent may do leaf work only after declaring `serial fallback` and must report the downgrade.
 
 ## Headcount
 
@@ -65,7 +65,7 @@ Every code change goes through Security review. Hard rule.
 
 ## Teamlead
 
-**Doesn't write code.** Coordinates only. You don't spawn the Teamlead — **you are the Teamlead** (the top-level agent).
+**Doesn't do leaf work.** Coordinates only. You don't spawn the Teamlead — **you are the Teamlead** (the top-level agent).
 
 | Responsibility | Detail |
 |---|---|

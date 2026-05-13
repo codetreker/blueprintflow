@@ -62,6 +62,7 @@ max_depth = 2
 Rules:
 - Coordinators coordinate; helpers execute bounded leaf work.
 - Keep coordinators open while the phase/task set is active.
+- Reuse relevant coordinator/helper subagents when their context is still valid; spawn fresh only for independent review, materially different scope, stale/biased context, overload, parallelism, or required Security/review separation.
 - Name helpers `bf-<role>:<task>`.
 - If capacity is insufficient, Teamlead runs missing roles as serial lenses and records the downgrade.
 - In Codex, bare activation of Blueprintflow is standby only. Role/helper delegation starts only after the user names a concrete Blueprintflow-scoped objective, such as a milestone, issue, PR review, Phase plan, drift audit, or cron check-in.
@@ -99,6 +100,10 @@ Do not inspect files, run tools, or make decisions.
 ```
 
 Sleeper constraints: one-shot; occupies one thread; parent must remain active; parent respawns only if work remains.
+
+## Context Reuse
+
+Codex coordinators should keep role coordinators open for the active Phase/task set and continue them with concise deltas. Reuse the same worker for follow-up work in the same scope when its context remains useful. Start a fresh worker only for independent/blind review, stale or biased context, materially different scope, parallel work while the existing worker is busy, or mandatory Security/review independence.
 
 ## Operation Map
 

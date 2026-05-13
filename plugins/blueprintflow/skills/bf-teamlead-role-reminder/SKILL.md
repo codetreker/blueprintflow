@@ -1,6 +1,6 @@
 ---
 name: bf-teamlead-role-reminder
-description: "Part of the Blueprintflow methodology. 30-min cron that injects a system reminder into the Teamlead's context — you are the orchestrator, not the doer."
+description: "Part of the Blueprintflow methodology. Use on Teamlead role-reminder ticks when the active coordinator needs to reassert orchestration boundaries."
 ---
 
 # Teamlead Role Reminder

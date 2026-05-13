@@ -4,6 +4,17 @@ GitHub issues are the backlog SSOT. This skill defines the gate: cron scans → 
 
 Runs in parallel to fast-cron (PR dimension) and slow-cron (drift dimension) — this is the **issue dimension**.
 
+## Sections
+
+| Section | Use |
+|---|---|
+| Native issue type field | Read/set Bug, Feature, Task |
+| User review queue | Handle triaged issues without a type |
+| State labels | Apply status labels |
+| Routing matrix | Assign Architect/PM/QA/Dev follow-up |
+| Execution flow | Run the cron triage loop |
+| Anti-patterns | Avoid label-only or speculative routing |
+
 ## Native issue type field
 
 Use GitHub's built-in issue type (Bug / Feature / Task), not `type:*` labels.

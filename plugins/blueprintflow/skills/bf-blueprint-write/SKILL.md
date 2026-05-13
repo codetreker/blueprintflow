@@ -1,6 +1,6 @@
 ---
 name: bf-blueprint-write
-description: "Part of the Blueprintflow methodology. Use when brainstorm has converged stances or a new module chapter is starting - writes them into docs/blueprint/ as the product-shape source of truth."
+description: "Part of the Blueprintflow methodology. Use when brainstorm has converged stances, a product-shape source of truth is needed, or a new blueprint module chapter is starting."
 ---
 
 # Blueprint Write

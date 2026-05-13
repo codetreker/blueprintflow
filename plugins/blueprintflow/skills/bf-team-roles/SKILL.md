@@ -1,6 +1,6 @@
 ---
 name: bf-team-roles
-description: "Part of the Blueprintflow methodology. Use when spawning the team or arbitrating role boundaries - provides prompt templates for the 6 roles + Teamlead and enforces Security as an independent role."
+description: "Part of the Blueprintflow methodology. Use when spawning role agents, assigning role prompts, checking role boundaries, or deciding whether roles can be merged."
 ---
 
 # Team Roles

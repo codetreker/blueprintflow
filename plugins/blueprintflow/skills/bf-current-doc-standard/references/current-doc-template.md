@@ -2,6 +2,18 @@
 
 Use this only when a project has no `docs/current` yet. Keep files short; delete sections that do not apply.
 
+## Sections
+
+| Section | Use |
+|---|---|
+| Initial File Tree | Create the first `docs/current` layout |
+| README.md | Top-level architecture entrypoint |
+| system-overview.md | System boundary and source-of-truth overview |
+| runtime-topology.md | Process/runtime view |
+| cross-module-flows.md | High-impact boundary flows |
+| `<module>/README.md` | Module ownership page |
+| known-gaps.md | Current limitations and do-not-assume notes |
+
 ## Initial File Tree
 
 ```text

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Blueprintflow Phase Exit Gate"
+  short_description: "Close a completed Phase safely"
+  default_prompt: "Use $bf-phase-exit-gate to close a Phase after all milestone PRs and acceptance are complete."

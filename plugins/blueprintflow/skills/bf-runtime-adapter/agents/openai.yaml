@@ -1,0 +1,4 @@
+interface:
+  display_name: "Blueprintflow Runtime Adapter"
+  short_description: "Map Blueprintflow to runtime"
+  default_prompt: "Use $bf-runtime-adapter to check the current agent runtime and team capabilities."

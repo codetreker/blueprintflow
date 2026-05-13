@@ -1,5 +1,16 @@
 # Claude Code Adapter
 
+## Sections
+
+| Section | Use |
+|---|---|
+| Decision tree | Pick the one Claude Code operating mode |
+| Team mode + tmux | Full multi-agent setup |
+| Team mode, no tmux | Team process without tmux layout |
+| Single session | Serial fallback behavior |
+| Teamlead checklist | Activation/capacity checks |
+| Role bootstrap | Agent prompt and worktree setup |
+
 ## Decision tree
 
 ```

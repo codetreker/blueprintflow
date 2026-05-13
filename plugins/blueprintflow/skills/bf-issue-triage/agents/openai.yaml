@@ -1,0 +1,4 @@
+interface:
+  display_name: "Blueprintflow Issue Triage"
+  short_description: "Route untriaged GitHub issues"
+  default_prompt: "Use $bf-issue-triage to route new GitHub issues into Blueprintflow work."

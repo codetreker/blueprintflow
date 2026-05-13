@@ -44,6 +44,42 @@ for skill_dir in "$skills_root"/*; do
     exit 1
   fi
 
+  openai_yaml="$skill_dir/agents/openai.yaml"
+  if [[ ! -f "$openai_yaml" ]]; then
+    echo "$skill_dir is missing agents/openai.yaml" >&2
+    exit 1
+  fi
+  if [[ $(sed -n '1p' "$openai_yaml") != "interface:" ]]; then
+    echo "$openai_yaml must start with interface:" >&2
+    exit 1
+  fi
+
+  display_name=$(awk -F'"' '/^[[:space:]]+display_name:[[:space:]]*"/ { print $2; found = 1 } END { if (!found) exit 1 }' "$openai_yaml") || {
+    echo "$openai_yaml is missing quoted interface.display_name" >&2
+    exit 1
+  }
+  short_description=$(awk -F'"' '/^[[:space:]]+short_description:[[:space:]]*"/ { print $2; found = 1 } END { if (!found) exit 1 }' "$openai_yaml") || {
+    echo "$openai_yaml is missing quoted interface.short_description" >&2
+    exit 1
+  }
+  default_prompt=$(awk -F'"' '/^[[:space:]]+default_prompt:[[:space:]]*"/ { print $2; found = 1 } END { if (!found) exit 1 }' "$openai_yaml") || {
+    echo "$openai_yaml is missing quoted interface.default_prompt" >&2
+    exit 1
+  }
+  if [[ -z "$display_name" ]]; then
+    echo "$openai_yaml interface.display_name must not be empty" >&2
+    exit 1
+  fi
+  short_len=${#short_description}
+  if (( short_len < 25 || short_len > 64 )); then
+    echo "$openai_yaml interface.short_description must be 25-64 characters: $short_len" >&2
+    exit 1
+  fi
+  if [[ "$default_prompt" != *"\$$skill_name"* ]]; then
+    echo "$openai_yaml interface.default_prompt must mention \$$skill_name" >&2
+    exit 1
+  fi
+
   while IFS= read -r ref; do
     [[ -e "$skill_dir/$ref" ]] || {
       echo "$skill_file references missing file: $ref" >&2

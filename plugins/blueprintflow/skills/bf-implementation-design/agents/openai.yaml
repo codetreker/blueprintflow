@@ -1,0 +1,4 @@
+interface:
+  display_name: "Blueprintflow Implementation Design"
+  short_description: "Design before implementation"
+  default_prompt: "Use $bf-implementation-design to draft the code-facing design before implementation starts."

@@ -1,6 +1,6 @@
 ---
 name: bf-e2e-verification
-description: "Part of the Blueprintflow methodology. Use when QA verifies any client-facing UI / frontend change before LGTM - covers code-level acceptance + product usability + design reasonableness as three required dimensions, not just PR-described acceptance."
+description: "Part of the Blueprintflow methodology. Use when QA verifies a client-facing UI or frontend change before LGTM, especially when acceptance, usability, or design quality must be checked."
 ---
 
 # UI E2E Verification

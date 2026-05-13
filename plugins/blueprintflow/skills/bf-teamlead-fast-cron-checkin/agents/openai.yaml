@@ -1,0 +1,4 @@
+interface:
+  display_name: "Blueprintflow Fast Check-In"
+  short_description: "Dispatch active work check-ins"
+  default_prompt: "Use $bf-teamlead-fast-cron-checkin to dispatch idle roles and clear active workflow blockers."

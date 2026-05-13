@@ -1,6 +1,6 @@
 ---
 name: bf-implementation-design
-description: "Part of the Blueprintflow methodology. Use when the four-piece is in place and code has not started - Dev drafts the implementation design (data flow, contracts, edge cases) for 4-role signoff before coding."
+description: "Part of the Blueprintflow methodology. Use when the milestone four-piece is in place, code has not started, and a code-facing implementation design needs review."
 ---
 
 # Implementation Design

@@ -1,6 +1,6 @@
 ---
 name: bf-milestone-fourpiece
-description: "Part of the Blueprintflow methodology. Use when a milestone starts and code has not begun - establishes the 4 baseline docs (spec brief, stance, content lock, acceptance template) inside one milestone PR."
+description: "Part of the Blueprintflow methodology. Use when a milestone starts, code has not begun, and the spec/stance/content-lock/acceptance baseline docs need to be created."
 ---
 
 # Milestone 4 pieces

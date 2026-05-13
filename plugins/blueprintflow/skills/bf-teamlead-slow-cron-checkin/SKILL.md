@@ -1,6 +1,6 @@
 ---
 name: bf-teamlead-slow-cron-checkin
-description: "Part of the Blueprintflow methodology. Use on 2-4h cron tick or when drift signals appear - Teamlead audits blueprint drift, docs/current sync, delayed acceptance flips, and stale worktrees."
+description: "Part of the Blueprintflow methodology. Use on slow-cron ticks or when blueprint, current-doc, acceptance, PR, issue, or worktree drift signals appear."
 ---
 
 # Teamlead Slow-Cron Check-in

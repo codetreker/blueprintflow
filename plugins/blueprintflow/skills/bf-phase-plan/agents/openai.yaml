@@ -1,0 +1,4 @@
+interface:
+  display_name: "Blueprintflow Phase Plan"
+  short_description: "Plan phases from a blueprint"
+  default_prompt: "Use $bf-phase-plan to split a frozen blueprint into Phases, gates, and milestones."

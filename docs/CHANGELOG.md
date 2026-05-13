@@ -1,5 +1,19 @@
 # Changelog
 
+## v3.0.1 — 2026-05-13
+
+### Skill Creator alignment
+
+- Reworked skill frontmatter descriptions to focus on invocation triggers instead of workflow summaries.
+- Added section navigation to long reference files so agents can load the right subsection faster.
+- Added OpenAI interface metadata for all public `bf-*` skills.
+- Extended skill validation to require and sanity-check OpenAI interface metadata.
+- Replaced repository-local example paths in `bf-repo-update` with `<repo-root>` placeholders.
+
+### Plugin version
+
+- `plugin.json` bumped `3.0.0` → `3.0.1` (patch: skill metadata and reference-structure alignment).
+
 ## v3.0.0 — 2026-05-13
 
 ### Repo update skill rename

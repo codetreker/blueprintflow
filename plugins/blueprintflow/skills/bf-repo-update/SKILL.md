@@ -11,7 +11,7 @@ All Blueprintflow repo changes go through: **worktree → PR → all-hands revie
 
 ```bash
 # 1. Create worktree
-cd /workspace/blueprintflow && git fetch origin
+cd <repo-root> && git fetch origin
 git worktree add .worktrees/<topic> -b docs/<topic> origin/main
 
 # 2. Edit + commit
@@ -31,7 +31,7 @@ gh pr create --repo codetreker/blueprintflow \
 gh pr merge <N> --repo codetreker/blueprintflow --squash
 
 # 6. Clean up
-cd /workspace/blueprintflow
+cd <repo-root>
 git worktree remove .worktrees/<topic>
 git fetch origin --prune
 ```

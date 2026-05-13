@@ -8,6 +8,8 @@
 - Added an activation state table (`Standby` / `Assigned` / `Running` / `Paused`) plus an explicit pre-assignment Teamlead may/must-not boundary.
 - Changed the bootstrap and cron language so role dispatch and cron setup start only after a named milestone, issue, PR, Phase, review, audit, or cron check-in.
 - Narrowed the Codex adapter rule so activation authorizes role/helper delegation only after the user names a concrete Blueprintflow-scoped objective.
+- Slimmed `bf-workflow` into a compact entrypoint/router and moved the fuller mental model, lifecycle map, cron prompts, and team-layout notes to progressive references.
+- Added a direct-invocation standby boundary to `bf-blueprint-iteration` so calling that stage skill alone does not scan issues, blueprint files, task docs, PRs, git history, or worktrees without a named iteration objective.
 
 ### Plugin version
 

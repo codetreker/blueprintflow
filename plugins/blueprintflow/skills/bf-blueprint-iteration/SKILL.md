@@ -9,6 +9,26 @@ The blueprint evolves after freeze through a 3-state machine. Stance reversals a
 
 **When this applies**: first blueprint version frozen, at least one Phase executed. Early brainstorm + first-version write doesn't go through this skill.
 
+## Direct invocation boundary
+
+If this skill is invoked without a concrete objective, enter standby: do not inspect GitHub issues, blueprint files, task docs, git history, PRs, or worktrees. State what this skill coordinates and ask which objective to run.
+
+Concrete objectives include:
+
+- Patch current blueprint for `gh#NNN`.
+- Triage backlog issues for the next blueprint version.
+- Open a next-version draft.
+- Review or freeze the next-version draft.
+- Cut over next-version to current after approval.
+
+Standby response:
+
+```text
+bf-blueprint-iteration loaded. This skill coordinates blueprint changes after freeze: current patches, backlog-to-next selection, next-version drafting, review/freeze, and cutover.
+No issues, blueprint files, task docs, PRs, git history, or worktrees have been inspected yet.
+Tell me which blueprint iteration objective to coordinate.
+```
+
 ## 3-state machine
 
 | State | Where | Meaning |
@@ -42,7 +62,7 @@ Version lives in `docs/blueprint/` frontmatter (`frozen: <date>`, `prev: vN.M-1`
 
 When the current iteration passes acceptance, the next-version discussion opens. Its primary input is **GitHub issues labeled `backlog`** — these are scanned one by one to decide what gets pulled into the next blueprint version.
 
-Read `references/lifecycle.md` for the full flow: scan backlog → write blueprint-next → four-role discussion → freeze + tag + source-issues.md → relabel issues → trigger Phase N+1. Reminder period is project-defined in AGENTS.md (`reminder-period: 2w` default).
+After the user names a concrete iteration objective, read `references/lifecycle.md` for the full flow: scan backlog → write blueprint-next → four-role discussion → freeze + tag + source-issues.md → relabel issues → trigger Phase N+1. Reminder period is project-defined in AGENTS.md (`reminder-period: 2w` default).
 
 ## Anti-patterns
 
@@ -57,6 +77,7 @@ Read `references/lifecycle.md` for the full flow: scan backlog → write bluepri
 ```
 follow skill bf-blueprint-iteration
 
+# No objective named → standby, ask which iteration objective to coordinate
 # Current iteration done → scan backlog → open blueprint-next
 # blueprint-next converges → freeze + tag + source-issues.md
 ```

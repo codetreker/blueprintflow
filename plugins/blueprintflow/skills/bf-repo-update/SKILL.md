@@ -1,11 +1,11 @@
 ---
-name: bf-skill-workflow
-description: "Part of the Blueprintflow methodology. Use when adding, editing, or deleting a blueprintflow skill - runs the self-governing worktree to PR to all-hands vote to merge flow for the skill repo."
+name: bf-repo-update
+description: "Part of the Blueprintflow methodology. Use when updating the Blueprintflow repository itself, including skills, plugin metadata, README, CI, scripts, or release notes."
 ---
 
-# Skill Workflow
+# Repo Update
 
-All skill changes (add, edit, delete) go through: **worktree → PR → all-hands review → merge**. Never push to main directly.
+All Blueprintflow repo changes go through: **worktree → PR → all-hands review → merge**. Never push to main directly.
 
 ## Flow
 
@@ -16,7 +16,7 @@ git worktree add .worktrees/<topic> -b docs/<topic> origin/main
 
 # 2. Edit + commit
 cd .worktrees/<topic>
-# ... edit skill files ...
+# ... edit repo files ...
 git add -A && git commit -m "docs(<scope>): <description>"
 git push -u origin docs/<topic>
 
@@ -57,7 +57,7 @@ git fetch origin --prune
 - **All-hands vote required** — Architect + PM + Dev + QA + Jianjun all ✅; any missing = don't merge
 - **Read the whole file** — not just the diff
 - **No LGTM with open issues** — found a problem = NOT LGTM; author fixes, re-review, then LGTM. "LGTM, not blocking" does not exist
-- **Bump `plugin.json` version** — patch for fixes, minor for new skills. Same PR, not follow-up
+- **Bump `plugin.json` version** — patch for fixes, minor for new public skills, major for public skill renames/removals. Same PR, not follow-up
 - **Commit format**: `docs(<skill-name>): <description>`
 
 ## When it doesn't apply
@@ -69,5 +69,5 @@ git fetch origin --prune
 ## How to invoke
 
 ```
-follow skill bf-skill-workflow
+follow skill bf-repo-update
 ```

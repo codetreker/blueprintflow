@@ -95,7 +95,7 @@ After the user names a concrete objective, load only the matching skill(s):
 | Triage GitHub issues | `bf-issue-triage` |
 | Close a Phase | `bf-phase-exit-gate` |
 | Change blueprint after freeze | `bf-blueprint-iteration` |
-| Edit Blueprintflow skills | `bf-skill-workflow` |
+| Update the Blueprintflow repo | `bf-repo-update` |
 
 ## Protocol Quick Reference
 

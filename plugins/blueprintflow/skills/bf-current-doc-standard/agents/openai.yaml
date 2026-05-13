@@ -1,0 +1,4 @@
+interface:
+  display_name: "Blueprintflow docs/current Standard"
+  short_description: "Guide Blueprintflow docs/current"
+  default_prompt: "Use $bf-current-doc-standard to create, update, or review docs/current."

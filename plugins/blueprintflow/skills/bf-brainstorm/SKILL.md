@@ -1,6 +1,6 @@
 ---
 name: bf-brainstorm
-description: "Part of the Blueprintflow methodology. Multi-round Architect + PM + Teamlead discussion that converges a fuzzy idea into core stances, concept model, and constraints for the blueprint. Use when starting a new product/module, stances conflict, or a major blueprint rewrite is needed. Don't use for mechanical PRs, small patches, hotfixes, or milestone-splitting."
+description: "Part of the Blueprintflow methodology. Use when starting a new product/module, clarifying a fuzzy idea, resolving stance conflicts, or preparing a major blueprint rewrite."
 ---
 
 # Brainstorm

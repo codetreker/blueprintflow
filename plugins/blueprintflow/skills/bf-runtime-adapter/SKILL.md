@@ -1,6 +1,6 @@
 ---
 name: bf-runtime-adapter
-description: "Part of the Blueprintflow methodology. Use when bringing up a team or switching agent environments - maps environment capabilities (messaging, files, scheduling, silence detection) to concrete operations."
+description: "Part of the Blueprintflow methodology. Use when bringing up a Blueprintflow team, switching agent environments, or checking runtime capabilities."
 ---
 
 # Runtime Adapter

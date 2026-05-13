@@ -1,5 +1,17 @@
 # Codex Adapter
 
+## Sections
+
+| Section | Use |
+|---|---|
+| Modes | Pick CLI, App, or cloud-task mode |
+| Activation Check | Confirm skills, roles, capacity, reasoning |
+| Capacity | Set max depth/threads expectations |
+| Reasoning Effort | Choose helper effort by task type |
+| CLI Sleeper Fallback | Simulate check-ins without durable cron |
+| Context Reuse | Resume coordinators and helpers |
+| Command Mapping | Translate Blueprintflow actions to Codex |
+
 ## Modes
 
 | Mode | Use for | Scheduling | Parallelism |

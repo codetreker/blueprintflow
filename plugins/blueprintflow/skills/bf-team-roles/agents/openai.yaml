@@ -1,0 +1,4 @@
+interface:
+  display_name: "Blueprintflow Team Roles"
+  short_description: "Spawn and bound team roles"
+  default_prompt: "Use $bf-team-roles to spawn role agents or check Blueprintflow role boundaries."

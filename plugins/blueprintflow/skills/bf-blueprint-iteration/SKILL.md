@@ -1,6 +1,6 @@
 ---
 name: bf-blueprint-iteration
-description: "Part of the Blueprintflow methodology. Defines how the blueprint evolves after freeze: 3-state machine (current / next / backlog), versioning rules, patch constraints, and the freeze-to-next lifecycle."
+description: "Part of the Blueprintflow methodology. Use when changing a frozen blueprint, routing backlog items, preparing the next blueprint version, or handling post-freeze product-shape drift."
 ---
 
 # Blueprint Iteration

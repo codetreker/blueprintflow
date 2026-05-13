@@ -1,6 +1,6 @@
 ---
 name: bf-teamlead-fast-cron-checkin
-description: "Part of the Blueprintflow methodology. Use on 15-min cron tick or when a role goes idle - Teamlead dispatches idle roles, clears stuck PRs, and runs the three-signoff merge gate."
+description: "Part of the Blueprintflow methodology. Use on fast-cron ticks, idle-role signals, stuck PRs, or merge-gate check-ins during active Blueprintflow work."
 ---
 
 # Teamlead Fast-Cron Check-in

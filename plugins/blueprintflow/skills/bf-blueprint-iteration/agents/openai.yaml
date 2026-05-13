@@ -1,0 +1,4 @@
+interface:
+  display_name: "Blueprintflow Blueprint Iteration"
+  short_description: "Evolve a frozen blueprint"
+  default_prompt: "Use $bf-blueprint-iteration to route a frozen-blueprint change into current, next, or backlog."

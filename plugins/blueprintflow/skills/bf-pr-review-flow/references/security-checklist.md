@@ -8,6 +8,15 @@
 
 ---
 
+## Sections
+
+| Section | Use |
+|---|---|
+| 1-3 | Auth, validation, sensitive data |
+| 4-6 | Privacy, filesystem/network, dependency/supply chain |
+| 7-9 | Browser/UI, concurrency, logging/observability |
+| 10-12 | Migration/config, test/security gates, review output |
+
 ## 1. Authentication / Authorization
 
 | Check | Anti-constraint |
@@ -108,4 +117,3 @@ The generic checklist (this file) is stack-agnostic; project-specific checklists
 - ❌ Copying the checklist into the SKILL.md body (breaks lazy-reference mode, pollutes context)
 - ❌ Hardcoding language / framework / tool / path into the generic checklist (project stacks vary widely; not portable)
 - ❌ Listing only the "what" without the "why / anti-constraint" (anti "checklist that doesn't tell you why")
-

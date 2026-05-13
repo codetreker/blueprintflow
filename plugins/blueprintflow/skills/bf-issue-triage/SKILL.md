@@ -1,6 +1,6 @@
 ---
 name: bf-issue-triage
-description: "Part of the Blueprintflow methodology. Use on cron tick or when new untriaged GitHub issues arrive - Teamlead routes each to Architect/PM/QA, who set the issue's native type field + apply status/triaged labels as the entry gate to blueprint iteration."
+description: "Part of the Blueprintflow methodology. Use on issue-triage cron ticks or when new untriaged GitHub issues need routing into Blueprintflow work."
 ---
 
 # Issue Triage

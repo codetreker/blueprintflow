@@ -3,6 +3,18 @@
 
 The cron is not a status report. It is a forward-motion action. Every check-in must hand out new work to every idle role; otherwise you've failed the job.
 
+## Sections
+
+| Section | Use |
+|---|---|
+| 1-3 | Idle-role dispatch and priority |
+| 3.1 | Current-iteration issue dispatch |
+| 4 | Cron output format |
+| 5 | Merge gate and task-completion check |
+| Default dispatch list | Per-role fallback work |
+| PR BLOCKED routing | Assign blocked PR fixes |
+| Anti-patterns | Avoid audit-only or CI-only decisions |
+
 ### 1. The cron must ACT, not just audit
 Every idle role must walk away with new work. Only two exceptions:
 - They are waiting on a specific blocker (write down the PR # / dependency).

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Blueprintflow PR Review Flow"
+  short_description: "Run Blueprintflow PR review"
+  default_prompt: "Use $bf-pr-review-flow to handle review, signoff, and merge gates for a milestone PR."

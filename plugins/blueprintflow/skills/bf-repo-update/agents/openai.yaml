@@ -1,0 +1,4 @@
+interface:
+  display_name: "Blueprintflow Repo Update"
+  short_description: "Update the Blueprintflow repo"
+  default_prompt: "Use $bf-repo-update to change Blueprintflow skills, metadata, docs, CI, scripts, or release files."

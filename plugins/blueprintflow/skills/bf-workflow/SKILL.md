@@ -1,6 +1,6 @@
 ---
 name: bf-workflow
-description: "Part of the Blueprintflow methodology. Use when starting a new product, onboarding a team, or unsure which skill applies - navigates the concept-to-blueprint-to-Phase-to-milestone-to-PR-to-gate lifecycle."
+description: "Part of the Blueprintflow methodology. Use as the Blueprintflow entrypoint when starting the workflow, onboarding a team, choosing the next skill, or coordinating product work."
 ---
 
 # Blueprintflow Workflow

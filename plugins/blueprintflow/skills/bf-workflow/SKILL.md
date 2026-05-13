@@ -9,29 +9,29 @@ description: "Part of the Blueprintflow methodology. Use first as the Blueprintf
 
 ## Activation
 
-Always start by loading `bf-runtime-adapter` and `bf-team-roles` to establish runtime and team boundaries. Spawn or assign concrete roles/helpers only when the objective needs leaf work, or when the user explicitly asks for full team setup.
+Always start by loading `bf-runtime-adapter` and `bf-team-roles` to establish runtime and team boundaries. Bring up role coordinators according to runtime capacity; dispatch helpers/reviewers only when the objective needs leaf work.
 
 | User input | Teamlead action |
 |---|---|
 | No concrete objective | Set up runtime/team boundaries, report Blueprintflow active, and ask what milestone, issue, PR, Phase, review, audit, backlog-selection discussion, or cron check-in to coordinate. Do not inspect repo, issue, PR, doc, git, or worktree state. |
-| Concrete objective present | Set up runtime/team boundaries, route to the matching child skill, and assign roles/helpers for leaf work. |
+| Concrete objective present | Set up runtime/team boundaries, route to the matching child skill, and ask role coordinators to dispatch helpers/reviewers for leaf work. |
 | User interrupts or stops | Stop new work. Continue only after the user confirms the same objective or names a new one. |
 
 Workflow active means the Teamlead boundary and runtime/team setup are in place. It does not authorize content inspection by itself.
 
 ## Teamlead Boundary
 
-Teamlead coordinates; roles/helpers execute. Teamlead may read routing metadata and repo-local coordination rules, assign scopes, synthesize evidence, enforce gates, ask the user for decisions, and record coordination state.
+Teamlead and role agents coordinate; helpers/reviewers execute bounded leaf work. Teamlead may read routing metadata and repo-local coordination rules, assign scopes, synthesize role outputs, enforce gates, ask the user for decisions, and record coordination state.
 
-Leaf work goes to roles/helpers:
+Leaf work goes through the relevant role coordinator to helpers/reviewers:
 
 - reading issue bodies/comments, blueprint/current/task docs, or code for substantive analysis
 - drafting or editing docs/code
 - running tests, builds, audits, grep evidence, or verification commands
-- making PM/Architect/QA/Security judgments
+- gathering evidence for PM/Architect/QA/Security judgment
 - choosing backlog pull-in candidates from substantive issue content
 
-If role/helper spawning is unavailable, state `serial fallback` before doing role-lens work. If the runtime can spawn agents but host policy requires extra confirmation, ask for confirmation instead of calling it runtime unavailability.
+Teamlead does not make PM/Architect/QA/Security judgments. Ask the relevant role coordinator to decide from helper evidence. If helper spawning is unavailable, a role coordinator may use `serial fallback` for its own role-lens work and must report the downgrade. If the runtime can spawn agents but host policy requires extra confirmation, ask for confirmation instead of calling it runtime unavailability.
 
 Security is mandatory and independent; Architect cannot double as Security.
 

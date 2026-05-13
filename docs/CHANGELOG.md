@@ -1,5 +1,18 @@
 # Changelog
 
+## v3.0.3 — 2026-05-13
+
+### OpenAI skill display names
+
+- Changed public skill `agents/openai.yaml` display names to exact `bf-*` skill names so truncated UI lists remain distinguishable.
+- Kept Blueprintflow product context in public skill short descriptions instead of repeating it in display names.
+- Changed repo-local `repo-update` display names to `repo-update` for the same scanability reason.
+- Extended public skill validation to require `interface.display_name` to match the skill name.
+
+### Plugin version
+
+- `plugin.json` bumped `3.0.2` → `3.0.3` (patch: OpenAI interface display-name usability fix).
+
 ## v3.0.2 — 2026-05-13
 
 ### Child skill entry guards

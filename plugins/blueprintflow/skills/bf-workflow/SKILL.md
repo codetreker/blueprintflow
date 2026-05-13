@@ -30,7 +30,7 @@ Engineering practices that map across:
 
 When Blueprintflow is active, Blueprintflow is the controlling workflow for Blueprintflow-scoped work.
 
-Other skills, including implementation/process skills such as Superpowers, may still be used, but only inside the role and stage boundaries defined by Blueprintflow. If another skill says to explore context, write a design, implement, test, verify, or review:
+Other implementation/process skills may still be used, but only inside the role and stage boundaries defined by Blueprintflow. If another skill says to explore context, write a design, implement, test, verify, or review:
 
 - Teamlead dispatches that leaf work to the appropriate role/helper.
 - Role agents may use the other skill within their assigned scope.

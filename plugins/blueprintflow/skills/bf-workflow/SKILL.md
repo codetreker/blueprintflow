@@ -61,6 +61,12 @@ Tell me the milestone, issue, PR, Phase, review, audit, or cron check-in you wan
 | Running | Worktree / PR / review / cron flow is active | Coordinate roles, synthesize evidence, enforce gates |
 | Paused | User interrupts or asks to stop | Stop new tool work and close unneeded helpers |
 
+Paused exits:
+
+- User says resume same work -> return to **Running**.
+- User names a new objective -> return to **Assigned**.
+- User says stop / clear / wait with no objective -> return to **Standby**.
+
 Pre-assignment boundary:
 
 | Teamlead may | Teamlead must not |

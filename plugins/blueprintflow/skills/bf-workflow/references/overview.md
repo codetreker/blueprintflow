@@ -24,6 +24,8 @@ Engineering practices that map across:
 
 ## Skill composition rule
 
+This mirrors the entrypoint rule in `bf-workflow/SKILL.md`; update both together. The entrypoint is authoritative when the two ever differ.
+
 When Blueprintflow is active, Blueprintflow is the controlling workflow for Blueprintflow-scoped work.
 
 Other implementation/process skills may still be used, but only inside the role and stage boundaries defined by Blueprintflow. If another skill says to explore context, write a design, implement, test, verify, or review:

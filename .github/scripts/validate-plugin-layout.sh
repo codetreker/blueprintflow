@@ -29,4 +29,17 @@ if [[ "$claude_version" != "$codex_version" ]]; then
   exit 1
 fi
 
+codex_hooks=$(jq -r '.hooks // empty' "$plugin_root/.codex-plugin/plugin.json")
+if [[ -n "$codex_hooks" ]]; then
+  if [[ "$codex_hooks" != ./* ]]; then
+    echo "Codex hooks path must be plugin-root relative and start with ./" >&2
+    exit 1
+  fi
+  hooks_file="$plugin_root/${codex_hooks#./}"
+  test -f "$hooks_file"
+  jq -e . "$hooks_file" >/dev/null
+  jq -e '.hooks.Stop[]?.hooks[]? | select(.type == "command") | .command | contains("${PLUGIN_ROOT}/hooks/bf_session_state.py")' \
+    "$hooks_file" >/dev/null
+fi
+
 echo "Plugin layout is valid"

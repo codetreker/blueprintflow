@@ -22,6 +22,8 @@ Bring up role coordinators according to runtime capacity. Do not dispatch helper
 
 Workflow active means the Teamlead boundary and runtime/team setup are in place. It does not authorize content inspection, leaf work, or scheduled check-ins by itself.
 
+Concrete objective or ongoing coordination active: ordinary stop/completion is not pause. Use the runtime continuity hook or loop fallback from `bf-runtime-adapter` until structured disable, explicit user pause/stop, or assigned-work closure.
+
 ## Workflow Skeleton
 
 Use the router for exact stage entry, but keep this mainline in view:
@@ -104,6 +106,7 @@ Route backward when prerequisites are missing: if stances are unsettled, use `bf
 - Next-blueprint anchors lock before Phase/Milestone planning; `bf-milestone-breakdown` creates reviewed task skeletons before task work; accepted work promotes to current only after coding and acceptance pass.
 - Teamlead is the sole PR opener/merger for Blueprintflow milestone work.
 - No cron, sleeper, or automation setup without a concrete objective or explicit ongoing-coordination request.
+- No abandoning active Teamlead coordination because a turn stops; explicit user pause/stop or closed assigned work is required.
 - No closing role coordinators as task cleanup; treat them as long-lived teammates for the Blueprintflow session.
 - No admin bypass merge; CI must really pass.
 - Code changes must sync `docs/current` using `bf-current-doc-standard` when the project uses that convention.

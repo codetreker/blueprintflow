@@ -1,5 +1,18 @@
 # Changelog
 
+## v4.0.2 — 2026-05-15
+
+### Teamlead continuity hook
+
+- Added a Teamlead continuity rule to `bf-workflow`: concrete objective or ongoing coordination active means ordinary stop/completion is not pause.
+- Added packaged Codex hook config and a session-scoped Python hook for structured continuity state.
+- Added Codex adapter guidance for hook feature flags, structured enable/disable control, and sleeper/manual fallback.
+- Required per-session state, no prompt parsing, disable on explicit pause/stop, and assigned-scope-only continuation.
+
+### Plugin version
+
+- `plugin.json` bumped `4.0.1` -> `4.0.2` (patch: Teamlead continuity hook).
+
 ## v4.0.1 — 2026-05-14
 
 ### Teamlead drive and execution hierarchy

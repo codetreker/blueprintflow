@@ -47,6 +47,8 @@ Every teammate = independent Claude Code process (`claude --agent-id <name>@<tea
 | Open PR | `gh pr create` (Teamlead only) |
 | Merge PR | `gh pr merge <N> --squash` |
 
+Role `Agent(..., prompt)` values must use the `bf-team-roles` common preamble, delegated activation envelope, and role-specific prompt.
+
 ### Recommended tmux layout
 
 ```

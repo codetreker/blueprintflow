@@ -1,5 +1,22 @@
 # Changelog
 
+## v3.0.5 — 2026-05-13
+
+### Slim workflow entrypoint
+
+- Reworked `bf-workflow` as a single-file entry driver focused on runtime/team setup, Teamlead boundary, objective routing, and global hard rules.
+- Removed the four-state activation model in favor of a simpler boundary: no objective means active-but-idle after setup; a concrete objective routes to the owning child skill.
+- Kept a compact workflow skeleton so the entrypoint still shows the full Blueprintflow mainline from setup through shape, plan, milestone execution, coordination, Phase close, and blueprint iteration.
+- Deleted `bf-workflow` activation and overview references because their cron, runtime, role, lifecycle, and mental-model details are already owned by runtime, team, cron, lifecycle, or README documentation.
+- Kept the global safety rails in the entrypoint: Teamlead and role coordinators own decisions in scope while preserving coordinator context through helper/reviewer leaf work, Security is independent, one milestone maps to one worktree/branch/PR, CI cannot be bypassed, and `docs/current` sync remains required when applicable.
+- Clarified that entrypoint activation may load runtime/team setup skills without triggering the child-skill guard loop, and that bare activation may bring up role coordinators but still cannot dispatch helpers, inspect project content, or start cron/sleeper/automation checks without a concrete objective or explicit ongoing-coordination request.
+- Preserved the global coordinator/helper reuse rule in the slim entrypoint and aligned the Codex adapter, team roles, Teamlead reminder, and README wording with the role-coordinator boundary.
+- Added a `bf-team-roles` spawn contract requiring a common coordinator preamble, delegated activation envelope, and role-specific prompt so spawned role coordinators can load routed `bf-*` skills inside scope without re-entering `bf-workflow`.
+
+### Plugin version
+
+- `plugin.json` bumped `3.0.4` → `3.0.5` (patch: slimmer `bf-workflow` entrypoint and removal of duplicate references).
+
 ## v3.0.4 — 2026-05-13
 
 ### Coordinator / worker boundary

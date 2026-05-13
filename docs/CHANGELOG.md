@@ -1,5 +1,18 @@
 # Changelog
 
+## v2.0.3 — 2026-05-13
+
+### Skill composition rule
+
+- Clarified in `bf-workflow` that Blueprintflow is the controlling workflow when active, and other process/implementation skills run only inside Blueprintflow role and stage boundaries.
+- Added the rule that Teamlead dispatches leaf work such as context exploration, design, implementation, testing, verification, and review to roles/helpers instead of doing it directly.
+- Documented serial fallback: if the runtime cannot support role/helper agents, Teamlead must declare the downgrade before doing role-lens work.
+- Clarified in the Codex adapter that Blueprintflow activation authorizes role/helper delegation for Blueprintflow-scoped work.
+
+### Plugin version
+
+- `plugin.json` bumped `2.0.2` → `2.0.3` (patch: workflow composition clarification).
+
 ## v2.0.2 — 2026-05-12
 
 ### Codex marketplace package layout

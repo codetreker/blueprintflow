@@ -52,6 +52,8 @@ Rules:
 - Keep coordinators open while the phase/task set is active.
 - Name helpers `bf-<role>:<task>`.
 - If capacity is insufficient, Teamlead runs missing roles as serial lenses and records the downgrade.
+- In Codex, user activation of Blueprintflow is an explicit request for role/helper delegation for Blueprintflow-scoped work.
+- If the Codex runtime or current session cannot spawn role/helper agents, Teamlead must declare `serial fallback` before doing role-lens work in the parent thread.
 
 ## Reasoning Effort
 

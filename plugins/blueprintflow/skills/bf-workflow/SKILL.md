@@ -26,6 +26,28 @@ Engineering practices that map across:
 - **Quality-gate trail** (rule 6 / migration versioning = engineering archive)
 - **PM on site throughout** (stance reverse-check = construction can't drift from requirements)
 
+## Skill composition rule
+
+When Blueprintflow is active, Blueprintflow is the controlling workflow for Blueprintflow-scoped work.
+
+Other skills, including implementation/process skills such as Superpowers, may still be used, but only inside the role and stage boundaries defined by Blueprintflow. If another skill says to explore context, write a design, implement, test, verify, or review:
+
+- Teamlead dispatches that leaf work to the appropriate role/helper.
+- Role agents may use the other skill within their assigned scope.
+- Teamlead synthesizes role outputs and makes coordination decisions; Teamlead does not perform leaf work directly.
+- Security remains independent and cannot be merged into Architect.
+
+If another skill conflicts with Blueprintflow protocol, Blueprintflow wins for Blueprintflow-scoped work. Non-negotiable examples:
+
+- blueprint freeze before build
+- Teamlead coordinates; roles execute/review
+- one milestone = one worktree = one PR
+- Security review is mandatory and independent
+- no admin bypass merge
+- code changes sync `docs/current`
+
+If the runtime cannot support role agents/helpers, Teamlead must declare `serial fallback` before doing role-lens work, label each lens explicitly, and record the downgrade.
+
 ### When to use
 
 - New product / major feature / large refactor starting from concept
@@ -111,6 +133,7 @@ Read `bf-runtime-adapter` first — confirms your environment (team mode, crons,
 - ❌ Audit without dispatch → not forward motion
 - ❌ Admin merge / ruleset bypass → permanent ban
 - ❌ Idle without dispatch → cron must ACT
+- ❌ Letting a non-Blueprintflow skill turn Teamlead into a leaf worker → role boundaries collapse
 
 ## Bootstrap
 

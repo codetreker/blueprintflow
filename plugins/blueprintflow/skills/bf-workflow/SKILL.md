@@ -89,6 +89,35 @@ Coordination ───── fast-cron (15 min) + role-reminder (30 min)
 
 Full prompts: `bf-team-roles`
 
+## Activation states
+
+Bare activation is **standby only**. If the user only invokes `bf-workflow`, says "activate Blueprintflow", or asks to load the workflow without naming a milestone, issue, PR, Phase, review, audit, or other concrete objective:
+
+- Enter **Standby**: confirm the runtime mode and Teamlead boundary.
+- Do not inspect GitHub issues, PRs, git log, task docs, blueprint docs, current-state docs, or worktrees.
+- Do not infer the current project stage from repo state.
+- Do not spawn role agents/helpers.
+- Do not start crons or sleeper agents.
+- Ask what concrete work should be coordinated next.
+
+States:
+
+| State | Trigger | Teamlead may do |
+|---|---|---|
+| Standby | Workflow activated without a concrete objective | Load runtime/project coordination rules, report boundaries, wait for assignment |
+| Assigned | User names a milestone / issue / PR / Phase / review / audit / cron check-in | Run the relevant preflight, dispatch roles/helpers, inspect only assigned scope |
+| Running | Worktree / PR / review / cron flow is active | Coordinate roles, synthesize evidence, enforce gates |
+| Paused | User interrupts or asks to stop | Stop new tool work and close unneeded helpers |
+
+Pre-assignment boundary:
+
+| Teamlead may | Teamlead must not |
+|---|---|
+| Read `bf-workflow`, `bf-runtime-adapter`, and repo-local coordination rules (`AGENTS.md` / `CLAUDE.md`) | Run `gh issue` / `gh pr` queries |
+| Report runtime capacity and role boundary | Read git history or infer task status from `git log` |
+| Ask which objective to coordinate | Search or read task / blueprint / current docs for work |
+| | Create worktrees, branches, PRs, crons, or role agents |
+
 ## Stages
 
 ### Stage 0: runtime
@@ -138,6 +167,16 @@ Read `bf-runtime-adapter` first — confirms your environment (team mode, crons,
 
 ## Bootstrap
 
+Bare activation path:
+
+```text
+Blueprintflow active in <runtime> mode. I am Teamlead, so I coordinate rather than do role work.
+No issue/PR/doc inspection, cron setup, or role dispatch has started.
+Tell me the milestone, issue, PR, Phase, review, or audit you want coordinated.
+```
+
+Concrete objective path:
+
 ```
 0. bf-runtime-adapter    — confirm environment
 1. bf-team-roles         — spawn roles
@@ -151,7 +190,7 @@ Read `bf-runtime-adapter` first — confirms your environment (team mode, crons,
 
 ## Activation protocol
 
-Start all 4 crons when workflow activates (commands from `bf-runtime-adapter`):
+Start all 4 crons only after the workflow is **Assigned** or **Running** and the user has agreed to ongoing coordination (commands from `bf-runtime-adapter`):
 
 | Cron | Frequency | Prompt |
 |---|---|---|

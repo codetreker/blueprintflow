@@ -1,5 +1,17 @@
 # Changelog
 
+## v3.0.8 — 2026-05-13
+
+### Persistent role coordinators
+
+- Clarified in `bf-workflow` that Teamlead treats role coordinators as long-lived teammates for the Blueprintflow session.
+- Aligned `bf-team-roles` with that lifecycle in the coordinator spawn contract.
+- Added an explicit Codex `close_agent` guard for role coordinators while leaving helper/reviewer cleanup short-lived.
+
+### Plugin version
+
+- `plugin.json` bumped `3.0.7` → `3.0.8` (patch: persistent role coordinator lifecycle clarification).
+
 ## v3.0.7 — 2026-05-13
 
 ### Codex subagent authorization

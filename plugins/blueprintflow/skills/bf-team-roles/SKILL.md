@@ -30,7 +30,7 @@ Only read the prompt for your own role (progressive disclosure):
 
 Every spawned role coordinator must receive three prompt parts:
 
-1. **Common coordinator preamble**: you are `<Role> Coordinator`, not a leaf worker; preserve your main-session context for role decisions; dispatch helpers/reviewers for long reading, evidence gathering, drafting, edits, tests, and implementation; synthesize helper evidence back to Teamlead; use `serial fallback` only when helper spawning is truly unavailable, not when user authorization is missing or ambiguous.
+1. **Common coordinator preamble**: you are `<Role> Coordinator`, not a leaf worker; act as a long-lived teammate for Teamlead; preserve your main-session context for role decisions; dispatch helpers/reviewers for long reading, evidence gathering, drafting, edits, tests, and implementation; synthesize helper evidence back to Teamlead; use `serial fallback` only when helper spawning is truly unavailable, not when user authorization is missing or ambiguous.
 2. **Delegated activation envelope**: `bf-workflow` is active under Teamlead, parent Teamlead identity/contact, concrete objective or active setup scope, allowed child `bf-*` skills, worktree/path scope, runtime/helper capacity, and expected output.
 3. **Role-specific prompt**: load only `references/<role>.md` for that coordinator's own role.
 

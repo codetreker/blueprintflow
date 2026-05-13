@@ -61,7 +61,6 @@ max_depth = 2
 
 Rules:
 - Coordinators coordinate; helpers execute bounded leaf work.
-- Keep coordinators open while the phase/task set is active.
 - Reuse relevant coordinator/helper subagents when their context is still valid; spawn fresh only for independent review, materially different scope, stale/biased context, overload, parallelism, or required Security/review separation.
 - Name helpers `bf-<role>:<task>`.
 - Spawn role coordinators with the `bf-team-roles` common preamble, delegated activation envelope, and role-specific prompt so they can load routed `bf-*` skills inside scope without re-entering `bf-workflow`.
@@ -105,7 +104,7 @@ Sleeper constraints: one-shot; occupies one thread; parent must remain active; p
 
 ## Context Reuse
 
-Codex coordinators should keep role coordinators open for the active Phase/task set and continue them with concise deltas. Reuse the same worker for follow-up work in the same scope when its context remains useful. Start a fresh worker only for independent/blind review, stale or biased context, materially different scope, parallel work while the existing worker is busy, or mandatory Security/review independence.
+Do not call `close_agent` on role coordinators as task cleanup; continue existing coordinator threads with concise deltas. Reuse the same worker for follow-up work in the same scope when its context remains useful. Start a fresh worker only for independent/blind review, stale or biased context, materially different scope, parallel work while the existing worker is busy, or mandatory Security/review independence.
 
 ## Operation Map
 

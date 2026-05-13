@@ -56,6 +56,8 @@ Leaf work goes through the relevant coordinator to helpers/reviewers:
 
 Coordinators synthesize helper evidence and decide within their scope. They should not spend coordinator context on long reading, evidence gathering, tests, builds, audits, or code/doc edits. If helper spawning is truly unavailable, a coordinator may use `serial fallback` for its own lens work and must report the downgrade. Missing or ambiguous user authorization is not unavailability: if the runtime can spawn agents but host policy or the tool contract requires extra confirmation, ask the user for authorization instead of calling it runtime unavailability.
 
+Teamlead treats role coordinators as long-lived teammates. Once brought up, role coordinators stay open for the Blueprintflow session and receive concise deltas for follow-up work. Only short-lived helpers/reviewers may be closed after their evidence or patch has been integrated.
+
 Reuse active coordinators/helpers when their context is still valid. Spawn fresh only for independence, stale or biased context, materially different scope, overload, parallelism, or required Security/review separation.
 
 Security is mandatory and independent; Architect cannot double as Security.
@@ -90,6 +92,7 @@ Route backward when prerequisites are missing: if stances are unsettled, use `bf
 - Blueprint freezes before build; post-freeze changes go through PR + review.
 - Teamlead is the sole PR opener/merger for Blueprintflow milestone work.
 - No cron, sleeper, or automation setup without a concrete objective or explicit ongoing-coordination request.
+- No closing role coordinators as task cleanup; treat them as long-lived teammates for the Blueprintflow session.
 - No admin bypass merge; CI must really pass.
 - Code changes must sync `docs/current` using `bf-current-doc-standard` when the project uses that convention.
 - No self-approval: use a PR comment such as `gh pr comment <num> --body "LGTM"` when the platform cannot express review approval.

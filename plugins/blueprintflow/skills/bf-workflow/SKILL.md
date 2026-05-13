@@ -19,6 +19,23 @@ Always start by loading `bf-runtime-adapter` and `bf-team-roles` to establish ru
 
 Workflow active means the Teamlead boundary and runtime/team setup are in place. It does not authorize content inspection by itself.
 
+## Workflow Skeleton
+
+Use the router for exact stage entry, but keep this mainline in view:
+
+```text
+1. Setup: bf-runtime-adapter + bf-team-roles
+2. Shape: bf-brainstorm -> bf-blueprint-write
+3. Plan: bf-phase-plan
+4. Execute milestone loop:
+   bf-git-workflow -> bf-milestone-fourpiece -> bf-implementation-design
+   -> implementation/current-doc sync -> bf-pr-review-flow
+5. Coordinate while active:
+   bf-teamlead-fast-cron-checkin / bf-teamlead-role-reminder / bf-teamlead-slow-cron-checkin / bf-issue-triage
+6. Close Phase: bf-phase-exit-gate
+7. Iterate frozen blueprint/backlog: bf-blueprint-iteration
+```
+
 ## Coordinator Boundary
 
 Teamlead and role agents own decisions in their scopes, but preserve their main-session context by delegating bounded leaf work to helpers/reviewers.

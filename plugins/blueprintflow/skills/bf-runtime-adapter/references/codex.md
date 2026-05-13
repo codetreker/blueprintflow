@@ -65,7 +65,7 @@ Rules:
 - Reuse relevant coordinator/helper subagents when their context is still valid; spawn fresh only for independent review, materially different scope, stale/biased context, overload, parallelism, or required Security/review separation.
 - Name helpers `bf-<role>:<task>`.
 - If capacity is insufficient, Teamlead runs missing roles as serial lenses and records the downgrade.
-- In Codex, bare activation of Blueprintflow is standby only. Role/helper delegation starts only after the user names a concrete Blueprintflow-scoped objective, such as a milestone, issue, PR review, Phase plan, drift audit, or cron check-in.
+- In Codex, bare activation may set up Teamlead/runtime boundaries and role coordinators, but it does not authorize helper dispatch, project content inspection, or sleeper/automation setup. Those start only after the user names a concrete Blueprintflow-scoped objective or explicitly requests ongoing coordination, such as a milestone, issue, PR review, Phase plan, drift audit, or cron check-in.
 - If the Codex runtime or current session cannot spawn role/helper agents, Teamlead must declare `serial fallback` before doing role-lens work in the parent thread.
 
 ## Reasoning Effort

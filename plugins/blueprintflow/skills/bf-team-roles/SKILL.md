@@ -7,7 +7,7 @@ description: "Part of the Blueprintflow methodology. Use when spawning role agen
 
 > **Role ≠ person.** One agent/person can carry multiple roles. **Exception: Security must stay independent — Architect cannot take it on.**
 
-6 roles + Teamlead (coordinator). Each role has a prompt template. Spawn whichever roles you need; Security is always there.
+6 roles + Teamlead. Teamlead and role agents are coordinators. Bring up whichever role coordinators the runtime and objective need; Security is always there. Helpers/reviewers do bounded leaf work under a coordinator.
 
 ## Direct Invocation Guard
 

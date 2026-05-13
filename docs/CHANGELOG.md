@@ -9,6 +9,8 @@
 - Kept a compact workflow skeleton so the entrypoint still shows the full Blueprintflow mainline from setup through shape, plan, milestone execution, coordination, Phase close, and blueprint iteration.
 - Deleted `bf-workflow` activation and overview references because their cron, runtime, role, lifecycle, and mental-model details are already owned by runtime, team, cron, lifecycle, or README documentation.
 - Kept the global safety rails in the entrypoint: Teamlead and role coordinators own decisions in scope while preserving coordinator context through helper/reviewer leaf work, Security is independent, one milestone maps to one worktree/branch/PR, CI cannot be bypassed, and `docs/current` sync remains required when applicable.
+- Clarified that entrypoint activation may load runtime/team setup skills without triggering the child-skill guard loop, and that bare activation may bring up role coordinators but still cannot dispatch helpers, inspect project content, or start cron/sleeper/automation checks without a concrete objective or explicit ongoing-coordination request.
+- Preserved the global coordinator/helper reuse rule in the slim entrypoint and aligned the Codex adapter, team roles, Teamlead reminder, and README wording with the role-coordinator boundary.
 
 ### Plugin version
 

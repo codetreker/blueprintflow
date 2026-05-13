@@ -88,8 +88,8 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 
 | Skill | 触发 | 用途 |
 |---|---|---|
-| [bf-workflow](plugins/blueprintflow/skills/bf-workflow/SKILL.md) | 起步 | 总览 + 何时用 + 角色 + 阶段索引 |
-| [bf-team-roles](plugins/blueprintflow/skills/bf-team-roles/SKILL.md) | 起团 | 6 角色 prompt 模板 |
+| [bf-workflow](plugins/blueprintflow/skills/bf-workflow/SKILL.md) | 起步 | 入口 driver：建立 Teamlead/runtime/team 边界，然后按目标路由 |
+| [bf-team-roles](plugins/blueprintflow/skills/bf-team-roles/SKILL.md) | 起团 | 6 个 role coordinator prompt 模板 + helper 边界 |
 | [bf-brainstorm](plugins/blueprintflow/skills/bf-brainstorm/SKILL.md) | 讨论 | 多轮讨论锁立场 + 反约束 |
 | [bf-blueprint-write](plugins/blueprintflow/skills/bf-blueprint-write/SKILL.md) | 立项 | 蓝图模板（立场 / 概念 / v0/v1 边界） |
 | [bf-phase-plan](plugins/blueprintflow/skills/bf-phase-plan/SKILL.md) | 规划 | Phase 拆分 + 退出 gate |
@@ -110,9 +110,9 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 ## 起步
 
 ```
-1. bf-workflow          — 看总览，决定是否适用
+1. bf-workflow          — 建立 Teamlead 边界，按目标路由
 2. bf-runtime-adapter    — 确认运行模式
-3. bf-team-roles        — spawn 角色（按需）
+3. bf-team-roles        — 按 runtime capacity 起 role coordinators；helpers 只做 leaf work
 4. bf-brainstorm        — 多轮讨论锁立场
 5. bf-blueprint-write   — 落蓝图
 6. bf-phase-plan        — 拆 Phase

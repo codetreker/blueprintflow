@@ -9,7 +9,9 @@ description: "Part of the Blueprintflow methodology. Use first as the Blueprintf
 
 ## Activation
 
-Always start by loading `bf-runtime-adapter` and `bf-team-roles` to establish runtime and team boundaries. Bring up role coordinators according to runtime capacity; dispatch helpers/reviewers only when the objective needs leaf work.
+Always start by loading `bf-runtime-adapter` and `bf-team-roles` to establish runtime and team boundaries. This entrypoint activation is allowed to load those setup skills even though routed child skills normally require `bf-workflow` to be active first.
+
+Bring up role coordinators according to runtime capacity. Do not dispatch helpers/reviewers, start cron/sleeper/automation checks, or inspect project content until the user names a concrete objective or explicitly requests ongoing coordination.
 
 | User input | Teamlead action |
 |---|---|
@@ -17,7 +19,7 @@ Always start by loading `bf-runtime-adapter` and `bf-team-roles` to establish ru
 | Concrete objective present | Set up runtime/team boundaries, route to the matching child skill, and ask role coordinators to dispatch helpers/reviewers for leaf work. |
 | User interrupts or stops | Stop new work. Continue only after the user confirms the same objective or names a new one. |
 
-Workflow active means the Teamlead boundary and runtime/team setup are in place. It does not authorize content inspection by itself.
+Workflow active means the Teamlead boundary and runtime/team setup are in place. It does not authorize content inspection, leaf work, or scheduled check-ins by itself.
 
 ## Workflow Skeleton
 
@@ -52,6 +54,8 @@ Leaf work goes through the relevant coordinator to helpers/reviewers:
 
 Coordinators synthesize helper evidence and decide within their scope. They should not spend coordinator context on long reading, evidence gathering, tests, builds, audits, or code/doc edits. If helper spawning is unavailable, a coordinator may use `serial fallback` for its own lens work and must report the downgrade. If the runtime can spawn agents but host policy requires extra confirmation, ask for confirmation instead of calling it runtime unavailability.
 
+Reuse active coordinators/helpers when their context is still valid. Spawn fresh only for independence, stale or biased context, materially different scope, overload, parallelism, or required Security/review separation.
+
 Security is mandatory and independent; Architect cannot double as Security.
 
 ## Router
@@ -83,6 +87,7 @@ Route backward when prerequisites are missing: if stances are unsettled, use `bf
 - One milestone = one worktree = one branch = one PR.
 - Blueprint freezes before build; post-freeze changes go through PR + review.
 - Teamlead is the sole PR opener/merger for Blueprintflow milestone work.
+- No cron, sleeper, or automation setup without a concrete objective or explicit ongoing-coordination request.
 - No admin bypass merge; CI must really pass.
 - Code changes must sync `docs/current` using `bf-current-doc-standard` when the project uses that convention.
 - No self-approval: use a PR comment such as `gh pr comment <num> --body "LGTM"` when the platform cannot express review approval.

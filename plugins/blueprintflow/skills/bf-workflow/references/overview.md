@@ -24,18 +24,7 @@ Engineering practices that map across:
 
 ## Skill composition rule
 
-This mirrors the entrypoint rule in `bf-workflow/SKILL.md`; update both together. The entrypoint is authoritative when the two ever differ.
-
-When Blueprintflow is active, Blueprintflow is the controlling workflow for Blueprintflow-scoped work.
-
-Other implementation/process skills may still be used, but only inside the role and stage boundaries defined by Blueprintflow. If another skill says to explore context, write a design, implement, test, verify, or review:
-
-- Teamlead dispatches that leaf work to the appropriate role/helper.
-- Role agents may use the other skill within their assigned scope.
-- Teamlead synthesizes role outputs and makes coordination decisions; Teamlead does not perform leaf work directly.
-- Security remains independent and cannot be merged into Architect.
-
-If another skill conflicts with Blueprintflow protocol, Blueprintflow wins for Blueprintflow-scoped work.
+The authoritative rule lives in `bf-workflow/SKILL.md` and is intentionally kept in the entrypoint so it is loaded before other process skills. This reference does not duplicate it; update the entrypoint rule directly.
 
 ## 4-layer structure
 

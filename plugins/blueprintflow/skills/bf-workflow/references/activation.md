@@ -24,7 +24,7 @@ After a concrete objective is assigned, use this order as applicable:
 2. bf-brainstorm         - lock stances
 3. bf-blueprint-write    - write blueprint
 4. bf-phase-plan         - split into Phases
-5. (loop) bf-milestone-fourpiece + bf-pr-review-flow + bf-teamlead-fast-cron-checkin
+5. (loop) bf-milestone-fourpiece + bf-current-doc-standard (as needed) + bf-pr-review-flow + bf-teamlead-fast-cron-checkin
 6. (periodic) bf-teamlead-role-reminder + bf-teamlead-slow-cron-checkin + bf-issue-triage
 7. (Phase wrap-up) bf-phase-exit-gate
 ```

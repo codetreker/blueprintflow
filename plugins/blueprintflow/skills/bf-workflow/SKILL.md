@@ -93,7 +93,7 @@ After the user names a concrete objective, load only the matching skill(s):
 
 ## Protocol Quick Reference
 
-- Use Blueprintflow for new products, major features, large refactors, multi-role collaboration, stance/blueprint/execution/acceptance tracks, and cross-milestone drift control.
+- Use Blueprintflow for new products, major features, large refactors, multi-role collaboration (typically 3+ roles), stance/blueprint/execution/acceptance tracks, and cross-milestone drift control.
 - Do not use it for hackathon scripts, one-off single-PR fixes, or solo rapid iteration unless the user explicitly wants Blueprintflow governance.
 - If no stance is settled, use `bf-brainstorm` before blueprint or implementation work.
 - Teamlead is the sole PR opener/merger for Blueprintflow milestone work; roles commit/review inside the assigned worktree.

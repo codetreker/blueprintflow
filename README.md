@@ -97,6 +97,7 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 | [bf-milestone-fourpiece](plugins/blueprintflow/skills/bf-milestone-fourpiece/SKILL.md) | 实施 | 4 件套（spec / stance / acceptance / content-lock） |
 | [bf-implementation-design](plugins/blueprintflow/skills/bf-implementation-design/SKILL.md) | 实施 | 4 件套后写代码前 Dev 出实现方案设计 + 4 角色 review |
 | [bf-git-workflow](plugins/blueprintflow/skills/bf-git-workflow/SKILL.md) | 实施 | 一 milestone 一 worktree 一 PR |
+| [bf-current-doc-standard](plugins/blueprintflow/skills/bf-current-doc-standard/SKILL.md) | 实施/Review | `docs/current` 新建、更新、审查的当前实现文档标准 |
 | [bf-pr-review-flow](plugins/blueprintflow/skills/bf-pr-review-flow/SKILL.md) | Review | 双 review + 标准 squash merge |
 | [bf-e2e-verification](plugins/blueprintflow/skills/bf-e2e-verification/SKILL.md) | Review | UI 改动的 QA 验收必须走三个角度：代码改动是否按预期工作 / 产品是否好用 / 设计是否合理 |
 | [bf-teamlead-fast-cron-checkin](plugins/blueprintflow/skills/bf-teamlead-fast-cron-checkin/SKILL.md) | 巡检 | 15min idle 派活 |
@@ -116,7 +117,7 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 4. bf-brainstorm        — 多轮讨论锁立场
 5. bf-blueprint-write   — 落蓝图
 6. bf-phase-plan        — 拆 Phase
-7. (循环) bf-milestone-fourpiece + bf-git-workflow + bf-pr-review-flow
+7. (循环) bf-milestone-fourpiece + bf-git-workflow + bf-current-doc-standard（按需）+ bf-pr-review-flow
 8. (巡检) bf-teamlead-fast-cron-checkin + bf-teamlead-slow-cron-checkin
 9. (收尾) bf-phase-exit-gate
 ```

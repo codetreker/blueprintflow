@@ -27,7 +27,7 @@ Admin bypass hides bugs. History: e2e failures bypassed into main → each neede
 ```
 Blueprint: blueprint/<file>.md §X.Y
 Touches: <packages or docs>
-Current sync: <explanation or N/A — reason>
+Current sync: <docs/current path + bf-current-doc-standard check, or N/A — reason>
 Stage: v0|v1
 
 ## Summary
@@ -65,6 +65,8 @@ gh pr comment <num> --body "LGTM (reason ≤30 chars)"
 | ① CI passes | statusCheckRollup all SUCCESS | `gh pr view <N> --json statusCheckRollup` |
 | ② Non-author LGTM | ≥1 different reviewer identity | PR review or LGTM comment |
 | ③ Task completeness | Acceptance + Test plan all ✅ | `gh pr view <N> --json body \| jq -r .body \| grep -cE "^- \\[ \\]"` == 0 |
+
+For code changes, task completeness includes `docs/current` sync. QA verifies existence; Architect verifies boundary/state/anchor quality with `bf-current-doc-standard`.
 
 All three pass → `gh pr merge <N> --squash --delete-branch`. Any missing → don't merge.
 

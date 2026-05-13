@@ -1,5 +1,17 @@
 # Changelog
 
+## v2.1.0 — 2026-05-13
+
+### Current docs standard
+
+- Added `bf-current-doc-standard` for creating, updating, and reviewing `docs/current` as current implementation documentation, with anti-patterns and an on-demand initial template in `references/`.
+- Wired the standard into Rule 6 current-sync checks, milestone execution, PR review, Teamlead cron audits, and role prompts.
+- Added update/review guidance: integrate changes into the existing doc set from code context, then reread for flow and contradictions.
+
+### Plugin version
+
+- `plugin.json` bumped `2.0.3` → `2.1.0` (minor: new public skill for current-system documentation quality).
+
 ## v2.0.3 — 2026-05-13
 
 ### Skill composition rule

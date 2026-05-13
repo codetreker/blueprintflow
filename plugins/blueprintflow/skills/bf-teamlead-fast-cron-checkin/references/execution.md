@@ -59,7 +59,7 @@ CI green + LGTMs collected ≠ ready to merge. **You must check that the milesto
 
 | Milestone type | "Done" criteria |
 |---|---|
-| Schema + server + client end-to-end | schema migration + server endpoint + client UI + e2e + docs/current sync + REG flipped to green + acceptance template ⚪→✅ + PROGRESS [x] **all in place** |
+| Schema + server + client end-to-end | schema migration + server endpoint + client UI + e2e + `docs/current` sync checked with `bf-current-doc-standard` + REG flipped to green + acceptance template ⚪→✅ + PROGRESS [x] **all in place** |
 | Spec / four-piece set | The four-piece set is committed to the worktree by every owner (Architect spec / QA acceptance / PM stance + content-lock), not just one piece |
 | Closure / status flip | Lands in the same PR as the implementation, not in a follow-up |
 

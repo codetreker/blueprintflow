@@ -105,24 +105,25 @@ Read `bf-runtime-adapter` first — confirms your environment (team mode, crons,
 4. `bf-git-workflow` — one milestone = one worktree + one branch + one PR
 5. `bf-milestone-fourpiece` — 4 baseline docs in the same PR
 6. `bf-implementation-design` — Dev writes design, 4-role review before coding
-7. `bf-pr-review-flow` — dual review + Security checklist + squash merge
-8. `bf-e2e-verification` — QA walks 3 lines for UI changes
+7. `bf-current-doc-standard` — when code changes create/update `docs/current`
+8. `bf-pr-review-flow` — dual review + Security checklist + squash merge
+9. `bf-e2e-verification` — QA walks 3 lines for UI changes
 
 ### Stage 4: coordination + Phase exit
-9. `bf-teamlead-fast-cron-checkin` — 15 min, idle dispatch + merge gate
-10. `bf-teamlead-slow-cron-checkin` — 2-4 h, drift audit
-11. `bf-issue-triage` — 3 h, GitHub issue scan
-12. `bf-phase-exit-gate` — 4-role signoff + closure
+10. `bf-teamlead-fast-cron-checkin` — 15 min, idle dispatch + merge gate
+11. `bf-teamlead-slow-cron-checkin` — 2-4 h, drift audit
+12. `bf-issue-triage` — 3 h, GitHub issue scan
+13. `bf-phase-exit-gate` — 4-role signoff + closure
 
 ### Stage 5: iteration
-13. `bf-blueprint-iteration` — 3-state machine, version management, change routing
+14. `bf-blueprint-iteration` — 3-state machine, version management, change routing
 
 ## Key protocols
 
 - **One milestone, one PR** — 4 pieces + implementation + e2e + closure all in one PR. No splitting
 - **Teamlead is the sole PR opener** — roles commit to the worktree, Teamlead opens the PR
 - **Never admin-bypass merge / disable ruleset** — CI must really pass
-- **Rule 6 (current sync)** — code change → `docs/current` must sync
+- **Rule 6 (current sync)** — code change → `docs/current` must sync using `bf-current-doc-standard`
 - **5-layer stance-drift defense** — spec grep + acceptance anchor + stance blacklist + content-lock byte-identical + cross-file cross-check
 - **No self-approve** — `gh pr comment <num> --body "LGTM"`
 
@@ -143,7 +144,7 @@ Read `bf-runtime-adapter` first — confirms your environment (team mode, crons,
 2. bf-brainstorm         — lock stances
 3. bf-blueprint-write    — write blueprint
 4. bf-phase-plan         — split into Phases
-5. (loop) bf-milestone-fourpiece + bf-pr-review-flow + bf-teamlead-fast-cron-checkin
+5. (loop) bf-milestone-fourpiece + bf-current-doc-standard (as needed) + bf-pr-review-flow + bf-teamlead-fast-cron-checkin
 6. (periodic) bf-teamlead-role-reminder + bf-teamlead-slow-cron-checkin + bf-issue-triage
 7. (Phase wrap-up) bf-phase-exit-gate
 ```

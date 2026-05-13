@@ -5,7 +5,7 @@ description: "Part of the Blueprintflow methodology. Use when changing a frozen 
 
 # Blueprint Iteration
 
-The blueprint evolves after freeze through a 3-state machine. Stance reversals are never allowed on the current version — they go to `blueprint-next/`.
+The blueprint evolves after freeze through a 3-state machine. Stance reversals are never allowed on the current version — they go to `docs/blueprint/next/`.
 
 **When this applies**: first blueprint version frozen, at least one Phase executed. Early brainstorm + first-version write doesn't go through this skill.
 
@@ -35,15 +35,15 @@ Tell me which blueprint iteration objective to coordinate.
 
 | State | Where | Meaning |
 |---|---|---|
-| Current | `docs/blueprint/` | Frozen, versioned, every PR anchors here |
-| Next-version | `docs/blueprint-next/` | Draft, four roles + user discussing |
+| Current | `docs/blueprint/current/` | Frozen, versioned, every PR anchors here |
+| Next-version | `docs/blueprint/next/` | Draft, four roles + user discussing |
 | Backlog | GitHub issues (`backlog` label) | Unplanned, accumulates, not in current iteration |
 
-The three states don't mix. Current allows patches (literal / anchor / constraint), **not stance reversals**. Change suggestions enter these states via `bf-issue-triage`.
+The three states don't mix. Current allows patches (literal / anchor / constraint), **not stance reversals**. Change suggestions enter these states via `bf-issue-triage`. Cross-version metadata and traceability files live in `docs/blueprint/_meta/`.
 
 ## Version numbers
 
-Version lives in `docs/blueprint/` frontmatter (`frozen: <date>`, `prev: vN.M-1`).
+Version lives in `docs/blueprint/current/` frontmatter (`frozen: <date>`, `prev: vN.M-1`); frozen-version traceability lives under `docs/blueprint/_meta/`.
 
 | Bump | When | Example |
 |---|---|---|
@@ -56,15 +56,15 @@ Version lives in `docs/blueprint/` frontmatter (`frozen: <date>`, `prev: vN.M-1`
 ## Current-blueprint patch rules
 
 - ✅ Patches allowed — literal / anchor / constraint, no version bump, just commit
-- ❌ Stance reversals → must go through `blueprint-next/` and freeze cutover
+- ❌ Stance reversals → must go through `docs/blueprint/next/` and freeze cutover
 - Patch / bugfix PRs must link `Closes gh#NNN` (root-cause traceability)
-- Too many patches = probably a stance reversal → immediately open `blueprint-next/`
+- Too many patches = probably a stance reversal → immediately open `docs/blueprint/next/`
 
 ## Iteration lifecycle
 
 When the current iteration passes acceptance, the next-version discussion opens. Its primary input is **GitHub issues labeled `backlog`** — these are scanned one by one to decide what gets pulled into the next blueprint version.
 
-After the user names a concrete iteration objective, read `references/lifecycle.md` for the full flow: scan backlog → write blueprint-next → four-role discussion → freeze + tag + source-issues.md → relabel issues → trigger Phase N+1. Reminder period is project-defined in AGENTS.md (`reminder-period: 2w` default).
+After the user names a concrete iteration objective, read `references/lifecycle.md` for the full flow: scan backlog → write `docs/blueprint/next/` → four-role discussion → freeze + tag + source-issues.md in `docs/blueprint/_meta/` → relabel issues → trigger Phase N+1. Reminder period is project-defined in AGENTS.md (`reminder-period: 2w` default).
 
 ## Anti-patterns
 
@@ -80,6 +80,6 @@ After the user names a concrete iteration objective, read `references/lifecycle.
 follow skill bf-blueprint-iteration
 
 # No objective named → standby, ask which iteration objective to coordinate
-# Current iteration done → scan backlog → open blueprint-next
-# blueprint-next converges → freeze + tag + source-issues.md
+# Current iteration done → scan backlog → open docs/blueprint/next/
+# docs/blueprint/next/ converges → freeze + tag + docs/blueprint/_meta/ source-issues.md
 ```

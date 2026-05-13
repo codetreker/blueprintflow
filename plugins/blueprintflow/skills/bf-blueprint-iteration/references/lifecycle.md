@@ -11,24 +11,24 @@ User says go
    ↓
 Scan GitHub issues with label `backlog` (clean up + pick, move to `next-iteration`) + brainstorm
    ↓
-Write docs/blueprint-next/ + migration analysis
+Write docs/blueprint/next/ + migration analysis
    ↓
 Four roles + Teamlead/user discuss
    ↓
 User signs off (or user authorizes Teamlead to sign off)
    ↓
 Freeze:
-  - blueprint-next/ → blueprint/ replacement
+  - docs/blueprint/next/ → docs/blueprint/current/ replacement
   - Old version gets a git tag (blueprint-vN.M) for history
-  - Write docs/blueprint/<version>/source-issues.md (link issue # that were pulled in; don't list those that weren't; forks can trace back)
+  - Write docs/blueprint/_meta/<version>/source-issues.md (link issue # that were pulled in; don't list those that weren't; forks can trace back)
   - Issues pulled in change label from `next-iteration` to `current-iteration`, then get assigned milestones for execution
   - Issues kept at `backlog` are untouched (still pending)
-  - Create an empty blueprint-next/ to open the entry point for the next-version discussion
+  - Create an empty docs/blueprint/next/ to open the entry point for the next-version discussion
 ```
 
 ### source-issues.md trail
 
-At freeze time, list the picked-in issue # in `docs/blueprint/<version>/source-issues.md`:
+At freeze time, list the picked-in issue # in `docs/blueprint/_meta/<version>/source-issues.md`:
 
 ```markdown
 # Source issues for blueprint vN.M

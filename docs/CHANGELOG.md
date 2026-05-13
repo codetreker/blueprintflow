@@ -11,6 +11,7 @@
 - Kept the global safety rails in the entrypoint: Teamlead and role coordinators own decisions in scope while preserving coordinator context through helper/reviewer leaf work, Security is independent, one milestone maps to one worktree/branch/PR, CI cannot be bypassed, and `docs/current` sync remains required when applicable.
 - Clarified that entrypoint activation may load runtime/team setup skills without triggering the child-skill guard loop, and that bare activation may bring up role coordinators but still cannot dispatch helpers, inspect project content, or start cron/sleeper/automation checks without a concrete objective or explicit ongoing-coordination request.
 - Preserved the global coordinator/helper reuse rule in the slim entrypoint and aligned the Codex adapter, team roles, Teamlead reminder, and README wording with the role-coordinator boundary.
+- Added a `bf-team-roles` spawn contract requiring a common coordinator preamble, delegated activation envelope, and role-specific prompt so spawned role coordinators can load routed `bf-*` skills inside scope without re-entering `bf-workflow`.
 
 ### Plugin version
 

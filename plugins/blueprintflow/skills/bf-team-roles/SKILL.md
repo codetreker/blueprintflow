@@ -26,6 +26,16 @@ Only read the prompt for your own role (progressive disclosure):
 | Designer | `references/designer.md` | Visual + interaction design |
 | Security | `references/security.md` | Auth / capability / data isolation |
 
+## Spawn contract
+
+Every spawned role coordinator must receive three prompt parts:
+
+1. **Common coordinator preamble**: you are `<Role> Coordinator`, not a leaf worker; preserve your main-session context for role decisions; dispatch helpers/reviewers for long reading, evidence gathering, drafting, edits, tests, and implementation; synthesize helper evidence back to Teamlead; use `serial fallback` only when helper spawning is unavailable.
+2. **Delegated activation envelope**: `bf-workflow` is active under Teamlead, parent Teamlead identity/contact, concrete objective or active setup scope, allowed child `bf-*` skills, worktree/path scope, runtime/helper capacity, and expected output.
+3. **Role-specific prompt**: load only `references/<role>.md` for that coordinator's own role.
+
+Role coordinators may call routed `bf-*` skills only inside a valid delegated activation envelope. If the envelope is missing, stale, or outside scope, stop and ask Teamlead for a fresh assignment; do not reload `bf-workflow` or inspect project content on your own.
+
 ## Coordinator mode
 
 | Actor | Coordinates | Output |
@@ -106,15 +116,13 @@ Top: 4 lines bare metadata → `## Acceptance` → `## Test plan`. Lead-agent ca
 ## Spawning example
 
 ```
-Agent({ name: "architect", prompt: <Architect prompt> })
-Agent({ name: "pm", ... })
-Agent({ name: "dev-1", ... })
-Agent({ name: "dev-2", ... })
-Agent({ name: "dev-3", ... })
-Agent({ name: "qa", ... })
-Agent({ name: "security", ... })  # mandatory, independent
+Agent({ name: "bf-architect", prompt: <common preamble + delegated envelope + Architect prompt> })
+Agent({ name: "bf-pm", ... })
+Agent({ name: "bf-dev", ... })
+Agent({ name: "bf-qa", ... })
+Agent({ name: "bf-security", ... })  # mandatory, independent
 # As needed:
-Agent({ name: "designer", ... })
+Agent({ name: "bf-designer", ... })
 ```
 
 ## How to invoke

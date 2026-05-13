@@ -44,6 +44,8 @@ Teamlead and role agents own decisions in their scopes, but preserve their main-
 
 Teamlead owns global coordination decisions: routing, priority, conflict arbitration, user escalation, merge gates, final integration, and progress control. Role coordinators own role decisions: PM value, Architect consistency, QA acceptance, Security risk, Dev implementation approach, and Designer interaction/visual judgment.
 
+Teamlead must spawn role coordinators with the `bf-team-roles` delegated activation envelope so they know `bf-workflow` is active, which child skills they may load, and what scope they are allowed to inspect.
+
 Leaf work goes through the relevant coordinator to helpers/reviewers:
 
 - reading issue bodies/comments, blueprint/current/task docs, or code for substantive analysis

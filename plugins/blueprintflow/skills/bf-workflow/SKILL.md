@@ -54,7 +54,7 @@ Leaf work goes through the relevant coordinator to helpers/reviewers:
 - gathering evidence for Teamlead or role-coordinator decisions
 - choosing backlog pull-in candidates from substantive issue content
 
-Coordinators synthesize helper evidence and decide within their scope. They should not spend coordinator context on long reading, evidence gathering, tests, builds, audits, or code/doc edits. If helper spawning is unavailable, a coordinator may use `serial fallback` for its own lens work and must report the downgrade. If the runtime can spawn agents but host policy requires extra confirmation, ask for confirmation instead of calling it runtime unavailability.
+Coordinators synthesize helper evidence and decide within their scope. They should not spend coordinator context on long reading, evidence gathering, tests, builds, audits, or code/doc edits. If helper spawning is truly unavailable, a coordinator may use `serial fallback` for its own lens work and must report the downgrade. Missing or ambiguous user authorization is not unavailability: if the runtime can spawn agents but host policy or the tool contract requires extra confirmation, ask the user for authorization instead of calling it runtime unavailability.
 
 Reuse active coordinators/helpers when their context is still valid. Spawn fresh only for independence, stale or biased context, materially different scope, overload, parallelism, or required Security/review separation.
 

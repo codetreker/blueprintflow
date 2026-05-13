@@ -1,5 +1,17 @@
 # Changelog
 
+## v3.0.7 — 2026-05-13
+
+### Codex subagent authorization
+
+- Clarified that missing or ambiguous user authorization is not a Codex spawn-capacity failure.
+- Required Teamlead/role coordinators to ask the user for authorization when host policy or tool contracts require explicit permission before spawning role/helper agents.
+- Kept `serial fallback` only for true runtime or session incapacity after required authorization has been requested or resolved.
+
+### Plugin version
+
+- `plugin.json` bumped `3.0.6` → `3.0.7` (patch: Codex subagent authorization clarification).
+
 ## v3.0.6 — 2026-05-13
 
 ### Blueprint iteration paths

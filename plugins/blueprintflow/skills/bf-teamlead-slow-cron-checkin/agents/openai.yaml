@@ -1,4 +1,4 @@
 interface:
-  display_name: "Blueprintflow Slow Check-In"
-  short_description: "Audit workflow drift signals"
+  display_name: "bf-teamlead-slow-cron-checkin"
+  short_description: "Blueprintflow: Audit workflow drift signals"
   default_prompt: "Use $bf-teamlead-slow-cron-checkin to audit blueprint, docs/current, acceptance, PR, issue, or worktree drift."

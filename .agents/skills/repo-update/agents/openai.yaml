@@ -1,4 +1,4 @@
 interface:
-  display_name: "Blueprintflow Repo Update"
-  short_description: "Open the repo update pointer"
+  display_name: "repo-update"
+  short_description: "Update the Blueprintflow repo"
   default_prompt: "Use $repo-update to update the Blueprintflow repository itself."

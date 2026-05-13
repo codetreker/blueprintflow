@@ -1,4 +1,4 @@
 interface:
-  display_name: "Blueprintflow Brainstorm"
-  short_description: "Converge fuzzy product ideas"
+  display_name: "bf-brainstorm"
+  short_description: "Blueprintflow: Converge fuzzy product ideas"
   default_prompt: "Use $bf-brainstorm to clarify a fuzzy product idea or resolve stance conflicts."

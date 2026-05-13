@@ -1,4 +1,4 @@
 interface:
-  display_name: "Blueprintflow Entry"
-  short_description: "Start and route Blueprintflow"
+  display_name: "bf-workflow"
+  short_description: "Blueprintflow: Start and route workflow"
   default_prompt: "Use $bf-workflow as the entrypoint to choose the right Blueprintflow stage and coordination boundary."

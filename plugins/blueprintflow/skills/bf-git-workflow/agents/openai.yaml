@@ -1,4 +1,4 @@
 interface:
-  display_name: "Blueprintflow Git Workflow"
-  short_description: "Run milestone branch workflow"
+  display_name: "bf-git-workflow"
+  short_description: "Blueprintflow: Run milestone branch workflow"
   default_prompt: "Use $bf-git-workflow to start a milestone worktree, branch, PR, or cleanup."

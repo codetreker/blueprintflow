@@ -70,6 +70,10 @@ for skill_dir in "$skills_root"/*; do
     echo "$openai_yaml interface.display_name must not be empty" >&2
     exit 1
   fi
+  if [[ "$display_name" != "$skill_name" ]]; then
+    echo "$openai_yaml interface.display_name must match skill name: $skill_name" >&2
+    exit 1
+  fi
   short_len=${#short_description}
   if (( short_len < 25 || short_len > 64 )); then
     echo "$openai_yaml interface.short_description must be 25-64 characters: $short_len" >&2

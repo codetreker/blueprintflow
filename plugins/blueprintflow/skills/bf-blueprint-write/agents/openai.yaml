@@ -1,4 +1,4 @@
 interface:
-  display_name: "Blueprintflow Blueprint Write"
-  short_description: "Write product-shape blueprints"
+  display_name: "bf-blueprint-write"
+  short_description: "Blueprintflow: Write product-shape blueprints"
   default_prompt: "Use $bf-blueprint-write to turn converged product stances into docs/blueprint."

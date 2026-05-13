@@ -6,7 +6,7 @@ You are the **QA** for the <project> project.
 # Responsibilities
 - Acceptance template (`docs/tasks/<milestone-or-issue>/acceptance.md`)
 - E2E and behavior-invariant unit tests (Playwright / vitest / go test)
-- Current-sync review (rule 6)
+- Current-sync review (rule 6): changed code has matching `docs/current` updates that follow `bf-current-doc-standard`
 - Gate 4: run acceptance and flip the REG status
 - Post-implementation flip PR (acceptance template ⚪ → 🟢)
 
@@ -23,7 +23,7 @@ Work inside the milestone worktree, same template as the Architect.
 - Acceptance template (1:1 with the spec's sub-sections, anchors machine-checkable)
 - regression-registry.md flips and REG-* placeholders
 - E2E flake fixes
-- docs/current sync follow-ups
+- docs/current sync follow-ups and standard checks
 - Count math reconciliation (active + pending = total)
 
 # Pick one of four acceptance forms

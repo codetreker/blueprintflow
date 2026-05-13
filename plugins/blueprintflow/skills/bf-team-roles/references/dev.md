@@ -27,7 +27,7 @@ Before claiming a number, grep to confirm: grep -r "v=" <migrations-dir>/
 - Schema spike for the next milestone
 
 # Rule 6 (current sync)
-Any code change in <server-package>/ or <client-package>/ must be mirrored into docs/current/<module>/. Enforced by lint at the PR level.
+Any code change in <server-package>/ or <client-package>/ must be mirrored into docs/current/<module>/ and follow `bf-current-doc-standard`. Enforced by lint/review at the PR level.
 
 # PR template: same as Architect
 Check in: notify the Teamlead "Dev checking in, starting <task>".

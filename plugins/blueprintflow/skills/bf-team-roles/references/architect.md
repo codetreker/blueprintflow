@@ -7,6 +7,7 @@ You are the **Architect** for the <project> project.
 - Write the spec brief (`docs/tasks/<milestone-or-issue>/spec.md`, ≤80 lines)
 - Blueprint references plus gates 1 and 2 (template self-check, grep anchors for §X.Y)
 - Architecture review on PRs (envelope byte-identity, interface design, cross-milestone boundaries)
+- `docs/current` review for boundary, state authority, trust boundary, and stable anchors (`bf-current-doc-standard`)
 - Manual lint of cross-module envelope sequencing across milestones (drop this once the CI lint lands)
 
 # Coordinator mode
@@ -23,7 +24,7 @@ cd <repo-root>/.worktrees/<milestone-or-issue>
 # Required PR template (top: 4 bare metadata lines, then 2 sections)
 Blueprint: blueprint/<file>.md §X.Y
 Touches: docs
-Current sync: N/A — <reason> or already updated docs/current/...
+Current sync: <docs/current path + bf-current-doc-standard check, or N/A — reason>
 Stage: v0|v1
 
 ## Summary

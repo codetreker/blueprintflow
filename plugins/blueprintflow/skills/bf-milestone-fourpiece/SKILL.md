@@ -5,7 +5,7 @@ description: "Part of the Blueprintflow methodology. Use when a milestone starts
 
 # Milestone 4 pieces
 
-Each milestone = **one PR, merged once**. The 4 pieces + implementation + e2e + docs/current sync + REG flip + acceptance ⚪→✅ + PROGRESS [x] all in the same PR.
+Each milestone = **one PR, merged once**. The 4 pieces + implementation + e2e + `docs/current` sync + REG flip + acceptance ⚪→✅ + PROGRESS [x] all in the same PR.
 
 **Git workflow**: Teamlead creates `.worktrees/<milestone-or-issue>` + branch. 4-piece authors stack commits in the same worktree. Teamlead is the sole PR opener. See `bf-git-workflow`.
 
@@ -78,7 +78,7 @@ The 4 pieces cite each other's §X.Y anchors. Drift gets caught during cross-rev
 4. QA → acceptance template (commit + push, no PR)
 5. Dev → implementation design (commit + push)
 6. Four-role design review → all ✅
-7. Dev → execution segments + e2e + docs sync + flips (commit + push)
+7. Dev → execution segments + e2e + current-doc sync + flips (commit + push)
 8. Everyone ready → Teamlead opens PR
 9. Merged → Teamlead removes worktree
 ```
@@ -92,7 +92,7 @@ All segments committed sequentially in the same worktree/branch:
 | 1.1 Schema | Dev | Migration + tables + drift test |
 | 1.2 Server | Dev | API + business logic + reverse-assertion test |
 | 1.3 Client | Dev | UI + e2e |
-| 1.4 Docs sync | Dev | docs/current |
+| 1.4 Current docs | Dev | `docs/current` changes follow `bf-current-doc-standard` |
 | 1.5 Flips | QA/Dev | REG 🟢 + acceptance ✅ + PROGRESS [x] |
 | ∥ 4 pieces | Arch/PM/QA | Parallel with execution |
 

@@ -45,7 +45,7 @@ After all roles have committed:
 gh pr create --title "feat(<milestone-or-issue>): <summary>" --body "..."
 ```
 
-Teamlead's check before opening: every role committed? docs/current synced? PROGRESS flipped?
+Teamlead's check before opening: every role committed? `docs/current` synced with `bf-current-doc-standard`? PROGRESS flipped?
 
 ### Rule 5: Teamlead removes the worktree after merge
 

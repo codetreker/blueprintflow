@@ -19,6 +19,7 @@
 - `git diff main HEAD docs/current/ <server-package>/ <client-package>/`
 - Rule 6 is enforced at the PR level; slow-cron looks at cross-PR accumulation.
 - If server / client changed but docs/current didn't follow → assign QA to patch.
+- If docs/current changed but reads like code tour / PR history / test log / endpoint catalog → assign Architect + QA to repair using `bf-current-doc-standard`.
 - A "carry-over: N/A — <reason>" opt-out is fine (consistent with the rule 6 lint), but check that the reason is genuinely reasonable.
 
 ### 4. Delayed flips

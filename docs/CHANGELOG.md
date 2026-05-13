@@ -1,5 +1,19 @@
 # Changelog
 
+## v3.0.2 — 2026-05-13
+
+### Child skill entry guards
+
+- Added direct-invocation guards to routed Blueprintflow child skills near the top of each skill, after the opening description and before triggers, flows, checklists, or execution steps.
+- Kept entry workflows (`bf-workflow`, repo-local `repo-update`) free of the child-skill guard.
+- Moved the Blueprintflow repository update entry skill out of the public plugin package to `.claude/skills/repo-update`, and renamed it from `bf-repo-update` to `repo-update` so it is not mistaken for a routed child skill.
+- Added a thin `.agents/skills/repo-update` pointer so Agents runtimes can discover the repo-local maintenance entry without duplicating its instructions.
+- Added `repo-update` anti-patterns for bulk scripted skill edits without classifying which skills a rule applies to, and for treating validation scripts as semantic review.
+
+### Plugin version
+
+- `plugin.json` bumped `3.0.1` → `3.0.2` (patch: child skill entry guards, repo-update private-skill placement/pointer, and review guardrails).
+
 ## v3.0.1 — 2026-05-13
 
 ### Skill Creator alignment

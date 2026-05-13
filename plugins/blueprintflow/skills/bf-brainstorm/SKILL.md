@@ -7,6 +7,10 @@ description: "Part of the Blueprintflow methodology. Use when starting a new pro
 
 Converge a fuzzy idea into core stances, concept model, and constraints. Teamlead facilitates, PM + Architect drive (Designer or Security pulled in as needed). Usually 5-15 rounds; each locks 1-2 concepts.
 
+## Direct Invocation Guard
+
+If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's input; do nothing else in this skill until it routes back.
+
 ## When to use / not use
 
 | Use | Don't use |

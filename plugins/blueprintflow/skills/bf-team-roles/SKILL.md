@@ -9,6 +9,10 @@ description: "Part of the Blueprintflow methodology. Use when spawning role agen
 
 6 roles + Teamlead (coordinator). Each role has a prompt template. Spawn whichever roles you need; Security is always there.
 
+## Direct Invocation Guard
+
+If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's input; do nothing else in this skill until it routes back.
+
 ## Role prompt templates
 
 Only read the prompt for your own role (progressive disclosure):

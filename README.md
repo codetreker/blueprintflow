@@ -106,7 +106,6 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 | [bf-issue-triage](plugins/blueprintflow/skills/bf-issue-triage/SKILL.md) | 巡检 | 3h cron 扫 GitHub issues, Teamlead 先判分发到 Architect/PM/QA |
 | [bf-phase-exit-gate](plugins/blueprintflow/skills/bf-phase-exit-gate/SKILL.md) | 收尾 | Phase 4 联签 + closure |
 | [bf-runtime-adapter](plugins/blueprintflow/skills/bf-runtime-adapter/SKILL.md) | 起步 | 运行时适配（通讯/文件/调度的模式对照表） |
-| [bf-repo-update](plugins/blueprintflow/skills/bf-repo-update/SKILL.md) | 更新 | Blueprintflow 仓库自身的 PR / review / release 流程 |
 
 ## 起步
 
@@ -171,4 +170,4 @@ Act as Teamlead in the parent thread; run the Codex activation check before Phas
 
 ## 反馈
 
-跑出新经验？开 PR 改 Blueprintflow 仓库，走 bf-repo-update 全员 vote。这套 skill 自己也是用 blueprintflow 方式迭代的。
+跑出新经验？开 PR 改 Blueprintflow 仓库，走仓库私有 skill [.claude/skills/repo-update](.claude/skills/repo-update/SKILL.md) 全员 vote；Agents 侧用 [.agents/skills/repo-update](.agents/skills/repo-update/SKILL.md) pointer 发现同一个入口。这套 skill 自己也是用 blueprintflow 方式迭代的。

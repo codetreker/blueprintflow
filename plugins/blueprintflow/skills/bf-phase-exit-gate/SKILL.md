@@ -9,6 +9,10 @@ Phase exit = last checkpoint when finishing a Phase. Confirm everything planned 
 
 **Not** the same as closing a single milestone (that happens in its own PR). Phase exit is one level higher — closes a whole stretch of milestones.
 
+## Direct Invocation Guard
+
+If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's input; do nothing else in this skill until it routes back.
+
 ## Phase exit vs wave closure
 
 | | Phase exit (this skill) | Wave closure |

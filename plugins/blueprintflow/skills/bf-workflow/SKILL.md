@@ -1,6 +1,6 @@
 ---
 name: bf-workflow
-description: "Part of the Blueprintflow methodology. Use as the Blueprintflow entrypoint when starting the workflow, onboarding a team, choosing the next skill, or coordinating product work."
+description: "Part of the Blueprintflow methodology. Use first as the Blueprintflow entrypoint/router before any routed bf-* child skill, and when starting the workflow, onboarding a team, choosing the next skill, or coordinating product work."
 ---
 
 # Blueprintflow Workflow
@@ -95,7 +95,6 @@ After the user names a concrete objective, load only the matching skill(s):
 | Triage GitHub issues | `bf-issue-triage` |
 | Close a Phase | `bf-phase-exit-gate` |
 | Change blueprint after freeze | `bf-blueprint-iteration` |
-| Update the Blueprintflow repo | `bf-repo-update` |
 
 ## Protocol Quick Reference
 

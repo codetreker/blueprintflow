@@ -9,6 +9,10 @@ description: "Part of the Blueprintflow methodology. Use when creating, updating
 
 Not: blueprint, PR history, test log, endpoint/component catalog, or code walkthrough.
 
+## Direct Invocation Guard
+
+If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's input; do nothing else in this skill until it routes back.
+
 ## Workflow Fit
 
 | Invoked by | Use |

@@ -11,6 +11,10 @@ After the four-piece set, before code: **Dev writes the implementation design**,
 
 **Anti ivory-tower**: design comes **after** four-piece, not before. Four-piece grounds it in product stance.
 
+## Direct Invocation Guard
+
+If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's input; do nothing else in this skill until it routes back.
+
 ## Triggers
 
 | Applies | Skip |

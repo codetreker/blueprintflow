@@ -7,6 +7,10 @@ description: "Part of the Blueprintflow methodology. Use when a frozen blueprint
 
 Once the blueprint is ready, the Architect leads. Break the project into Phases, each anchored to a **value loop** (something an end user can actually use), not to technical layers.
 
+## Direct Invocation Guard
+
+If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's input; do nothing else in this skill until it routes back.
+
 ## Preflight check
 
 Before using this skill, read `references/preflight.md` to confirm it applies. The decision graph checks: single-file change? mechanical PR type? team <3? blueprint missing? If any → skip the 4-piece flow.

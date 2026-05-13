@@ -1,5 +1,17 @@
 # Changelog
 
+## v3.0.0 — 2026-05-13
+
+### Repo update skill rename
+
+- Renamed `bf-skill-workflow` to `bf-repo-update` to describe the full Blueprintflow repository update flow, not only skill content changes.
+- Removed the old public skill name instead of keeping a compatibility shim.
+- Updated README references and repo update rules for public skill renames/removals.
+
+### Plugin version
+
+- `plugin.json` bumped `2.1.1` → `3.0.0` (major: public skill trigger name removed/renamed).
+
 ## v2.1.1 — 2026-05-13
 
 ### Activation standby boundary

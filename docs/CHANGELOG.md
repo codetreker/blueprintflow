@@ -1,5 +1,16 @@
 # Changelog
 
+## v3.0.6 — 2026-05-13
+
+### Blueprint iteration paths
+
+- Corrected `bf-blueprint-iteration` to use the current blueprint layout: `docs/blueprint/current/`, `docs/blueprint/next/`, and `docs/blueprint/_meta/`.
+- Updated the lifecycle reference so next-version cutover and `source-issues.md` traceability use the same layout.
+
+### Plugin version
+
+- `plugin.json` bumped `3.0.5` → `3.0.6` (patch: blueprint iteration path correction).
+
 ## v3.0.5 — 2026-05-13
 
 ### Slim workflow entrypoint

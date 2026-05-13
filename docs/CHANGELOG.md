@@ -1,5 +1,18 @@
 # Changelog
 
+## v3.0.5 — 2026-05-13
+
+### Team activation routing
+
+- Clarified that `$blueprintflow` plus a concrete objective enters Assigned state and activates the Blueprintflow team protocol instead of waiting for a second "spawn agents" instruction.
+- Added explicit routing for backlog-selection / next-version discussion: use `bf-blueprint-iteration` plus `bf-team-roles`, while reserving `bf-issue-triage` for new or untriaged issue entry-gate work.
+- Documented Codex behavior for team activation, serial fallback, and host-policy confirmation so missing spawn authorization is not mislabeled as runtime unavailability.
+- Required backlog-to-next selection to be handled by role/helper leaf work instead of Teamlead reading issue bodies and choosing candidates directly.
+
+### Plugin version
+
+- `plugin.json` bumped `3.0.4` → `3.0.5` (patch: concrete-objective team activation and backlog routing clarification).
+
 ## v3.0.4 — 2026-05-13
 
 ### Coordinator / worker boundary

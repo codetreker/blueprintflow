@@ -10,6 +10,7 @@ Blueprintflow coordinates multi-agent product work from concept to blueprint to 
 ## Non-negotiables
 
 - **Bare activation is standby only.** No issue/PR/doc/git/worktree discovery, role dispatch, or cron setup until the user names a concrete objective.
+- **Concrete objective activates the team protocol.** When the user invokes Blueprintflow with a named milestone, issue, PR, Phase, review, audit, backlog-selection, or cron objective, enter Assigned and load the runtime adapter. If the objective needs substantive reading, role judgment, drafting, verification, or review, activate the minimum role/helper set allowed by the runtime; do not wait for separate "spawn agents" wording.
 - Blueprintflow controls Blueprintflow-scoped work. Other process skills may run only inside Blueprintflow role and stage boundaries.
 - Teamlead dispatches leaf work (context exploration, design, implementation, testing, verification, review) to the appropriate role/helper.
 - Security is mandatory and independent; Architect cannot double as Security.
@@ -18,7 +19,22 @@ Blueprintflow coordinates multi-agent product work from concept to blueprint to 
 - No admin bypass merge; CI must really pass.
 - Code changes must sync `docs/current` using `bf-current-doc-standard` when the project uses that convention.
 
-If role/helper spawning is unavailable, the coordinator must declare `serial fallback` before doing role-lens work, label each lens explicitly, and record the downgrade.
+If role/helper spawning is unavailable, or the host runtime policy requires an extra confirmation before spawning, the coordinator must state the blocker before doing role-lens work. Use `serial fallback` only when spawning is truly unavailable; otherwise ask for the missing confirmation instead of silently downgrading.
+
+## Activation Routing
+
+Blueprintflow has two activation modes:
+
+| User input | State | Teamlead action |
+|---|---|---|
+| Bare `$blueprintflow`, "activate Blueprintflow", or workflow load with no objective | Standby | Report runtime and Teamlead boundary; no repo, issue, PR, doc, worktree, cron, or role inspection |
+| `$blueprintflow` plus a concrete objective | Assigned | Run runtime preflight, route to the matching skill, and activate the minimum role/helper set required for any leaf work |
+
+Examples of concrete objectives:
+
+- "Read GitHub backlog and discuss what to do next" → `bf-blueprint-iteration` + `bf-team-roles`; roles read backlog bodies and propose pull-in candidates.
+- "Triage new untriaged issues" → `bf-issue-triage`; roles classify new issues through the issue entry gate.
+- "Review PR #123" → `bf-pr-review-flow`; reviewers inspect the PR and report evidence.
 
 ## Coordinator / Worker Boundary
 
@@ -80,7 +96,7 @@ If another skill conflicts with Blueprintflow protocol, Blueprintflow wins for B
 
 ## Standby Boundary
 
-If the user only invokes `bf-workflow`, says "activate Blueprintflow", or asks to load the workflow without naming a milestone, issue, PR, Phase, review, audit, or cron check-in:
+If the user only invokes `bf-workflow`, says "activate Blueprintflow", or asks to load the workflow without naming a milestone, issue, PR, Phase, review, audit, backlog-selection discussion, or cron check-in:
 
 - Enter **Standby**: report the runtime mode and Teamlead boundary.
 - Do not inspect GitHub issues, PRs, git log, task docs, blueprint docs, current-state docs, or worktrees.
@@ -94,7 +110,7 @@ Standby response:
 ```text
 Blueprintflow active in <runtime> mode. I am Teamlead, so I coordinate rather than do role work.
 No issue/PR/doc inspection, cron setup, or role dispatch has started.
-Tell me the milestone, issue, PR, Phase, review, audit, or cron check-in you want coordinated.
+Tell me the milestone, issue, PR, Phase, review, audit, backlog-selection discussion, or cron check-in you want coordinated.
 ```
 
 ## State Machine
@@ -102,7 +118,7 @@ Tell me the milestone, issue, PR, Phase, review, audit, or cron check-in you wan
 | State | Trigger | Teamlead may do |
 |---|---|---|
 | Standby | Workflow activated without a concrete objective | Load runtime/project coordination rules, report boundaries, wait for assignment |
-| Assigned | User names a milestone / issue / PR / Phase / review / audit / cron check-in | Run coordination preflight, dispatch roles/helpers, inspect only routing metadata |
+| Assigned | User names a milestone / issue / PR / Phase / review / audit / backlog-selection discussion / cron check-in | Run coordination preflight, dispatch roles/helpers, inspect only routing metadata |
 | Running | Worktree / PR / review / cron flow is active | Coordinate roles, synthesize evidence, enforce gates |
 | Paused | User interrupts or asks to stop | Stop new tool work and close unneeded helpers |
 
@@ -137,7 +153,8 @@ After the user names a concrete objective, load only the matching skill(s):
 | Review or merge a milestone PR | `bf-pr-review-flow` |
 | Verify client-facing UI | `bf-e2e-verification` |
 | Cron/idle coordination | `bf-teamlead-fast-cron-checkin`, `bf-teamlead-role-reminder`, or `bf-teamlead-slow-cron-checkin` |
-| Triage GitHub issues | `bf-issue-triage` |
+| Triage new/untriaged GitHub issues | `bf-issue-triage` |
+| Read backlog / choose next work / open next-version discussion | `bf-blueprint-iteration`, then `bf-team-roles` |
 | Close a Phase | `bf-phase-exit-gate` |
 | Change blueprint after freeze | `bf-blueprint-iteration` |
 
@@ -157,4 +174,4 @@ Load references only when needed:
 - `references/overview.md` - mental model, role map, layer/stage lifecycle, anti-patterns, cross-project conventions.
 - `references/activation.md` - concrete activation examples, cron prompts, and team layout notes.
 - `bf-runtime-adapter` - required before Assigned/Running work in a specific runtime.
-- `bf-team-roles` - required before spawning or assigning roles.
+- `bf-team-roles` - required before spawning or assigning roles; load it during Assigned work whenever the objective includes leaf work or role judgment.

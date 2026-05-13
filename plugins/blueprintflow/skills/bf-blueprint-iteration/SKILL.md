@@ -19,6 +19,7 @@ Concrete objectives include:
 
 - Patch current blueprint for `gh#NNN`.
 - Triage backlog issues for the next blueprint version.
+- Read backlog and discuss what to pull into the next version.
 - Open a next-version draft.
 - Review or freeze the next-version draft.
 - Cut over next-version to current after approval.
@@ -66,6 +67,8 @@ When the current iteration passes acceptance, the next-version discussion opens.
 
 After the user names a concrete iteration objective, read `references/lifecycle.md` for the full flow: scan backlog → write blueprint-next → four-role discussion → freeze + tag + source-issues.md → relabel issues → trigger Phase N+1. Reminder period is project-defined in AGENTS.md (`reminder-period: 2w` default).
 
+For backlog-to-next selection, load `bf-team-roles` and activate the minimum role set needed for the discussion. PM checks product value and user fit, Architect checks blueprint consistency and implementation shape, QA checks acceptance/verifiability, and Security stays independent when auth, capability, privacy, data isolation, or agent execution boundaries are involved. Teamlead may read only routing metadata before assignment; issue bodies, comments, blueprint files, and pull-in recommendations are leaf work for roles/helpers.
+
 ## Anti-patterns
 
 - ❌ Version number in AGENTS.md (blueprint owns its frontmatter)
@@ -73,6 +76,7 @@ After the user names a concrete iteration objective, read `references/lifecycle.
 - ❌ Stuck milestone dragging the whole iteration (kick to backlog or split)
 - ❌ Cramming many patches that are actually a stance reversal
 - ❌ Opening next-version discussion without scanning `backlog` issues first (cleanup window missed)
+- ❌ Teamlead personally reading backlog bodies and choosing candidates without role/helper activation
 
 ## How to invoke
 

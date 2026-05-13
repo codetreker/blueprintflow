@@ -5,26 +5,20 @@ description: "Part of the Blueprintflow methodology. Use when starting a new pro
 
 # Blueprintflow Workflow
 
-Multi-agent collaboration for building products: concept → blueprint → Phase → milestone → PR → gate, driven by 6 roles + Teamlead.
+Blueprintflow coordinates multi-agent product work from concept to blueprint to Phase to milestone to PR to gate. The parent agent is **Teamlead**: it coordinates, assigns, and gates; roles execute and review.
 
-## Mental model
+## Non-negotiables
 
-| City engineering | Blueprintflow |
-|---|---|
-| Chief engineer | Architect — blueprints + spec briefs |
-| Client | PM — stances + constraints |
-| Construction crew | Dev — builds to spec |
-| Inspector | QA — acceptance |
-| Designer / safety | Designer / Security |
-| General contractor | Teamlead — coordinates, doesn't build |
+- **Bare activation is standby only.** No issue/PR/doc/git/worktree discovery, role dispatch, or cron setup until the user names a concrete objective.
+- Blueprintflow controls Blueprintflow-scoped work. Other process skills may run only inside Blueprintflow role and stage boundaries.
+- Teamlead dispatches leaf work (context exploration, design, implementation, testing, verification, review) to the appropriate role/helper.
+- Security is mandatory and independent; Architect cannot double as Security.
+- One milestone = one worktree = one branch = one PR.
+- Blueprint freezes before build; changes after freeze go through PR + review.
+- No admin bypass merge; CI must really pass.
+- Code changes must sync `docs/current` using `bf-current-doc-standard` when the project uses that convention.
 
-Core principle: **freeze the blueprint before building**. Changes go through PR + 4-role review (= engineering change order).
-
-Engineering practices that map across:
-- **Phase by value loop** (foundation / main structure / finishing) — not by technical layer
-- **Phase-end signoff** (4-role signoff = acceptance report + carry-over gate)
-- **Quality-gate trail** (rule 6 / migration versioning = engineering archive)
-- **PM on site throughout** (stance reverse-check = construction can't drift from requirements)
+If role/helper spawning is unavailable, Teamlead must declare `serial fallback` before doing role-lens work, label each lens explicitly, and record the downgrade.
 
 ## Skill composition rule
 
@@ -37,137 +31,86 @@ Other implementation/process skills may still be used, but only inside the role 
 - Teamlead synthesizes role outputs and makes coordination decisions; Teamlead does not perform leaf work directly.
 - Security remains independent and cannot be merged into Architect.
 
-If another skill conflicts with Blueprintflow protocol, Blueprintflow wins for Blueprintflow-scoped work. Non-negotiable examples:
+If another skill conflicts with Blueprintflow protocol, Blueprintflow wins for Blueprintflow-scoped work.
 
-- blueprint freeze before build
-- Teamlead coordinates; roles execute/review
-- one milestone = one worktree = one PR
-- Security review is mandatory and independent
-- no admin bypass merge
-- code changes sync `docs/current`
+## Standby Boundary
 
-If the runtime cannot support role agents/helpers, Teamlead must declare `serial fallback` before doing role-lens work, label each lens explicitly, and record the downgrade.
+If the user only invokes `bf-workflow`, says "activate Blueprintflow", or asks to load the workflow without naming a milestone, issue, PR, Phase, review, audit, or cron check-in:
 
-### When to use
+- Enter **Standby**: report the runtime mode and Teamlead boundary.
+- Do not inspect GitHub issues, PRs, git log, task docs, blueprint docs, current-state docs, or worktrees.
+- Do not infer the current project stage from repo state.
+- Do not spawn role agents/helpers.
+- Do not start crons or sleeper agents.
+- Ask what concrete work should be coordinated next.
 
-- New product / major feature / large refactor starting from concept
-- Multi-agent collaboration (≥3 roles)
-- Stance / blueprint / execution / acceptance on separate but interlocked tracks
-- High demand for cross-milestone drift control
+Standby response:
 
-### When this doesn't apply
-
-- Hackathon / one-off script / single-PR fix — too heavyweight
-- Solo rapid iteration — assumes multi-person collaboration
-- No settled stance yet — use `bf-brainstorm` first
-
-## 4-layer structure
-
-```
-Concept layer ──── brainstorm + blueprint-write
-    ↓
-Plan layer ─────── phase-plan
-    ↓
-Milestone layer ── milestone-fourpiece + pr-review-flow
-    ↓
-Coordination ───── fast-cron (15 min) + role-reminder (30 min)
-                   slow-cron (2-4 h) + issue-triage (3 h)
-                   phase-exit-gate
+```text
+Blueprintflow active in <runtime> mode. I am Teamlead, so I coordinate rather than do role work.
+No issue/PR/doc inspection, cron setup, or role dispatch has started.
+Tell me the milestone, issue, PR, Phase, review, audit, or cron check-in you want coordinated.
 ```
 
-## 6 roles + Teamlead
+## State Machine
 
-| Role | Responsibilities |
-|---|---|
-| **Teamlead** | Coordinates, assigns work, guards protocol. Doesn't write code |
-| **Architect** | Spec brief, blueprint citations, gates 1+2, PR architecture review |
-| **PM** | Stance reverse-check, content lock, gates 3+4 |
-| **Dev** | Implementation, migration, unit tests |
-| **QA** | Acceptance template, E2E tests, current-sync review, gate 4 |
-| **Designer** | UI/UX/visual (when milestone touches client UI) |
-| **Security** | Auth/privacy/admin/cross-org review (mandatory independent role) |
-
-Full prompts: `bf-team-roles`
-
-## Stages
-
-### Stage 0: runtime
-Read `bf-runtime-adapter` first — confirms your environment (team mode, crons, messaging).
-
-### Stage 1: concept
-1. `bf-brainstorm` — lock stances + concept model
-2. `bf-blueprint-write` — write `docs/blueprint/*.md`
-
-### Stage 2: plan
-3. `bf-phase-plan` — split blueprint into Phases, write `docs/tasks/README.md`
-
-### Stage 3: execution
-4. `bf-git-workflow` — one milestone = one worktree + one branch + one PR
-5. `bf-milestone-fourpiece` — 4 baseline docs in the same PR
-6. `bf-implementation-design` — Dev writes design, 4-role review before coding
-7. `bf-current-doc-standard` — when code changes create/update `docs/current`
-8. `bf-pr-review-flow` — dual review + Security checklist + squash merge
-9. `bf-e2e-verification` — QA walks 3 lines for UI changes
-
-### Stage 4: coordination + Phase exit
-10. `bf-teamlead-fast-cron-checkin` — 15 min, idle dispatch + merge gate
-11. `bf-teamlead-slow-cron-checkin` — 2-4 h, drift audit
-12. `bf-issue-triage` — 3 h, GitHub issue scan
-13. `bf-phase-exit-gate` — 4-role signoff + closure
-
-### Stage 5: iteration
-14. `bf-blueprint-iteration` — 3-state machine, version management, change routing
-
-## Key protocols
-
-- **One milestone, one PR** — 4 pieces + implementation + e2e + closure all in one PR. No splitting
-- **Teamlead is the sole PR opener** — roles commit to the worktree, Teamlead opens the PR
-- **Never admin-bypass merge / disable ruleset** — CI must really pass
-- **Rule 6 (current sync)** — code change → `docs/current` must sync using `bf-current-doc-standard`
-- **5-layer stance-drift defense** — spec grep + acceptance anchor + stance blacklist + content-lock byte-identical + cross-file cross-check
-- **No self-approve** — `gh pr comment <num> --body "LGTM"`
-
-## Anti-patterns
-
-- ❌ Skipping 4 pieces → stance drift uncatchable
-- ❌ One role running multiple milestones in parallel → worktree conflict
-- ❌ Audit without dispatch → not forward motion
-- ❌ Admin merge / ruleset bypass → permanent ban
-- ❌ Idle without dispatch → cron must ACT
-- ❌ Letting a non-Blueprintflow skill turn Teamlead into a leaf worker → role boundaries collapse
-
-## Bootstrap
-
-```
-0. bf-runtime-adapter    — confirm environment
-1. bf-team-roles         — spawn roles
-2. bf-brainstorm         — lock stances
-3. bf-blueprint-write    — write blueprint
-4. bf-phase-plan         — split into Phases
-5. (loop) bf-milestone-fourpiece + bf-current-doc-standard (as needed) + bf-pr-review-flow + bf-teamlead-fast-cron-checkin
-6. (periodic) bf-teamlead-role-reminder + bf-teamlead-slow-cron-checkin + bf-issue-triage
-7. (Phase wrap-up) bf-phase-exit-gate
-```
-
-## Activation protocol
-
-Start all 4 crons when workflow activates (commands from `bf-runtime-adapter`):
-
-| Cron | Frequency | Prompt |
+| State | Trigger | Teamlead may do |
 |---|---|---|
-| fast-cron | 15 min | `[auto check-in · 15 min] follow skill bf-teamlead-fast-cron-checkin` |
-| role-reminder | 30 min | see `bf-teamlead-role-reminder` SKILL.md for the `<system reminder>` block |
-| slow-cron | 2 h | `[drift audit · 2 hours] follow skill bf-teamlead-slow-cron-checkin` |
-| issue-triage | 3 h | `[issue triage · 3h] follow skill bf-issue-triage` |
+| Standby | Workflow activated without a concrete objective | Load runtime/project coordination rules, report boundaries, wait for assignment |
+| Assigned | User names a milestone / issue / PR / Phase / review / audit / cron check-in | Run the relevant preflight, dispatch roles/helpers, inspect only assigned scope |
+| Running | Worktree / PR / review / cron flow is active | Coordinate roles, synthesize evidence, enforce gates |
+| Paused | User interrupts or asks to stop | Stop new tool work and close unneeded helpers |
 
-Without crons, agents go idle. Crons stop automatically when the session ends; explicitly remove to pause.
+Paused exits:
 
-**Anti-patterns**: starting only some crons (drift/issues accumulate), cron prompt missing skill name (uncontrolled behavior), persistent crons without user signoff (leaks across projects).
+- User says resume same work -> return to **Running**.
+- User names a new objective -> return to **Assigned**.
+- User says stop / clear / wait with no objective -> return to **Standby**.
 
-## Team layout principle
+Pre-assignment boundary:
 
-Regardless of runtime: Teamlead gets the widest view (coordination thread), roles are visible at a glance, every pane/window is named. Concrete layout commands depend on your runtime — see `bf-runtime-adapter`.
+| Teamlead may | Teamlead must not |
+|---|---|
+| Read `bf-workflow`, `bf-runtime-adapter`, and repo-local coordination rules (`AGENTS.md` / `CLAUDE.md`) | Run `gh issue` / `gh pr` queries |
+| Report runtime capacity and role boundary | Read git history or infer task status from `git log` |
+| Ask which objective to coordinate | Search or read task / blueprint / current docs for work |
+| | Create worktrees, branches, PRs, crons, or role agents |
 
-## Cross-project use
+## Objective Router
 
-Role names, doc paths (`docs/blueprint/`, `docs/tasks/`), and project aliases are conventions — adjustable via AGENTS.md / CLAUDE.md. Worktree / migration / lint protocols are core and don't change.
+After the user names a concrete objective, load only the matching skill(s):
+
+| Objective | Load next |
+|---|---|
+| Runtime/team setup | `bf-runtime-adapter`, then `bf-team-roles` if roles are needed |
+| Fuzzy concept or unsettled stance | `bf-brainstorm` |
+| Write or revise frozen product shape | `bf-blueprint-write` |
+| Split a frozen blueprint into execution Phases | `bf-phase-plan` |
+| Start milestone work | `bf-git-workflow`, then `bf-milestone-fourpiece` |
+| Design before coding | `bf-implementation-design` |
+| Create/update/review `docs/current` | `bf-current-doc-standard` |
+| Review or merge a milestone PR | `bf-pr-review-flow` |
+| Verify client-facing UI | `bf-e2e-verification` |
+| Cron/idle coordination | `bf-teamlead-fast-cron-checkin`, `bf-teamlead-role-reminder`, or `bf-teamlead-slow-cron-checkin` |
+| Triage GitHub issues | `bf-issue-triage` |
+| Close a Phase | `bf-phase-exit-gate` |
+| Change blueprint after freeze | `bf-blueprint-iteration` |
+| Edit Blueprintflow skills | `bf-skill-workflow` |
+
+## Protocol Quick Reference
+
+- Use Blueprintflow for new products, major features, large refactors, multi-role collaboration (typically 3+ roles), stance/blueprint/execution/acceptance tracks, and cross-milestone drift control.
+- Do not use it for hackathon scripts, one-off single-PR fixes, or solo rapid iteration unless the user explicitly wants Blueprintflow governance.
+- If no stance is settled, use `bf-brainstorm` before blueprint or implementation work.
+- Teamlead is the sole PR opener/merger for Blueprintflow milestone work; roles commit/review inside the assigned worktree.
+- Rule 6 current sync uses `bf-current-doc-standard` when code changes create/update `docs/current`.
+- No self-approval: use a PR comment such as `gh pr comment <num> --body "LGTM"` when the platform cannot express review approval.
+
+## Progressive References
+
+Load references only when needed:
+
+- `references/overview.md` - mental model, role map, layer/stage lifecycle, anti-patterns, cross-project conventions.
+- `references/activation.md` - concrete activation examples, cron prompts, and team layout notes.
+- `bf-runtime-adapter` - required before Assigned/Running work in a specific runtime.
+- `bf-team-roles` - required before spawning or assigning roles.

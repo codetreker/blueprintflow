@@ -7,7 +7,7 @@
 - Reworked `bf-workflow` as a single-file entry driver focused on runtime/team setup, Teamlead boundary, objective routing, and global hard rules.
 - Removed the four-state activation model in favor of a simpler boundary: no objective means active-but-idle after setup; a concrete objective routes to the owning child skill.
 - Deleted `bf-workflow` activation and overview references because their cron, runtime, role, lifecycle, and mental-model details are already owned by runtime, team, cron, lifecycle, or README documentation.
-- Kept the global safety rails in the entrypoint: no content inspection without an objective/role handoff, Teamlead and role agents are coordinators, helpers/reviewers do bounded leaf work, Security is independent, one milestone maps to one worktree/branch/PR, CI cannot be bypassed, and `docs/current` sync remains required when applicable.
+- Kept the global safety rails in the entrypoint: Teamlead and role coordinators own decisions in scope while preserving coordinator context through helper/reviewer leaf work, Security is independent, one milestone maps to one worktree/branch/PR, CI cannot be bypassed, and `docs/current` sync remains required when applicable.
 
 ### Plugin version
 

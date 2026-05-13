@@ -19,19 +19,21 @@ Always start by loading `bf-runtime-adapter` and `bf-team-roles` to establish ru
 
 Workflow active means the Teamlead boundary and runtime/team setup are in place. It does not authorize content inspection by itself.
 
-## Teamlead Boundary
+## Coordinator Boundary
 
-Teamlead and role agents coordinate; helpers/reviewers execute bounded leaf work. Teamlead may read routing metadata and repo-local coordination rules, assign scopes, synthesize role outputs, enforce gates, ask the user for decisions, and record coordination state.
+Teamlead and role agents own decisions in their scopes, but preserve their main-session context by delegating bounded leaf work to helpers/reviewers.
 
-Leaf work goes through the relevant role coordinator to helpers/reviewers:
+Teamlead owns global coordination decisions: routing, priority, conflict arbitration, user escalation, merge gates, final integration, and progress control. Role coordinators own role decisions: PM value, Architect consistency, QA acceptance, Security risk, Dev implementation approach, and Designer interaction/visual judgment.
+
+Leaf work goes through the relevant coordinator to helpers/reviewers:
 
 - reading issue bodies/comments, blueprint/current/task docs, or code for substantive analysis
 - drafting or editing docs/code
 - running tests, builds, audits, grep evidence, or verification commands
-- gathering evidence for PM/Architect/QA/Security judgment
+- gathering evidence for Teamlead or role-coordinator decisions
 - choosing backlog pull-in candidates from substantive issue content
 
-Teamlead does not make PM/Architect/QA/Security judgments. Ask the relevant role coordinator to decide from helper evidence. If helper spawning is unavailable, a role coordinator may use `serial fallback` for its own role-lens work and must report the downgrade. If the runtime can spawn agents but host policy requires extra confirmation, ask for confirmation instead of calling it runtime unavailability.
+Coordinators synthesize helper evidence and decide within their scope. They should not spend coordinator context on long reading, evidence gathering, tests, builds, audits, or code/doc edits. If helper spawning is unavailable, a coordinator may use `serial fallback` for its own lens work and must report the downgrade. If the runtime can spawn agents but host policy requires extra confirmation, ask for confirmation instead of calling it runtime unavailability.
 
 Security is mandatory and independent; Architect cannot double as Security.
 

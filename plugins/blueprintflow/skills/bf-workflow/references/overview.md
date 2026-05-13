@@ -22,10 +22,6 @@ Engineering practices that map across:
 - **Quality-gate trail** - rule 6 / migration versioning as engineering archive.
 - **PM on site throughout** - stance reverse-check so construction cannot drift from requirements.
 
-## Skill composition rule
-
-The authoritative rule lives in `bf-workflow/SKILL.md` and is intentionally kept in the entrypoint so it is loaded before other process skills. This reference does not duplicate it; update the entrypoint rule directly.
-
 ## 4-layer structure
 
 ```text

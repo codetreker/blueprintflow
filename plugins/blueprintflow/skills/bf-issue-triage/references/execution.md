@@ -4,6 +4,8 @@ GitHub issues are the backlog SSOT. This skill defines the gate: cron scans → 
 
 Runs in parallel to fast-cron (PR dimension) and slow-cron (drift dimension) — this is the **issue dimension**.
 
+Before routing issue work, read the Teamlead notebook at `~/.blueprint/<repo-dir>/teamlead.md` using `bf-workflow/references/teamlead-notebook.md`. After assigning role follow-up, dispatching a patch milestone, or flagging a stuck issue, update the notebook in the same turn.
+
 ## Sections
 
 | Section | Use |
@@ -163,3 +165,4 @@ Three independent, no overlap.
 - Has untriaged: `[issue-triage] N open, M untriaged routed: X→Architect / Y→PM / Z→QA`
 - All triaged: `[issue-triage] N open, all triaged`
 - Stuck: `[issue-triage] N open, M untriaged ≥24h → dispatch Teamlead`
+- Confirm the notebook was reconciled and updated, or state why no notebook change was needed.

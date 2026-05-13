@@ -80,6 +80,7 @@ Every code change goes through Security review. Hard rule.
 | Responsibility | Detail |
 |---|---|
 | Hand out work | Assign to roles, watch progress, guard protocol |
+| Track task state | Keep `~/.blueprint/<repo-dir>/teamlead.md` current using `bf-workflow/references/teamlead-notebook.md` |
 | Arbitrate conflicts | Between roles when they disagree |
 | Synthesize diagnosis | When reports conflict, poke closest party for evidence before deciding |
 | Broadcast retractions | Changed your mind → tell all affected reviewers |

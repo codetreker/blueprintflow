@@ -3,6 +3,8 @@
 
 `bf-teamlead-fast-cron-checkin` pushes idle dispatches forward; slow-cron pushes drift correction. They don't overlap.
 
+Before auditing, read the Teamlead notebook at `~/.blueprint/<repo-dir>/teamlead.md` using `bf-workflow/references/teamlead-notebook.md`. Reconcile notebook state with live docs, PRs, issues, and worktrees. After any drift finding, assignment, blocker, or no-drift conclusion, update the notebook in the same turn.
+
 ## Four audit categories (priority order)
 
 ### 1. Is PROGRESS current?
@@ -80,9 +82,11 @@ Confirm PROGRESS.md matches reality:
 - All in sync: "docs in sync, no drift".
 - Drift found: list specific PR # / files / who you're assigning.
 - Dispatch priority follows fast-cron's order (unblock > follow-up > forward > maintenance).
+- Confirm the notebook was reconciled and updated, or state why no notebook change was needed.
 
 ## Anti-patterns
 
 - Treating audit as forward motion (audit must end in dispatch, otherwise it's wasted).
 - Running all four categories before producing any output (any single finding triggers immediate dispatch — don't wait for the rest).
 - Mixing it with fast-cron's idle dispatch (slow-cron is dedicated to audit, fast-cron is dedicated to idle).
+- Auditing from memory without first reconciling `~/.blueprint/<repo-dir>/teamlead.md` against live sources of truth.

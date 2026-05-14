@@ -8,6 +8,7 @@
 | Activation Check | Confirm skills, roles, capacity, reasoning |
 | Capacity | Set max depth/threads expectations |
 | Reasoning Effort | Choose helper effort by task type |
+| Teamlead Continuity | Keep active Teamlead coordination running across stop events |
 | CLI Sleeper Fallback | Simulate check-ins without durable cron |
 | Context Reuse | Resume coordinators and helpers |
 | Command Mapping | Translate Blueprintflow actions to Codex |
@@ -32,6 +33,7 @@ Run before Phase, milestone, or task work.
 | Capacity | `agents.max_depth = 2`; `agents.max_threads >= 24` for full team |
 | Reasoning | One model family; helper effort by task type |
 | Checkins | App automation or CLI sleeper; no durable CLI cron claim |
+| Continuity | Packaged stop hook loaded and session-enabled, or 60-second sleeper loop for active coordination |
 
 ## Capacity
 
@@ -101,6 +103,32 @@ Do not inspect files, run tools, or make decisions.
 ```
 
 Sleeper constraints: one-shot; occupies one thread; parent must remain active; parent respawns only if work remains.
+
+## Teamlead Continuity
+
+Use only after a concrete objective or explicit ongoing coordination request. Never enable for bare activation/standby.
+
+Requirements:
+
+```toml
+[features]
+hooks = true
+plugin_hooks = true
+```
+
+Hook control:
+
+```bash
+printf '%s' '{"session_id":"<session>","cwd":"<repo>","blueprintflow_continuity":{"scope":"PR #85"}}' \
+  | python3 "${PLUGIN_ROOT}/hooks/bf_session_state.py" enable
+
+printf '%s' '{"session_id":"<session>","cwd":"<repo>"}' \
+  | python3 "${PLUGIN_ROOT}/hooks/bf_session_state.py" disable
+```
+
+Fallback: if hooks are unavailable, use the 60-second sleeper loop; if sleeper is unavailable, report degraded continuity and check manually.
+
+Rules: per-session state only; no prompt parsing; disable on explicit pause/stop; inspect only assigned scope.
 
 ## Context Reuse
 

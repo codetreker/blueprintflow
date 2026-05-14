@@ -1,12 +1,13 @@
 {
   "name": "blueprintflow",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Blueprint-driven multi-agent collaboration workflow with team roles, task four-piece, verification, PR review flow, and Phase exit gates",
   "author": {
     "name": "codetreker"
   },
   "repository": "https://github.com/codetreker/blueprintflow",
   "skills": "./skills/",
+  "hooks": "./hooks/hooks.json",
   "interface": {
     "displayName": "Blueprintflow",
     "shortDescription": "Blueprint-driven multi-agent product workflow",

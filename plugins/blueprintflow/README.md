@@ -1,5 +1,7 @@
 # Blueprintflow Iteration Flow
 
+Status: next-generation design target. Use this document to design the upcoming child-skill rewrite. Current v4.0.1 skills still carry legacy `Decision` / `Work` / `LOCKED` state in some execution paths; the rewrite must bring those skills into this model before this file becomes the active runtime procedure.
+
 Blueprintflow turns selected sources into accepted current behavior through a dependency-ordered path:
 
 ```text

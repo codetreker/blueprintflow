@@ -1,8 +1,10 @@
 # Skill Runtime Design
 
+Status: next-generation design target. Use this document to plan and review the upcoming `plugins/blueprintflow/skills/*` rewrite. Until the owning skills are updated, legacy execution paths may still use older state names; treat conflicts as rewrite targets, not as permission to mix state models.
+
 Blueprintflow skills are LLM runtime code. They control agent behavior the way application code controls program behavior.
 
-Use this design before changing `plugins/blueprintflow/skills/*`. Update the design first when the state model, ownership boundary, or routing rule changes; then patch the owning skills to match it.
+Use this design before changing `plugins/blueprintflow/skills/*`. Update the design first when the state model, ownership boundary, or routing rule changes; then patch the owning skills to match it in the same change set or mark the design section as a future target.
 
 ## Design Principles
 

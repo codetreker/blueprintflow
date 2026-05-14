@@ -99,7 +99,7 @@ Resume from top to bottom: next anchor row -> Phase row -> Milestone row -> Task
 
 ## Stage Rules
 
-Read state values from the relevant row or batch, not from logs or inferred file presence.
+Read state values from the relevant owned row, not from logs or inferred file presence. Use source trace artifacts only for intake mapping.
 
 | Stage | Entry check | Done state |
 |---|---|---|

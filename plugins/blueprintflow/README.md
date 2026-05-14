@@ -89,7 +89,7 @@ Parent ledgers own child row state. Keep each state in one place.
 
 | Object row | State owner |
 |---|---|
-| Source batch | `docs/blueprint/_meta/<version>/source-issues.md` or `source-notes.md` |
+| Source trace | `docs/blueprint/_meta/<version>/source-issues.md` or `source-notes.md` |
 | Anchor | `docs/blueprint/next/README.md` |
 | Phase | `docs/tasks/README.md` |
 | Milestone | `docs/tasks/phase-N-*/phase-plan.md` |
@@ -103,8 +103,8 @@ Read state values from the relevant row or batch, not from logs or inferred file
 
 | Stage | Entry check | Done state |
 |---|---|---|
-| Source intake | Source candidates exist. | Source batch `State = SELECTED`. |
-| Next blueprint anchors | Source batch `State = SELECTED`. | Each selected source maps to one or more anchor rows; each anchor row has `State = OPEN` or `State = PLANNED`. |
+| Source intake | Source candidates exist. | Source trace artifact maps selected sources to intended anchors. |
+| Next blueprint anchors | Source trace artifact exists. | Each selected source maps to one or more anchor rows; each anchor row has `State = OPEN` or `State = PLANNED`. |
 | Anchor planning | Anchor row `State = OPEN`. | Each anchor selected for execution has `State = PLANNED`. |
 | Phase planning | Anchor row `State = PLANNED`. | Each planned Phase row has `State = PLANNED`. |
 | Milestone planning | Phase row exists for the target scope. | Each Milestone row under the target Phase has `State = PLANNED`. |
@@ -115,7 +115,7 @@ Read state values from the relevant row or batch, not from logs or inferred file
 | Phase exit | Required Milestone rows have `State = ACCEPTED`. | The target Phase row has `State = ACCEPTED`. |
 | Current promotion | Phase row `State = ACCEPTED`. | Corresponding next anchor rows have `State = COMPLETED`. |
 
-State belongs to object rows: source batch, anchor, Phase, Milestone, and Task. A stage is done only when the relevant row set reaches the done state.
+Runtime state belongs to object rows: anchor, Phase, Milestone, and Task. Source trace records intake mapping only.
 
 ## Planning Rules
 

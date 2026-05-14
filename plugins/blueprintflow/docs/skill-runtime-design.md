@@ -77,7 +77,7 @@ Object state owners:
 
 | Object row | State owner |
 |---|---|
-| Source batch | `docs/blueprint/_meta/<version>/source-issues.md` or `source-notes.md` |
+| Source trace | `docs/blueprint/_meta/<version>/source-issues.md` or `source-notes.md` |
 | Anchor | `docs/blueprint/next/README.md` |
 | Phase | `docs/tasks/README.md` |
 | Milestone | `docs/tasks/phase-N-*/phase-plan.md` |
@@ -87,8 +87,8 @@ Stage rules:
 
 | Stage | Entry check | Done state |
 |---|---|---|
-| Source intake | Source candidates exist. | Source batch `State = SELECTED`. |
-| Next blueprint anchors | Source batch `State = SELECTED`. | Each selected source maps to one or more anchor rows; each anchor row has `State = OPEN` or `State = PLANNED`. |
+| Source intake | Source candidates exist. | Source trace artifact maps selected sources to intended anchors. |
+| Next blueprint anchors | Source trace artifact exists. | Each selected source maps to one or more anchor rows; each anchor row has `State = OPEN` or `State = PLANNED`. |
 | Anchor planning | Anchor row `State = OPEN`. | Each anchor selected for execution has `State = PLANNED`. |
 | Phase planning | Anchor row `State = PLANNED`. | Each planned Phase row has `State = PLANNED`. |
 | Milestone planning | Phase row exists for the target scope. | Each Milestone row under the target Phase has `State = PLANNED`. |
@@ -106,7 +106,7 @@ Stage rules:
 | `bf-workflow` | Entry routing and Teamlead boundary. | User objective, Teamlead notebook, top-level state. | No product state. |
 | `bf-brainstorm` | Fuzzy idea and stance convergence. | User input, existing product context when routed. | No runtime state; hands stances to `bf-blueprint-write`. |
 | `bf-blueprint-write` | Next blueprint product shape and anchors. | Brainstorm output or clear non-issue source. | Anchor rows as `OPEN` or ready for `PLANNED`. |
-| `bf-blueprint-iteration` | Source intake, anchor selection, current promotion. | Source artifacts, next ledger, accepted task/Phase state. | Source batch state, anchor `State`. |
+| `bf-blueprint-iteration` | Source intake, anchor selection, current promotion. | Source artifacts, next ledger, accepted task/Phase state. | Source trace mapping, anchor `State`. |
 | `bf-phase-plan` | Phase rows and Milestone rows for planned anchors. | Anchor rows with `State = PLANNED`. | Phase rows in `docs/tasks/README.md`; Milestone rows in `phase-plan.md`. |
 | `bf-milestone-breakdown` | Task set for one selected milestone. | Milestone row with `State = SELECTED`. | Task rows in `milestone.md`; selected Milestone row to `TASK_SET_READY`. |
 | `bf-task-execute` | One task execution loop. | Task row with ready execution state. | Task row progress toward `ACCEPTED`; task-local progress evidence. |

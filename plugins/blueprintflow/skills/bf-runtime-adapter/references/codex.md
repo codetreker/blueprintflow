@@ -87,7 +87,7 @@ If unsure, use `high`. Sleeper helpers use `low`.
 
 | Need | Codex App | Codex CLI |
 |---|---|---|
-| Fast checkin | Automation prompt with `$bf-teamlead-fast-cron-checkin` | 15-min sleeper subagent |
+| Fast checkin | Automation prompt with `$bf-teamlead-fast-cron-checkin` | Project-cadence sleeper subagent |
 | Slow checkin | Automation prompt with `$bf-teamlead-slow-cron-checkin` | Long sleeper only when useful |
 | Role reminder | Automation prompt with `$bf-teamlead-role-reminder` | Parent self-check before implementation |
 | Issue triage | Automation prompt with `$bf-issue-triage` | Sleeper or explicit parent dispatch |
@@ -95,8 +95,8 @@ If unsure, use `high`. Sleeper helpers use `low`.
 Sleeper prompt:
 
 ```text
-Sleep for 15 minutes, then return exactly:
-[auto check-in · 15 min] $bf-teamlead-fast-cron-checkin
+Sleep for the project-defined fast-checkin cadence, then return exactly:
+[auto check-in] $bf-teamlead-fast-cron-checkin
 Do not inspect files, run tools, or make decisions.
 ```
 

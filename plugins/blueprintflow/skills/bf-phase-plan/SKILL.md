@@ -13,7 +13,7 @@ If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's in
 
 ## Preflight check
 
-Before using this skill, read `references/preflight.md` to confirm it applies. The decision graph checks: single-file change? mechanical PR type? team <3? blueprint missing? If any → skip the 4-piece flow.
+Before using this skill, read `references/preflight.md` to confirm it applies. The decision graph checks: single-file change? mechanical PR type? blueprint missing? If any skip condition applies, skip this planning flow.
 
 ## Phase / Milestone / Task
 
@@ -69,7 +69,7 @@ Gates 1+2 in the task spec brief, gate 3 in stance + acceptance, gate 4 at demo 
 - **phase-N-<name>/phase-plan.md** — value loop, milestone list, exit gates
 - **phase-N-<name>/<milestone>/milestone.md** — capability goal, acceptance boundary, dependencies, task-split trigger, and first task seed when this is the first executable milestone
 - **phase-N-<name>/<milestone>/<task>/task.md** — created later by `bf-milestone-breakdown`, not by freeze/lock planning
-- **phase-N-<name>/<milestone>/<task>/{spec,stance,acceptance,design,progress}.md** — created when that task starts (see `bf-milestone-fourpiece`)
+- **phase-N-<name>/<milestone>/<task>/{spec,stance,acceptance,design,progress}.md** — created when that task starts
 
 Freeze/lock example:
 
@@ -104,15 +104,19 @@ Task start adds the four-piece/design/progress files to that task folder.
 
 ## docs/tasks/README.md template
 
-```
-| Phase | Status | Exit condition | Current focus |
-|-------|--------|----------------|---------------|
+```markdown
+# Tasks State
+
+## Phase Index
+
+| Phase | Status | Exit condition | Current milestone |
+|-------|--------|----------------|-------------------|
 | Phase 0 foundation | ARCHIVED | G0.x accepted | archived |
-| Phase 6 remote agent | IMPLEMENTING | G6.x strict + PM signoff | milestone-2/task-1 |
+| Phase 6 remote agent | IMPLEMENTING | G6.x strict + PM signoff | milestone-2-web-config |
 | Phase 7 next loop | PLANNED | G7.x defined after lock | waiting |
 ```
 
-After every task PR merge, update the matching task row immediately. A milestone closes only when all required tasks are accepted. A Phase closes only when its milestone gates pass.
+This Phase index stops at milestone level. Do not put task paths, task owners, worktrees, branches, PRs, blockers, or checkbox progress here. A milestone closes only when all required tasks are accepted. A Phase closes only when its milestone gates pass.
 
 ## Anti-patterns
 

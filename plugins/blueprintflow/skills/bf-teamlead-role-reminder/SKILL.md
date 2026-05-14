@@ -5,7 +5,7 @@ description: "Part of the Blueprintflow methodology. Use on Teamlead role-remind
 
 # Teamlead Role Reminder
 
-30-minute recurring cron. Runtime syntax → `bf-runtime-adapter`.
+Project-defined role-reminder cadence. Runtime syntax → `bf-runtime-adapter`.
 
 ## Direct Invocation Guard
 

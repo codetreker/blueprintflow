@@ -28,7 +28,7 @@ If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's in
 | Notify \<Role\> | Any cross-role message (dispatch, completion, review request) |
 | Create worktree | Teamlead creates task working directory |
 | Commit code | Role does `commit` + `push` in worktree |
-| Start cron checks | Set up fast-cron (15min) + slow-cron (2-4h) |
+| Start cron checks | Set up project-defined fast active-work check-in + slow drift audit |
 | Check role status | Teamlead checks whether each role is working or idle |
 
 ## Core rules (all environments)

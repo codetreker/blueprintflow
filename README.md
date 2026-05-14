@@ -65,7 +65,7 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 │      ↓
 ├─ 计划层 ──────── bf-phase-plan → bf-milestone-breakdown
 │      ↓
-├─ 实施层 ──────── bf-git-workflow + bf-milestone-fourpiece + bf-pr-review-flow
+├─ 实施层 ──────── bf-git-workflow + bf-task-fourpiece + bf-pr-review-flow
 │      ↓
 └─ 协调层 ──────── bf-teamlead-fast-cron-checkin + bf-teamlead-slow-cron-checkin + bf-phase-exit-gate
 ```
@@ -95,16 +95,16 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 | [bf-phase-plan](plugins/blueprintflow/skills/bf-phase-plan/SKILL.md) | 规划 | locked next anchors 拆 Phase / Milestone + 首个 task seed + 退出 gate |
 | [bf-milestone-breakdown](plugins/blueprintflow/skills/bf-milestone-breakdown/SKILL.md) | 规划 | selected milestone 拆 reviewed task skeletons + `task.md` contract |
 | [bf-blueprint-iteration](plugins/blueprintflow/skills/bf-blueprint-iteration/SKILL.md) | 演进 | current/next/tasks 状态推进 + backlog intake |
-| [bf-milestone-fourpiece](plugins/blueprintflow/skills/bf-milestone-fourpiece/SKILL.md) | 实施 | task 4 件套（spec / stance / acceptance / content-lock） |
+| [bf-task-fourpiece](plugins/blueprintflow/skills/bf-task-fourpiece/SKILL.md) | 实施 | task 4 件套（spec / stance / acceptance / content-lock） |
 | [bf-implementation-design](plugins/blueprintflow/skills/bf-implementation-design/SKILL.md) | 实施 | 4 件套后写代码前 Dev 出实现方案设计 + 4 角色 review |
 | [bf-git-workflow](plugins/blueprintflow/skills/bf-git-workflow/SKILL.md) | 实施 | 一 task 一 worktree 一 PR |
 | [bf-current-doc-standard](plugins/blueprintflow/skills/bf-current-doc-standard/SKILL.md) | 实施/Review | `docs/current` 新建、更新、审查的当前实现文档标准 |
 | [bf-pr-review-flow](plugins/blueprintflow/skills/bf-pr-review-flow/SKILL.md) | Review | 双 review + 标准 squash merge |
 | [bf-e2e-verification](plugins/blueprintflow/skills/bf-e2e-verification/SKILL.md) | Review | UI 改动的 QA 验收必须走三个角度：代码改动是否按预期工作 / 产品是否好用 / 设计是否合理 |
-| [bf-teamlead-fast-cron-checkin](plugins/blueprintflow/skills/bf-teamlead-fast-cron-checkin/SKILL.md) | 巡检 | 15min idle 派活 |
-| [bf-teamlead-role-reminder](plugins/blueprintflow/skills/bf-teamlead-role-reminder/SKILL.md) | 巡检 | 30min Teamlead 职责自检 |
-| [bf-teamlead-slow-cron-checkin](plugins/blueprintflow/skills/bf-teamlead-slow-cron-checkin/SKILL.md) | 巡检 | 2-4h 偏差 audit |
-| [bf-issue-triage](plugins/blueprintflow/skills/bf-issue-triage/SKILL.md) | 巡检 | 3h cron 扫 GitHub issues, Teamlead 先判分发到 Architect/PM/QA |
+| [bf-teamlead-fast-cron-checkin](plugins/blueprintflow/skills/bf-teamlead-fast-cron-checkin/SKILL.md) | 巡检 | 项目定义 cadence 的 active-work 派活 |
+| [bf-teamlead-role-reminder](plugins/blueprintflow/skills/bf-teamlead-role-reminder/SKILL.md) | 巡检 | 项目定义 cadence 的 Teamlead 职责自检 |
+| [bf-teamlead-slow-cron-checkin](plugins/blueprintflow/skills/bf-teamlead-slow-cron-checkin/SKILL.md) | 巡检 | 项目定义 cadence 的偏差 audit |
+| [bf-issue-triage](plugins/blueprintflow/skills/bf-issue-triage/SKILL.md) | 巡检 | 项目定义 cadence 扫 GitHub issues, Teamlead 先判分发到 Architect/PM/QA |
 | [bf-phase-exit-gate](plugins/blueprintflow/skills/bf-phase-exit-gate/SKILL.md) | 收尾 | Phase 4 联签 + closure |
 | [bf-runtime-adapter](plugins/blueprintflow/skills/bf-runtime-adapter/SKILL.md) | 起步 | 运行时适配（通讯/文件/调度的模式对照表） |
 
@@ -118,7 +118,7 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 5. bf-blueprint-write   — 落蓝图
 6. bf-phase-plan        — 拆 Phase / Milestone + 首个 task seed
 7. bf-milestone-breakdown — selected milestone 拆 task skeleton + review
-8. (循环) bf-milestone-fourpiece + bf-git-workflow + bf-current-doc-standard（按需）+ bf-pr-review-flow
+8. (循环) bf-git-workflow + bf-task-fourpiece + bf-current-doc-standard（按需）+ bf-pr-review-flow
 9. (巡检) bf-teamlead-fast-cron-checkin + bf-teamlead-slow-cron-checkin
 10. (收尾) bf-phase-exit-gate
 ```

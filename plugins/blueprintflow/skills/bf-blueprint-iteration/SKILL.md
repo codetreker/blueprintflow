@@ -72,7 +72,7 @@ Rules:
 - If one topic is half decided, split it into smaller anchors so the locked parts can move while open questions remain visible.
 - Blueprint lock does not require a complete task split. It locks the Phase/Milestone plan and enough first-milestone task seed to prove executability.
 - `bf-milestone-breakdown` creates reviewed task skeleton folders and `task.md` contracts before concrete task work starts.
-- Skeleton task folders do not mean implementation has started; `TASKING` begins only when a specific task enters `bf-git-workflow` / `bf-milestone-fourpiece`.
+- Skeleton task folders do not mean implementation has started; `TASKING` begins only when a specific task enters `bf-git-workflow` / `bf-task-fourpiece`.
 - Each resulting task still owns one worktree, one branch, and one PR when that task starts.
 - `ACCEPTED` means code is complete and acceptance passed; only then may the accepted scope be promoted to `current`.
 - `CURRENT` means the accepted scope has already been reflected in `docs/blueprint/current/` and should leave the active next queue.
@@ -100,7 +100,7 @@ The implemented version lives in `docs/blueprint/current/` frontmatter (`accepte
 
 When the current implemented work passes acceptance, the next selection round can open. Its intake is **GitHub issues labeled `backlog`** — scan them once to decide what gets pulled into `docs/blueprint/next/`. After selection, ongoing state lives in `next` and `tasks`, not issue labels.
 
-After the user names a concrete iteration objective, read `references/lifecycle.md` for the full flow: scan backlog → write/resume `docs/blueprint/next/` with a status ledger → lock anchors → plan `docs/tasks/` as Phase -> Milestone with first-milestone task seed → run `bf-milestone-breakdown` for reviewed task skeletons → implement one task per PR → accept → promote accepted scope into `docs/blueprint/current/`. Reminder period is project-defined in AGENTS.md (`reminder-period: 2w` default).
+After the user names a concrete iteration objective, read `references/lifecycle.md` for the full flow: scan backlog → write/resume `docs/blueprint/next/` with a status ledger → lock anchors → plan `docs/tasks` as Phase -> Milestone with first-milestone task seed → run `bf-milestone-breakdown` for reviewed task skeletons → implement one task per PR → accept → promote accepted scope into `docs/blueprint/current/`. Reminder period is project-defined in `AGENTS.md`.
 
 ## Anti-patterns
 

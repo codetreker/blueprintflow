@@ -5,7 +5,7 @@ description: "Part of the Blueprintflow methodology. Use when starting a task br
 
 # Git Workflow (Task Protocol)
 
-Task is the PR atom. Pairs with `bf-milestone-breakdown` (reviewed `task.md` contract), `bf-pr-review-flow` (merge red lines), and `bf-milestone-fourpiece` (task four-piece set lands inside the PR).
+Task is the PR atom. Pairs with `bf-milestone-breakdown` (reviewed `task.md` contract), `bf-pr-review-flow` (merge red lines), and `bf-task-fourpiece` (task four-piece set lands inside the PR).
 
 ## Direct Invocation Guard
 
@@ -78,6 +78,20 @@ teamlead              roles                    GitHub
 
 N tasks = N worktrees + N branches + N PRs. A single Dev works in one task worktree at a time. Different Devs run N tasks in parallel, including tasks under the same milestone when dependencies allow.
 
+## Active Task Resume
+
+When a task starts, Teamlead records it in `docs/tasks/README.md`:
+
+```markdown
+## Active Task Resume
+
+| Scope | Execution | Active task | Owner | Worktree/branch | PR | Blocker | Progress |
+|---|---|---|---|---|---|---|---|
+| phase-6/milestone-2 | IMPLEMENTING | task-1-configure-job-api | Dev | .worktrees/task-1-configure-job-api / feat/task-1-configure-job-api | #820 | none | task-1-configure-job-api/progress.md |
+```
+
+Update this row when owner, branch, PR, blocker, or checkpoint changes. Remove it after task merge/closure; completed state lives in the task folder and milestone closure records.
+
 ## Anti-patterns
 
 - ❌ **A role opens a PR** — fragments the task, creates closure follow-up tails
@@ -89,7 +103,7 @@ N tasks = N worktrees + N branches + N PRs. A single Dev works in one task workt
 
 ## Pairs with
 
-- `bf-milestone-fourpiece` — task four-piece set commits in the same worktree
+- `bf-task-fourpiece` — task four-piece set commits in the same worktree
 - `bf-milestone-breakdown` — reviewed task skeletons and `task.md` contracts before task work starts
 - `bf-pr-review-flow` — dual review + squash merge after Teamlead opens PR
 - `workflow` — top-level lifecycle

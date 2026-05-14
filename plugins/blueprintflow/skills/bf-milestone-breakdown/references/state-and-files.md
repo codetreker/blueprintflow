@@ -5,9 +5,9 @@
 | State | Checkable meaning |
 |---|---|
 | `MILESTONE_PLANNED` | `phase-plan.md` and `milestone.md` exist; first task seed exists; task skeletons are not reviewed yet |
-| `BREAKING_DOWN` | Breakdown worktree/PR is active, unmerged, or task skeletons/review are incomplete |
-| `TASK_SET_READY` | Breakdown gate passed and published: for PR-governed projects, the merged breakdown PR contained the final `TASK_SET_READY` ledger update; for non-PR projects, equivalent review evidence was recorded in the same update; every task skeleton folder has `task.md`; `milestone.md` names dependency order and first ready task |
-| `TASKING` | A concrete task has entered `bf-git-workflow` / `bf-milestone-fourpiece`; four-piece/design work is active |
+| `BREAKING_DOWN` | Breakdown change is in progress, or task skeletons, review, evidence, or publication are incomplete |
+| `TASK_SET_READY` | Breakdown gate passed and published: the published breakdown change contains the final `TASK_SET_READY` ledger update, or non-PR evidence was recorded in the same update; every task skeleton folder has `task.md`; `milestone.md` names dependency order and first ready task |
+| `TASKING` | A concrete task has started; task-level planning, progress, or implementation work is active |
 
 ## File Timeline
 
@@ -34,11 +34,11 @@ docs/tasks/<phase>/<milestone>/
     └── task.md
 ```
 
-`task-0-breakdown-<milestone>/` is a planning task folder only when the project requires a PR for breakdown docs changes. It owns the breakdown PR record; it is not a product task and does not receive four-piece files.
+`task-0-breakdown-<milestone>/` is a planning task folder only when the project requires governed breakdown docs changes. It owns the breakdown publication record; it is not a product task and does not receive four-piece files.
 
 `breakdown.md` contains:
 
-- PR/worktree/branch owner
+- breakdown change owner
 - links to changed `milestone.md` and task skeleton folders
 - review status summary
 - handoff to first ready task
@@ -59,6 +59,7 @@ docs/tasks/<phase>/<milestone>/task-1-<name>/
 
 ## Ledger Update
 
-- `BREAKING_DOWN`: `Plan/task path` points to `task-0-breakdown-*` when a breakdown PR exists; otherwise it points to the milestone folder.
-- `TASK_SET_READY`: `Plan/task path` points to the first ready task folder; the ledger PR column records the merged breakdown PR, or the evidence link/record for non-PR projects, until the task starts. In PR-governed projects, this row change is part of the breakdown PR before merge; no follow-up PR or direct commit is allowed.
-- `TASKING`: `Plan/task path` points to the active task folder; PR/worktree may exist.
+- `docs/blueprint/next/README.md`: `Milestone path` points to the milestone folder only. Do not record task paths, task PRs, task owners, or task checkbox progress in the next ledger.
+- `BREAKING_DOWN`: next ledger stays on the milestone folder; `docs/tasks/README.md` or `milestone.md` points to `task-0-breakdown-*` when a governed breakdown change exists.
+- `TASK_SET_READY`: next ledger stays on the milestone folder; `milestone.md` names the first ready task and records the breakdown review/evidence. In governed-change projects, this row change belongs to the same breakdown change set before publication; do not publish `TASK_SET_READY` separately.
+- `TASKING`: next ledger stays on the milestone folder; task-level recovery lives in `docs/tasks/README.md`, `milestone.md`, and the active task folder.

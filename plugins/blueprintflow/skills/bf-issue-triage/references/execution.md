@@ -42,13 +42,14 @@ If native types not enabled → ask user/org admin to enable. Don't fall back to
 
 ## User review queue
 
-"Triaged but no type" issues accumulate. Slow-cron audits queue size (threshold default 5). User cadence: weekly or when flagged.
+"Triaged but no type" issues accumulate. Slow-cron audits queue size (threshold default 5). User review cadence is project-defined or when flagged.
 
 ```yaml
 # AGENTS.md override
 issue-triage:
   triaged-no-type-threshold: 5
-  triaged-no-type-review: weekly
+  triaged-no-type-review: <project cadence>
+  untriaged-stuck-threshold: <project threshold>
 ```
 
 ## Routing table
@@ -122,27 +123,28 @@ issue-triage owns the **entry gate**; `bf-blueprint-iteration` owns selection, n
 | Time | Event | Action |
 |---|---|---|
 | T+0 | User opens "login logo 5px off-center" | — |
-| T+1h | Cron fires, Teamlead scans | UI bug → route to QA |
-| T+1h05 | QA reproduces | Type: Bug, labels: `p2-normal` + `triaged`. Dispatch a patch task linked with `Closes gh#NNN` |
-| T+1h | User opens "collaborative multi-device sync" | — |
-| T+1h10 | PM reviews | New module, not in blueprint. Type: Feature, labels: `backlog` + `p1-high` + `triaged` |
+| next triage tick | Cron fires, Teamlead scans | UI bug → route to QA |
+| after QA review | QA reproduces | Type: Bug, labels: `p2-normal` + `triaged`. Dispatch a patch task linked with `Closes gh#NNN` |
+| next triage tick | User opens "collaborative multi-device sync" | — |
+| after PM review | PM reviews | New module, not in blueprint. Type: Feature, labels: `backlog` + `p1-high` + `triaged` |
 
 ## Cron config
 
-Default 3h. Override in AGENTS.md:
+Set cadence and thresholds in `AGENTS.md`:
 ```yaml
 issue-triage:
-  cron: 3h
+  cron: <project cadence>
   scope: open-only
+  untriaged-stuck-threshold: <project threshold>
 ```
 
 ## Boundaries
 
 | Skill | Dimension | Frequency |
 |---|---|---|
-| fast-cron | PR | 15m |
-| slow-cron | Drift | 2-4h |
-| issue-triage | Issue | 3h |
+| fast-cron | PR | project-defined |
+| slow-cron | Drift | project-defined |
+| issue-triage | Issue | project-defined |
 
 Three independent, no overlap.
 
@@ -164,5 +166,5 @@ Three independent, no overlap.
 
 - Has untriaged: `[issue-triage] N open, M untriaged routed: X→Architect / Y→PM / Z→QA`
 - All triaged: `[issue-triage] N open, all triaged`
-- Stuck: `[issue-triage] N open, M untriaged ≥24h → dispatch Teamlead`
+- Stuck: `[issue-triage] N open, M untriaged past triage threshold → dispatch Teamlead`
 - Confirm the notebook was reconciled and updated, or state why no notebook change was needed.

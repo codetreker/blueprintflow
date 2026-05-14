@@ -13,7 +13,7 @@ If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's in
 
 ## Pre-requisite: implementation design ✅
 
-Code tasks must have passed the four-role design review before the PR opens. Design doc lives in the task leaf folder as `design.md` (see `bf-milestone-fourpiece` for folder layout). Full spec in `bf-implementation-design`. Non-code tasks skip this step.
+Code tasks must have passed the four-role design review before the PR opens. Design doc lives in the task leaf folder as `design.md`. Task baseline docs come from `bf-task-fourpiece`; design review comes from `bf-implementation-design`. Non-code tasks skip this step.
 
 ## 🚫 Permanently forbidden (hard red line)
 

@@ -28,7 +28,7 @@ Use when all are true:
 - One `task.md` contract in every task skeleton folder.
 - `docs/tasks/README.md` and `docs/blueprint/next/README.md` updated with the new resume state.
 
-Do not create `spec.md`, `stance.md`, `acceptance.md`, `design.md`, or `progress.md`. Those start in `bf-milestone-fourpiece` after a concrete task enters `bf-git-workflow`.
+Output boundary: create task skeletons and `task.md` only. Do not create implementation, four-piece, design, or progress files in this skill.
 
 ## Steps
 
@@ -36,7 +36,7 @@ Do not create `spec.md`, `stance.md`, `acceptance.md`, `design.md`, or `progress
 
 | Project mode | Action |
 |---|---|
-| PR-governed | Create a real planning task folder such as `task-0-breakdown-<milestone>` plus its worktree and branch for breakdown ownership; do not open the PR yet. In that worktree, mark the selected milestone `BREAKING_DOWN` in the next ledger. |
+| PR-governed | Prepare the project-governed breakdown change workspace and a real planning task folder such as `task-0-breakdown-<milestone>`; do not publish the review yet. In that workspace, mark the selected milestone `BREAKING_DOWN` in the next ledger. |
 | Non-PR-governed | Mark the selected milestone `BREAKING_DOWN` in the next ledger in place. |
 
 2. See [references/state-and-files.md](references/state-and-files.md) for the planning task file shape.
@@ -44,8 +44,8 @@ Do not create `spec.md`, `stance.md`, `acceptance.md`, `design.md`, or `progress
 4. Create task skeleton folders and `task.md` contracts using [references/task-contract.md](references/task-contract.md).
 5. Update `milestone.md` with the task index, dependency order, parallelism notes, first ready task, and review table.
 6. Run the breakdown review gate using [references/review-checklist.md](references/review-checklist.md).
-7. Complete the breakdown gate. In PR-governed projects, commit the task skeletons, review table, and final ledger update to `TASK_SET_READY`; then open the breakdown PR, collect required reviews, pass CI, and merge it. In non-PR-governed projects, record equivalent review evidence in `milestone.md` and mark `TASK_SET_READY` in the same update.
-8. After `TASK_SET_READY` is published, dispatch the first ready task to `bf-git-workflow` + `bf-milestone-fourpiece`.
+7. Complete the breakdown gate. In PR-governed projects, the breakdown change set must contain the task skeletons, review table, and final ledger update to `TASK_SET_READY`; PR mechanics are handled by the project's PR workflow. In non-PR-governed projects, record equivalent review evidence in `milestone.md` and mark `TASK_SET_READY` in the same update.
+8. Record the handoff target: the first ready task named in `milestone.md`. Do not start that task in this skill.
 
 ## State Transition
 
@@ -59,7 +59,7 @@ See [references/state-and-files.md](references/state-and-files.md) for status me
 
 Architect, PM, QA, and Dev must approve every breakdown. They must classify sensitive paths from task scope, anchors, dependencies, APIs, files, and commands; do not rely only on the task author's `Sensitive paths` value. Security is required when any task touches auth, privacy, credentials, dangerous commands, remote agents, admin paths, or project-defined sensitive areas.
 
-Any rejection, red CI, unmerged required breakdown PR, or missing non-PR review evidence keeps the milestone in `BREAKING_DOWN`. Fix `task.md` or `milestone.md`, then re-review. Do not use a follow-up PR or direct commit to publish `TASK_SET_READY`; it belongs in the breakdown PR before merge.
+Any incomplete review/publication gate keeps the milestone in `BREAKING_DOWN`. Fix `task.md` or `milestone.md`, then re-review. Do not publish `TASK_SET_READY` separately; it belongs in the breakdown change set before publication.
 
 ## Anti-patterns
 

@@ -39,11 +39,11 @@ Wave planning is not a container PR exception. If the wave needs a planning chan
 
 Task skeleton folders and `task.md` contracts — created by `bf-milestone-breakdown` when the milestone is selected for execution.
 
-Task-level 4-piece (spec / PM stance / content-lock / acceptance / design) — created when each task starts.
+Task baseline docs (spec / PM stance / acceptance / optional content-lock) and later `design.md` — created only when each task starts.
 
 Container planning is **Phase/Milestone plan + first task seed**, not implementation specification.
 
-Each task is its own PR. Task PR flow inside a wave is identical to any other task PR — `bf-git-workflow` + `bf-milestone-fourpiece` + `bf-pr-review-flow` apply unchanged.
+Each task is its own PR. Task PR flow inside a wave is identical to any other task PR — `bf-git-workflow` + `bf-task-fourpiece` + `bf-pr-review-flow` apply unchanged.
 
 ### Wave closure signoff
 

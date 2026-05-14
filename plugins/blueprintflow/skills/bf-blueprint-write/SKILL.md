@@ -49,7 +49,7 @@ Each stance = one sentence + constraint + key scenario.
 
 **Validity test**: if you can't write "X is, Y isn't" for a stance, it's not a stance — it's a platitude.
 
-Every stance must produce 5-7 reverse-check items (used by `bf-milestone-fourpiece` stance checklist).
+Every stance must produce 5-7 reverse-check items (used by `bf-task-fourpiece` stance checklist).
 
 ## Process
 

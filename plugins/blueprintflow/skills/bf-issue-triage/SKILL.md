@@ -5,7 +5,7 @@ description: "Part of the Blueprintflow methodology. Use on issue-triage cron ti
 
 # Issue Triage
 
-3-hour recurring cron. Runtime syntax → `bf-runtime-adapter`.
+Project-defined issue-triage cadence. Runtime syntax → `bf-runtime-adapter`.
 
 ## Direct Invocation Guard
 
@@ -15,7 +15,7 @@ If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's in
 
 Cron:
 ```
-[issue triage · 3h]
+[issue triage]
 follow skill bf-issue-triage
 ```
 

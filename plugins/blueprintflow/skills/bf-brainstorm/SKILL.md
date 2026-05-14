@@ -16,7 +16,7 @@ If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's in
 | Use | Don't use |
 |---|---|
 | New product starting up (→ `bf-blueprint-write`) | Implementation choices (SQLite vs Postgres → spec brief) |
-| New module added to existing product | Milestone with stance already locked (→ `bf-milestone-fourpiece`) |
+| New module added to existing product | Milestone/task execution with stance already locked (route via `bf-workflow`) |
 | Existing stances in conflict | Mechanical PRs, small patches, hotfixes |
 | Major blueprint rewrite | — |
 

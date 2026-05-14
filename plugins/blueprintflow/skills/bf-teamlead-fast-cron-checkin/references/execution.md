@@ -28,7 +28,7 @@ Every idle role must walk away with new work. Only two exceptions:
 
 **Not legitimate**: the agent sent one message and went idle without actually waiting for anything. Kick them with new work.
 
-How to tell: if an agent has had no new output for 5+ minutes, it has most likely just stopped after speaking. Hand it new work. While the merge agent is running, everyone else can work in parallel:
+How to tell: if an agent has no new output by the next fast check-in and has not recorded a wait checkpoint, it has most likely stopped after speaking. Hand it new work. While the merge agent is running, everyone else can work in parallel:
 - Dev → start implementing the next ready task in its own worktree
 - Architect → next batch of task spec briefs / blueprint patches / reviewing older PRs
 - PM → next batch of stance cross-checks / content lock / demo screenshots
@@ -50,13 +50,21 @@ For each idle role:
 2. If state is `NO_PLAN`, dispatch Architect to run `bf-phase-plan` for Phase/Milestone planning before task work.
 3. If state is `MILESTONE_PLANNED`, dispatch `bf-milestone-breakdown` for the highest-priority unblocked milestone.
 4. If state is `BREAKING_DOWN`, dispatch the next missing breakdown action: task-contract fix, reviewer, CI-failure owner, merge-gate owner, or non-PR evidence recorder.
-5. If state is `TASK_SET_READY`, dispatch `bf-git-workflow` + `bf-milestone-fourpiece` for the first ready task.
+5. If state is `TASK_SET_READY`, dispatch `bf-git-workflow` + `bf-task-fourpiece` for the first ready task.
 6. For task-level states, pick the highest-priority task by blocker > dependency order > phase/milestone priority.
 7. Skip if already assigned or already linked to an open PR.
 8. Dispatch the exact role action needed in the milestone plan, task contract folder, task folder, or task worktree.
 9. Only if no active planned milestone or task needs the role, fall back to the default dispatch list below.
 
-If a `LOCKED` next anchor stays `NO_PLAN` for more than 24h, a selected milestone stays `MILESTONE_PLANNED` with clear dependencies, a `BREAKING_DOWN` milestone has no review/CI/merge movement for more than 24h, or a `TASK_SET_READY` milestone has no first-task owner, that's a stuck signal — flag it in the cron report and the Teamlead investigates.
+Use the project-defined stuck threshold. LLM default: two fast check-ins with no owner output, no blocker update, and no artifact change.
+
+Stuck signals:
+- `LOCKED` next anchor remains `NO_PLAN` past the threshold.
+- Selected milestone remains `MILESTONE_PLANNED` with clear dependencies past the threshold.
+- `BREAKING_DOWN` milestone has no review/CI/merge/evidence movement past the threshold.
+- `TASK_SET_READY` milestone has no first-task owner by the next fast check-in.
+
+Flag stuck signals in the cron report and dispatch the unblock action immediately.
 
 ### 4. Cron output format
 - One sentence reporting current forward motion (PR # + one-line goal).
@@ -109,7 +117,7 @@ When a PR is blocked, **look at the type of block first**, then decide who to as
 | **rebase / merge conflict** (DIRTY) | **subagent** | Cross-PR work; the author can't see the accumulated conflicts. A subagent batch-handles them quickly. |
 | **CI fail** (cov / test / e2e / lint) | **author** | The author understands their own task's stance and implementation best. A fresh-context subagent is more likely to break the byte-identical lock chain. |
 | **PR body missing a section** (mechanical N/A fillers, etc.) | **subagent** | Pure mechanical work (PATCH the body + empty commit + re-lint). |
-| **review pending > 1h** | **ping the reviewer** | Not a block; just nudge the reviewing role. |
+| **review pending past review threshold** | **ping the reviewer** | Not a block; nudge by project threshold. LLM default: next fast check-in with no reviewer output. |
 
 > **Note on flaky CI:** red CI always blocks merge. If a failure appears unrelated to this PR, open an issue to track the flake and assign a fix, but do not merge until the required checks are green. See `bf-pr-review-flow`, "Flaky test" section.
 
@@ -132,10 +140,10 @@ When a PR is blocked, **look at the type of block first**, then decide who to as
 - Treating audit as forward motion (audit + dispatch is forward motion).
 - Assuming "parallel will conflict" and refusing to parallelize (under the protocol, one task has one worktree; independent tasks run in parallel naturally).
 - **Skipping the `docs/tasks` queue and going straight to the default dispatch list** — if there are active tasks, an idle role should pick one up before maintenance work (see §3.1).
-- **A `LOCKED` next anchor sitting for >24h with `NO_PLAN`** — that's stuck, not parked. Flag it and unblock.
+- **A `LOCKED` next anchor sitting past the stuck threshold with `NO_PLAN`** — that's stuck, not parked. Flag it and unblock.
 - **A selected milestone sitting at `MILESTONE_PLANNED` with dependencies clear** — run `bf-milestone-breakdown`.
-- **A `BREAKING_DOWN` milestone with no review/CI/merge/evidence movement for >24h** — dispatch the missing reviewer, task-contract fix, CI-failure owner, merge-gate owner, or non-PR evidence recorder.
-- **A `TASK_SET_READY` milestone with no first-task owner** — assign the first ready task through `bf-git-workflow` + `bf-milestone-fourpiece`.
+- **A `BREAKING_DOWN` milestone with no review/CI/merge/evidence movement past the stuck threshold** — dispatch the missing reviewer, task-contract fix, CI-failure owner, merge-gate owner, or non-PR evidence recorder.
+- **A `TASK_SET_READY` milestone with no first-task owner** — assign the first ready task through `bf-git-workflow` + `bf-task-fourpiece`.
 - **"CI is green so merge"** — you must first read the PR body's Acceptance / Test plan and confirm every item is ticked (see §5).
 - **"subagent LGTM = merge signal"** — a subagent doesn't audit task completion. The Teamlead reads the PR body in person.
 - **CI fail → grab a subagent** — the author knows their own task best. Send it back to the author (see "PR BLOCKED routing").

@@ -31,7 +31,7 @@ Use the router for exact stage entry, but keep this mainline in view:
 3. Plan locked next scope: bf-phase-plan (Phase -> Milestone + first task seed)
 4. Break down the selected milestone: bf-milestone-breakdown (reviewed task skeletons)
 5. Start task loop:
-   bf-git-workflow -> bf-milestone-fourpiece -> bf-implementation-design
+   bf-git-workflow -> bf-task-fourpiece -> bf-implementation-design
    -> implementation/current-doc sync -> bf-pr-review-flow
 6. Coordinate while active:
    bf-teamlead-fast-cron-checkin / bf-teamlead-role-reminder / bf-teamlead-slow-cron-checkin / bf-issue-triage
@@ -76,7 +76,7 @@ After the user names a concrete objective, load only the matching skill(s):
 | Write or revise product shape before next lock | `bf-blueprint-write` |
 | Split locked next-blueprint anchors into execution Phases/Milestones, with task seed | `bf-phase-plan` |
 | Break a selected milestone into reviewed task skeletons | `bf-milestone-breakdown` |
-| Start task work | `bf-git-workflow`, then `bf-milestone-fourpiece` |
+| Start task work | `bf-git-workflow`, then `bf-task-fourpiece` |
 | Design before coding | `bf-implementation-design` |
 | Create/update/review `docs/current` | `bf-current-doc-standard` |
 | Review or merge a task PR | `bf-pr-review-flow` |
@@ -87,7 +87,7 @@ After the user names a concrete objective, load only the matching skill(s):
 | Cron/idle coordination | `bf-teamlead-fast-cron-checkin`, `bf-teamlead-role-reminder`, or `bf-teamlead-slow-cron-checkin` |
 | Close a Phase | `bf-phase-exit-gate` |
 
-Route backward when prerequisites are missing: if stances are unsettled, use `bf-brainstorm`; if next product shape is not locked, use `bf-blueprint-write`; if Phase/Milestone planning is missing, use `bf-phase-plan`; if milestone task skeletons are missing or unreviewed, use `bf-milestone-breakdown`; if a concrete task has not started, use `bf-git-workflow` and `bf-milestone-fourpiece` before implementation or PR review.
+Route backward when prerequisites are missing: if stances are unsettled, use `bf-brainstorm`; if next product shape is not locked, use `bf-blueprint-write`; if Phase/Milestone planning is missing, use `bf-phase-plan`; if milestone task skeletons are missing or unreviewed, use `bf-milestone-breakdown`; if a concrete task has not started, use `bf-git-workflow` and `bf-task-fourpiece` before implementation or PR review.
 
 ## Hard Rules
 

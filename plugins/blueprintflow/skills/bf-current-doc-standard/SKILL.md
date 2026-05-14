@@ -17,7 +17,7 @@ If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's in
 
 | Invoked by | Use |
 |---|---|
-| `bf-milestone-fourpiece` | Dev creates/updates segment 1.4 current docs |
+| Task implementation | Dev creates/updates current docs when code changes current behavior |
 | `bf-git-workflow` | Teamlead checks current-doc sync before PR |
 | `bf-pr-review-flow` | QA verifies presence; Architect verifies quality |
 

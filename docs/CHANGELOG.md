@@ -1,5 +1,20 @@
 # Changelog
 
+## v4.0.1 — 2026-05-14
+
+### Teamlead drive and execution hierarchy
+
+- Defined the execution hierarchy as major iteration -> dependency-ordered Phase -> user-facing Milestone -> task PR atom.
+- Added default sizing guidance: usually no more than 3 Phases per major iteration and no more than 3 milestones per Phase, with recorded exceptions required.
+- Clarified that Teamlead is the active driver; cron and reminders are backstops, not the primary engine.
+- Added Teamlead operating metrics: process progression and team utilization within runtime capacity.
+- Required idle teammates to receive useful next work, a legitimate wait state, or a diagnosed bottleneck with an unblock owner.
+- Aligned phase planning, milestone breakdown, milestone progress, role reminder, fast-cron, and README wording with these standards.
+
+### Plugin version
+
+- `plugin.json` bumped `4.0.0` -> `4.0.1` (patch: execution hierarchy and Teamlead drive clarification).
+
 ## v4.0.0 — 2026-05-14
 
 ### Blueprint state and task flow

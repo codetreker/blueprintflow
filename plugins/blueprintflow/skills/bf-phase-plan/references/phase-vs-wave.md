@@ -2,15 +2,21 @@
 
 **Core question: did the locked next scope introduce a new value loop?**
 
+Use a new Phase only for a dependency-ordered stage inside the active major iteration. A major iteration usually has no more than 3 Phases; if a fourth Phase seems necessary, first check whether the work is really a milestone wave inside an existing value loop.
+
 | Trigger | What it is | Where it lives |
 |---|---|---|
 | Locked next anchors define a new user value loop | New **Phase N+1** with exit gate | `docs/tasks/phase-N-<name>/phase-plan.md` |
-| Gap-to-target rewrite inside an existing value loop | **Milestone wave** inside existing Phase | `docs/tasks/phase-N-<name>/<milestone>/` or `docs/tasks/<wave-name>/` |
+| Gap-to-target rewrite inside an existing value loop | **Milestone wave** inside existing Phase | `docs/tasks/phase-N-<name>/<milestone>/` |
 | Ad-hoc bug / feature from GitHub issue | Task or task set under the relevant milestone | `docs/tasks/phase-N-<name>/<milestone>/<task>/` |
 
 ## Wave structure
 
 A wave = a milestone/task set with a shared closure gate inside an existing Phase. No new Phase row in the overview.
+
+A Phase usually has no more than 3 user-facing milestones. If a wave would add more, record why the Phase still holds together and why another Phase would be worse.
+
+Top-level wave folders such as `docs/tasks/<wave-name>/` are legacy or migration-only. New planning must place waves under the existing Phase so the Phase -> Milestone -> Task hierarchy stays intact.
 
 ```
 docs/tasks/phase-N-<name>/

@@ -4,6 +4,8 @@
 
 从模糊概念到可发布软件，6 角色 + Teamlead 协议推进。`current` 只放已实现且验收通过的蓝图，`next` 承载锁定/实现中的蓝图，`tasks` 先记录 Phase → Milestone 计划，再做 milestone breakdown 生成 task skeleton，一 task 一 PR 闭环交付。
 
+一个大 iteration 通常拆成不超过 3 个有依赖顺序的 Phase；每个 Phase 通常拆成不超过 3 个 user-facing Milestone；Task 才是执行和 PR 原子。Teamlead 是流程驱动者，衡量标准是流程有没有推进、team 有没有在 runtime capacity 内被充分使用。
+
 ---
 
 ## 隐喻：城市工程
@@ -21,7 +23,9 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 核心思想：
 
 - **蓝图状态分层** — `current` 是已实现验收，`next` 是待实现/实现中，`tasks` 是 next → current 的施工路径
-- **按价值闭环分期** — Phase 0 地基 / Phase 1 主体 / Phase 2 装修，不按工种分期
+- **按价值闭环分期** — Phase 是大 iteration 内有依赖顺序的阶段，通常不超过 3 个，不按工种分期
+- **按用户可见结果拆里程碑** — 每个 Phase 通常不超过 3 个 user-facing Milestone，Task 才是 PR 原子
+- **Teamlead 持续驱动** — 不等 cron；有人空闲就派活、记录等待或诊断卡点
 - **阶段性验收签字** — Phase 退出 4 联签 = 阶段验收报告
 - **质量门留痕** — 每个闸门有 commit SHA 锚点，可追溯
 - **甲方代表全程在场** — PM 立场反查 = 不让施工偏离需求

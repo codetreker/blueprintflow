@@ -5,7 +5,7 @@ description: "Part of the Blueprintflow methodology. Use when locked next-bluepr
 
 # Phase Plan
 
-Once `docs/blueprint/next/` has `LOCKED` anchors, the Architect leads. Break the selected next work into Phases and Milestones, with enough first-milestone task seed to prove execution can start. Complete task decomposition waits for `bf-milestone-breakdown`. Each Phase anchors to a **value loop** (something an end user can actually use), not to technical layers.
+Once `docs/blueprint/next/` has `LOCKED` anchors, the Architect leads. Break the selected next work into dependency-ordered Phases and user-facing Milestones, with enough first-milestone task seed to prove execution can start. Complete task decomposition waits for `bf-milestone-breakdown`. Each Phase anchors to a **value loop** (something an end user can actually use), not to technical layers.
 
 ## Direct Invocation Guard
 
@@ -19,11 +19,13 @@ Before using this skill, read `references/preflight.md` to confirm it applies. T
 
 | Level | Meaning | PR ownership |
 |---|---|---|
-| Phase | Value loop with exit gates | Not a PR by itself |
-| Milestone | Capability or deliverable group inside a Phase | Groups tasks; not a PR by itself |
-| Task | Smallest executable unit | **One task = one worktree + one branch + one PR** |
+| Phase | Dependency-ordered stage inside one major iteration, centered on a value loop with exit gates | Not a PR by itself |
+| Milestone | User-facing capability or deliverable group inside a Phase; owns acceptance boundary, dependency order, and first-ready task selection | Groups tasks; not a PR by itself |
+| Task | Smallest executable unit inside a milestone: one acceptance slice | **One task = one worktree + one branch + one PR** |
 
 `docs/tasks/` is the execution path from locked `next` anchors to accepted `current` behavior. At freeze/lock time it records Phase/Milestone planning; `bf-milestone-breakdown` later creates reviewed task skeleton folders; each concrete task gains four-piece/design files only when that task starts. It does not replace the product-shape source of truth in `docs/blueprint/next/`.
+
+Default sizing is deliberately small: one major iteration usually has no more than 3 Phases, and one Phase usually has no more than 3 milestones. If scope genuinely needs more, record the exception in `phase-plan.md` with the dependency reason and why a milestone wave would not fit.
 
 ## Phase vs wave
 
@@ -36,7 +38,9 @@ Split by **value loop**, not by technical layer:
 - ❌ Wrong: Phase 1 schema / Phase 2 server / Phase 3 client (technical layers, no value)
 - ✅ Right: Phase 1 identity loop / Phase 2 collaboration loop / Phase 3 second-dimension product / Phase 4+ remaining (each Phase independently demonstrable)
 
-> **Real example (Borgee):** Phase 0 foundation → Phase 1 identity loop → Phase 2 collaboration loop ⭐ → Phase 3 second dimension → Phase 4+ remaining
+> **Large-roadmap example (Borgee):** Phase 0 foundation -> Phase 1 identity loop -> Phase 2 collaboration loop -> Phase 3 second dimension -> Phase 4+ remaining. This is an exception-sized roadmap, not the default shape for one major iteration.
+
+Preserve dependency order. Phase N+1 should not start until Phase N exit gates pass, unless `phase-plan.md` records a carry-over gate or waiver. Milestones should likewise stay ordered unless `milestone.md` records safe parallelism.
 
 ## Exit gate design
 

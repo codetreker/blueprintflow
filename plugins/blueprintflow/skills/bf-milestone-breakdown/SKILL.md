@@ -5,7 +5,7 @@ description: "Part of the Blueprintflow methodology. Use when a planned mileston
 
 # Milestone Breakdown
 
-Turn one selected milestone into reviewed task skeleton folders. Stop before task execution.
+Turn one selected user-facing milestone into reviewed task skeleton folders while preserving milestone dependency order. Stop before task execution.
 
 ## Direct Invocation Guard
 
@@ -51,7 +51,7 @@ docs/blueprint/next Work during breakdown: PENDING -> IMPLEMENTING
 
 - Run [references/review-checklist.md](references/review-checklist.md).
 - Base reviewers: Architect, PM, QA, Dev.
-- Add Security when the checklist marks any task sensitive.
+- Add Security when the checklist marks any breakdown task sensitive. Code-task Security review remains mandatory under `bf-team-roles`.
 - If review, publication, or evidence is incomplete: keep `BREAKING_DOWN`, fix `task.md` or `milestone.md`, and re-run review.
 - Publish the reviewed task set only with the breakdown change set.
 

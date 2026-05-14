@@ -96,9 +96,9 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 | [bf-team-roles](plugins/blueprintflow/skills/bf-team-roles/SKILL.md) | 起团 | 6 个 role coordinator prompt 模板 + helper 边界 |
 | [bf-brainstorm](plugins/blueprintflow/skills/bf-brainstorm/SKILL.md) | 讨论 | 多轮讨论锁立场 + 反约束 |
 | [bf-blueprint-write](plugins/blueprintflow/skills/bf-blueprint-write/SKILL.md) | 立项 | 蓝图模板（立场 / 概念 / v0/v1 边界） |
-| [bf-phase-plan](plugins/blueprintflow/skills/bf-phase-plan/SKILL.md) | 规划 | locked next anchors + fresh lock-gate evidence 拆 Phase / Milestone + 首个 task seed + 退出 gate |
+| [bf-phase-plan](plugins/blueprintflow/skills/bf-phase-plan/SKILL.md) | 规划 | selected next anchors 拆 Phase / Milestone + 首个 task seed + 退出 gate |
 | [bf-milestone-breakdown](plugins/blueprintflow/skills/bf-milestone-breakdown/SKILL.md) | 规划 | selected milestone 拆 reviewed task skeletons + `task.md` contract |
-| [bf-blueprint-iteration](plugins/blueprintflow/skills/bf-blueprint-iteration/SKILL.md) | 演进 | current/next/tasks 状态推进 + backlog intake + Next lock integrity gate |
+| [bf-blueprint-iteration](plugins/blueprintflow/skills/bf-blueprint-iteration/SKILL.md) | 演进 | current/next/tasks 状态推进 + backlog intake + source trace |
 | [bf-task-state-standard](plugins/blueprintflow/skills/bf-task-state-standard/SKILL.md) | 实施 | `docs/tasks` 文件职责、resume ledger、task/milestone 状态标准 |
 | [bf-task-execute](plugins/blueprintflow/skills/bf-task-execute/SKILL.md) | 实施 | 单个 task 从 ready 到 accepted 的总控 |
 | [bf-task-fourpiece](plugins/blueprintflow/skills/bf-task-fourpiece/SKILL.md) | 实施 | task 4 件套（spec / stance / acceptance / content-lock） |
@@ -123,7 +123,7 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 3. bf-team-roles        — 按 runtime capacity 起 role coordinators；helpers 只做 leaf work
 4. bf-brainstorm        — 多轮讨论锁立场
 5. bf-blueprint-write   — 落蓝图
-6. bf-blueprint-iteration — 已有 accepted current 后，写 source trace、锁 next anchors、跑 Next lock integrity gate
+6. bf-blueprint-iteration — 已有 accepted current 后，写 source trace、选择 next anchors
 7. bf-phase-plan        — 拆 Phase / Milestone + 首个 task seed
 8. bf-milestone-breakdown — selected milestone 拆 task skeleton + review
 9. (循环) bf-task-execute（内部串起 git workflow / fourpiece / design / current-doc / verification / PR review）

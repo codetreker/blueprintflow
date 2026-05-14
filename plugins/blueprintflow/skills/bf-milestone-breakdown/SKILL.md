@@ -5,7 +5,7 @@ description: "Part of the Blueprintflow methodology. Use when a planned mileston
 
 # Milestone Breakdown
 
-Convert one selected user-facing milestone into reviewed task skeleton folders. Preserve milestone dependency order. Stop before task execution.
+Turn one selected milestone into reviewed task skeleton folders. Stop before task execution.
 
 ## Direct Invocation Guard
 
@@ -17,7 +17,6 @@ Use when all are true:
 
 - The selected milestone exists in `docs/tasks/` and has not been broken into reviewed task contracts.
 - Relevant `docs/blueprint/next` anchors are `LOCKED`.
-- Recorded `bf-blueprint-iteration` Next lock integrity gate evidence exists and is fresh under that gate's freshness criteria.
 - `phase-plan.md` and milestone-level `milestone.md` exist.
 - A first task seed exists in `milestone.md` or `task-seed.md`.
 - Dependencies are clear enough to start this milestone.
@@ -25,7 +24,6 @@ Use when all are true:
 ## Outputs
 
 - `milestone.md`: task index, dependency order, parallelism, first ready task, review summary.
-- `task-0-breakdown-<milestone>/breakdown.md`: governed breakdown publication record when the project requires governed docs changes.
 - `task-N-<name>/task.md`: one reviewed contract per skeleton folder.
 - `docs/tasks/README.md`: breakdown/task resume state.
 - `docs/blueprint/next/README.md`: milestone-level `Work` only.
@@ -33,15 +31,14 @@ Use when all are true:
 
 ## Steps
 
-1. Prepare the breakdown location: PR-governed projects use the governed change workspace and create `task-0-breakdown-<milestone>/breakdown.md`; non-PR-governed projects work in place.
-2. Check the recorded Next lock integrity gate. If evidence is missing, stale, or failed, STOP and route to `bf-blueprint-iteration`; do not create task skeletons.
-3. In that location, set next ledger `Work` to `IMPLEMENTING`; keep `Milestone path` at the milestone folder. Do not publish yet.
-4. Use [references/state-and-files.md](references/state-and-files.md) for planning task files and state meanings.
-5. Use [references/task-contract.md](references/task-contract.md) to read inputs and write each `task.md`.
-6. Update `milestone.md`: task index, dependency order, parallelism, first ready task, review table.
-7. Run [references/review-checklist.md](references/review-checklist.md).
-8. Complete the gate: PR-governed projects publish one change set containing task skeletons, review table, `milestone.md` first-ready update, and next-ledger `IMPLEMENTING` update; non-PR-governed projects record equivalent evidence in `milestone.md`.
-9. Handoff: name the first ready task in `milestone.md`, then route to `bf-task-execute`. Do not start that task here.
+1. Prepare the breakdown location: PR-governed projects use the governed change workspace and create `task-0-breakdown-<milestone>`; non-PR-governed projects work in place.
+2. In that location, set next ledger `Work` to `IMPLEMENTING`; keep `Milestone path` at the milestone folder. Do not publish yet.
+3. Use [references/state-and-files.md](references/state-and-files.md) for planning task files and state meanings.
+4. Use [references/task-contract.md](references/task-contract.md) to read inputs and write each `task.md`.
+5. Update `milestone.md`: task index, dependency order, parallelism, first ready task, review table.
+6. Run [references/review-checklist.md](references/review-checklist.md).
+7. Complete the gate: PR-governed projects publish one change set containing task skeletons, review table, `milestone.md` first-ready update, and next-ledger `IMPLEMENTING` update; non-PR-governed projects record equivalent evidence in `milestone.md`.
+8. Handoff: name the first ready task in `milestone.md`, then route to `bf-task-execute`. Do not start that task here.
 
 ## State Transition
 
@@ -54,7 +51,7 @@ docs/blueprint/next Work during breakdown: PENDING -> IMPLEMENTING
 
 - Run [references/review-checklist.md](references/review-checklist.md).
 - Base reviewers: Architect, PM, QA, Dev.
-- Add Security when the checklist marks any breakdown task sensitive. Code-task Security review remains mandatory under `bf-team-roles`.
+- Add Security when the checklist marks any task sensitive.
 - If review, publication, or evidence is incomplete: keep `BREAKING_DOWN`, fix `task.md` or `milestone.md`, and re-run review.
 - Publish the reviewed task set only with the breakdown change set.
 
@@ -65,7 +62,6 @@ docs/blueprint/next Work during breakdown: PENDING -> IMPLEMENTING
 - Treating skeleton folders as task worktrees or implementation PRs.
 - Leaving task scope only in `milestone.md`; task details belong in each `task.md`.
 - Skipping review because the first task seed looked obvious.
-- Starting breakdown from missing, stale, or failed Next lock integrity evidence.
 - Creating a task too large for one PR, or splitting by technical layer when value-slice tasks are possible.
 
 ## How to invoke

@@ -5,7 +5,7 @@ description: "Part of the Blueprintflow methodology. Use when locked next-bluepr
 
 # Phase Plan
 
-Use this skill only after `docs/blueprint/next/` has `LOCKED` anchors. Architect leads. Create dependency-ordered Phases, user-facing Milestones, and the first-milestone task seed. Do not decompose all tasks here; route task contracts to `bf-milestone-breakdown`. Anchor each Phase to a user value loop, not to a technical layer.
+Once `docs/blueprint/next/` has `LOCKED` anchors, the Architect leads. Break the selected next work into Phases and Milestones, with enough first-milestone task seed to prove execution can start. Complete task decomposition waits for `bf-milestone-breakdown`. Each Phase anchors to a **value loop** (something an end user can actually use), not to technical layers.
 
 ## Direct Invocation Guard
 
@@ -15,23 +15,19 @@ If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's in
 
 Before using this skill, read `references/preflight.md` to confirm it applies. The decision graph checks: single-file change? mechanical PR type? blueprint missing? If any skip condition applies, skip this planning flow.
 
-Before planning, require recorded `bf-blueprint-iteration` Next lock integrity gate evidence in `docs/blueprint/_meta/<target-version>/next-lock-integrity.md`. Treat evidence as stale if selected anchors, README rows, detail anchors, blockers/open anchors, source issue/note trace, milestone paths, `phase-plan.md`, or `milestone.md` changed after the recorded gate result. If evidence is missing, stale, or failed, STOP and route back to `bf-blueprint-iteration`. Do not create or continue a Phase plan from README ledger status alone.
-
 ## Phase / Milestone / Task
 
 | Level | Meaning | PR ownership |
 |---|---|---|
-| Phase | Plan a dependency-ordered stage inside one major iteration. Anchor it to one value loop and exit gates. | Not a PR by itself |
-| Milestone | Plan a user-facing deliverable inside a Phase. Record acceptance boundary, dependency order, and first-ready task selection. | Groups tasks; not a PR by itself |
-| Task | Execute one milestone acceptance slice. | **One task = one worktree + one branch + one PR** |
+| Phase | Value loop with exit gates | Not a PR by itself |
+| Milestone | Capability or deliverable group inside a Phase | Groups tasks; not a PR by itself |
+| Task | Smallest executable unit | **One task = one worktree + one branch + one PR** |
 
 `docs/tasks/` is the execution path from locked `next` anchors to accepted `current` behavior. At freeze/lock time it records Phase/Milestone planning; `bf-milestone-breakdown` later creates reviewed task skeleton folders; each concrete task gains four-piece/design files only when that task starts. It does not replace the product-shape source of truth in `docs/blueprint/next/`.
 
-Use the default size: <=3 Phases per major iteration and <=3 milestones per Phase. If scope exceeds that, record the exception in `phase-plan.md`: dependency reason, extra Phase/milestone count, and why a milestone wave would not fit.
-
 ## Phase vs wave
 
-Before adding a Phase, read `references/phase-vs-wave.md`. Ask: did locked next scope introduce a new value loop? Yes -> create a Phase. No -> create a milestone wave inside the existing Phase. Ad-hoc issue -> create a task or task set under the relevant milestone.
+Not every batch of work is a new Phase. Read `references/phase-vs-wave.md` for the rule: **did locked next scope introduce a new value loop?** Yes → new Phase. No → milestone wave inside an existing Phase. Ad-hoc issue → single task or task set under the relevant milestone.
 
 ## How to split Phases
 
@@ -40,9 +36,7 @@ Split by **value loop**, not by technical layer:
 - ❌ Wrong: Phase 1 schema / Phase 2 server / Phase 3 client (technical layers, no value)
 - ✅ Right: Phase 1 identity loop / Phase 2 collaboration loop / Phase 3 second-dimension product / Phase 4+ remaining (each Phase independently demonstrable)
 
-> **Large-roadmap exception (Borgee):** Phase 0 foundation -> Phase 1 identity loop -> Phase 2 collaboration loop -> Phase 3 second dimension -> Phase 4+ remaining. Do not use this as the default shape for one major iteration.
-
-Preserve dependency order. Phase N+1 should not start until Phase N exit gates pass, unless `phase-plan.md` records a carry-over gate or waiver. Milestones should likewise stay ordered unless `milestone.md` records safe parallelism.
+> **Real example (Borgee):** Phase 0 foundation → Phase 1 identity loop → Phase 2 collaboration loop ⭐ → Phase 3 second dimension → Phase 4+ remaining
 
 ## Exit gate design
 

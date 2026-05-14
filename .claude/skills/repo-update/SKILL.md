@@ -56,9 +56,11 @@ Write skills as executable instructions, not essays.
 
 - Use imperative verbs: `Read`, `Create`, `Dispatch`, `Stop`, `Record`, `Verify`.
 - Name the trigger, action, owner, artifact, and stop condition.
+- Prefer positive commands. Replace prohibition text with the required action, required state, or stop condition.
 - Prefer tables, numbered steps, and checklists over paragraphs.
 - Keep background only when it changes a decision.
 - Keep wording short. Remove examples or explanations that do not prevent a real mistake.
+- Put durable docs at decision/state level: work item, owner or reviewer role, result/status, and blocker owner when blocked. Use PR comments or local notes for transient run details.
 - Avoid vague verbs: `consider`, `think about`, `handle`, `support`, `ensure` without a concrete check.
 - Review every changed skill for instruction clarity before LGTM.
 

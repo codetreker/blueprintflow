@@ -12,11 +12,10 @@
 - Required Teamlead resume after interruption to reconcile notebook plus source-of-truth state and dispatch the restart action in the same turn.
 - Required repo-update skill edits to use directive, structured, concise language.
 - Required failure-driven skill updates to record the observed failure, owning skill, prevention check, and review result.
-- Required `bf-workflow` to keep Next lock integrity evidence on the normal lock path before Phase planning or milestone breakdown.
-- Required issue-backed source trace to map picked issues to selected anchors at decision level before the Next lock integrity gate passes.
 - Required a 4-lens local review gate after skill edits and before PR `Review checklist` items are checked.
-- Added a Next lock integrity gate before Phase/Milestone planning and milestone breakdown so source trace, detail docs, README rows, stable anchors, split scopes, blockers, milestone paths, durable gate evidence, and stale Phase plans are checked before execution planning continues.
-- Aligned phase planning, milestone breakdown, milestone progress, role reminder, fast-cron, repo-update, and README wording with these standards.
+- Added the plugin iteration-flow design doc covering source intake, next-anchor state, parent-ledger state ownership, state-based completion rules, and one-milestone-at-a-time breakdown.
+- Added the skill-runtime design doc that treats Blueprintflow skills as LLM runtime control modules with explicit inputs, preconditions, side effects, return values, error handling, and review tests.
+- Aligned role reminder, repo-update, README, and design docs with these standards. Full child-skill state-model rewrites remain a follow-up.
 
 ### Plugin version
 

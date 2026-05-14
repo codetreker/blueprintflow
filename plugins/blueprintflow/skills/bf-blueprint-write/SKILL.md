@@ -58,7 +58,7 @@ Every stance must produce 5-7 reverse-check items (used by `bf-task-fourpiece` s
 | 1. Concept discussion | Paired with `bf-brainstorm`. Lock 1-2 concepts/stances per round |
 | 2. Write next-blueprint PR | Architect + PM write `docs/blueprint/next/<module>.md` and update `docs/blueprint/next/README.md` anchors/status. Dev + QA review too — stances must be accepted by all roles |
 | 3. Core stance list | Distill 10-15 core stances into `docs/blueprint/next/README.md`, mark ⭐ important ones |
-| 4. Next anchor lock | Approved anchors in `docs/blueprint/next/README.md` move to `LOCKED`; hand execution-ready anchors to `bf-blueprint-iteration` for lock evidence before `bf-phase-plan`; later changes require PR + four-role review and affected tasks rechecked |
+| 4. Next anchor lock | Approved anchors in `docs/blueprint/next/README.md` move to `LOCKED`; later changes require PR + four-role review and affected tasks rechecked |
 
 ## Anti-patterns
 

@@ -1,7 +1,7 @@
 # Fast-cron execution logic
 
 
-Do not use cron as a status report. Use it as a forward-motion backstop. On every check-in, improve process progression or team utilization. Give every idle role useful work, a recorded legitimate wait state, or a bottleneck diagnosis with an unblock owner.
+The cron is not a status report. It is a forward-motion action. Every check-in must hand out new work to every idle role; otherwise you've failed the job.
 
 Before dispatching, read the Teamlead notebook at `~/.blueprint/<repo-dir>/teamlead.md` using `bf-workflow/references/teamlead-notebook.md`. After assigning work, recording a legitimate wait state, flagging a blocker, or making a merge-gate decision, update the notebook in the same turn.
 
@@ -18,13 +18,9 @@ Before dispatching, read the Teamlead notebook at `~/.blueprint/<repo-dir>/teaml
 | Anti-patterns | Avoid audit-only or CI-only decisions |
 
 ### 1. The cron must ACT, not just audit
-Give every idle role one of these outcomes:
-- New useful work.
-- A specific blocker wait state with PR # / dependency and unblock owner.
-- A current in-flight task wait state with a recorded checkpoint.
-- A bottleneck diagnosis with an unblock owner.
-
-Do not let cron become the first project mover. If the same forward action appears on two fast check-ins, flag active-drive failure and dispatch the unblock action immediately.
+Every idle role must walk away with new work. Only two exceptions:
+- They are waiting on a specific blocker (write down the PR # / dependency).
+- Their current in-flight task hasn't been wrapped up yet.
 
 ### 2. When "waiting on X" counts as legitimate idle
 
@@ -51,15 +47,13 @@ Before reaching for the default dispatch list, read `docs/blueprint/next/README.
 
 For each idle role:
 1. Find `LOCKED` next anchors with `Work` = `PENDING`, `IMPLEMENTING`, or `COMPLETED`.
-2. If `Work` is `PENDING`, no milestone plan exists, and fresh Next lock integrity gate evidence is missing, stale, or failed, dispatch Architect to `bf-blueprint-iteration` to produce fresh lock evidence before `bf-phase-plan`.
-3. If `Work` is `PENDING`, fresh gate evidence exists, and no milestone plan exists, dispatch Architect to run `bf-phase-plan`.
-4. If `Work` is `PENDING`, the selected milestone is planned but not broken down, and fresh Next lock integrity gate evidence is missing, stale, or failed, dispatch Architect to `bf-blueprint-iteration` to produce fresh lock evidence before `bf-milestone-breakdown`.
-5. If `Work` is `PENDING`, fresh gate evidence exists, and the selected milestone is planned but not broken down, dispatch `bf-milestone-breakdown`.
-6. If `Work` is `IMPLEMENTING`, read `docs/tasks/README.md`, `milestone.md`, and the relevant task `progress.md`, then dispatch the next missing action: breakdown fix/review, `bf-task-execute`, implementation owner, PR gate owner, acceptance owner, `bf-milestone-progress`, or `bf-phase-exit-gate`.
-7. If `Work` is `COMPLETED`, confirm required milestone, wave, or Phase gates are recorded, then dispatch `bf-blueprint-iteration` for accepted-scope promotion toward current unless the row already reflects current sync.
-8. Skip if already assigned or already linked to an open PR.
-9. Dispatch the exact role action needed in the milestone plan, task contract folder, task folder, or task worktree.
-10. Only if no active planned milestone or task needs the role, fall back to the default dispatch list below.
+2. If `Work` is `PENDING` and no milestone plan exists, dispatch Architect to run `bf-phase-plan`.
+3. If `Work` is `PENDING` and the selected milestone is planned but not broken down, dispatch `bf-milestone-breakdown`.
+4. If `Work` is `IMPLEMENTING`, read `docs/tasks/README.md`, `milestone.md`, and the relevant task `progress.md`, then dispatch the next missing action: breakdown fix/review, `bf-task-execute`, implementation owner, PR gate owner, acceptance owner, `bf-milestone-progress`, or `bf-phase-exit-gate`.
+5. If `Work` is `COMPLETED`, confirm required milestone, wave, or Phase gates are recorded, then dispatch `bf-blueprint-iteration` for accepted-scope promotion toward current unless the row already reflects current sync.
+6. Skip if already assigned or already linked to an open PR.
+7. Dispatch the exact role action needed in the milestone plan, task contract folder, task folder, or task worktree.
+8. Only if no active planned milestone or task needs the role, fall back to the default dispatch list below.
 
 Use the project-defined stuck threshold. LLM default: two fast check-ins with no owner output, no blocker update, and no artifact change.
 

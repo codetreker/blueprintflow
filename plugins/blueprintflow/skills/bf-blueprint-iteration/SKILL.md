@@ -73,17 +73,17 @@ Rules:
 
 ## Next Lock Integrity Gate
 
-Architect owns this gate. Run it after source trace exists and before marking selected anchors ready for `bf-phase-plan`. Rerun it before resuming an existing Phase plan or starting `bf-milestone-breakdown`.
+Architect owns this gate. Run it after source trace exists and before marking selected anchors ready for `bf-phase-plan`. Before resuming an existing Phase plan or starting `bf-milestone-breakdown`, check recorded gate evidence; rerun only when evidence is missing, stale, or failed.
 
 | Check | Required action |
 |---|---|
-| Source trace | Verify `docs/blueprint/_meta/<target-version>/source-issues.md` lists picked backlog issues, or `docs/blueprint/_meta/<target-version>/source-notes.md` records the non-issue source. |
+| Source trace | Verify `docs/blueprint/_meta/<target-version>/source-issues.md` lists picked issues and the selected anchors they inform, or `docs/blueprint/_meta/<target-version>/source-notes.md` records non-issue sources and selected anchors at decision level. |
 | Ledger row | Verify every selected `LOCKED` anchor appears in `docs/blueprint/next/README.md` with Decision, Work, and Next action. Allow `Milestone path` to be `-` before `bf-phase-plan`; require the milestone folder path after planning exists. |
 | Detail anchor | Verify every selected `LOCKED` anchor has a stable `§X.Y` heading, slug anchor, or explicit anchor ID in detailed `docs/blueprint/next/` files. |
 | Ledger-to-detail link | Replace whole-doc references with section-level references. Each README row must point to the exact detail anchor it locks. |
 | Split topics | If one topic splits into locked and open parts, create separate anchors. Keep locked scope and open blockers separate in README and detail docs. |
 | Blocker coverage | Record every blocker that prevents execution in the detail docs and summarize it in the README row or linked open anchor. |
-| Reverse trace | For each selected anchor, verify source issue or source note -> README row -> detail anchor can be followed without guessing. |
+| Reverse trace | For each selected anchor, verify source issue or source note -> selected anchor -> detail anchor can be followed without guessing. |
 | Phase-plan handoff | If a Phase plan or milestone already exists, verify README `Milestone path` -> `phase-plan.md` / `milestone.md` -> cited next anchor -> source trace. |
 | Freshness | Treat evidence as stale if selected anchors, README rows, detail anchors, blockers/open anchors, source issue/note trace, milestone paths, `phase-plan.md`, or `milestone.md` changed after the recorded gate result. |
 
@@ -93,7 +93,7 @@ Record the gate result in `docs/blueprint/_meta/<target-version>/next-lock-integ
 
 When resuming after merge, read `docs/blueprint/_meta/<target-version>/next-lock-integrity.md` first. If the file or `## Gate result` section is missing, treat evidence as missing.
 
-If the gate is missing, stale, or failed, STOP. Architect routes repair through `docs/blueprint/next`, source trace, or `docs/tasks` as needed, reruns role review, and records a fresh gate result before Phase/Milestone planning or milestone breakdown continues.
+If the gate is missing, stale, or failed, STOP. Return to Architect to produce fresh gate evidence from current `docs/blueprint/next`, source trace, and `docs/tasks` state before Phase/Milestone planning or milestone breakdown continues.
 
 ## Version numbers
 
@@ -118,7 +118,7 @@ The implemented version lives in `docs/blueprint/current/` frontmatter (`accepte
 
 When the current implemented work passes acceptance, the next selection round can open. Its intake is **GitHub issues labeled `backlog`** — scan them once to decide what gets pulled into `docs/blueprint/next/`. After selection, ongoing state lives in `next` and `tasks`, not issue labels.
 
-After the user names a concrete iteration objective, read `references/lifecycle.md` for the full flow: scan backlog → write source trace → write/resume `docs/blueprint/next/` with a status ledger → lock anchors → run the Next lock integrity gate → plan `docs/tasks` as Phase -> Milestone with first-milestone task seed → run `bf-milestone-breakdown` for reviewed task skeletons → run `bf-task-execute` one task per PR → run `bf-milestone-progress` after accepted tasks → promote accepted scope into `docs/blueprint/current/`. Use [references/promotion-checklist.md](references/promotion-checklist.md) for accepted-scope promotion. Reminder period is project-defined in `AGENTS.md`.
+After the user names a concrete iteration objective, read `references/lifecycle.md` for the full flow: scan backlog → write/resume `docs/blueprint/next/` with selected anchors and status ledger → finalize source trace → lock anchors → run the Next lock integrity gate → plan `docs/tasks` as Phase -> Milestone with first-milestone task seed → run `bf-milestone-breakdown` for reviewed task skeletons → run `bf-task-execute` one task per PR → run `bf-milestone-progress` after accepted tasks → promote accepted scope into `docs/blueprint/current/`. Use [references/promotion-checklist.md](references/promotion-checklist.md) for accepted-scope promotion. Reminder period is project-defined in `AGENTS.md`.
 
 ## Anti-patterns
 

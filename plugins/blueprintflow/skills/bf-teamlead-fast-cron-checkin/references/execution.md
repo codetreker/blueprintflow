@@ -51,9 +51,9 @@ Before reaching for the default dispatch list, read `docs/blueprint/next/README.
 
 For each idle role:
 1. Find `LOCKED` next anchors with `Work` = `PENDING`, `IMPLEMENTING`, or `COMPLETED`.
-2. If `Work` is `PENDING`, no milestone plan exists, and fresh Next lock integrity gate evidence is missing, stale, or failed, dispatch Architect to `bf-blueprint-iteration` for gate repair before `bf-phase-plan`.
+2. If `Work` is `PENDING`, no milestone plan exists, and fresh Next lock integrity gate evidence is missing, stale, or failed, dispatch Architect to `bf-blueprint-iteration` to produce fresh lock evidence before `bf-phase-plan`.
 3. If `Work` is `PENDING`, fresh gate evidence exists, and no milestone plan exists, dispatch Architect to run `bf-phase-plan`.
-4. If `Work` is `PENDING`, the selected milestone is planned but not broken down, and fresh Next lock integrity gate evidence is missing, stale, or failed, dispatch Architect to `bf-blueprint-iteration` for gate repair before `bf-milestone-breakdown`.
+4. If `Work` is `PENDING`, the selected milestone is planned but not broken down, and fresh Next lock integrity gate evidence is missing, stale, or failed, dispatch Architect to `bf-blueprint-iteration` to produce fresh lock evidence before `bf-milestone-breakdown`.
 5. If `Work` is `PENDING`, fresh gate evidence exists, and the selected milestone is planned but not broken down, dispatch `bf-milestone-breakdown`.
 6. If `Work` is `IMPLEMENTING`, read `docs/tasks/README.md`, `milestone.md`, and the relevant task `progress.md`, then dispatch the next missing action: breakdown fix/review, `bf-task-execute`, implementation owner, PR gate owner, acceptance owner, `bf-milestone-progress`, or `bf-phase-exit-gate`.
 7. If `Work` is `COMPLETED`, confirm required milestone, wave, or Phase gates are recorded, then dispatch `bf-blueprint-iteration` for accepted-scope promotion toward current unless the row already reflects current sync.

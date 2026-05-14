@@ -6,8 +6,8 @@
 accepted current
 -> user opens next selection
 -> scan backlog once
--> write source-issues.md
 -> write/resume docs/blueprint/next + ledger
+-> finalize source-issues.md / source-notes.md trace
 -> lock selected anchors
 -> run Next lock integrity gate
 -> plan Phase -> Milestone + first task seed
@@ -65,20 +65,21 @@ Rules:
 
 ## Source Issues
 
-Create `docs/blueprint/_meta/<target-version>/source-issues.md` after picking backlog issues and before locking next anchors:
+Create `docs/blueprint/_meta/<target-version>/source-issues.md` after selected next anchors and detail anchors exist, and before locking next anchors:
 
 ```markdown
 # Source issues for blueprint vN.M
 
-Picked issues grouped by topic:
-
-## Module X
-- gh#123 — title, one sentence on what this version intends to deliver
-- gh#125 — title, one sentence on what this version intends to deliver
+| Anchor | Issues | Detail anchor | Intended delivery |
+|---|---|---|---|
+| MOD-X-1 | gh#123 — title | `docs/blueprint/next/module-x.md#mod-x-1` | One sentence on what this version intends to deliver |
+| MOD-X-2 | gh#125 — title | `docs/blueprint/next/module-x.md#mod-x-2` | One sentence on what this version intends to deliver |
 ```
 
 Rules:
 - List picked issues only.
+- Map each issue-backed anchor to the issue or issues that justify it before the Next lock integrity gate can pass.
+- Keep traceability at anchor/decision level. Do not require word-level proof or Markdown row anchors.
 - Use this file for traceability only.
 - Do not treat selected issues as current behavior.
 
@@ -94,13 +95,14 @@ For non-issue sources, create `docs/blueprint/_meta/<target-version>/source-note
 
 Rules:
 - Use one row per non-issue source anchor.
+- Map each non-issue source to its selected anchor at decision level.
 - Keep the note short enough to verify reverse trace.
 
 ## After Lock
 
 When one or more next anchors are `LOCKED`:
 - Run the Next lock integrity gate from `bf-blueprint-iteration/SKILL.md`.
-- Stop if the gate is missing, stale, or failed. Repair source trace, `docs/blueprint/next`, or stale `docs/tasks` files; rerun role review; record a fresh gate result in `docs/blueprint/_meta/<target-version>/next-lock-integrity.md` before Phase/Milestone planning or milestone breakdown.
+- Stop if the gate is missing, stale, or failed. Return to Architect to produce fresh gate evidence from current source trace, `docs/blueprint/next`, and `docs/tasks` state; rerun role review; record a fresh gate result in `docs/blueprint/_meta/<target-version>/next-lock-integrity.md` before Phase/Milestone planning or milestone breakdown.
 - Run Phase/Milestone planning under `docs/tasks/`.
 - Require milestones, dependencies, acceptance boundaries, and first-milestone task seed.
 - Do not require complete task decomposition at lock time.

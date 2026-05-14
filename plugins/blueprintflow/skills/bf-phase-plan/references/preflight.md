@@ -29,7 +29,7 @@ digraph phase_plan_preflight {
 
 ## Decision points
 
-After this preflight says Phase/Milestone planning applies, require recorded `bf-blueprint-iteration` Next lock integrity gate evidence in `docs/blueprint/_meta/<target-version>/next-lock-integrity.md`. Treat evidence as stale if selected anchors, README rows, detail anchors, blockers/open anchors, source issue/note trace, milestone paths, `phase-plan.md`, or `milestone.md` changed after the recorded gate result. If the gate is missing, stale, or failed, stop and repair source trace, `docs/blueprint/next`, or stale `docs/tasks` files before planning.
+After this preflight says Phase/Milestone planning applies, require recorded `bf-blueprint-iteration` Next lock integrity gate evidence in `docs/blueprint/_meta/<target-version>/next-lock-integrity.md`. Treat evidence as stale if selected anchors, README rows, detail anchors, blockers/open anchors, source issue/note trace, milestone paths, `phase-plan.md`, or `milestone.md` changed after the recorded gate result. If the gate is missing, stale, or failed, stop and return to `bf-blueprint-iteration` for fresh lock evidence before planning.
 
 | # | Check | Skip if | Constraint |
 |---|---|---|---|

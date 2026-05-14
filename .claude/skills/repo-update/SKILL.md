@@ -62,12 +62,38 @@ Write skills as executable instructions, not essays.
 - Avoid vague verbs: `consider`, `think about`, `handle`, `support`, `ensure` without a concrete check.
 - Review every changed skill for instruction clarity before LGTM.
 
+## Local Skill Review Gate
+
+Run this gate after editing any skill body, skill reference, or skill metadata, before marking the change ready.
+
+1. Spawn 4 local subagents in parallel when the runtime supports it.
+2. If capacity is insufficient, follow `bf-runtime-adapter`: ask for required authorization, then declare and record `serial fallback` only for true runtime/session incapacity.
+3. Give each reviewer the changed file paths, the diff, and this `repo-update` skill. Require each reviewer to read every changed skill/reference as a whole. Do not give them your intended conclusion.
+4. Give the Process reviewer `skill-creator` and `writing-skills`, or tell it to load them before review. If either skill is unavailable, record that as a Process blocker and ask Jianjun for a fallback in the PR.
+5. Require final output with `Blockers`, `Findings`, and `LGTM` or `NOT LGTM`.
+6. Require each finding to state whether it is informational or must-fix.
+7. Cover these lenses:
+
+| Reviewer | Required questions |
+|---|---|
+| Global value / placement | Does the change improve repo-wide Blueprintflow maintenance or skill execution? Is it in the right skill/reference? Should it move, split, or stay out? |
+| Process / completeness | Does it follow `repo-update`, `skill-creator`, and `writing-skills`? Are trigger, action, owner, durable review artifact, fallback, and stop condition complete? |
+| Language / structure | Is it directive, concise, structured, and unambiguous? Remove vague or descriptive prose. |
+| Risk / anti-patterns | Does it create conflicts, loopholes, regressions, stale examples, validation gaps, or anti-patterns? |
+
+8. Architect records the 4 reviewer outcomes in the PR body under `Local Skill Review Gate`, or in a PR comment linked from that section.
+9. Fix every blocker and every must-fix finding. Re-run the affected reviewer lens after each fix.
+10. Treat local reviewer LGTM as a prerequisite only. It does not replace all-hands PR review or Jianjun approval.
+11. Do not check any PR `Review checklist` item until all 4 local reviewers return LGTM and the durable review artifact is recorded.
+12. Do not self-approve the gate.
+
 ## Anti-patterns
 
 - ❌ Bulk-editing skills with `sed` / scripted replacement before classifying which skills the rule actually applies to.
 - ❌ Treating every `bf-*` skill as the same kind of child skill; entry workflows, repo-maintenance flows, role setup, and execution stages have different invocation boundaries.
 - ❌ Relying on validation scripts as semantic review. Every changed skill must be read as a whole after the edit.
 - ❌ Writing descriptive skill prose when a direct command, checklist, or decision table would remove ambiguity.
+- ❌ Updating a skill without the 4-lens local review gate.
 
 ## Rules
 

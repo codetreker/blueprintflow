@@ -17,7 +17,7 @@ If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's in
 
 ## Doc layout
 
-This skill runs after a milestone is selected for execution and a concrete task is being started. It is not part of blueprint freeze/lock; `bf-phase-plan` owns Phase/Milestone planning and task seed.
+This skill runs after `bf-milestone-breakdown` has produced a reviewed `task.md` contract and a concrete task is being started. It is not part of blueprint freeze/lock or milestone breakdown; `bf-phase-plan` owns Phase/Milestone planning and `bf-milestone-breakdown` owns task skeletons.
 
 Task artifacts live under Phase -> Milestone -> Task:
 
@@ -27,6 +27,7 @@ docs/tasks/phase-N-<name>/
 └── milestone-<n>-<name>/
     ├── milestone.md
     └── task-<n>-<name>/
+        ├── task.md           # reviewed task contract from bf-milestone-breakdown
         ├── spec.md           # Architect spec brief §0-§4
         ├── stance.md         # PM stance checklist
         ├── content-lock.md   # PM content lock (UI tasks only)
@@ -39,6 +40,7 @@ Ad-hoc issue tasks may use a compact path when no Phase exists yet:
 
 ```
 docs/tasks/<issue#>-<short-slug>/
+├── task.md           # task contract when available
 ├── spec.md           # Architect spec brief §0-§4
 ├── stance.md         # PM stance checklist
 ├── content-lock.md   # PM content lock (UI tasks only)
@@ -66,7 +68,7 @@ Anti-pattern: `m698-*` / `gh698-*` prefixes. Folder name describes the work and 
 
 Container folders hold `phase-plan.md` or `milestone.md` plus task leaf subfolders. See `bf-phase-plan` references/phase-vs-wave.md for container vs leaf details.
 
-**Index rule**: `docs/tasks/README.md` lists active Phases and the current resume focus. `phase-plan.md` lists milestones. `milestone.md` lists tasks. Do not duplicate every task row in every parent file.
+**Index rule**: `docs/tasks/README.md` lists active Phases and the current resume focus. `phase-plan.md` lists milestones. `milestone.md` lists the task index. Each `task.md` owns that task's scope, out-of-scope, anchors, acceptance slice, dependencies, and parallelism.
 
 ## The 4 pieces
 
@@ -133,6 +135,7 @@ Closure (acceptance / REG / PROGRESS) lands in the same PR. **No follow-up PR.**
 ## Anti-patterns
 
 - ❌ Skipping 4 pieces → stance drift uncatchable
+- ❌ Rewriting the reviewed `task.md` contract without sending the task back through `bf-milestone-breakdown`
 - ❌ Splitting one task into multiple PRs (actually slower)
 - ❌ Treating a milestone as one giant PR when it should be split into tasks
 - ❌ Execution PR doesn't cite spec § anchors

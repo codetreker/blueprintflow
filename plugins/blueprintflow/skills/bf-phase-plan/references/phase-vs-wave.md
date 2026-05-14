@@ -23,7 +23,7 @@ docs/tasks/phase-N-<name>/
 └── ...
 ```
 
-Concrete task folders appear under a milestone as individual tasks start, not during wave planning.
+Task skeleton folders appear under a milestone during `bf-milestone-breakdown`, not during wave planning.
 
 ### Planning task carries
 
@@ -37,9 +37,9 @@ Wave planning is not a container PR exception. If the wave needs a planning chan
 
 ### Planning task does NOT carry
 
-Complete task set — created in `milestone.md` when the milestone starts.
+Task skeleton folders and `task.md` contracts — created by `bf-milestone-breakdown` when the milestone is selected for execution.
 
-Product task folders and task-level 4-piece (spec / PM stance / content-lock / acceptance / design) — created when each task starts.
+Task-level 4-piece (spec / PM stance / content-lock / acceptance / design) — created when each task starts.
 
 Container planning is **Phase/Milestone plan + first task seed**, not implementation specification.
 

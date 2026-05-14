@@ -1,11 +1,11 @@
 ---
 name: bf-phase-plan
-description: "Part of the Blueprintflow methodology. Use when locked next-blueprint anchors need Phase/Milestone planning, value-loop gates, or execution-path structure before milestone task split."
+description: "Part of the Blueprintflow methodology. Use when locked next-blueprint anchors need Phase/Milestone planning, value-loop gates, or first task seed before milestone breakdown."
 ---
 
 # Phase Plan
 
-Once `docs/blueprint/next/` has `LOCKED` anchors, the Architect leads. Break the selected next work into Phases and Milestones, with enough first-milestone task seed to prove execution can start. Complete Task decomposition waits until each milestone starts. Each Phase anchors to a **value loop** (something an end user can actually use), not to technical layers.
+Once `docs/blueprint/next/` has `LOCKED` anchors, the Architect leads. Break the selected next work into Phases and Milestones, with enough first-milestone task seed to prove execution can start. Complete task decomposition waits for `bf-milestone-breakdown`. Each Phase anchors to a **value loop** (something an end user can actually use), not to technical layers.
 
 ## Direct Invocation Guard
 
@@ -23,7 +23,7 @@ Before using this skill, read `references/preflight.md` to confirm it applies. T
 | Milestone | Capability or deliverable group inside a Phase | Groups tasks; not a PR by itself |
 | Task | Smallest executable unit | **One task = one worktree + one branch + one PR** |
 
-`docs/tasks/` is the execution path from locked `next` anchors to accepted `current` behavior. At freeze/lock time it records Phase/Milestone planning; at milestone start `milestone.md` gains the complete task set; when each task starts, that task gets its concrete folder. It does not replace the product-shape source of truth in `docs/blueprint/next/`.
+`docs/tasks/` is the execution path from locked `next` anchors to accepted `current` behavior. At freeze/lock time it records Phase/Milestone planning; `bf-milestone-breakdown` later creates reviewed task skeleton folders; each concrete task gains four-piece/design files only when that task starts. It does not replace the product-shape source of truth in `docs/blueprint/next/`.
 
 ## Phase vs wave
 
@@ -67,8 +67,9 @@ Gates 1+2 in the task spec brief, gate 3 in stance + acceptance, gate 4 at demo 
 
 - **README.md** — cross-Phase index + resume view (updated on every task PR merge)
 - **phase-N-<name>/phase-plan.md** — value loop, milestone list, exit gates
-- **phase-N-<name>/<milestone>/milestone.md** — capability goal, acceptance boundary, dependencies, task-split trigger, and first task seed when this is the first executable milestone; gains the complete task set when the milestone starts
-- **phase-N-<name>/<milestone>/<task>/** — task four-piece, design, progress, created when that task starts (see `bf-milestone-fourpiece`)
+- **phase-N-<name>/<milestone>/milestone.md** — capability goal, acceptance boundary, dependencies, task-split trigger, and first task seed when this is the first executable milestone
+- **phase-N-<name>/<milestone>/<task>/task.md** — created later by `bf-milestone-breakdown`, not by freeze/lock planning
+- **phase-N-<name>/<milestone>/<task>/{spec,stance,acceptance,design,progress}.md** — created when that task starts (see `bf-milestone-fourpiece`)
 
 Freeze/lock example:
 
@@ -79,29 +80,27 @@ docs/tasks/
     ├── phase-plan.md
     └── milestone-2-web-configure/
         ├── milestone.md
-        └── task-seed.md        # optional: enough shape to start the first task
+        └── task-seed.md        # optional file; seed may also be in milestone.md
 ```
 
 The first-milestone task seed may be a section in `milestone.md` or a small `task-seed.md`. It names the likely first task, cited next-blueprint anchors, prerequisites, expected PR atom, and first acceptance check. It is not a four-piece set and does not start implementation.
 
 PR boundary: in a PR-governed project, freeze/lock planning is a normal planning task such as `task-0-plan-phase-6`: one worktree, one branch, one PR. It has a real planning task folder for PR ownership/progress, for example `docs/tasks/phase-6-remote-agent/milestone-planning/task-0-plan-phase-6/progress.md`. The planning task's substantive deliverables are parent `phase-plan.md`, `milestone.md`, and task seed files; it is not a container PR exception and it does not implement product behavior.
 
-The freeze/lock planning task may stop at `phase-plan.md`, `milestone.md`, and the first-milestone task seed. Do not fabricate a complete task tree just to make the plan look finished. At milestone start, split the milestone into its complete task set in `milestone.md`; create each concrete task folder only when that task starts and its owning task PR is ready to be created.
+The freeze/lock planning task may stop at `phase-plan.md`, `milestone.md`, and the first-milestone task seed. Do not fabricate task skeleton folders just to make the plan look finished. When the milestone is selected for execution, run `bf-milestone-breakdown` to create reviewed task folders with `task.md`; create four-piece/design/progress files only when each task starts.
 
-Milestone-start example:
+After `bf-milestone-breakdown`:
 
 ```text
 docs/tasks/phase-6-remote-agent/milestone-2-web-configure/
-├── milestone.md          # now includes the complete task set
-└── task-1-configure-job-api/
-    ├── spec.md
-    ├── stance.md
-    ├── acceptance.md
-    ├── design.md
-    └── progress.md
+├── milestone.md          # index, dependencies, breakdown review
+├── task-1-configure-job-api/
+│   └── task.md           # task contract only
+└── task-2-helper-runner/
+    └── task.md
 ```
 
-Task 2 and later stay listed in `milestone.md` until each task starts.
+Task start adds the four-piece/design/progress files to that task folder.
 
 ## docs/tasks/README.md template
 

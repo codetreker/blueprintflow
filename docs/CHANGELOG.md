@@ -1,12 +1,26 @@
 # Changelog
 
+## v3.1.0 — 2026-05-14
+
+### Milestone breakdown skill
+
+- Added `bf-milestone-breakdown` as the stage between Phase/Milestone planning and concrete task start.
+- Added `BREAKING_DOWN` and `TASK_SET_READY` execution states so task skeleton folders are not confused with active implementation.
+- Defined `task.md` as the reviewed task contract for purpose, scope, out-of-scope, anchors, acceptance slice, dependencies, parallelism, and sensitive paths.
+- Kept `milestone.md` as the milestone index, dependency order, first-ready task pointer, and breakdown review summary.
+- Aligned workflow routing, blueprint iteration lifecycle, phase planning, task four-piece, fast cron, role reminder, README, and plugin metadata with the milestone breakdown stage.
+
+### Plugin version
+
+- `plugin.json` bumped `3.0.10` → `3.1.0` (minor: new public `bf-milestone-breakdown` skill).
+
 ## v3.0.10 — 2026-05-14
 
 ### Blueprint state model correction
 
 - Reframed `docs/blueprint/current/` as implemented, coding-complete, accepted product truth rather than a frozen plan.
 - Reframed `docs/blueprint/next/` as the home for locked, open, or in-progress blueprint work until implementation and acceptance promote it to current.
-- Defined `docs/tasks/` as the next-to-current execution path where freeze/lock plans Phase -> Milestone first, then each milestone splits Tasks when it starts.
+- Defined `docs/tasks/` as the next-to-current execution path where freeze/lock plans Phase -> Milestone before later task execution stages.
 - Clarified that freeze/lock requires a first-milestone task seed for executability, not a complete task tree.
 - Changed the PR atom from milestone to task across workflow, git workflow, task four-piece, implementation design, PR review, cron, role prompts, and runtime guidance.
 - Limited GitHub `backlog` labels to initial next-selection intake; ongoing recovery state now lives in `docs/blueprint/next/README.md` and `docs/tasks/`.

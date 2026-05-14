@@ -29,13 +29,14 @@ Use the router for exact stage entry, but keep this mainline in view:
 1. Setup: bf-runtime-adapter + bf-team-roles
 2. Shape: bf-brainstorm -> bf-blueprint-write
 3. Plan locked next scope: bf-phase-plan (Phase -> Milestone + first task seed)
-4. Start milestone, then execute task loop:
+4. Break down the selected milestone: bf-milestone-breakdown (reviewed task skeletons)
+5. Start task loop:
    bf-git-workflow -> bf-milestone-fourpiece -> bf-implementation-design
    -> implementation/current-doc sync -> bf-pr-review-flow
-5. Coordinate while active:
+6. Coordinate while active:
    bf-teamlead-fast-cron-checkin / bf-teamlead-role-reminder / bf-teamlead-slow-cron-checkin / bf-issue-triage
-6. Close Phase: bf-phase-exit-gate
-7. Iterate accepted current / locked next / backlog intake: bf-blueprint-iteration
+7. Close Phase: bf-phase-exit-gate
+8. Iterate accepted current / locked next / backlog intake: bf-blueprint-iteration
 ```
 
 ## Coordinator Boundary
@@ -74,6 +75,7 @@ After the user names a concrete objective, load only the matching skill(s):
 | Fuzzy concept or unsettled stance | `bf-brainstorm` |
 | Write or revise product shape before next lock | `bf-blueprint-write` |
 | Split locked next-blueprint anchors into execution Phases/Milestones, with task seed | `bf-phase-plan` |
+| Break a selected milestone into reviewed task skeletons | `bf-milestone-breakdown` |
 | Start task work | `bf-git-workflow`, then `bf-milestone-fourpiece` |
 | Design before coding | `bf-implementation-design` |
 | Create/update/review `docs/current` | `bf-current-doc-standard` |
@@ -85,15 +87,15 @@ After the user names a concrete objective, load only the matching skill(s):
 | Cron/idle coordination | `bf-teamlead-fast-cron-checkin`, `bf-teamlead-role-reminder`, or `bf-teamlead-slow-cron-checkin` |
 | Close a Phase | `bf-phase-exit-gate` |
 
-Route backward when prerequisites are missing: if stances are unsettled, use `bf-brainstorm`; if next product shape is not locked, use `bf-blueprint-write`; if Phase/Milestone planning is missing, use `bf-phase-plan`; if a milestone is starting and concrete task execution has not been split yet, use `bf-git-workflow` and `bf-milestone-fourpiece` before implementation or PR review.
+Route backward when prerequisites are missing: if stances are unsettled, use `bf-brainstorm`; if next product shape is not locked, use `bf-blueprint-write`; if Phase/Milestone planning is missing, use `bf-phase-plan`; if milestone task skeletons are missing or unreviewed, use `bf-milestone-breakdown`; if a concrete task has not started, use `bf-git-workflow` and `bf-milestone-fourpiece` before implementation or PR review.
 
 ## Hard Rules
 
 - Blueprintflow controls Blueprintflow-scoped work; other process skills run only inside Blueprintflow role and stage boundaries.
 - `docs/blueprint/current/` is implemented and accepted only; planned or in-progress work stays in `docs/blueprint/next/`.
-- `docs/tasks/` is the next -> current execution path: Phase -> Milestone first, then Task split at milestone start.
+- `docs/tasks/` is the next -> current execution path: Phase -> Milestone first, then reviewed task skeletons at milestone breakdown, then concrete task work.
 - One task = one worktree = one branch = one PR.
-- Next-blueprint anchors lock before Phase/Milestone planning; milestone task split happens before task work; accepted work promotes to current only after coding and acceptance pass.
+- Next-blueprint anchors lock before Phase/Milestone planning; `bf-milestone-breakdown` creates reviewed task skeletons before task work; accepted work promotes to current only after coding and acceptance pass.
 - Teamlead is the sole PR opener/merger for Blueprintflow milestone work.
 - No cron, sleeper, or automation setup without a concrete objective or explicit ongoing-coordination request.
 - No closing role coordinators as task cleanup; treat them as long-lived teammates for the Blueprintflow session.

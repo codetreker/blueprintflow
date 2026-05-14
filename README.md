@@ -2,7 +2,7 @@
 
 **多 Agent 协作做产品的工作流方法论。**
 
-从模糊概念到可发布软件，6 角色 + Teamlead 协议推进。`current` 只放已实现且验收通过的蓝图，`next` 承载锁定/实现中的蓝图，`tasks` 先记录 Phase → Milestone 计划，milestone start 后再拆 Task，一 task 一 PR 闭环交付。
+从模糊概念到可发布软件，6 角色 + Teamlead 协议推进。`current` 只放已实现且验收通过的蓝图，`next` 承载锁定/实现中的蓝图，`tasks` 先记录 Phase → Milestone 计划，再做 milestone breakdown 生成 task skeleton，一 task 一 PR 闭环交付。
 
 ---
 
@@ -63,7 +63,7 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 ```
 ┌─ 概念层 ──────── bf-brainstorm → bf-blueprint-write
 │      ↓
-├─ 计划层 ──────── bf-phase-plan（Phase → Milestone + 首个 task seed）
+├─ 计划层 ──────── bf-phase-plan → bf-milestone-breakdown
 │      ↓
 ├─ 实施层 ──────── bf-git-workflow + bf-milestone-fourpiece + bf-pr-review-flow
 │      ↓
@@ -93,6 +93,7 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 | [bf-brainstorm](plugins/blueprintflow/skills/bf-brainstorm/SKILL.md) | 讨论 | 多轮讨论锁立场 + 反约束 |
 | [bf-blueprint-write](plugins/blueprintflow/skills/bf-blueprint-write/SKILL.md) | 立项 | 蓝图模板（立场 / 概念 / v0/v1 边界） |
 | [bf-phase-plan](plugins/blueprintflow/skills/bf-phase-plan/SKILL.md) | 规划 | locked next anchors 拆 Phase / Milestone + 首个 task seed + 退出 gate |
+| [bf-milestone-breakdown](plugins/blueprintflow/skills/bf-milestone-breakdown/SKILL.md) | 规划 | selected milestone 拆 reviewed task skeletons + `task.md` contract |
 | [bf-blueprint-iteration](plugins/blueprintflow/skills/bf-blueprint-iteration/SKILL.md) | 演进 | current/next/tasks 状态推进 + backlog intake |
 | [bf-milestone-fourpiece](plugins/blueprintflow/skills/bf-milestone-fourpiece/SKILL.md) | 实施 | task 4 件套（spec / stance / acceptance / content-lock） |
 | [bf-implementation-design](plugins/blueprintflow/skills/bf-implementation-design/SKILL.md) | 实施 | 4 件套后写代码前 Dev 出实现方案设计 + 4 角色 review |
@@ -116,9 +117,10 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 4. bf-brainstorm        — 多轮讨论锁立场
 5. bf-blueprint-write   — 落蓝图
 6. bf-phase-plan        — 拆 Phase / Milestone + 首个 task seed
-7. (循环) bf-milestone-fourpiece + bf-git-workflow + bf-current-doc-standard（按需）+ bf-pr-review-flow
-8. (巡检) bf-teamlead-fast-cron-checkin + bf-teamlead-slow-cron-checkin
-9. (收尾) bf-phase-exit-gate
+7. bf-milestone-breakdown — selected milestone 拆 task skeleton + review
+8. (循环) bf-milestone-fourpiece + bf-git-workflow + bf-current-doc-standard（按需）+ bf-pr-review-flow
+9. (巡检) bf-teamlead-fast-cron-checkin + bf-teamlead-slow-cron-checkin
+10. (收尾) bf-phase-exit-gate
 ```
 
 ## 安装

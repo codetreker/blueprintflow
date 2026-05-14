@@ -38,7 +38,7 @@ How to tell: if an agent has had no new output for 5+ minutes, it has most likel
 Look for new work in this order:
 - a) **unblock**: there's a concrete blocker holding other people up — fix that first
 - b) **follow-up**: an issue exposed by the last merged PR, or a flip that was left as carry-over
-- c) **forward**: the next task from `docs/tasks` (spec / acceptance / implementation / stance)
+- c) **forward**: the next planned milestone or task from `docs/tasks` (breakdown / spec / acceptance / implementation / stance)
 - d) **maintenance**: REG audit / docs lint / out-of-date blueprint
 
 ### 3.1 If a role goes idle, scan `docs/tasks` first
@@ -46,15 +46,17 @@ Look for new work in this order:
 Before reaching for the default dispatch list, read `docs/blueprint/next/README.md` and `docs/tasks/README.md`, then pick the highest-priority active task that fits the idle role. These files are the workflow source of truth after backlog selection. Use GitHub issues only for source trace (`Closes gh#NNN`) or initial backlog intake; do not scan `current-iteration` / `next-iteration` labels as the active queue.
 
 For each idle role:
-1. Find `LOCKED` next anchors whose execution state is `NO_PLAN`, `MILESTONE_PLANNED`, `TASKING`, `READY_FOR_IMPL`, `IMPLEMENTING`, or `ACCEPTING`.
+1. Find `LOCKED` next anchors whose execution state is `NO_PLAN`, `MILESTONE_PLANNED`, `BREAKING_DOWN`, `TASK_SET_READY`, `TASKING`, `READY_FOR_IMPL`, `IMPLEMENTING`, or `ACCEPTING`.
 2. If state is `NO_PLAN`, dispatch Architect to run `bf-phase-plan` for Phase/Milestone planning before task work.
-3. If state is `MILESTONE_PLANNED`, dispatch milestone-start work only for the highest-priority unblocked milestone; split the complete task set for that milestone and start the first ready task.
-4. For task-level states, pick the highest-priority task by blocker > dependency order > phase/milestone priority.
-5. Skip if already assigned or already linked to an open PR.
-6. Dispatch the exact role action needed in the milestone plan, task folder, or task worktree.
-7. Only if no active planned milestone or task needs the role, fall back to the default dispatch list below.
+3. If state is `MILESTONE_PLANNED`, dispatch `bf-milestone-breakdown` for the highest-priority unblocked milestone.
+4. If state is `BREAKING_DOWN`, dispatch the next missing breakdown action: task-contract fix, reviewer, CI-failure owner, merge-gate owner, or non-PR evidence recorder.
+5. If state is `TASK_SET_READY`, dispatch `bf-git-workflow` + `bf-milestone-fourpiece` for the first ready task.
+6. For task-level states, pick the highest-priority task by blocker > dependency order > phase/milestone priority.
+7. Skip if already assigned or already linked to an open PR.
+8. Dispatch the exact role action needed in the milestone plan, task contract folder, task folder, or task worktree.
+9. Only if no active planned milestone or task needs the role, fall back to the default dispatch list below.
 
-If a `LOCKED` next anchor stays `NO_PLAN` for more than 24h, or the currently selected milestone has no task seed/task set/first-task owner when its dependencies are clear, that's a stuck signal — flag it in the cron report and the Teamlead investigates. A later milestone without a task set is not stuck until it is selected to start.
+If a `LOCKED` next anchor stays `NO_PLAN` for more than 24h, a selected milestone stays `MILESTONE_PLANNED` with clear dependencies, a `BREAKING_DOWN` milestone has no review/CI/merge movement for more than 24h, or a `TASK_SET_READY` milestone has no first-task owner, that's a stuck signal — flag it in the cron report and the Teamlead investigates.
 
 ### 4. Cron output format
 - One sentence reporting current forward motion (PR # + one-line goal).
@@ -131,7 +133,9 @@ When a PR is blocked, **look at the type of block first**, then decide who to as
 - Assuming "parallel will conflict" and refusing to parallelize (under the protocol, one task has one worktree; independent tasks run in parallel naturally).
 - **Skipping the `docs/tasks` queue and going straight to the default dispatch list** — if there are active tasks, an idle role should pick one up before maintenance work (see §3.1).
 - **A `LOCKED` next anchor sitting for >24h with `NO_PLAN`** — that's stuck, not parked. Flag it and unblock.
-- **A selected milestone sitting with no task seed/task set/first-task owner while dependencies are clear** — split the milestone task set and assign the first ready task.
+- **A selected milestone sitting at `MILESTONE_PLANNED` with dependencies clear** — run `bf-milestone-breakdown`.
+- **A `BREAKING_DOWN` milestone with no review/CI/merge/evidence movement for >24h** — dispatch the missing reviewer, task-contract fix, CI-failure owner, merge-gate owner, or non-PR evidence recorder.
+- **A `TASK_SET_READY` milestone with no first-task owner** — assign the first ready task through `bf-git-workflow` + `bf-milestone-fourpiece`.
 - **"CI is green so merge"** — you must first read the PR body's Acceptance / Test plan and confirm every item is ticked (see §5).
 - **"subagent LGTM = merge signal"** — a subagent doesn't audit task completion. The Teamlead reads the PR body in person.
 - **CI fail → grab a subagent** — the author knows their own task best. Send it back to the author (see "PR BLOCKED routing").

@@ -5,7 +5,7 @@ description: "Part of the Blueprintflow methodology. Use when starting a task br
 
 # Git Workflow (Task Protocol)
 
-Task is the PR atom. Pairs with `bf-pr-review-flow` (merge red lines) and `bf-milestone-fourpiece` (task four-piece set lands inside the PR).
+Task is the PR atom. Pairs with `bf-milestone-breakdown` (reviewed `task.md` contract), `bf-pr-review-flow` (merge red lines), and `bf-milestone-fourpiece` (task four-piece set lands inside the PR).
 
 ## Direct Invocation Guard
 
@@ -90,6 +90,7 @@ N tasks = N worktrees + N branches + N PRs. A single Dev works in one task workt
 ## Pairs with
 
 - `bf-milestone-fourpiece` — task four-piece set commits in the same worktree
+- `bf-milestone-breakdown` — reviewed task skeletons and `task.md` contracts before task work starts
 - `bf-pr-review-flow` — dual review + squash merge after Teamlead opens PR
 - `workflow` — top-level lifecycle
 

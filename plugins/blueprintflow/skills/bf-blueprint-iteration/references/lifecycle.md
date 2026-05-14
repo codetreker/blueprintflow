@@ -19,7 +19,7 @@ Architect runs bf-phase-plan against LOCKED next anchors
    ↓
 docs/tasks/ records Phase -> Milestone plan + first-milestone task seed
    ↓
-When a milestone starts, split it into a complete executable Task set
+bf-milestone-breakdown creates reviewed task skeleton folders + task.md contracts
    ↓
 Each Task runs one worktree + one branch + one PR
    ↓
@@ -54,19 +54,20 @@ Resume from: <one concrete next action>
 
 | Anchor | Topic | Decision | Execution | Plan/task path | PR | Blocker | Next action |
 |---|---|---|---|---|---|---|---|
-| RA-1 | Web-triggered configure | LOCKED | MILESTONE_PLANNED | docs/tasks/phase-6-remote-agent/milestone-2-web-config | - | none | split milestone task set and start first task |
+| RA-1 | Web-triggered configure | LOCKED | MILESTONE_PLANNED | docs/tasks/phase-6-remote-agent/milestone-2-web-config | - | none | run milestone breakdown |
 | RA-2 | Helper sandbox stance | OPEN | NO_PLAN | - | - | sudo boundary | role discussion |
-| RA-3 | Helper boot/crash | LOCKED | READY_FOR_IMPL | docs/tasks/phase-6-remote-agent/milestone-3-helper-service/task-1-boot-crash | - | none | create worktree |
-| RA-4 | Status and logs UI | LOCKED | IMPLEMENTING | docs/tasks/phase-6-remote-agent/milestone-4-operator-status/task-2-redacted-logs-ui | #812 | none | finish client tests |
-| RA-5 | Revoke behavior | LOCKED | ACCEPTING | docs/tasks/phase-6-remote-agent/milestone-5-revoke/task-1-revoke-helper-auth | #816 | QA review | acceptance signoff |
-| RA-6 | Configure job API | LOCKED | ACCEPTED | docs/tasks/phase-6-remote-agent/milestone-2-web-config/task-1-configure-job-api | #820 | none | promote to current |
-| RA-7 | Legacy helper sandbox | REOPENED | NO_PLAN | - | - | product/security conflict | resolve stance |
-| RA-8 | Enrollment status | LOCKED | CURRENT | docs/tasks/archived/task-1-enrollment-status | #801 | none | none |
+| RA-3 | Helper boot/crash | LOCKED | BREAKING_DOWN | docs/tasks/phase-6-remote-agent/milestone-3-helper-service/task-0-breakdown-helper-service | #811 | Dev review | finish breakdown review |
+| RA-4 | Helper boot/crash | LOCKED | TASK_SET_READY | docs/tasks/phase-6-remote-agent/milestone-3-helper-service/task-1-boot-crash | #811 | none | start first ready task |
+| RA-5 | Status and logs UI | LOCKED | IMPLEMENTING | docs/tasks/phase-6-remote-agent/milestone-4-operator-status/task-2-redacted-logs-ui | #812 | none | finish client tests |
+| RA-6 | Revoke behavior | LOCKED | ACCEPTING | docs/tasks/phase-6-remote-agent/milestone-5-revoke/task-1-revoke-helper-auth | #816 | QA review | acceptance signoff |
+| RA-7 | Configure job API | LOCKED | ACCEPTED | docs/tasks/phase-6-remote-agent/milestone-2-web-config/task-1-configure-job-api | #820 | none | promote to current |
+| RA-8 | Legacy helper sandbox | REOPENED | NO_PLAN | - | - | product/security conflict | resolve stance |
+| RA-9 | Enrollment status | LOCKED | CURRENT | docs/tasks/archived/task-1-enrollment-status | #801 | none | none |
 ```
 
 Decision values: `OPEN`, `LOCKED`, `REOPENED`.
 
-Execution values: `NO_PLAN`, `MILESTONE_PLANNED`, `TASKING`, `READY_FOR_IMPL`, `IMPLEMENTING`, `ACCEPTING`, `ACCEPTED`, `CURRENT`.
+Execution values: `NO_PLAN`, `MILESTONE_PLANNED`, `BREAKING_DOWN`, `TASK_SET_READY`, `TASKING`, `READY_FOR_IMPL`, `IMPLEMENTING`, `ACCEPTING`, `ACCEPTED`, `CURRENT`.
 
 ## source-issues.md trail
 
@@ -91,7 +92,9 @@ Effects:
 
 When one or more next anchors are `LOCKED`, the Architect runs `bf-phase-plan` to split them into Phase -> Milestone under `docs/tasks/`. This starts execution planning, not current promotion.
 
-Freeze/lock does not require complete task decomposition. The plan must identify milestones, dependencies, acceptance boundaries, and a first-milestone task seed that proves the plan can start. Full task-set split happens when each milestone starts execution; at that point the milestone names its complete task set, and every resulting task is a normal task PR with four-piece/design/review requirements when it starts.
+Freeze/lock does not require complete task decomposition. The plan must identify milestones, dependencies, acceptance boundaries, and a first-milestone task seed that proves the plan can start.
+
+When a milestone is selected for execution, Teamlead runs `bf-milestone-breakdown`. Breakdown creates one skeleton folder per task with `task.md`, keeps `milestone.md` as the index/dependency/review summary, and requires a green, merged breakdown PR or equivalent project review evidence before `TASK_SET_READY` is published. In PR-governed projects, the `TASK_SET_READY` ledger update is part of that same breakdown PR before merge. Concrete task work starts later: each task is a normal task PR with four-piece/design/review requirements when it enters `bf-git-workflow` / `bf-milestone-fourpiece`.
 
 ## Promotion to current
 

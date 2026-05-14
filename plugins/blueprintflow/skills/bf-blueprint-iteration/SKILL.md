@@ -93,7 +93,7 @@ The implemented version lives in `docs/blueprint/current/` frontmatter (`accepte
 
 When the current implemented work passes acceptance, the next selection round can open. Its intake is **GitHub issues labeled `backlog`** — scan them once to decide what gets pulled into `docs/blueprint/next/`. After selection, ongoing state lives in `next` and `tasks`, not issue labels.
 
-After the user names a concrete iteration objective, read `references/lifecycle.md` for the full flow: scan backlog → write/resume `docs/blueprint/next/` with a status ledger → lock anchors → plan `docs/tasks` as Phase -> Milestone with first-milestone task seed → run `bf-milestone-breakdown` for reviewed task skeletons → run `bf-task-execute` one task per PR → run `bf-milestone-progress` after accepted tasks → promote accepted scope into `docs/blueprint/current/`. Reminder period is project-defined in `AGENTS.md`.
+After the user names a concrete iteration objective, read `references/lifecycle.md` for the full flow: scan backlog → write/resume `docs/blueprint/next/` with a status ledger → lock anchors → plan `docs/tasks` as Phase -> Milestone with first-milestone task seed → run `bf-milestone-breakdown` for reviewed task skeletons → run `bf-task-execute` one task per PR → run `bf-milestone-progress` after accepted tasks → promote accepted scope into `docs/blueprint/current/`. Use [references/promotion-checklist.md](references/promotion-checklist.md) for accepted-scope promotion. Reminder period is project-defined in `AGENTS.md`.
 
 ## Anti-patterns
 

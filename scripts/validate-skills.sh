@@ -11,6 +11,13 @@ if [[ -n "$stale_refs" ]]; then
   exit 1
 fi
 
+stale_verification_refs=$(grep -RInE 'bf-e2e-verification|e2e-verification' "$repo_root/README.md" "$skills_root" || true)
+if [[ -n "$stale_verification_refs" ]]; then
+  printf '%s\n' "$stale_verification_refs" >&2
+  echo "Active docs must not reference retired bf-e2e-verification; use bf-verification." >&2
+  exit 1
+fi
+
 fixed_cadence=$(grep -RInE '7,22,37,52 \* \* \* \*|17 \*/2 \* \* \*|openclaw cron add \.\.\.' "$skills_root" || true)
 if [[ -n "$fixed_cadence" ]]; then
   printf '%s\n' "$fixed_cadence" >&2

@@ -28,6 +28,7 @@ All must be true before starting the exit flow:
 | Check | Requirement |
 |---|---|
 | `progress.md` + `milestone.md` | Every done task and milestone checked off. Confirm unchecked items one by one — fix before starting |
+| Verification evidence | UI scope has `bf-verification` UI evidence; API/data/CLI/background scope has matching `bf-verification` evidence |
 | Machine-checkable gates | Every `G<Phase>.<n>` is SIGNED, anchored to commit SHA |
 | Carry-overs | Each carry-over anchored to a future task path or placeholder PR number in next Phase. "We'll get to it later" ≠ anchored |
 | Conditionally complete | Acceptable: N gates SIGNED + M gates PARTIAL (condition + closure path) + K gates DEFERRED (locked to future task path or placeholder task PR). Announcement says "conditionally complete", not "complete" |

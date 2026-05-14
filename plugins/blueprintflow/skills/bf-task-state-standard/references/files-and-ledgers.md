@@ -9,7 +9,7 @@
 | Active task resume | `docs/tasks/README.md` | Scope, execution, active task, owner, worktree/branch, PR, blocker, progress path |
 | Milestone resume | `docs/tasks/<phase>/<milestone>/milestone.md` | Task index, dependency order, first ready task, blocked tasks, closure state |
 | Task contract | `docs/tasks/<phase>/<milestone>/<task>/task.md` | Scope, anchors, out-of-scope, acceptance slice, dependencies, sensitive paths |
-| Task progress | `docs/tasks/<phase>/<milestone>/<task>/progress.md` | Worktree/branch, PR, checkpoints, blockers, acceptance, current sync |
+| Task progress | `docs/tasks/<phase>/<milestone>/<task>/progress.md` | Worktree/branch, PR, checkpoints, blockers, acceptance evidence, current sync |
 
 ## `docs/blueprint/next/README.md`
 
@@ -93,8 +93,21 @@ Create when a task starts.
 - [ ] Implementation design reviewed
 - [ ] Implementation complete
 - [ ] docs/current sync checked or N/A recorded
-- [ ] Acceptance passed
+- [ ] Acceptance evidence recorded through `bf-verification`
 - [ ] PR merged
+
+## Acceptance Evidence
+
+| Check | Evidence | Result |
+|---|---|---|
+| <acceptance item> | <command/test/screenshot/log/PR anchor> | PASS / HOLD / BLOCK |
+
+Verifier: <role/name>
+Date: YYYY-MM-DD
+Scope: <UI/API/data/CLI/background/security/current-doc>
+Fixtures: <fixture/user/tenant/resource, secrets redacted, or N/A>
+Out-of-scope findings: <issue links or N/A>
+Decision: LGTM / HOLD / BLOCK
 ```
 
 ## Consistency Rules
@@ -105,5 +118,5 @@ Create when a task starts.
 - `TASKING` requires an Active Task Resume row and a task folder.
 - `READY_FOR_IMPL` requires four-piece baseline and reviewed `design.md` for code tasks.
 - `IMPLEMENTING` requires worktree/branch state in Active Task Resume or `progress.md`.
-- `ACCEPTED` requires merged task PR, acceptance evidence, and milestone update.
+- `ACCEPTED` requires merged task PR, `bf-verification` acceptance evidence, and milestone update.
 - Use `docs/tasks/README.md`, `milestone.md`, and task `progress.md` for fine-grained task state.

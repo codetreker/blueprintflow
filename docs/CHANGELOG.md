@@ -15,6 +15,8 @@
 - Added `bf-task-execute` as the task-level orchestrator from reviewed task contract to accepted task closure.
 - Added `bf-milestone-progress` for accepted-task follow-up, next-task selection, milestone closure, and Phase-exit readiness.
 - Added `bf-task-state-standard` for `docs/tasks` ledgers, milestone indexes, task folders, and interrupted-work recovery.
+- Renamed public skill `bf-e2e-verification` to `bf-verification`; the UI E2E three-line check is now a lazy reference alongside API, data, CLI, background-job, and acceptance-evidence references.
+- Added implementation-loop, acceptance-evidence, milestone/wave closure, current-promotion, security/privacy threat-model, and remote-agent/dangerous-command references to close execution and verification gaps.
 - Added `BREAKING_DOWN` and `TASK_SET_READY` `docs/tasks` milestone states so task skeleton folders are not confused with active implementation.
 - Defined `task.md` as the reviewed task contract for purpose, scope, out-of-scope, anchors, acceptance slice, dependencies, parallelism, and sensitive paths.
 - Kept `milestone.md` as the milestone index, dependency order, first-ready task pointer, and breakdown review summary.
@@ -29,7 +31,7 @@
 
 ### Plugin version
 
-- `plugin.json` bumped `3.0.9` → `4.0.0` (major: public skill rename from `bf-milestone-fourpiece` to `bf-task-fourpiece`, plus new public task/milestone orchestration skills).
+- `plugin.json` bumped `3.0.9` → `4.0.0` (major: public skill renames from `bf-milestone-fourpiece` to `bf-task-fourpiece` and `bf-e2e-verification` to `bf-verification`, plus new public task/milestone orchestration skills).
 
 ## v3.0.9 — 2026-05-14
 

@@ -46,6 +46,7 @@ Dev is the primary author (they'll work from it). Architect reviews, doesn't gho
 | §4 Edge cases | Empty/null/oversized input, concurrency, partial failure, user-state edges |
 | §5 Multiple options | ≥2 candidates + chosen + real reason. Single-option exception requires "why no alternatives" |
 | §6 Integration | Reverse-grep existing interfaces + clash points + reverse impact (who is affected) |
+| Sensitive-task threat model | Required for sensitive code tasks; see [references/security-privacy-threat-model.md](references/security-privacy-threat-model.md) |
 
 **Format is flexible** (H2/H3/prose/diagram all fine), but **content is required**: data flow, data model, API contract, edge cases, alternatives, and integration points must all be covered.
 
@@ -61,11 +62,12 @@ Dev is the primary author (they'll work from it). Architect reviews, doesn't gho
 - Any one ❌ blocks coding
 - ≥3 rounds still blocked → escalate to Teamlead + user
 - Reviews through PR comments / communication channel, no separate PR
+- Sensitive tasks require the Security/Privacy threat model reference before Security LGTM.
 
 ## PR protocol
 
 The design doc is **not a separate PR**. Everything in one task PR:
-1. Four-piece set → 2. Design doc → 3. Four-role review → 4. Implementation → 5. e2e → 6. Closure → 7. Teamlead opens PR
+1. Four-piece set -> 2. Design doc -> 3. Four-role review -> 4. Implementation -> 5. `bf-verification` evidence -> 6. Closure -> 7. Teamlead opens PR
 
 ## Anti-patterns
 

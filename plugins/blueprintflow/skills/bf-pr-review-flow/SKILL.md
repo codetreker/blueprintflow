@@ -56,9 +56,11 @@ Every PR is a task PR. Role artifacts are commits inside that task PR, not separ
 | Stance / content-lock task | Architect + QA |
 | Acceptance / status-flip task | Architect + PM (if v0/v1 stance changes) |
 
-> **UI / frontend PRs**: QA walks the 3 lines from `bf-e2e-verification` before LGTM.
+> **Verification**: QA uses `bf-verification` before LGTM. UI/frontend PRs load `bf-verification/references/ui-e2e.md`; backend/data/CLI/background jobs load the matching `bf-verification` references.
 
 **Security review**: walks `references/security-checklist.md` (12 categories). LGTM must cite specific items.
+
+**Remote-agent / dangerous-command review**: when scope touches remote agents, host automation, command execution, approval flows, or filesystem/network delegation, Security also walks [references/remote-agent-dangerous-commands.md](references/remote-agent-dangerous-commands.md).
 
 LGTM command (author cannot self-approve):
 ```

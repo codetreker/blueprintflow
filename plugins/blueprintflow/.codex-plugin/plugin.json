@@ -1,7 +1,7 @@
 {
   "name": "blueprintflow",
   "version": "4.0.0",
-  "description": "Blueprint-driven multi-agent collaboration workflow with team roles, task four-piece, PR review flow, and Phase exit gates",
+  "description": "Blueprint-driven multi-agent collaboration workflow with team roles, task four-piece, verification, PR review flow, and Phase exit gates",
   "author": {
     "name": "codetreker"
   },
@@ -10,13 +10,13 @@
   "interface": {
     "displayName": "Blueprintflow",
     "shortDescription": "Blueprint-driven multi-agent product workflow",
-    "longDescription": "Run concept lock-in, blueprint writing, phase/milestone planning, milestone breakdown, task four-piece setup, PR review, and phase exit gates with role-based agent collaboration.",
+    "longDescription": "Run concept lock-in, blueprint writing, phase/milestone planning, milestone breakdown, task four-piece setup, verification, PR review, and phase exit gates with role-based agent collaboration.",
     "developerName": "codetreker",
     "category": "Productivity",
     "capabilities": ["Interactive", "Write"],
     "defaultPrompt": [
       "Use Blueprintflow to plan a multi-agent product workflow.",
-      "Use Blueprintflow to run a task from four-piece setup through PR review."
+      "Use Blueprintflow to run a task from four-piece setup through verification and PR review."
     ],
     "brandColor": "#2563EB"
   }

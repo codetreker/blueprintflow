@@ -32,7 +32,7 @@ Use the router for exact stage entry, but keep this mainline in view:
 4. Break down the selected milestone: bf-milestone-breakdown (reviewed task skeletons)
 5. Start task loop:
    bf-task-execute (bf-git-workflow -> bf-task-fourpiece -> bf-implementation-design
-   -> implementation/current-doc sync -> bf-pr-review-flow)
+   -> implementation/current-doc sync -> bf-verification -> bf-pr-review-flow)
 6. Coordinate while active:
    bf-teamlead-fast-cron-checkin / bf-teamlead-role-reminder / bf-teamlead-slow-cron-checkin / bf-issue-triage
 7. Advance milestones: bf-milestone-progress
@@ -83,7 +83,7 @@ After the user names a concrete objective, load only the matching skill(s):
 | Create/update/review `docs/current` | `bf-current-doc-standard` |
 | Review or merge a task PR | `bf-pr-review-flow` |
 | Select next task or close a milestone | `bf-milestone-progress` |
-| Verify client-facing UI | `bf-e2e-verification` |
+| Verify task acceptance evidence | `bf-verification` |
 | Triage new/untriaged GitHub issues | `bf-issue-triage` |
 | Read backlog / choose next work / open or resume next discussion | `bf-blueprint-iteration`, then `bf-team-roles` |
 | Change blueprint after current acceptance | `bf-blueprint-iteration` |

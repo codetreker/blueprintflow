@@ -28,6 +28,7 @@ Use when any are true:
 | Next ready task or blocker | `milestone.md`, `docs/tasks/README.md` |
 | Next-blueprint coarse work state update | `docs/blueprint/next/README.md` |
 | Milestone closure summary | `milestone.md` |
+| Milestone/wave closure evidence | [references/closure-evidence.md](references/closure-evidence.md) |
 | Phase-exit handoff | `docs/tasks/README.md` and Teamlead notebook |
 
 ## Steps
@@ -40,7 +41,7 @@ Use when any are true:
 6. Pick the next task by dependency order, blocker severity, and milestone priority.
 7. If a next task is ready, mark it `READY`, keep the next ledger `Work` as `IMPLEMENTING` with `Milestone path` still pointed at the milestone folder, and hand off to `bf-task-execute`.
 8. If tasks remain blocked, record the blocker and dispatch the owning role.
-9. If all required tasks are accepted, write the milestone closure summary.
+9. If all required tasks are accepted, write the milestone closure summary using [references/closure-evidence.md](references/closure-evidence.md).
 10. If required milestone or wave gates still need review, keep the next ledger `Work` as `IMPLEMENTING` and finish them in this skill.
 11. If Phase-level exit is needed after milestone or wave closure, keep the next ledger `Work` as `IMPLEMENTING` and hand off to `bf-phase-exit-gate`.
 12. Update the next ledger `Work` to `COMPLETED` only after required milestone, wave, or Phase gates pass and the accepted scope is ready for current promotion.
@@ -51,6 +52,7 @@ Use when any are true:
 - The next selected task has all dependencies accepted or explicitly waived.
 - Blocked tasks name a concrete owner and unblock action.
 - Milestone closure lists completed tasks, deferred tasks, carry-over anchors, and acceptance evidence.
+- Milestone/wave closure evidence follows [references/closure-evidence.md](references/closure-evidence.md).
 - Phase exit is not started until milestone closure is recorded.
 - `COMPLETED` is not set while required milestone, wave, or Phase gates are still pending.
 

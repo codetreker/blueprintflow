@@ -113,6 +113,8 @@ Then:
 - Tag `blueprint-vN.M`.
 - Mark corresponding next ledger rows `COMPLETED`.
 
+Use [promotion-checklist.md](promotion-checklist.md) for the promotion procedure.
+
 ## Stuck-task safety net
 
 Stuck signal:

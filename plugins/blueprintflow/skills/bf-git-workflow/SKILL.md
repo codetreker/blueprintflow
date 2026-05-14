@@ -44,12 +44,17 @@ No role runs `gh pr create`. The PR = the task's complete deliverable, not one r
 
 ### Rule 4: Teamlead opens the sole PR
 
-After all roles have committed:
+After all roles have committed and `bf-task-execute` reports `READY_FOR_PR`:
 ```bash
 gh pr create --title "feat(<task>): <summary>" --body "..."
 ```
 
-Teamlead's check before opening: every role committed? `docs/current` synced with `bf-current-doc-standard` when applicable? Task PROGRESS updated?
+Teamlead's check before opening:
+- every role committed required artifacts
+- `docs/current` synced with `bf-current-doc-standard` when applicable
+- task `progress.md` includes implementation evidence and acceptance evidence
+- no `HOLD` or `BLOCK` remains in `progress.md` or `acceptance.md`
+- implementation loop handoff says `READY_FOR_PR`
 
 ### Rule 5: Teamlead removes the worktree after merge
 

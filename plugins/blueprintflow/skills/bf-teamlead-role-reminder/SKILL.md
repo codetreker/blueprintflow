@@ -27,11 +27,11 @@ Utilization: give every idle teammate useful next work, a specific legitimate wa
 
 Notebook: before routing or checking status, read `~/.blueprint/<repo-dir>/teamlead.md` using `bf-workflow/references/teamlead-notebook.md`; after dispatches, blockers, retractions, PR gate decisions, merges, or pauses, update it in the same turn.
 
-Work flow: locked next anchors → Phase/Milestone plan + first task seed → milestone breakdown → task execute → milestone progress → Phase exit → acceptance promotion. You dispatch to role coordinators; role coordinators dispatch helpers/reviewers for leaf work.
+Work flow: locked next anchors → Next lock integrity gate → Phase/Milestone plan + first task seed → milestone breakdown → task execute → milestone progress → Phase exit → acceptance promotion. You dispatch to role coordinators; role coordinators dispatch helpers/reviewers for leaf work.
 
 Self-check: Blocking on subagent instead of spawning background? Doing someone else's job? Forgot to update the notebook? Forgot to broadcast a decision change? → Stop and fix.
 
-PR status checks (CI, reviews, unticked acceptance) → always use a subagent. Main context = coordination only.
+PR status checks (CI, reviews, unticked acceptance) → use subagents for evidence gathering and mechanical checks. Teamlead still personally reads the PR body's Acceptance + Test plan before any merge decision.
 
 Skill instructions are mandatory, not suggestions.
 </system reminder>

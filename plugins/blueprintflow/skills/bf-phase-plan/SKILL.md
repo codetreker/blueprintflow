@@ -15,7 +15,7 @@ If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's in
 
 Before using this skill, read `references/preflight.md` to confirm it applies. The decision graph checks: single-file change? mechanical PR type? blueprint missing? If any skip condition applies, skip this planning flow.
 
-Before planning, require recorded `bf-blueprint-iteration` Next lock integrity gate evidence for the selected anchors. Treat evidence as stale if selected anchors, README rows, detail anchors, blockers/open anchors, source issue/note trace, milestone paths, `phase-plan.md`, or `milestone.md` changed after the recorded gate result. If evidence is missing, stale, or failed, STOP and route back to `bf-blueprint-iteration`. Do not create or continue a Phase plan from README ledger status alone.
+Before planning, require recorded `bf-blueprint-iteration` Next lock integrity gate evidence in `docs/blueprint/_meta/<target-version>/next-lock-integrity.md`. Treat evidence as stale if selected anchors, README rows, detail anchors, blockers/open anchors, source issue/note trace, milestone paths, `phase-plan.md`, or `milestone.md` changed after the recorded gate result. If evidence is missing, stale, or failed, STOP and route back to `bf-blueprint-iteration`. Do not create or continue a Phase plan from README ledger status alone.
 
 ## Phase / Milestone / Task
 

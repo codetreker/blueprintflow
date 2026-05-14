@@ -64,9 +64,9 @@ Wave closure can be a final task PR (scope = wave closure evidence) or milestone
 
 Phase numbers are historical markers, not counters — downstream dependents (release notes, migration plans, quarterly reviews) rely on mapping "what was true at Phase N exit" to "what changed between Phase N and Phase N+1".
 
-| Rule | Phase | Wave |
+| Rule | Phase | Milestone wave |
 |---|---|---|
-| ID format | `phase-N-{name}` (number) | `<descriptive-name>` (name, no number) |
+| ID format | `phase-N-{name}` (number) | `phase-N-{name}/milestone-M-{name}` or sibling milestone folders under the existing Phase |
 | Monotonic? | Yes — only goes up, no skip/rollback/split/merge | N/A — waves have no required order |
 | On close | Eligible for accepted-scope promotion to current | Folder or completed tasks can move to `docs/tasks/archived/` |
 

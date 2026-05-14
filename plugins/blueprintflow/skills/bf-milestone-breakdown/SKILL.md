@@ -25,6 +25,7 @@ Use when all are true:
 ## Outputs
 
 - `milestone.md`: task index, dependency order, parallelism, first ready task, review summary.
+- `task-0-breakdown-<milestone>/breakdown.md`: governed breakdown publication record when the project requires governed docs changes.
 - `task-N-<name>/task.md`: one reviewed contract per skeleton folder.
 - `docs/tasks/README.md`: breakdown/task resume state.
 - `docs/blueprint/next/README.md`: milestone-level `Work` only.
@@ -32,7 +33,7 @@ Use when all are true:
 
 ## Steps
 
-1. Prepare the breakdown location: PR-governed projects use the governed change workspace and create `task-0-breakdown-<milestone>`; non-PR-governed projects work in place.
+1. Prepare the breakdown location: PR-governed projects use the governed change workspace and create `task-0-breakdown-<milestone>/breakdown.md`; non-PR-governed projects work in place.
 2. Check the recorded Next lock integrity gate. If evidence is missing, stale, or failed, STOP and route to `bf-blueprint-iteration`; do not create task skeletons.
 3. In that location, set next ledger `Work` to `IMPLEMENTING`; keep `Milestone path` at the milestone folder. Do not publish yet.
 4. Use [references/state-and-files.md](references/state-and-files.md) for planning task files and state meanings.

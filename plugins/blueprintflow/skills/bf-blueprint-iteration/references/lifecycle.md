@@ -44,14 +44,14 @@ Target version: vN.M
 Last updated: YYYY-MM-DD
 Resume from: <one concrete next action>
 
-| Anchor | Topic | Decision | Work | Milestone path | Next action |
-|---|---|---|---|---|---|
-| RA-1 | Web-triggered configure | LOCKED | PENDING | docs/tasks/phase-6-remote-agent/milestone-2-web-config | run or resume from milestone.md |
-| RA-2 | Helper sandbox stance | OPEN | PENDING | - | resolve stance |
-| RA-3 | Helper boot/crash | LOCKED | IMPLEMENTING | docs/tasks/phase-6-remote-agent/milestone-3-helper-service | see docs/tasks for breakdown/task state |
-| RA-4 | Status and logs UI | LOCKED | IMPLEMENTING | docs/tasks/phase-6-remote-agent/milestone-4-operator-status | see docs/tasks for active task |
-| RA-5 | Configure job API | LOCKED | COMPLETED | docs/tasks/phase-6-remote-agent/milestone-2-web-config | promote to current or confirm current sync |
-| RA-6 | Enrollment status | LOCKED | COMPLETED | docs/tasks/phase-5-enrollment/milestone-1-status | none |
+| Anchor | Detail anchor | Topic | Decision | Work | Milestone path | Next action |
+|---|---|---|---|---|---|---|
+| RA-1 | remote-actuator-design.md#ra-1 | Web-triggered configure | LOCKED | PENDING | docs/tasks/phase-6-remote-agent/milestone-2-web-config | run or resume from milestone.md |
+| RA-2 | remote-actuator-design.md#ra-2 | Helper sandbox stance | OPEN | PENDING | - | resolve stance |
+| RA-3 | remote-actuator-design.md#ra-3 | Helper boot/crash | LOCKED | IMPLEMENTING | docs/tasks/phase-6-remote-agent/milestone-3-helper-service | see docs/tasks for breakdown/task state |
+| RA-4 | remote-actuator-design.md#ra-4 | Status and logs UI | LOCKED | IMPLEMENTING | docs/tasks/phase-6-remote-agent/milestone-4-operator-status | see docs/tasks for active task |
+| RA-5 | remote-actuator-design.md#ra-5 | Configure job API | LOCKED | COMPLETED | docs/tasks/phase-6-remote-agent/milestone-2-web-config | promote to current or confirm current sync |
+| RA-6 | remote-actuator-design.md#ra-6 | Helper telemetry | LOCKED | COMPLETED | docs/tasks/phase-6-remote-agent/milestone-5-helper-telemetry | none |
 ```
 
 Decision values: `OPEN`, `LOCKED`, `REOPENED`.
@@ -59,6 +59,7 @@ Decision values: `OPEN`, `LOCKED`, `REOPENED`.
 Work values: `PENDING`, `IMPLEMENTING`, `COMPLETED`.
 
 Rules:
+- `Detail anchor` points to the exact stable section in `docs/blueprint/next/`.
 - `Milestone path` stops at the milestone folder.
 - `Next action` names only the next coarse handoff. If work is active, point readers to `docs/tasks/README.md` or `milestone.md` instead of duplicating task state.
 
@@ -81,11 +82,25 @@ Rules:
 - Use this file for traceability only.
 - Do not treat selected issues as current behavior.
 
+For non-issue sources, create `docs/blueprint/_meta/<target-version>/source-notes.md`:
+
+```markdown
+# Source notes for blueprint vN.M
+
+| Anchor | Source | Decision owner | Date | Note |
+|---|---|---|---|---|
+| RA-2 | user discussion | PM | YYYY-MM-DD | One sentence on why this anchor entered next. |
+```
+
+Rules:
+- Use one row per non-issue source anchor.
+- Keep the note short enough to verify reverse trace.
+
 ## After Lock
 
 When one or more next anchors are `LOCKED`:
 - Run the Next lock integrity gate from `bf-blueprint-iteration/SKILL.md`.
-- Stop if the gate is missing, stale, or failed. Repair source trace, `docs/blueprint/next`, or stale `docs/tasks` files; rerun role review; record a fresh gate result before Phase/Milestone planning or milestone breakdown.
+- Stop if the gate is missing, stale, or failed. Repair source trace, `docs/blueprint/next`, or stale `docs/tasks` files; rerun role review; record a fresh gate result in `docs/blueprint/_meta/<target-version>/next-lock-integrity.md` before Phase/Milestone planning or milestone breakdown.
 - Run Phase/Milestone planning under `docs/tasks/`.
 - Require milestones, dependencies, acceptance boundaries, and first-milestone task seed.
 - Do not require complete task decomposition at lock time.

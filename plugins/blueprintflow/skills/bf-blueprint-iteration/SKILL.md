@@ -77,7 +77,7 @@ Architect owns this gate. Run it after source trace exists and before marking se
 
 | Check | Required action |
 |---|---|
-| Source trace | Verify `docs/blueprint/_meta/<target-version>/source-issues.md` lists picked backlog issues, or a source note records the non-issue source. |
+| Source trace | Verify `docs/blueprint/_meta/<target-version>/source-issues.md` lists picked backlog issues, or `docs/blueprint/_meta/<target-version>/source-notes.md` records the non-issue source. |
 | Ledger row | Verify every selected `LOCKED` anchor appears in `docs/blueprint/next/README.md` with Decision, Work, and Next action. Allow `Milestone path` to be `-` before `bf-phase-plan`; require the milestone folder path after planning exists. |
 | Detail anchor | Verify every selected `LOCKED` anchor has a stable `§X.Y` heading, slug anchor, or explicit anchor ID in detailed `docs/blueprint/next/` files. |
 | Ledger-to-detail link | Replace whole-doc references with section-level references. Each README row must point to the exact detail anchor it locks. |
@@ -89,7 +89,9 @@ Architect owns this gate. Run it after source trace exists and before marking se
 
 Required reviewers: Architect + PM + QA + Security. Dev joins when executability, sandbox, migration, or integration blockers affect the lock.
 
-Record the gate result in the lock PR body or in a PR comment linked from the PR body. Include base commit or PR head SHA, checked anchors, source trace artifact, README rows, detail files, milestone paths when present, reviewer decisions, unresolved open anchors, and freshness decision.
+Record the gate result in `docs/blueprint/_meta/<target-version>/next-lock-integrity.md` under `## Gate result`. Link that section from the lock PR body or a PR comment. Include base commit or PR head SHA, checked anchors, source trace artifact, README rows, detail files, milestone paths when present, reviewer decisions, unresolved open anchors, and freshness decision.
+
+When resuming after merge, read `docs/blueprint/_meta/<target-version>/next-lock-integrity.md` first. If the file or `## Gate result` section is missing, treat evidence as missing.
 
 If the gate is missing, stale, or failed, STOP. Architect routes repair through `docs/blueprint/next`, source trace, or `docs/tasks` as needed, reruns role review, and records a fresh gate result before Phase/Milestone planning or milestone breakdown continues.
 

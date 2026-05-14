@@ -25,7 +25,7 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 - **蓝图状态分层** — `current` 是已实现验收，`next` 是待实现/实现中，`tasks` 是 next → current 的施工路径
 - **按价值闭环分期** — Phase 是大 iteration 内有依赖顺序的阶段，通常不超过 3 个，不按工种分期
 - **按用户可见结果拆里程碑** — 每个 Phase 通常不超过 3 个 user-facing Milestone，Task 才是 PR 原子
-- **Teamlead 持续驱动** — 不等 cron；有人空闲就派活、记录等待或诊断卡点
+- **Teamlead 持续驱动** — 不等 cron；有人空闲就派活，恢复后按 notebook + source of truth 直接续推
 - **阶段性验收签字** — Phase 退出 4 联签 = 阶段验收报告
 - **质量门留痕** — 每个闸门有 commit SHA 锚点，可追溯
 - **甲方代表全程在场** — PM 立场反查 = 不让施工偏离需求

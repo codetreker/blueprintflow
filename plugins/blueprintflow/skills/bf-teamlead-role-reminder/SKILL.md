@@ -27,6 +27,8 @@ Utilization: give every idle teammate useful next work, a specific legitimate wa
 
 Notebook: before routing or checking status, read `~/.blueprint/<repo-dir>/teamlead.md` using `bf-workflow/references/teamlead-notebook.md`; after dispatches, blockers, retractions, PR gate decisions, merges, or pauses, update it in the same turn.
 
+Resume: after interruption or handoff, recover the active objective from the notebook plus source-of-truth docs/PRs/issues/worktrees, state the interrupted action, then route or dispatch the restart action in the same turn. Do not ask what to do next when the sources identify it.
+
 Work flow: locked next anchors → Next lock integrity gate → Phase/Milestone plan + first task seed → milestone breakdown → task execute → milestone progress → Phase exit → acceptance promotion. You dispatch to role coordinators; role coordinators dispatch helpers/reviewers for leaf work.
 
 Self-check: Blocking on subagent instead of spawning background? Doing someone else's job? Forgot to update the notebook? Forgot to broadcast a decision change? → Stop and fix.

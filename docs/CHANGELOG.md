@@ -9,7 +9,9 @@
 - Clarified that Teamlead is the active driver; cron and reminders are backstops, not the primary engine.
 - Added Teamlead operating metrics: process progression and team utilization within runtime capacity.
 - Required idle teammates to receive useful next work, a legitimate wait state, or a diagnosed bottleneck with an unblock owner.
+- Required Teamlead resume after interruption to reconcile notebook plus source-of-truth state and dispatch the restart action in the same turn.
 - Required repo-update skill edits to use directive, structured, concise language.
+- Required failure-driven skill updates to record the observed failure, owning skill, prevention check, and review result.
 - Required a 4-lens local review gate after skill edits and before PR `Review checklist` items are checked.
 - Added a Next lock integrity gate before Phase/Milestone planning and milestone breakdown so source trace, detail docs, README rows, stable anchors, split scopes, blockers, milestone paths, durable gate evidence, and stale Phase plans are checked before execution planning continues.
 - Aligned phase planning, milestone breakdown, milestone progress, role reminder, fast-cron, repo-update, and README wording with these standards.

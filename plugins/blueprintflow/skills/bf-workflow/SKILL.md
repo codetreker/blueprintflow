@@ -18,6 +18,7 @@ Bring up role coordinators according to runtime capacity. Do not dispatch helper
 | No concrete objective | Set up runtime/team boundaries, report Blueprintflow active, and ask what Phase, milestone, task, issue, PR, review, audit, backlog-selection discussion, or cron check-in to coordinate. Do not inspect repo, issue, PR, doc, git, or worktree state. |
 | Concrete objective present | Set up runtime/team boundaries, route to the matching child skill, and ask role coordinators to dispatch helpers/reviewers for leaf work. |
 | User interrupts or stops | Stop new work. Continue only after the user confirms the same objective or names a new one. |
+| User confirms resume/continue | Read the Teamlead notebook, reconcile live source-of-truth state, name the recovered objective and next transition, then route or dispatch in the same turn. Do not wait for cron when the next action is known. |
 
 Workflow active means the Teamlead boundary and runtime/team setup are in place. It does not authorize content inspection, leaf work, or scheduled check-ins by itself.
 

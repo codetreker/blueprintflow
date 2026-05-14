@@ -62,6 +62,16 @@ Write skills as executable instructions, not essays.
 - Avoid vague verbs: `consider`, `think about`, `handle`, `support`, `ensure` without a concrete check.
 - Review every changed skill for instruction clarity before LGTM.
 
+## Failure-Driven Updates
+
+When a real Blueprintflow run fails because an agent stalled, serialized independent work, bypassed a gate, misrouted, lost context, or required repeated user correction:
+
+1. Record the failure as `symptom -> missing/weak instruction -> owning skill/reference -> prevention check`.
+2. Patch the owning skill/reference. Do not add generic reminders to `bf-workflow` unless the failure is entry setup, routing, or global coordination.
+3. Add the prevention check to the Local Skill Review Gate prompt: `Would this exact instruction have prevented the observed failure? If not, return NOT LGTM with the missing command.`
+4. Record the prevention check result in the PR `Local Skill Review Gate` artifact.
+5. Stop before PR readiness if the prevention check is missing or NOT LGTM.
+
 ## Local Skill Review Gate
 
 Run this gate after editing any skill body, skill reference, or skill metadata, before marking the change ready.
@@ -70,9 +80,10 @@ Run this gate after editing any skill body, skill reference, or skill metadata, 
 2. If capacity is insufficient, follow `bf-runtime-adapter`: ask for required authorization, then declare and record `serial fallback` only for true runtime/session incapacity.
 3. Give each reviewer the changed file paths, the diff, and this `repo-update` skill. Require each reviewer to read every changed skill/reference as a whole. Do not give them your intended conclusion.
 4. Give the Process reviewer `skill-creator` and `writing-skills`, or tell it to load them before review. If either skill is unavailable, record that as a Process blocker and ask Jianjun for a fallback in the PR.
-5. Require final output with `Blockers`, `Findings`, and `LGTM` or `NOT LGTM`.
-6. Require each finding to state whether it is informational or must-fix.
-7. Cover these lenses:
+5. For failure-driven changes, give every reviewer the recorded failure and prevention check.
+6. Require final output with `Blockers`, `Findings`, `Prevention check` when applicable, and `LGTM` or `NOT LGTM`.
+7. Require each finding to state whether it is informational or must-fix.
+8. Cover these lenses:
 
 | Reviewer | Required questions |
 |---|---|
@@ -81,11 +92,11 @@ Run this gate after editing any skill body, skill reference, or skill metadata, 
 | Language / structure | Is it directive, concise, structured, and unambiguous? Remove vague or descriptive prose. |
 | Risk / anti-patterns | Does it create conflicts, loopholes, regressions, stale examples, validation gaps, or anti-patterns? |
 
-8. Architect records the 4 reviewer outcomes in the PR body under `Local Skill Review Gate`, or in a PR comment linked from that section.
-9. Fix every blocker and every must-fix finding. Re-run the affected reviewer lens after each fix.
-10. Treat local reviewer LGTM as a prerequisite only. It does not replace all-hands PR review or Jianjun approval.
-11. Do not check any PR `Review checklist` item until all 4 local reviewers return LGTM and the durable review artifact is recorded.
-12. Do not self-approve the gate.
+9. Architect records the 4 reviewer outcomes in the PR body under `Local Skill Review Gate`, or in a PR comment linked from that section.
+10. Fix every blocker and every must-fix finding. Re-run the affected reviewer lens after each fix.
+11. Treat local reviewer LGTM as a prerequisite only. It does not replace all-hands PR review or Jianjun approval.
+12. Do not check any PR `Review checklist` item until all 4 local reviewers return LGTM and the durable review artifact is recorded.
+13. Do not self-approve the gate.
 
 ## Anti-patterns
 

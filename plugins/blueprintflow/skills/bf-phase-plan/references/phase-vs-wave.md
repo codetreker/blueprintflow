@@ -17,24 +17,31 @@ docs/tasks/phase-N-<name>/
 ├── phase-plan.md
 ├── milestone-1-<name>/
 │   ├── milestone.md
-│   ├── task-1-<name>/
-│   └── task-2-<name>/
+│   └── task-seed.md
 ├── milestone-2-<name>/
+│   └── milestone.md
 └── ...
 ```
 
+Concrete task folders appear under a milestone as individual tasks start, not during wave planning.
+
 ### Planning task carries
 
-Wave planning is not a container PR exception. If the wave needs a planning change on its own, create a normal task leaf such as `task-0-plan-wave/`; that task PR carries:
+Wave planning is not a container PR exception. If the wave needs a planning change on its own, create a real planning task folder such as `task-0-plan-wave/` for PR ownership/progress; that task has one worktree, one branch, and one PR. The planning task PR carries:
 
 1. `phase-plan.md` — milestone list, dependency graph, closure gate
-2. One subdirectory per milestone — `milestone.md` with task list and dependencies
-3. (Optional) container-level pre-work (e.g. Security pre-work for sensitive paths)
-4. `docs/tasks/README.md` index entry
+2. One subdirectory per milestone — `milestone.md` with capability goal, acceptance boundary, dependencies, and task-split trigger
+3. First-milestone task seed, enough to prove the wave can start without pretending every task is known
+4. (Optional) container-level pre-work (e.g. Security pre-work for sensitive paths)
+5. `docs/tasks/README.md` index entry
 
 ### Planning task does NOT carry
 
-Task-level 4-piece (spec / PM stance / content-lock / acceptance / design) — those live with each task when it starts. Container planning is **plan + task list**, not implementation specification.
+Complete task set — created in `milestone.md` when the milestone starts.
+
+Product task folders and task-level 4-piece (spec / PM stance / content-lock / acceptance / design) — created when each task starts.
+
+Container planning is **Phase/Milestone plan + first task seed**, not implementation specification.
 
 Each task is its own PR. Task PR flow inside a wave is identical to any other task PR — `bf-git-workflow` + `bf-milestone-fourpiece` + `bf-pr-review-flow` apply unchanged.
 

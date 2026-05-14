@@ -1,4 +1,4 @@
 interface:
   display_name: "bf-phase-plan"
   short_description: "Blueprintflow: Plan phases from a blueprint"
-  default_prompt: "Use $bf-phase-plan to split locked next-blueprint anchors into Phases, Milestones, Tasks, and gates."
+  default_prompt: "Use $bf-phase-plan to split locked next-blueprint anchors into Phases, Milestones, gates, and first-milestone task seed."

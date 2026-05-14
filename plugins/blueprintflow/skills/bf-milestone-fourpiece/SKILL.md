@@ -17,6 +17,8 @@ If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's in
 
 ## Doc layout
 
+This skill runs after a milestone is selected for execution and a concrete task is being started. It is not part of blueprint freeze/lock; `bf-phase-plan` owns Phase/Milestone planning and task seed.
+
 Task artifacts live under Phase -> Milestone -> Task:
 
 ```

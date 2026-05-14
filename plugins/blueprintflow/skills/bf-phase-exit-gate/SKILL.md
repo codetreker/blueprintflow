@@ -19,7 +19,7 @@ If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's in
 |---|---|---|
 | **When** | All milestone tasks merged + acceptance ✅, current promotion ready | A milestone wave inside a Phase finishes |
 | **Scope** | Accepted Phase scope can promote to current | Wave's closure task/gate handles its own signoff |
-| **Governed by** | This skill | `bf-phase-plan` |
+| **Governed by** | This skill | `bf-milestone-progress` |
 
 ## Prerequisites
 
@@ -27,7 +27,7 @@ All must be true before starting the exit flow:
 
 | Check | Requirement |
 |---|---|
-| PROGRESS.md | Every done task and milestone checked off. Confirm unchecked items one by one — fix before starting |
+| `progress.md` + `milestone.md` | Every done task and milestone checked off. Confirm unchecked items one by one — fix before starting |
 | Machine-checkable gates | Every `G<Phase>.<n>` is SIGNED, anchored to commit SHA |
 | Carry-overs | Each carry-over anchored to a future task path or placeholder PR number in next Phase. "We'll get to it later" ≠ anchored |
 | Conditionally complete | Acceptable: N gates SIGNED + M gates PARTIAL (condition + closure path) + K gates DEFERRED (locked to future task path or placeholder task PR). Announcement says "conditionally complete", not "complete" |
@@ -68,9 +68,9 @@ Architect commits §9 (date, carry-over details, next Phase unblocked). Teamlead
 
 ## Archiving closed tasks and milestones
 
-After a task PR merges and acceptance is ✅:
+After `bf-milestone-progress` reconciles accepted-task state:
 - Move task folders to `docs/tasks/archived/` only when the active milestone/phase resume view no longer needs them inline.
-- Update `docs/tasks/README.md` — remove from "Currently in flight"
+- Confirm closed rows are already absent from Active Task Resume. Do not remove them in this skill.
 
 ## Anti-patterns
 

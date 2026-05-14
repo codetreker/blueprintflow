@@ -52,7 +52,7 @@ Each task is its own PR. Task PR flow inside a wave is identical to any other ta
 | **Phase exit** | Dev + PM + QA + Teamlead | Accepted scope can promote toward current |
 | **Wave closure** | Dev + PM + QA + Security | Implementation deliverable |
 
-Wave closure can be a final task PR (scope = wave closure evidence) or Phase gate artifact, depending on project size. It follows normal task PR review. No separate skill needed.
+Wave closure can be a final task PR (scope = wave closure evidence) or milestone closure summary, depending on project size. Use `bf-milestone-progress` to record the closure decision before Phase exit.
 
 ## Numbering rules
 

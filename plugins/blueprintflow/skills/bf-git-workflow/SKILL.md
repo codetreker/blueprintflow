@@ -5,7 +5,7 @@ description: "Part of the Blueprintflow methodology. Use when starting a task br
 
 # Git Workflow (Task Protocol)
 
-Task is the PR atom. Pairs with `bf-milestone-breakdown` (reviewed `task.md` contract), `bf-pr-review-flow` (merge red lines), and `bf-task-fourpiece` (task four-piece set lands inside the PR).
+Task is the PR atom. This skill owns worktree, branch, PR, and cleanup mechanics. `bf-task-execute` owns the full task loop around it.
 
 ## Direct Invocation Guard
 
@@ -90,7 +90,7 @@ When a task starts, Teamlead records it in `docs/tasks/README.md`:
 | phase-6/milestone-2 | IMPLEMENTING | task-1-configure-job-api | Dev | .worktrees/task-1-configure-job-api / feat/task-1-configure-job-api | #820 | none | task-1-configure-job-api/progress.md |
 ```
 
-Update this row when owner, branch, PR, blocker, or checkpoint changes. Remove it after task merge/closure; completed state lives in the task folder and milestone closure records.
+Update this row when owner, branch, PR, blocker, or checkpoint changes. Do not remove it on merge; `bf-milestone-progress` removes it after accepted-task reconciliation. Completed state lives in the task folder and milestone closure records.
 
 ## Anti-patterns
 
@@ -105,6 +105,8 @@ Update this row when owner, branch, PR, blocker, or checkpoint changes. Remove i
 
 - `bf-task-fourpiece` — task four-piece set commits in the same worktree
 - `bf-milestone-breakdown` — reviewed task skeletons and `task.md` contracts before task work starts
+- `bf-task-execute` — task-level orchestration from ready task to accepted task
+- `bf-task-state-standard` — `docs/tasks` resume and progress file contract
 - `bf-pr-review-flow` — dual review + squash merge after Teamlead opens PR
 - `workflow` — top-level lifecycle
 

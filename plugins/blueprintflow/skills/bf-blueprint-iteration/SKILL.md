@@ -22,6 +22,7 @@ Concrete objectives include:
 - Open or resume `docs/blueprint/next/` with status anchors.
 - Lock selected next-blueprint anchors for execution.
 - Promote accepted next work into current after coding and acceptance are complete.
+- Repair or review blueprint/task state before resuming interrupted execution.
 
 Standby response:
 
@@ -37,7 +38,7 @@ Tell me which blueprint iteration objective to coordinate.
 |---|---|---|
 | Current | `docs/blueprint/current/` | Implemented, coding complete, accepted, and user-verifiable |
 | Next | `docs/blueprint/next/` | Locked or in-discussion blueprint work that is not yet accepted into current |
-| Tasks | `docs/tasks/` | The execution path from next to current: Phase -> Milestone plan, reviewed task skeletons, then task execution |
+| Tasks | `docs/tasks/` | The execution path from next to current: Phase -> Milestone plan, reviewed task skeletons, task execution, milestone progress |
 | Backlog intake | GitHub issues with `backlog` label | Input scanned only when opening a next selection round |
 
 The states do not mix. `current` is never a plan. `next` is where not-yet-accepted blueprint work lives. `tasks` records how locked `next` anchors become accepted `current` behavior. GitHub backlog issues are intake records, not the ongoing workflow state after selection. Cross-version metadata and traceability files live in `docs/blueprint/_meta/`.
@@ -72,7 +73,7 @@ Rules:
 - If one topic is half decided, split it into smaller anchors so the locked parts can move while open questions remain visible.
 - Blueprint lock does not require a complete task split. It locks the Phase/Milestone plan and enough first-milestone task seed to prove executability.
 - `bf-milestone-breakdown` creates reviewed task skeleton folders and `task.md` contracts before concrete task work starts.
-- Skeleton task folders do not mean implementation has started; `TASKING` begins only when a specific task enters `bf-git-workflow` / `bf-task-fourpiece`.
+- Skeleton task folders do not mean implementation has started; `TASKING` begins only when a specific task enters `bf-task-execute`.
 - Each resulting task still owns one worktree, one branch, and one PR when that task starts.
 - `ACCEPTED` means code is complete and acceptance passed; only then may the accepted scope be promoted to `current`.
 - `CURRENT` means the accepted scope has already been reflected in `docs/blueprint/current/` and should leave the active next queue.
@@ -100,7 +101,7 @@ The implemented version lives in `docs/blueprint/current/` frontmatter (`accepte
 
 When the current implemented work passes acceptance, the next selection round can open. Its intake is **GitHub issues labeled `backlog`** — scan them once to decide what gets pulled into `docs/blueprint/next/`. After selection, ongoing state lives in `next` and `tasks`, not issue labels.
 
-After the user names a concrete iteration objective, read `references/lifecycle.md` for the full flow: scan backlog → write/resume `docs/blueprint/next/` with a status ledger → lock anchors → plan `docs/tasks` as Phase -> Milestone with first-milestone task seed → run `bf-milestone-breakdown` for reviewed task skeletons → implement one task per PR → accept → promote accepted scope into `docs/blueprint/current/`. Reminder period is project-defined in `AGENTS.md`.
+After the user names a concrete iteration objective, read `references/lifecycle.md` for the full flow: scan backlog → write/resume `docs/blueprint/next/` with a status ledger → lock anchors → plan `docs/tasks` as Phase -> Milestone with first-milestone task seed → run `bf-milestone-breakdown` for reviewed task skeletons → run `bf-task-execute` one task per PR → run `bf-milestone-progress` after accepted tasks → promote accepted scope into `docs/blueprint/current/`. Reminder period is project-defined in `AGENTS.md`.
 
 ## Anti-patterns
 

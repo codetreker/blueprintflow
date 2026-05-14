@@ -45,7 +45,7 @@ Output boundary: create task skeletons and `task.md` only. Do not create impleme
 5. Update `milestone.md` with the task index, dependency order, parallelism notes, first ready task, and review table.
 6. Run the breakdown review gate using [references/review-checklist.md](references/review-checklist.md).
 7. Complete the breakdown gate. In PR-governed projects, the breakdown change set must contain the task skeletons, review table, and final ledger update to `TASK_SET_READY`; PR mechanics are handled by the project's PR workflow. In non-PR-governed projects, record equivalent review evidence in `milestone.md` and mark `TASK_SET_READY` in the same update.
-8. Record the handoff target: the first ready task named in `milestone.md`. Do not start that task in this skill.
+8. Record the handoff target: the first ready task named in `milestone.md`. Next skill is `bf-task-execute`. Do not start that task in this skill.
 
 ## State Transition
 

@@ -24,10 +24,10 @@ docs/tasks/<phase>/<milestone>/
 ```markdown
 ## Task Index
 
-| Task | Purpose | Depends on | Parallel? | First ready? |
-|---|---|---|---|---|
-| task-1-configure-job-api | Web can enqueue configure jobs | none | yes | yes |
-| task-2-helper-runner | Host helper runs queued jobs | task-1 | no | no |
+| Task | Status | Purpose | Depends on | Parallel? | First ready? |
+|---|---|---|---|---|---|
+| task-1-configure-job-api | READY | Web can enqueue configure jobs | none | yes | yes |
+| task-2-helper-runner | PLANNED | Host helper runs queued jobs | task-1 | no | no |
 
 ## Breakdown Review
 
@@ -76,6 +76,7 @@ Sensitive paths:
 - Every task must cite at least one locked next-blueprint anchor.
 - Every task must have a checkable acceptance slice.
 - Put task-specific scope in `task.md`; keep `milestone.md` as index and review summary.
+- Mark exactly one unblocked first task `READY` when the milestone reaches `TASK_SET_READY`; other tasks start as `PLANNED`, `BLOCKED`, or `DEFERRED`.
 - Reviewers must independently classify sensitive paths from scope, anchors, dependencies, APIs, files, and commands.
 - If any task is sensitive, `milestone.md` must include a Security review row and Security must approve before `TASK_SET_READY`.
 - Do not create four-piece files during breakdown.

@@ -61,16 +61,16 @@ gh api graphql -f query='query($owner:String!, $repo:String!) { repository(owner
 
 Use the project-defined manual review cadence. Slow-cron only surfaces the count; the user decides each issue's type manually (which moves it into regular routing).
 
-## PROGRESS accuracy check
+## Task state accuracy check
 
-Confirm PROGRESS.md matches reality:
-- A PR is merged → the matching task must already be ticked ✅, and parent milestone/phase status must still be accurate.
-- A task is in progress → it must not be marked Done.
-- Anything inconsistent → fix it immediately.
+Confirm `docs/tasks/README.md`, `milestone.md`, and task `progress.md` match reality:
+- A PR is merged and acceptance evidence exists → `bf-milestone-progress` must reconcile the task row, Active Task Resume, and milestone summary.
+- A task is in progress → it must remain in Active Task Resume and must not be marked `ACCEPTED`.
+- Anything inconsistent → run `bf-task-state-standard`, then dispatch the owning skill.
 
 **Anti-patterns:**
-- Done but not ticked.
-- Not done but marked Done.
+- Accepted but still in Active Task Resume.
+- In progress but marked `ACCEPTED`.
 
 ## Out-of-date red line (catch-all)
 

@@ -46,15 +46,17 @@ Look for new work in this order:
 Before reaching for the default dispatch list, read `docs/blueprint/next/README.md` and `docs/tasks/README.md`, then pick the highest-priority active task that fits the idle role. These files are the workflow source of truth after backlog selection. Use GitHub issues only for source trace (`Closes gh#NNN`) or initial backlog intake; do not scan `current-iteration` / `next-iteration` labels as the active queue.
 
 For each idle role:
-1. Find `LOCKED` next anchors whose execution state is `NO_PLAN`, `MILESTONE_PLANNED`, `BREAKING_DOWN`, `TASK_SET_READY`, `TASKING`, `READY_FOR_IMPL`, `IMPLEMENTING`, or `ACCEPTING`.
+1. Find `LOCKED` next anchors whose execution state is `NO_PLAN`, `MILESTONE_PLANNED`, `BREAKING_DOWN`, `TASK_SET_READY`, `TASKING`, `READY_FOR_IMPL`, `IMPLEMENTING`, `ACCEPTING`, or `ACCEPTED`.
 2. If state is `NO_PLAN`, dispatch Architect to run `bf-phase-plan` for Phase/Milestone planning before task work.
 3. If state is `MILESTONE_PLANNED`, dispatch `bf-milestone-breakdown` for the highest-priority unblocked milestone.
 4. If state is `BREAKING_DOWN`, dispatch the next missing breakdown action: task-contract fix, reviewer, CI-failure owner, merge-gate owner, or non-PR evidence recorder.
-5. If state is `TASK_SET_READY`, dispatch `bf-git-workflow` + `bf-task-fourpiece` for the first ready task.
-6. For task-level states, pick the highest-priority task by blocker > dependency order > phase/milestone priority.
-7. Skip if already assigned or already linked to an open PR.
-8. Dispatch the exact role action needed in the milestone plan, task contract folder, task folder, or task worktree.
-9. Only if no active planned milestone or task needs the role, fall back to the default dispatch list below.
+5. If state is `TASK_SET_READY`, dispatch `bf-task-execute` for the first ready task.
+6. For task-level states before `ACCEPTED`, dispatch `bf-task-execute` for the highest-priority task by blocker > dependency order > phase/milestone priority.
+7. If a task row or task `progress.md` shows accepted work that has not been reconciled into `milestone.md`, dispatch `bf-milestone-progress`.
+8. If the next ledger state is `ACCEPTED`, dispatch `bf-blueprint-iteration` for accepted-scope promotion toward current; if Phase exit evidence is still missing, route to `bf-phase-exit-gate` first.
+9. Skip if already assigned or already linked to an open PR.
+10. Dispatch the exact role action needed in the milestone plan, task contract folder, task folder, or task worktree.
+11. Only if no active planned milestone or task needs the role, fall back to the default dispatch list below.
 
 Use the project-defined stuck threshold. LLM default: two fast check-ins with no owner output, no blocker update, and no artifact change.
 
@@ -143,7 +145,7 @@ When a PR is blocked, **look at the type of block first**, then decide who to as
 - **A `LOCKED` next anchor sitting past the stuck threshold with `NO_PLAN`** — that's stuck, not parked. Flag it and unblock.
 - **A selected milestone sitting at `MILESTONE_PLANNED` with dependencies clear** — run `bf-milestone-breakdown`.
 - **A `BREAKING_DOWN` milestone with no review/CI/merge/evidence movement past the stuck threshold** — dispatch the missing reviewer, task-contract fix, CI-failure owner, merge-gate owner, or non-PR evidence recorder.
-- **A `TASK_SET_READY` milestone with no first-task owner** — assign the first ready task through `bf-git-workflow` + `bf-task-fourpiece`.
+- **A `TASK_SET_READY` milestone with no first-task owner** — assign the first ready task through `bf-task-execute`.
 - **"CI is green so merge"** — you must first read the PR body's Acceptance / Test plan and confirm every item is ticked (see §5).
 - **"subagent LGTM = merge signal"** — a subagent doesn't audit task completion. The Teamlead reads the PR body in person.
 - **CI fail → grab a subagent** — the author knows their own task best. Send it back to the author (see "PR BLOCKED routing").

@@ -3,6 +3,8 @@
 
 The cron is not a status report. It is a forward-motion action. Every check-in must hand out new work to every idle role; otherwise you've failed the job.
 
+Before dispatching, read the Teamlead notebook at `~/.blueprint/<repo-dir>/teamlead.md` using `bf-workflow/references/teamlead-notebook.md`. After assigning work, recording a legitimate wait state, flagging a blocker, or making a merge-gate decision, update the notebook in the same turn.
+
 ## Sections
 
 | Section | Use |
@@ -60,6 +62,7 @@ If a `current-iteration` issue has been sitting for more than 24h with no assign
 ### 4. Cron output format
 - One sentence reporting current forward motion (PR # + one-line goal).
 - Hard blockers (PR check failing for too long / review unanswered for too long) listed separately with details.
+- Confirm the notebook was updated, or state why no notebook change was needed.
 
 ### 5. When to merge — look at task completion, not just the green CI
 
@@ -135,3 +138,4 @@ When a PR is blocked, **look at the type of block first**, then decide who to as
 - **"subagent LGTM = merge signal"** — a subagent doesn't audit task completion. The Teamlead reads the PR body in person.
 - **CI fail → grab a subagent** — the author knows their own milestone best. Send it back to the author (see "PR BLOCKED routing").
 - Treating the review dispatch as the only merge gate — review is a quality check; **task completion + CI + LGTM is the three-way signoff that lets you merge**.
+- Dispatching or reporting status without reconciling `~/.blueprint/<repo-dir>/teamlead.md` first.

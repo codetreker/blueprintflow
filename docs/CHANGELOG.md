@@ -1,5 +1,17 @@
 # Changelog
 
+## v3.0.9 — 2026-05-14
+
+### Teamlead notebook
+
+- Added a Teamlead notebook reference that stores per-project coordination state under `~/.blueprint/<repo-dir>/teamlead.md`.
+- Required Teamlead to read and update the notebook around concrete objective routing, dispatches, blockers, retractions, PR gate decisions, merges, pauses, and cron ticks.
+- Wired notebook reconciliation into Teamlead role boundaries, role reminders, fast-cron, slow-cron, and issue-triage execution.
+
+### Plugin version
+
+- `plugin.json` bumped `3.0.8` → `3.0.9` (patch: Teamlead notebook coordination tracking).
+
 ## v3.0.8 — 2026-05-13
 
 ### Persistent role coordinators

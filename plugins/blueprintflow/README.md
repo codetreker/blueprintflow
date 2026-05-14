@@ -83,21 +83,23 @@ Use this shape:
 
 ## Completion Rules
 
-Each stage starts after the previous stage has its required state or fields. Use field values and required files to decide readiness.
+Each stage starts after the previous stage reaches the required state. Read state values from the relevant row or batch, not from logs or inferred file presence.
 
-| Stage | Completion rule |
+| Stage | State check |
 |---|---|
-| Source intake | `source-issues.md` exists for issue-backed anchors, or `source-notes.md` exists for non-issue anchors; each selected source maps to one or more next anchors. |
-| Next blueprint anchors | `docs/blueprint/next/README.md` has `Anchor`, `Detail anchor`, `Topic`, `State`, and `Milestone path`; each detail anchor points to a concrete `docs/blueprint/next/*.md` section. |
-| Anchor planning | Selected anchor `State` is `PLANNED`. |
-| Phase planning | `docs/tasks/README.md` has a Phase row; `docs/tasks/phase-N-*/phase-plan.md` exists; the Phase has a value loop, dependency order, and exit gate. |
-| Milestone planning | `phase-plan.md` lists milestones; each planned milestone has `milestone.md`; `milestone.md` has goal, acceptance boundary, dependencies, and breakdown trigger or task-split policy. |
-| Milestone selection | One milestone is selected for execution; dependencies are satisfied; `milestone.md` is ready as breakdown input. |
-| Milestone breakdown | The selected milestone only is broken down; `milestone.md` lists reviewed tasks; each task folder has `task.md`; task dependencies are recorded; at least one unblocked first task is `READY`. |
-| Task execution | Each task follows one worktree, one branch, one PR; four-piece, design, implementation, verification, review, and merge are complete. |
-| Milestone close | Required milestone tasks are accepted; milestone acceptance and gates pass. |
-| Phase exit | Required milestones in the Phase are complete; Phase exit gates pass; carried work has a follow-up anchor or task. |
-| Current promotion | Accepted behavior is reflected in `docs/blueprint/current/`; corresponding next anchors are `COMPLETED`. |
+| Source intake | Source batch `State = SELECTED`. |
+| Next blueprint anchors | Each selected source maps to one or more anchor rows; each anchor row has `State = OPEN` or `State = PLANNED`. |
+| Anchor planning | Each anchor selected for execution has `State = PLANNED`. |
+| Phase planning | Each planned Phase row has `State = PLANNED`. |
+| Milestone planning | Each Milestone row under the target Phase has `State = PLANNED`. |
+| Milestone selection | One dependency-ready Milestone row has `State = SELECTED`. |
+| Milestone breakdown | The selected Milestone row has `State = TASK_SET_READY`. |
+| Task execution | Each executed Task row reaches `State = ACCEPTED`. |
+| Milestone close | The target Milestone row has `State = ACCEPTED`. |
+| Phase exit | The target Phase row has `State = ACCEPTED`. |
+| Current promotion | Corresponding next anchor rows have `State = COMPLETED`. |
+
+State belongs to object rows: source batch, anchor, Phase, Milestone, and Task. A stage is done when the relevant row set reaches the required state.
 
 ## Planning Rules
 

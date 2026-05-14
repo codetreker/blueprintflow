@@ -5,7 +5,7 @@ description: "Part of the Blueprintflow methodology. Use when brainstorm has con
 
 # Blueprint Write
 
-`docs/blueprint/*.md` = source of truth for product shape. Every later PR cites a §X.Y anchor here. Once frozen, execution follows the blueprint.
+`docs/blueprint/next/*.md` = source of truth for product shape that is planned, locked, or in progress. Every task PR cites a §X.Y anchor here. `docs/blueprint/current/*.md` is reserved for implemented-and-accepted product truth.
 
 ## Direct Invocation Guard
 
@@ -49,22 +49,23 @@ Each stance = one sentence + constraint + key scenario.
 
 **Validity test**: if you can't write "X is, Y isn't" for a stance, it's not a stance — it's a platitude.
 
-Every stance must produce 5-7 reverse-check items (used by `bf-milestone-fourpiece` stance checklist).
+Every stance must produce 5-7 reverse-check items (used by `bf-task-fourpiece` stance checklist).
 
 ## Process
 
 | Step | Action |
 |---|---|
 | 1. Concept discussion | Paired with `bf-brainstorm`. Lock 1-2 concepts/stances per round |
-| 2. Write blueprint PR | Architect + PM write `docs/blueprint/<module>.md`. Dev + QA review too — stances must be accepted by all roles |
-| 3. Core stance list | Distill 10-15 core stances into `README.md`, mark ⭐ important ones |
-| 4. Blueprint freeze | Post-freeze changes require PR + four-role review. Reasons in changelog, affected milestones rechecked |
+| 2. Write next-blueprint PR | Architect + PM write `docs/blueprint/next/<module>.md` and update `docs/blueprint/next/README.md` anchors/status. Dev + QA review too — stances must be accepted by all roles |
+| 3. Core stance list | Distill 10-15 core stances into `docs/blueprint/next/README.md`, mark ⭐ important ones |
+| 4. Next anchor lock | Approved anchors in `docs/blueprint/next/README.md` move to `LOCKED`; later changes require PR + four-role review and affected tasks rechecked |
 
 ## Anti-patterns
 
 - ❌ Abstract platitudes as stances (no constraint = not a stance)
 - ❌ Skipping reverse-check table (drift escapes acceptance)
-- ❌ Never freezing the blueprint (execution keeps shifting)
+- ❌ Starting task implementation before the next anchor is `LOCKED`
+- ❌ Moving not-yet-accepted work into `docs/blueprint/current/`
 - ❌ Non-standard §X.Y anchors (grep can't find them)
 
 ## How to invoke

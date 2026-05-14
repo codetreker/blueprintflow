@@ -5,7 +5,7 @@ description: "Part of the Blueprintflow methodology. Use when bringing up a Blue
 
 # Runtime Adapter
 
-Blueprintflow rules (blueprint freeze, four-piece set, stance-drift defenses, one-milestone-one-PR) are environment-independent. **How** you carry them out depends on the runtime. This skill centralizes runtime differences; other skills say "what to do", this one says "how".
+Blueprintflow rules (current is implemented/accepted, next locks before task work, four-piece set, stance-drift defenses, one-task-one-PR) are environment-independent. **How** you carry them out depends on the runtime. This skill centralizes runtime differences; other skills say "what to do", this one says "how".
 
 ## Direct Invocation Guard
 
@@ -26,17 +26,18 @@ If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's in
 | Generic phrase | Meaning |
 |---|---|
 | Notify \<Role\> | Any cross-role message (dispatch, completion, review request) |
-| Create worktree | Teamlead creates milestone working directory |
+| Create worktree | Teamlead creates task working directory |
 | Commit code | Role does `commit` + `push` in worktree |
-| Start cron checks | Set up fast-cron (15min) + slow-cron (2-4h) |
+| Start cron checks | Set up project-defined fast active-work check-in + slow drift audit |
 | Check role status | Teamlead checks whether each role is working or idle |
 
 ## Core rules (all environments)
 
-- Blueprint freeze before starting work
+- Next-blueprint anchor lock before starting task work
+- Current blueprint changes only after implementation and acceptance complete
 - Four-piece set (spec / stance / acceptance / content-lock)
 - Five-layer stance-drift defense
-- One milestone, one PR
+- One task, one PR
 - No admin bypass merge (standard squash merge)
 
 ## Environment adapters (load on demand)

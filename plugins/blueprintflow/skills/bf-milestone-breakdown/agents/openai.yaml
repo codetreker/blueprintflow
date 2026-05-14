@@ -1,0 +1,4 @@
+interface:
+  display_name: "bf-milestone-breakdown"
+  short_description: "Blueprintflow: Split milestones into reviewed tasks"
+  default_prompt: "Use $bf-milestone-breakdown to split a planned milestone into reviewed task skeletons."

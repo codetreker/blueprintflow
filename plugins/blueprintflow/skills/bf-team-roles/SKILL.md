@@ -87,7 +87,7 @@ Every code change goes through Security review. Hard rule.
 | Authorize for efficiency | Flexible within charter. Examples: batch-merge a wave of PRs, run review subagents in parallel, let reviewers cross-write each other's pieces, single-reviewer chore PRs that skip dual review, fire batch processing when LGTMs arrive |
 | Silence detection | Handle per runtime environment (see `bf-runtime-adapter`) |
 | Issue triage routing | Route only, don't classify personally (see `bf-issue-triage`) |
-| Run cron checkins | Fast 15-min idle + slow 2-4h drift audit |
+| Run cron checkins | Project-defined fast active-work check-in + slow drift audit |
 
 ### Teamlead anti-patterns
 
@@ -100,7 +100,7 @@ Every code change goes through Security review. Hard rule.
 
 ### Worktree
 
-All roles work in the milestone worktree (`<repo-root>/.worktrees/<milestone-or-issue>`). One milestone, one worktree. No `/tmp/` throwaway clones.
+All roles work in the task worktree (`<repo-root>/.worktrees/<task>`). One task, one worktree, one branch, one PR. No `/tmp/` throwaway clones.
 
 ### PR body
 

@@ -8,12 +8,12 @@ Before auditing, read the Teamlead notebook at `~/.blueprint/<repo-dir>/teamlead
 ## Four audit categories (priority order)
 
 ### 1. Is PROGRESS current?
-- Read `docs/tasks/README.md` (cross-milestone index) and per-task `docs/tasks/<milestone-or-issue>/progress.md` rows; look at each Phase / milestone's ✅ / ⚪ / 🔄 status.
-- Reconcile against PRs merged in the last 2-4 hours. If a PR merged but progress wasn't flipped → assign the Architect to patch it (≤30 LOC doc PR).
+- Read `docs/blueprint/next/README.md`, `docs/tasks/README.md`, and per-task `progress.md` rows; look at each Phase / Milestone / Task status.
+- Reconcile against PRs merged since the last slow-cron checkpoint. If a PR merged but progress wasn't flipped → assign the Architect to patch it (small doc PR).
 - Watch the Phase overview in `docs/tasks/README.md` carefully — it drifts the most.
 
 ### 2. Blueprint drift scan
-- `git log --since="4 hours ago" --name-only` lists code-change files.
+- `git diff <last-slow-cron-sha>..HEAD --name-only` lists code-change files since the last slow-cron checkpoint.
 - Files matching keywords (admin / auth / message / channel / agent) changed but no blueprint files changed in the same window — that's normal (blueprint changes drive code, not the other way around).
 - **But** if code introduces a new concept (PR title contains "add" / "extend" / "feat:" but the description doesn't reference a blueprint section) → assign the Architect to audit and decide if the change needs to be reflected back into the blueprint.
 
@@ -25,22 +25,22 @@ Before auditing, read the Teamlead notebook at `~/.blueprint/<repo-dir>/teamlead
 - A "carry-over: N/A — <reason>" opt-out is fine (consistent with the rule 6 lint), but check that the reason is genuinely reasonable.
 
 ### 4. Delayed flips
-- A PR has been merged for more than 2-4 hours, but its acceptance template is still ⚪ — flip was missed.
+- A PR has been merged past the drift threshold, but its acceptance template is still ⚪ — flip was missed.
 - Assign QA to flip it.
 - If the project has its own regression / registry consistency math (active + pending = total), audit it here.
 
 ### 5. Open-PR task-completion audit (not just CI)
 
-Under the new protocol — one milestone, one PR — PRs are opened early and everyone stacks commits inside them. Slow-cron looks at how many `[ ]` items remain in each open PR's Acceptance / Test plan:
+Under the protocol — one task, one PR — PRs are opened when the task branch is ready for review and everyone stacks required commits inside them. Slow-cron looks at how many `[ ]` items remain in each open PR's Acceptance / Test plan:
 
 - `gh pr view <N> --json body | jq -r .body | grep -E "^- \\[ \\]"` lists the unticked items.
-- Many `[ ]` items + no commits for a long time (≥4h) → assign the matching role to commit into the worktree.
+- Many `[ ]` items + no commits past the task-completion threshold → assign the matching role to commit into the worktree.
 - **Don't rush to merge.** Green CI + LGTMs but Acceptance still has `[ ]` → leave a PR comment "waiting on role X to add Y", don't merge.
 
 **Typical sticking points:**
 - Dev's code has landed and e2e is green, but the acceptance template is still ⚪ → QA hasn't committed.
 - Implementation is all in, but docs/current sync hasn't been patched → assign Dev to patch.
-- The four-piece spec is in an old PR on main and was not cherry-picked into the milestone worktree → assign the Architect to commit it into the worktree.
+- The four-piece spec is in an old PR on main and was not included in the task worktree → assign the Architect to commit it into the worktree.
 
 ### 6. "Triaged but no native type" review-queue audit
 
@@ -59,22 +59,22 @@ gh api graphql -f query='query($owner:String!, $repo:String!) { repository(owner
     triaged-no-type-threshold: 5
   ```
 
-The user's expected cadence is "whenever slow-cron flags + weekly review at minimum". Slow-cron only surfaces the count; the user decides each issue's type manually (which moves it into regular routing).
+Use the project-defined manual review cadence. Slow-cron only surfaces the count; the user decides each issue's type manually (which moves it into regular routing).
 
-## PROGRESS accuracy check
+## Task state accuracy check
 
-Confirm PROGRESS.md matches reality:
-- A PR is merged → the matching milestone must already be ticked ✅.
-- A task is in progress → it must not be marked Done.
-- Anything inconsistent → fix it immediately.
+Confirm `docs/tasks/README.md`, `milestone.md`, and task `progress.md` match reality:
+- A PR is merged and acceptance evidence exists → `bf-milestone-progress` must reconcile the task row, Active Task Resume, and milestone summary.
+- A task is in progress → it must remain in Active Task Resume and must not be marked `ACCEPTED`.
+- Anything inconsistent → run `bf-task-state-standard`, then dispatch the owning skill.
 
 **Anti-patterns:**
-- Done but not ticked.
-- Not done but marked Done.
+- Accepted but still in Active Task Resume.
+- In progress but marked `ACCEPTED`.
 
 ## Out-of-date red line (catch-all)
 
-- If any blueprint file has mtime > 1 day and the matching milestone has been progressing in recent PRs → assign the Architect to add a "Last reviewed: <date>" line to that blueprint file.
+- If a next-blueprint file has not been reviewed past the drift threshold while the matching milestone/task has been progressing → assign the Architect to update the next status ledger or add a "Last reviewed: <date>" line to that blueprint file.
 - This prevents the "blueprint left to rot" kind of drift.
 
 ## Output format

@@ -1,0 +1,4 @@
+interface:
+  display_name: "bf-verification"
+  short_description: "Blueprintflow: Verify acceptance evidence before LGTM"
+  default_prompt: "Use $bf-verification to verify task acceptance evidence before LGTM."

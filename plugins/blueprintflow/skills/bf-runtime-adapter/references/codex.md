@@ -16,13 +16,13 @@
 
 | Mode | Use for | Scheduling | Parallelism |
 |---|---|---|---|
-| CLI local session | One milestone / PR review | Sleeper subagent | Subagents |
+| CLI local session | One task / PR review | Sleeper subagent | Subagents |
 | Codex App | Long-running coordination | App automations | Subagents |
 | Cloud task | Bounded execution/review | Caller-driven | Per task |
 
 ## Activation Check
 
-Run before Phase or milestone work.
+Run before Phase, milestone, or task work.
 
 | Check | Required |
 |---|---|
@@ -65,7 +65,7 @@ Rules:
 - Name helpers `bf-<role>:<task>`.
 - Spawn role coordinators with the `bf-team-roles` common preamble, delegated activation envelope, and role-specific prompt so they can load routed `bf-*` skills inside scope without re-entering `bf-workflow`.
 - If capacity is insufficient, Teamlead runs missing roles as serial lenses and records the downgrade.
-- In Codex, bare activation may set up Teamlead/runtime boundaries and role coordinators, but it does not authorize helper dispatch, project content inspection, or sleeper/automation setup. Those start only after the user names a concrete Blueprintflow-scoped objective or explicitly requests ongoing coordination, such as a milestone, issue, PR review, Phase plan, drift audit, or cron check-in.
+- In Codex, bare activation may set up Teamlead/runtime boundaries and role coordinators, but it does not authorize helper dispatch, project content inspection, or sleeper/automation setup. Those start only after the user names a concrete Blueprintflow-scoped objective or explicitly requests ongoing coordination, such as a Phase, milestone, task, issue, PR review, drift audit, or cron check-in.
 - Missing or ambiguous user authorization is not a spawn-capacity failure. If Codex host policy or the current tool contract requires explicit user authorization before spawning role/helper agents, Teamlead must ask the user for that authorization instead of declaring `serial fallback`.
 - If the Codex runtime or current session truly lacks role/helper spawning capability after required authorization has been requested or resolved, Teamlead must declare `serial fallback` before doing role-lens work in the parent thread.
 
@@ -87,7 +87,7 @@ If unsure, use `high`. Sleeper helpers use `low`.
 
 | Need | Codex App | Codex CLI |
 |---|---|---|
-| Fast checkin | Automation prompt with `$bf-teamlead-fast-cron-checkin` | 15-min sleeper subagent |
+| Fast checkin | Automation prompt with `$bf-teamlead-fast-cron-checkin` | Project-cadence sleeper subagent |
 | Slow checkin | Automation prompt with `$bf-teamlead-slow-cron-checkin` | Long sleeper only when useful |
 | Role reminder | Automation prompt with `$bf-teamlead-role-reminder` | Parent self-check before implementation |
 | Issue triage | Automation prompt with `$bf-issue-triage` | Sleeper or explicit parent dispatch |
@@ -95,8 +95,8 @@ If unsure, use `high`. Sleeper helpers use `low`.
 Sleeper prompt:
 
 ```text
-Sleep for 15 minutes, then return exactly:
-[auto check-in · 15 min] $bf-teamlead-fast-cron-checkin
+Sleep for the project-defined fast-checkin cadence, then return exactly:
+[auto check-in] $bf-teamlead-fast-cron-checkin
 Do not inspect files, run tools, or make decisions.
 ```
 
@@ -122,7 +122,7 @@ Do not call `close_agent` on role coordinators as task cleanup; continue existin
 ```text
 Use Blueprintflow in Codex mode.
 Use bf-workflow, then this Codex adapter reference.
-Act as Teamlead in the parent thread and run the activation check before Phase or milestone work.
+Act as Teamlead in the parent thread and run the activation check before Phase, milestone, or task work.
 ```
 
 ## Optional Local Agents

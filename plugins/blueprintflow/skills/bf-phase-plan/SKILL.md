@@ -1,11 +1,11 @@
 ---
 name: bf-phase-plan
-description: "Part of the Blueprintflow methodology. Use when a frozen blueprint needs an execution plan, value-loop Phase split, exit gates, or milestone list."
+description: "Part of the Blueprintflow methodology. Use when locked next-blueprint anchors need Phase/Milestone planning, value-loop gates, or first task seed before milestone breakdown."
 ---
 
 # Phase Plan
 
-Once the blueprint is ready, the Architect leads. Break the project into Phases, each anchored to a **value loop** (something an end user can actually use), not to technical layers.
+Once `docs/blueprint/next/` has `LOCKED` anchors, the Architect leads. Break the selected next work into Phases and Milestones, with enough first-milestone task seed to prove execution can start. Complete task decomposition waits for `bf-milestone-breakdown`. Each Phase anchors to a **value loop** (something an end user can actually use), not to technical layers.
 
 ## Direct Invocation Guard
 
@@ -13,11 +13,21 @@ If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's in
 
 ## Preflight check
 
-Before using this skill, read `references/preflight.md` to confirm it applies. The decision graph checks: single-file change? mechanical PR type? team <3? blueprint missing? If any → skip the 4-piece flow.
+Before using this skill, read `references/preflight.md` to confirm it applies. The decision graph checks: single-file change? mechanical PR type? blueprint missing? If any skip condition applies, skip this planning flow.
+
+## Phase / Milestone / Task
+
+| Level | Meaning | PR ownership |
+|---|---|---|
+| Phase | Value loop with exit gates | Not a PR by itself |
+| Milestone | Capability or deliverable group inside a Phase | Groups tasks; not a PR by itself |
+| Task | Smallest executable unit | **One task = one worktree + one branch + one PR** |
+
+`docs/tasks/` is the execution path from locked `next` anchors to accepted `current` behavior. At freeze/lock time it records Phase/Milestone planning; `bf-milestone-breakdown` later creates reviewed task skeleton folders; each concrete task gains four-piece/design files only when that task starts. It does not replace the product-shape source of truth in `docs/blueprint/next/`.
 
 ## Phase vs wave
 
-Not every batch of milestones is a new Phase. Read `references/phase-vs-wave.md` for the rule: **did the blueprint contract change?** Yes → new Phase. No → wave inside existing Phase. Ad-hoc issue → single milestone.
+Not every batch of work is a new Phase. Read `references/phase-vs-wave.md` for the rule: **did locked next scope introduce a new value loop?** Yes → new Phase. No → milestone wave inside an existing Phase. Ad-hoc issue → single task or task set under the relevant milestone.
 
 ## How to split Phases
 
@@ -36,47 +46,85 @@ Every Phase needs **machine-checkable** + **user-perceivable** exit conditions:
 |---|---|---|
 | **Strict** (machine) | Automated assertions | Cookie crosstalk test, throttle unit test, lint pass |
 | **User-perceivable** (signoff) | Demo + PM ✅ + screenshot | Flagship milestone demo, real human can use it |
-| **Carry-over** (partial OK) | Anchored to Phase N+1 placeholder PR # | Deferred work with a real PR anchor (rule 6) |
+| **Carry-over** (partial OK) | Anchored to a future task path or placeholder PR # | Deferred work with a real recovery anchor (rule 6) |
 
 ## Four drift-prevention gates
 
-Every milestone must have these attached before execution:
+Every task must have these attached before implementation:
 
 | Gate | Owner | What it checks |
 |---|---|---|
 | 1. Template self-check | Architect | Spec brief uses the template correctly |
-| 2. grep §X.Y anchor | Architect | Every milestone cites a blueprint section |
+| 2. grep §X.Y anchor | Architect | Every task cites a blueprint section |
 | 3. Reverse-check table | PM + Architect | Stances writable in one sentence; no drift |
 | 4. Flagship signoff | PM | Demo + screenshot (AI teams skip video) |
 
-Gates 1+2 in spec brief PR, gate 3 in stance + acceptance, gate 4 at demo signoff.
+Gates 1+2 in the task spec brief, gate 3 in stance + acceptance, gate 4 at demo signoff.
 
 ## Deliverables
 
 **Path**: `docs/tasks/`
 
-- **README.md** — cross-milestone index + Phase overview (updated on every PR merge)
-- **00-foundation/** — execution-plan, roadmap, milestone template
-- **<milestone-or-issue>/** — one folder per work unit (see `bf-milestone-fourpiece`)
+- **README.md** — cross-Phase index + resume view (updated on every task PR merge)
+- **phase-N-<name>/phase-plan.md** — value loop, milestone list, exit gates
+- **phase-N-<name>/<milestone>/milestone.md** — capability goal, acceptance boundary, dependencies, task-split trigger, and first task seed when this is the first executable milestone
+- **phase-N-<name>/<milestone>/<task>/task.md** — created later by `bf-milestone-breakdown`, not by freeze/lock planning
+- **phase-N-<name>/<milestone>/<task>/{spec,stance,acceptance,design,progress}.md** — created when that task starts
+
+Freeze/lock example:
+
+```text
+docs/tasks/
+├── README.md
+└── phase-6-remote-agent/
+    ├── phase-plan.md
+    └── milestone-2-web-configure/
+        ├── milestone.md
+        └── task-seed.md        # optional file; seed may also be in milestone.md
+```
+
+The first-milestone task seed may be a section in `milestone.md` or a small `task-seed.md`. It names the likely first task, cited next-blueprint anchors, prerequisites, expected PR atom, and first acceptance check. It is not a four-piece set and does not start implementation.
+
+PR boundary: in a PR-governed project, freeze/lock planning is a normal planning task such as `task-0-plan-phase-6`: one worktree, one branch, one PR. It has a real planning task folder for PR ownership/progress, for example `docs/tasks/phase-6-remote-agent/milestone-planning/task-0-plan-phase-6/progress.md`. The planning task's substantive deliverables are parent `phase-plan.md`, `milestone.md`, and task seed files; it is not a container PR exception and it does not implement product behavior.
+
+The freeze/lock planning task may stop at `phase-plan.md`, `milestone.md`, and the first-milestone task seed. Do not fabricate task skeleton folders just to make the plan look finished. When the milestone is selected for execution, run `bf-milestone-breakdown` to create reviewed task folders with `task.md`; create four-piece/design/progress files only when each task starts.
+
+After `bf-milestone-breakdown`:
+
+```text
+docs/tasks/phase-6-remote-agent/milestone-2-web-configure/
+├── milestone.md          # index, dependencies, breakdown review
+├── task-1-configure-job-api/
+│   └── task.md           # task contract only
+└── task-2-helper-runner/
+    └── task.md
+```
+
+Task start adds the four-piece/design/progress files to that task folder.
 
 ## docs/tasks/README.md template
 
-```
-| Phase | Status | Exit condition | Notes |
-|-------|--------|----------------|-------|
-| Phase 0 foundation | ✅ | G0.x passed | bootstrap |
-| Phase 1 identity | ✅ | G1.x passed | milestone-ids |
-| Phase 2 collaboration ⭐ | 🔄 | strict N + carry-over anchored | milestone-id ⭐ |
-| Phase 3+ | TODO | G3.x + PM signoff | waiting |
+```markdown
+# Tasks State
+
+## Phase Index
+
+| Phase | Status | Exit condition | Current milestone |
+|-------|--------|----------------|-------------------|
+| Phase 0 foundation | ARCHIVED | G0.x accepted | archived |
+| Phase 6 remote agent | IMPLEMENTING | G6.x strict + PM signoff | milestone-2-web-config |
+| Phase 7 next loop | PLANNED | G7.x defined after lock | waiting |
 ```
 
-After every PR merge, update the matching milestone row ⚪→✅ immediately.
+This Phase index records only Phase, Status, Exit condition, and Current milestone. A milestone closes only when all required tasks are accepted. A Phase closes only when its milestone gates pass.
 
 ## Anti-patterns
 
 - ❌ Splitting by technical layer (no value loop)
 - ❌ Exit gates without user perception (machine-only)
 - ❌ Carry-over not anchored to a PR # (rule 6)
+- ❌ Treating a milestone as the PR atom; task is the PR atom
+- ❌ Writing task mechanics into `docs/blueprint/current/` or `docs/blueprint/next/`
 - ❌ PROGRESS not updated promptly
 
 ## How to invoke

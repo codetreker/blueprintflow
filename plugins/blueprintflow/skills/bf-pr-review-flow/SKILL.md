@@ -1,6 +1,6 @@
 ---
 name: bf-pr-review-flow
-description: "Part of the Blueprintflow methodology. Use when a milestone PR is open, under review, blocked, ready for merge, or needs standard Blueprintflow merge-gate handling."
+description: "Part of the Blueprintflow methodology. Use when a task PR is open, under review, blocked, ready for merge, or needs standard Blueprintflow merge-gate handling."
 ---
 
 # PR Review Flow
@@ -13,7 +13,7 @@ If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's in
 
 ## Pre-requisite: implementation design ✅
 
-Code milestones must have passed the four-role design review before the PR opens. Design doc lives in the milestone's leaf folder as `design.md` (see `bf-milestone-fourpiece` for folder layout). Full spec in `bf-implementation-design`. Non-code milestones skip this step.
+Code tasks must have passed the four-role design review before the PR opens. Design doc lives in the task leaf folder as `design.md`. Task baseline docs come from `bf-task-fourpiece`; design review comes from `bf-implementation-design`. Non-code tasks skip this step.
 
 ## 🚫 Permanently forbidden (hard red line)
 
@@ -29,7 +29,7 @@ Admin bypass hides bugs. History: e2e failures bypassed into main → each neede
 ## PR template
 
 ```
-Blueprint: blueprint/<file>.md §X.Y
+Blueprint: docs/blueprint/next/<file>.md §X.Y
 Touches: <packages or docs>
 Current sync: <docs/current path + bf-current-doc-standard check, or N/A — reason>
 Stage: v0|v1
@@ -44,35 +44,40 @@ Stage: v0|v1
 
 Missing fields → lint red. Fix through lint patch flow, don't bypass.
 
-## Dual review
+## Required reviews
 
-| PR type | Reviewer 1 | Reviewer 2 | +Security if sensitive |
-|---|---|---|---|
-| Dev implementation | Architect (architecture) | QA (acceptance) | ✓ |
-| Architect spec brief | Dev (implementation) | QA + PM (stance) | — |
-| PM stance / content-lock | Architect | QA | — |
-| QA acceptance / status flip | Architect | PM (if v0 stance) | — |
+Every PR is a task PR. Role artifacts are commits inside that task PR, not separate PR types.
 
-> **UI / frontend PRs**: QA walks the 3 lines from `bf-e2e-verification` before LGTM.
+| Task content | Required reviewers before merge |
+|---|---|
+| Code implementation | Architect (architecture) + QA (acceptance) + Security |
+| Milestone breakdown / task skeletons | Architect + PM + QA + Dev + Security if any task is sensitive |
+| Spec-only task | Dev (executability) + QA (verifiability) + PM (stance) |
+| Stance / content-lock task | Architect + QA |
+| Acceptance / status-flip task | Architect + PM (if v0/v1 stance changes) |
+
+> **Verification**: QA uses `bf-verification` before LGTM. UI/frontend PRs load `bf-verification/references/ui-e2e.md`; backend/data/CLI/background jobs load the matching `bf-verification` references.
 
 **Security review**: walks `references/security-checklist.md` (12 categories). LGTM must cite specific items.
+
+**Remote-agent / dangerous-command review**: when scope touches remote agents, host automation, command execution, approval flows, or filesystem/network delegation, Security also walks [references/remote-agent-dangerous-commands.md](references/remote-agent-dangerous-commands.md).
 
 LGTM command (author cannot self-approve):
 ```
 gh pr comment <num> --body "LGTM (reason ≤30 chars)"
 ```
 
-## Three-signoff merge gate
+## Three-gate merge rule
 
 | Gate | Check | Command |
 |---|---|---|
 | ① CI passes | statusCheckRollup all SUCCESS | `gh pr view <N> --json statusCheckRollup` |
-| ② Non-author LGTM | ≥1 different reviewer identity | PR review or LGTM comment |
+| ② Required reviews | Every required reviewer for the task content has non-author LGTM; code tasks include Security | PR review or LGTM comment |
 | ③ Task completeness | Acceptance + Test plan all ✅ | `gh pr view <N> --json body \| jq -r .body \| grep -cE "^- \\[ \\]"` == 0 |
 
 For code changes, task completeness includes `docs/current` sync. QA verifies existence; Architect verifies boundary/state/anchor quality with `bf-current-doc-standard`.
 
-All three pass → `gh pr merge <N> --squash --delete-branch`. Any missing → don't merge.
+All three pass → `gh pr merge <N> --squash --delete-branch`. Any missing reviewer, red CI, or unchecked item → don't merge.
 
 Detailed merge gate protocol in `bf-teamlead-fast-cron-checkin` references/execution.md §5.
 

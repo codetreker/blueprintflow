@@ -1,5 +1,38 @@
 # Changelog
 
+## v4.0.0 — 2026-05-14
+
+### Blueprint state and task flow
+
+- Reframed `docs/blueprint/current/` as implemented, coding-complete, accepted product truth rather than a frozen plan.
+- Reframed `docs/blueprint/next/` as the home for locked, open, or in-progress blueprint work until implementation and acceptance promote it to current.
+- Defined `docs/tasks/` as the next-to-current execution path where freeze/lock plans Phase -> Milestone before later task execution stages.
+- Clarified that freeze/lock requires a first-milestone task seed for executability, not a complete task tree.
+- Changed the PR atom from milestone to task across workflow, git workflow, task four-piece, implementation design, PR review, cron, role prompts, and runtime guidance.
+- Limited GitHub `backlog` labels to initial next-selection intake; ongoing recovery uses a coarse `docs/blueprint/next/README.md` index plus detailed `docs/tasks/` state.
+- Added next status ledger guidance with independent Decision and Work statuses for interrupted-work recovery.
+- Added `bf-milestone-breakdown` as the stage between Phase/Milestone planning and concrete task start.
+- Added `bf-task-execute` as the task-level orchestrator from reviewed task contract to accepted task closure.
+- Added `bf-milestone-progress` for accepted-task follow-up, next-task selection, milestone closure, and Phase-exit readiness.
+- Added `bf-task-state-standard` for `docs/tasks` ledgers, milestone indexes, task folders, and interrupted-work recovery.
+- Renamed public skill `bf-e2e-verification` to `bf-verification`; the UI E2E three-line check is now a lazy reference alongside API, data, CLI, background-job, and acceptance-evidence references.
+- Added implementation-loop, acceptance-evidence, milestone/wave closure, current-promotion, security/privacy threat-model, and remote-agent/dangerous-command references to close execution and verification gaps.
+- Added `BREAKING_DOWN` and `TASK_SET_READY` `docs/tasks` milestone states so task skeleton folders are not confused with active implementation.
+- Defined `task.md` as the reviewed task contract for purpose, scope, out-of-scope, anchors, acceptance slice, dependencies, parallelism, and sensitive paths.
+- Kept `milestone.md` as the milestone index, dependency order, first-ready task pointer, and breakdown review summary.
+- Aligned workflow routing, blueprint iteration lifecycle, phase planning, task four-piece, fast cron, role reminder, README, and plugin metadata with the milestone breakdown stage.
+- Renamed public skill `bf-milestone-fourpiece` to `bf-task-fourpiece` because the skill owns task baseline docs, not milestone execution.
+- Kept `bf-git-workflow` separate; it owns task worktree/branch/PR lifecycle and Active Task Resume.
+- Kept `bf-phase-plan` milestone-only; task-level resume state moved to the task workflow.
+- Replaced fixed human-time stuck/review/drift thresholds with project-defined cadence/thresholds and LLM check-in defaults.
+- Added skill validation guards for retired task-fourpiece naming, fixed cron literals, and incomplete cron ellipses in active skills.
+- Removed the small-team preflight bypass so required role and Security review cannot be skipped by team size.
+- Rewrote iteration lifecycle reference into directive mainline/rules/checklist form.
+
+### Plugin version
+
+- `plugin.json` bumped `3.0.9` → `4.0.0` (major: public skill renames from `bf-milestone-fourpiece` to `bf-task-fourpiece` and `bf-e2e-verification` to `bf-verification`, plus new public task/milestone orchestration skills).
+
 ## v3.0.9 — 2026-05-14
 
 ### Teamlead notebook
@@ -294,7 +327,7 @@ Skill changes (3 files, 3 sections added):
 - **Leaf folder** (`<milestone-or-issue>`) — a single milestone or single GitHub issue
 - **Container folder** (`<phase-or-wave>`) — Phase (`phase-N-{name}`) or wave (e.g. `helper-v1-release`); holds `phase-plan.md` plus leaf subfolders
 
-A leaf can sit at the top level of `docs/tasks/` or nested inside a container (`docs/tasks/<wave>/<milestone>/`). See `bf-milestone-fourpiece` SKILL.md "Naming convention" for the worked example.
+A leaf can sit at the top level of `docs/tasks/` or nested inside a container (`docs/tasks/<wave>/<milestone>/`). See `bf-task-fourpiece` SKILL.md "Naming convention" for the worked example.
 
 ### Phase / wave numbering rules
 
@@ -305,8 +338,8 @@ See `bf-phase-plan` SKILL.md "Numbering rules" (H3 under "When to start a new Ph
 
 ### Wave closure signoff + index responsibilities
 
-- **Wave closure 4-role signoff comparison table**: `bf-phase-plan` SKILL.md "Wave structure" now contrasts Phase exit (Dev + PM + QA + Teamlead) against wave closure (Dev + PM + QA + Security) — different role mix because Phase exit transitions blueprint versions while wave closure ships an implementation deliverable. Wave closure is just a regular milestone PR following `bf-milestone-fourpiece` + `bf-pr-review-flow`; no separate skill needed.
-- **`README.md` vs `<container>/phase-plan.md` responsibilities**: `bf-milestone-fourpiece` SKILL.md "Naming convention" gets a new H3 — `docs/tasks/README.md` is the cross-folder index (lists top-level entries only, no recursion into containers); `<container>/phase-plan.md` is the container's own table of contents (lists the milestones inside that container + the closure gate).
+- **Wave closure 4-role signoff comparison table**: `bf-phase-plan` SKILL.md "Wave structure" now contrasts Phase exit (Dev + PM + QA + Teamlead) against wave closure (Dev + PM + QA + Security) — different role mix because Phase exit transitions blueprint versions while wave closure ships an implementation deliverable. Wave closure is just a regular milestone PR following `bf-task-fourpiece` + `bf-pr-review-flow`; no separate skill needed.
+- **`README.md` vs `<container>/phase-plan.md` responsibilities**: `bf-task-fourpiece` SKILL.md "Naming convention" gets a new H3 — `docs/tasks/README.md` is the cross-folder index (lists top-level entries only, no recursion into containers); `<container>/phase-plan.md` is the container's own table of contents (lists the milestones inside that container + the closure gate).
 - **Generic examples in rule body**: per the project-generic convention, rule-body examples now use generic names (`helper-v1-release`, `install-butler`); the Borgee-specific names live in a `> **Real example (Borgee):**` block under the mixed example.
 
 ## v1.4.0 — 2026-05-09
@@ -332,12 +365,12 @@ Path-mapping table:
 | `docs/qa/phase-N-readiness-review.md` | `docs/tasks/phase-N-exit/readiness-review.md` |
 | `docs/qa/phase-N-exit-announcement.md` | `docs/tasks/phase-N-exit/announcement.md` |
 
-Affected skills (11 files, 22 path references): `bf-milestone-fourpiece`, `bf-git-workflow`, `bf-workflow`, `bf-team-roles` (pm / qa / architect references), `bf-phase-exit-gate`, `bf-implementation-design`, `bf-teamlead-slow-cron-checkin`, `bf-pr-review-flow`, `bf-phase-plan`.
+Affected skills (11 files, 22 path references): `bf-task-fourpiece`, `bf-git-workflow`, `bf-workflow`, `bf-team-roles` (pm / qa / architect references), `bf-phase-exit-gate`, `bf-implementation-design`, `bf-teamlead-slow-cron-checkin`, `bf-pr-review-flow`, `bf-phase-plan`.
 
 ### Placeholder + naming convention
 
 - The folder placeholder is now `<milestone-or-issue>` (was `<milestone>` / `<m>`). The folder holds either a blueprint milestone or a feature/bugfix from a GitHub issue — both share the same shape (spec / stance / acceptance / etc.) and the same one-folder-one-PR rules; only the folder name varies.
-- Naming rule documented in `bf-milestone-fourpiece` SKILL.md:
+- Naming rule documented in `bf-task-fourpiece` SKILL.md:
   - Blueprint milestone → blueprint code (e.g. `al-2a-content-lock`, `chn-4-cross-org`)
   - Feature / bugfix from a GitHub issue → `<issue#>-<short-slug>` (e.g. `698-agent-config-form-overlap`, `716-e2e-real-ui-audit`)
   - Anti-patterns: `m698-*` / `gh698-*` prefixes

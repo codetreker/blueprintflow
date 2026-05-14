@@ -1,4 +1,0 @@
-interface:
-  display_name: "bf-e2e-verification"
-  short_description: "Blueprintflow: Verify frontend changes before LGTM"
-  default_prompt: "Use $bf-e2e-verification to verify a client-facing UI change before LGTM."

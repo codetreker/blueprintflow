@@ -13,13 +13,13 @@ Your job: confirm that **the exit process itself is complete and correct** — a
 
 ### 2. Anchor integrity
 
-- Every PR number referenced in the announcement actually exists and is merged (or is a real placeholder PR for the next Phase)
+- Every PR number referenced in the announcement actually exists; merged-work PRs are merged, and deferred anchors point to a future task path or real placeholder task PR for the next Phase
 - Every commit SHA referenced is reachable from main
 - No broken links, no "TBD" placeholders left
 
-### 3. Placeholder PRs landed
+### 3. Deferred anchors exist
 
-- All DEFERRED gate placeholder PRs are merged before you merge the exit PR
+- All DEFERRED gates have future task paths or placeholder task PRs before you merge the exit PR
 - The exit announcement's carry-over section accurately reflects what's deferred and where
 
 ### 4. Next Phase readiness
@@ -30,10 +30,11 @@ Your job: confirm that **the exit process itself is complete and correct** — a
 
 ## How to sign off
 
-After confirming all of the above, merge the PR:
+After confirming all of the above, run `bf-pr-review-flow` and merge only when its task-PR gates pass:
 
 1. Verify all four signoff lines are in the announcement §7
 2. Verify §9 (closure announcement) is committed by the Architect
-3. Squash merge the PR
-4. Remove the worktree, delete the branch
-5. Announce in the project channel that the Phase is closed
+3. Verify green CI, required non-author reviews, and no unchecked Acceptance/Test plan items
+4. Squash merge the PR
+5. Remove the worktree, delete the branch
+6. Announce in the project channel that the Phase is closed

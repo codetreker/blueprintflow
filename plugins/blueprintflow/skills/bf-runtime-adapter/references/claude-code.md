@@ -39,10 +39,10 @@ Every teammate = independent Claude Code process (`claude --agent-id <name>@<tea
 |---|---|
 | Start team | `TeamCreate({team_name})` + `Agent({team_name, name, subagent_type, run_in_background: true, prompt})` × N |
 | Notify \<Role\> | `SendMessage("role_name", content)` |
-| Create worktree | `git worktree add .worktrees/<milestone> -b feat/<milestone> origin/main` |
+| Create worktree | `git worktree add .worktrees/<task> -b feat/<task> origin/main` |
 | Commit code | `git add && git commit && git push` in worktree |
-| Start fast-cron | `CronCreate({cron: "7,22,37,52 * * * *", prompt: "...", durable: false})` |
-| Start slow-cron | `CronCreate({cron: "17 */2 * * *", prompt: "...", durable: false})` |
+| Start fast-cron | `CronCreate({cron: "<project fast-checkin cron>", prompt: "...", durable: false})` |
+| Start slow-cron | `CronCreate({cron: "<project slow-drift cron>", prompt: "...", durable: false})` |
 | Check role status | tmux pane output / `SendMessage` |
 | Open PR | `gh pr create` (Teamlead only) |
 | Merge PR | `gh pr merge <N> --squash` |
@@ -128,10 +128,10 @@ Single Claude Code session, no team mode.
 | Generic phrase | Concrete command |
 |---|---|
 | Notify \<Role\> | Not needed — single session switches roles serially |
-| Create worktree | `git worktree add .worktrees/<milestone> -b feat/<milestone> origin/main` |
+| Create worktree | `git worktree add .worktrees/<task> -b feat/<task> origin/main` |
 | Commit code | `git add && git commit && git push` in worktree |
-| Start fast-cron | `CronCreate({cron: "7,22,37,52 * * * *", ...})` — current session runs self-check |
-| Start slow-cron | `CronCreate({cron: "17 */2 * * *", ...})` — current session runs drift audit |
+| Start fast-cron | `CronCreate({cron: "<project fast-checkin cron>", ...})` — current session runs self-check |
+| Start slow-cron | `CronCreate({cron: "<project slow-drift cron>", ...})` — current session runs drift audit |
 | Check role status | Not needed — you are all the roles |
 | Open PR | `gh pr create` |
 | Merge PR | `gh pr merge <N> --squash` |
@@ -150,7 +150,7 @@ Single Claude Code session, no team mode.
 | Context | Own 1M context window | Shares parent's context |
 
 **Implications**:
-- "One milestone, one PR, everyone stacks commits" requires teammates (persistent, independent commit)
+- "One task, one PR, everyone stacks commits" requires teammates (persistent, independent commit)
 - Ping/Pong applies to teammates only (subagents have completion signals)
 - Parallel review via subagents is allowed, but teammate signs off
 
@@ -162,11 +162,11 @@ Single Claude Code session, no team mode.
 
 | Time | Action |
 |---|---|
-| ≤10 min silence | First ping: "Reply pong + one-line progress within 5 min" |
-| ≤15 min silence | Second ping: "Still working? Reply within 5 min or shutdown" |
-| ≤20 min silence | `shutdown_request` → spawn fresh agent to take over |
+| First silence threshold | First ping: "Reply pong + one-line progress by the ping deadline" |
+| Second silence threshold | Second ping: "Still working? Reply by the ping deadline or shutdown" |
+| Takeover threshold | `shutdown_request` → spawn fresh agent to take over |
 
-Threshold tunable (e.g. e2e debugging → 30 min normal). Does not apply to subagents.
+Thresholds are project/runtime-defined. Does not apply to subagents.
 
 ---
 

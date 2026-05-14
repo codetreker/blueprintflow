@@ -5,7 +5,7 @@ description: "Part of the Blueprintflow methodology. Use on slow-cron ticks or w
 
 # Teamlead Slow-Cron Check-in
 
-2-4 hour recurring cron. Runtime syntax → `bf-runtime-adapter`.
+Project-defined drift-audit cadence. Runtime syntax → `bf-runtime-adapter`.
 
 ## Direct Invocation Guard
 
@@ -14,7 +14,7 @@ If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's in
 ## How to invoke
 
 ```
-[drift audit · 2 hours]
+[drift audit]
 follow skill bf-teamlead-slow-cron-checkin
 ```
 

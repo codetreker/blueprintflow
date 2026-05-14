@@ -20,13 +20,13 @@ repo: codetreker/<repo>. Batch merge (order-independent, concurrent):
 **Red line**: no --admin, no ruleset disable, CI failure → don't merge.
 
 Order:
-1. ≥1 non-author LGTM + CI green + CLEAN → merge first
+1. All required non-author LGTMs for the task content + CI green + CLEAN → merge first
 2. Report ones that don't qualify
 
 For each:
 - \`gh pr view <N> --json statusCheckRollup,mergeStateStatus,reviews\`
 - Lint fail → patch body via gh api PATCH + close/reopen
-- Green → \`gh pr merge <N> --squash --delete-branch\`
+- Green + all required LGTMs + no unchecked Acceptance/Test plan items → \`gh pr merge <N> --squash --delete-branch\`
 - Report SHA + time, ≤80 chars each. Total ≤300 chars. No admin/ruleset/bypass in report.
 `
 })
@@ -35,7 +35,7 @@ For each:
 ## Trigger signals
 
 - Reviewer drops LGTM on multiple PRs in one wave → batch
-- Multiple milestone four-piece acceptances land together → batch
+- Multiple task four-piece acceptances land together → batch
 
 ## Anti-patterns
 

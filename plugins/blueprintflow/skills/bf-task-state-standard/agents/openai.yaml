@@ -1,0 +1,4 @@
+interface:
+  display_name: "bf-task-state-standard"
+  short_description: "Blueprintflow: Standardize docs/tasks state"
+  default_prompt: "Use $bf-task-state-standard to create, repair, or review docs/tasks state and resume ledgers."

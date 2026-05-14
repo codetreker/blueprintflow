@@ -5,7 +5,7 @@ description: "Part of the Blueprintflow methodology. Use on fast-cron ticks, idl
 
 # Teamlead Fast-Cron Check-in
 
-15-minute recurring cron. Runtime syntax → `bf-runtime-adapter`.
+Project-defined active-work check-in cadence. Runtime syntax → `bf-runtime-adapter`.
 
 ## Direct Invocation Guard
 
@@ -14,10 +14,10 @@ If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's in
 ## How to invoke
 
 ```
-[auto check-in · 15 min]
+[auto check-in]
 follow skill bf-teamlead-fast-cron-checkin
 ```
 
 ## Execution
 
-Read `references/execution.md` — covers dispatch priority, current-iteration issue scan, merge gate, PR BLOCKED routing, and anti-patterns.
+Read `references/execution.md` — covers dispatch priority, docs/tasks resume-state scan, merge gate, PR BLOCKED routing, and anti-patterns.

@@ -64,11 +64,34 @@ Rules:
 - Only `LOCKED` anchors may be planned into `docs/tasks/`.
 - `OPEN` or `REOPENED` anchors stay in discussion and cannot start implementation.
 - If one topic is half decided, split it into smaller anchors so the locked parts can move while open questions remain visible.
-- Blueprint lock does not require a complete task split. It locks the Phase/Milestone plan and enough first-milestone task seed to prove executability.
+- Blueprint lock does not require Phase/Milestone planning or task split. It locks selected next anchors; `bf-phase-plan` creates the Phase/Milestone path and first-milestone task seed after the lock gate passes.
+- Blueprint lock requires the Next lock integrity gate below. Do not treat the README ledger alone as proof of lock.
 - `bf-milestone-breakdown` creates reviewed task skeleton folders and `task.md` contracts before concrete task work starts.
 - Skeleton task folders do not mean task execution has started; task-level state lives in `docs/tasks/README.md`, `milestone.md`, and task folders.
 - Each resulting task still owns one worktree, one branch, and one PR when that task starts.
 - `COMPLETED` means code is complete, acceptance passed, and required milestone, wave, or Phase gates are recorded; only then may the accepted scope be promoted to `current`.
+
+## Next Lock Integrity Gate
+
+Architect owns this gate. Run it after source trace exists and before marking selected anchors ready for `bf-phase-plan`. Rerun it before resuming an existing Phase plan or starting `bf-milestone-breakdown`.
+
+| Check | Required action |
+|---|---|
+| Source trace | Verify `docs/blueprint/_meta/<target-version>/source-issues.md` lists picked backlog issues, or a source note records the non-issue source. |
+| Ledger row | Verify every selected `LOCKED` anchor appears in `docs/blueprint/next/README.md` with Decision, Work, and Next action. Allow `Milestone path` to be `-` before `bf-phase-plan`; require the milestone folder path after planning exists. |
+| Detail anchor | Verify every selected `LOCKED` anchor has a stable `§X.Y` heading, slug anchor, or explicit anchor ID in detailed `docs/blueprint/next/` files. |
+| Ledger-to-detail link | Replace whole-doc references with section-level references. Each README row must point to the exact detail anchor it locks. |
+| Split topics | If one topic splits into locked and open parts, create separate anchors. Keep locked scope and open blockers separate in README and detail docs. |
+| Blocker coverage | Record every blocker that prevents execution in the detail docs and summarize it in the README row or linked open anchor. |
+| Reverse trace | For each selected anchor, verify source issue or source note -> README row -> detail anchor can be followed without guessing. |
+| Phase-plan handoff | If a Phase plan or milestone already exists, verify README `Milestone path` -> `phase-plan.md` / `milestone.md` -> cited next anchor -> source trace. |
+| Freshness | Treat evidence as stale if selected anchors, README rows, detail anchors, blockers/open anchors, source issue/note trace, milestone paths, `phase-plan.md`, or `milestone.md` changed after the recorded gate result. |
+
+Required reviewers: Architect + PM + QA + Security. Dev joins when executability, sandbox, migration, or integration blockers affect the lock.
+
+Record the gate result in the lock PR body or in a PR comment linked from the PR body. Include base commit or PR head SHA, checked anchors, source trace artifact, README rows, detail files, milestone paths when present, reviewer decisions, unresolved open anchors, and freshness decision.
+
+If the gate is missing, stale, or failed, STOP. Architect routes repair through `docs/blueprint/next`, source trace, or `docs/tasks` as needed, reruns role review, and records a fresh gate result before Phase/Milestone planning or milestone breakdown continues.
 
 ## Version numbers
 
@@ -93,7 +116,7 @@ The implemented version lives in `docs/blueprint/current/` frontmatter (`accepte
 
 When the current implemented work passes acceptance, the next selection round can open. Its intake is **GitHub issues labeled `backlog`** — scan them once to decide what gets pulled into `docs/blueprint/next/`. After selection, ongoing state lives in `next` and `tasks`, not issue labels.
 
-After the user names a concrete iteration objective, read `references/lifecycle.md` for the full flow: scan backlog → write/resume `docs/blueprint/next/` with a status ledger → lock anchors → plan `docs/tasks` as Phase -> Milestone with first-milestone task seed → run `bf-milestone-breakdown` for reviewed task skeletons → run `bf-task-execute` one task per PR → run `bf-milestone-progress` after accepted tasks → promote accepted scope into `docs/blueprint/current/`. Use [references/promotion-checklist.md](references/promotion-checklist.md) for accepted-scope promotion. Reminder period is project-defined in `AGENTS.md`.
+After the user names a concrete iteration objective, read `references/lifecycle.md` for the full flow: scan backlog → write source trace → write/resume `docs/blueprint/next/` with a status ledger → lock anchors → run the Next lock integrity gate → plan `docs/tasks` as Phase -> Milestone with first-milestone task seed → run `bf-milestone-breakdown` for reviewed task skeletons → run `bf-task-execute` one task per PR → run `bf-milestone-progress` after accepted tasks → promote accepted scope into `docs/blueprint/current/`. Use [references/promotion-checklist.md](references/promotion-checklist.md) for accepted-scope promotion. Reminder period is project-defined in `AGENTS.md`.
 
 ## Anti-patterns
 
@@ -112,7 +135,7 @@ follow skill bf-blueprint-iteration
 
 # No objective named → standby, ask which iteration objective to coordinate
 # Current accepted → scan backlog → open/resume docs/blueprint/next/
-# docs/blueprint/next/ anchors lock → plan docs/tasks/ Phase -> Milestone + task seed
+# docs/blueprint/next/ anchors lock → run Next lock integrity gate → plan docs/tasks/ Phase -> Milestone + task seed
 # selected milestone → bf-milestone-breakdown creates reviewed task skeletons
 # task starts → one task = one worktree + one branch + one PR
 # accepted task/phase scope → promote to docs/blueprint/current/ + tag/meta

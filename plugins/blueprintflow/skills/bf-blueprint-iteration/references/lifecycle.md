@@ -6,9 +6,10 @@
 accepted current
 -> user opens next selection
 -> scan backlog once
+-> write source-issues.md
 -> write/resume docs/blueprint/next + ledger
 -> lock selected anchors
--> write source-issues.md
+-> run Next lock integrity gate
 -> plan Phase -> Milestone + first task seed
 -> break down selected milestone into reviewed task.md skeletons
 -> execute tasks through docs/tasks
@@ -63,7 +64,7 @@ Rules:
 
 ## Source Issues
 
-Create `docs/blueprint/_meta/<target-version>/source-issues.md` after picking backlog issues:
+Create `docs/blueprint/_meta/<target-version>/source-issues.md` after picking backlog issues and before locking next anchors:
 
 ```markdown
 # Source issues for blueprint vN.M
@@ -83,6 +84,8 @@ Rules:
 ## After Lock
 
 When one or more next anchors are `LOCKED`:
+- Run the Next lock integrity gate from `bf-blueprint-iteration/SKILL.md`.
+- Stop if the gate is missing, stale, or failed. Repair source trace, `docs/blueprint/next`, or stale `docs/tasks` files; rerun role review; record a fresh gate result before Phase/Milestone planning or milestone breakdown.
 - Run Phase/Milestone planning under `docs/tasks/`.
 - Require milestones, dependencies, acceptance boundaries, and first-milestone task seed.
 - Do not require complete task decomposition at lock time.

@@ -81,6 +81,20 @@ Use this shape:
 
 `_meta` stores source trace only. Runtime routing comes from `docs/blueprint/next/README.md` and `docs/tasks` state files.
 
+## State Ownership
+
+Parent ledgers own child row state. Keep each state in one place.
+
+| Object row | State owner |
+|---|---|
+| Source batch | `docs/blueprint/_meta/<version>/source-issues.md` or `source-notes.md` |
+| Anchor | `docs/blueprint/next/README.md` |
+| Phase | `docs/tasks/README.md` |
+| Milestone | `docs/tasks/phase-N-*/phase-plan.md` |
+| Task | `docs/tasks/phase-N-*/milestone-*/milestone.md` |
+
+Resume from top to bottom: next anchor row -> Phase row -> Milestone row -> Task row. Detail files may explain scope, acceptance, blockers, or implementation evidence; they do not duplicate parent-owned state.
+
 ## Completion Rules
 
 Each stage starts after the previous stage reaches the required state. Read state values from the relevant row or batch, not from logs or inferred file presence.

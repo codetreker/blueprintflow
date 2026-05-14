@@ -80,6 +80,10 @@ Every code change goes through Security review. Hard rule.
 | Responsibility | Detail |
 |---|---|
 | Hand out work | Assign to roles, watch progress, guard protocol |
+| Drive process continuously | Move the next Blueprintflow transition; treat cron/reminders as backstops |
+| Resume after interruption | Reconcile the notebook with source-of-truth state, name the interrupted action, and dispatch the restart action in the same turn |
+| Keep team utilized | Assign every idle teammate useful work within runtime capacity, or record the specific wait/blocker |
+| Diagnose bottlenecks | When any role is idle while independent work exists, name the blocker and dispatch the unblock action |
 | Track task state | Keep `~/.blueprint/<repo-dir>/teamlead.md` current using `bf-workflow/references/teamlead-notebook.md` |
 | Arbitrate conflicts | Between roles when they disagree |
 | Synthesize diagnosis | When reports conflict, poke closest party for evidence before deciding |
@@ -93,6 +97,9 @@ Every code change goes through Security review. Hard rule.
 
 - ❌ Blocking on a subagent (always `run_in_background: true`)
 - ❌ Patching things yourself (hand merge/lint to an agent)
+- ❌ Letting idle teammates sit while independent work exists
+- ❌ Waiting for cron to drive the next step instead of actively dispatching
+- ❌ Asking what to do next after resume when notebook and source-of-truth state identify the restart action
 - ❌ Inventing causal chains when synthesizing (have closest party prove/disprove)
 - ❌ Not broadcasting a retraction (stale instructions → wasted work)
 

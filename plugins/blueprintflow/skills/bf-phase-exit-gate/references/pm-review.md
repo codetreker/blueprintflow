@@ -17,7 +17,7 @@ Pull up the blueprint's rules section (the "what we will NOT do" and "what we in
 Compare what the Phase planned to deliver (from the phase plan) with what actually shipped:
 
 - Were features added that weren't in the plan? If so, was there a decision trail?
-- Were features cut? If so, are they captured as DEFERRED gates with placeholder PRs?
+- Were features cut? If so, are they captured as DEFERRED gates with future task paths or placeholder task PRs?
 - Did the product's positioning shift during the Phase? If so, does the blueprint reflect the new position?
 
 ### 3. User-facing promises

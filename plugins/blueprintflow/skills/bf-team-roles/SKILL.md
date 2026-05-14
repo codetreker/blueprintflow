@@ -100,7 +100,7 @@ Every code change goes through Security review. Hard rule.
 
 ### Worktree
 
-All roles work in the milestone worktree (`<repo-root>/.worktrees/<milestone-or-issue>`). One milestone, one worktree. No `/tmp/` throwaway clones.
+All roles work in the task worktree (`<repo-root>/.worktrees/<task>`). One task, one worktree, one branch, one PR. No `/tmp/` throwaway clones.
 
 ### PR body
 

@@ -44,8 +44,8 @@ Lens: <architecture | stance + content lock | acceptance + reverse-grep anchors>
 ## Protocol
 
 1. PR open → dispatch N review subagents (parallel)
-2. All LGTM + CI passes → standard merge (never admin-bypass)
-3. NOT-LGTM or cross-PR drift → escalate to persistent role
+2. All required LGTMs + CI passes + no unchecked Acceptance/Test plan items → standard merge (never admin-bypass)
+3. NOT-LGTM, missing required reviewer, unchecked task item, or cross-PR drift → escalate to persistent role
 4. Persistent roles keep: authoring + drift arbitration + cross-milestone judgment
 
 ## Anti-patterns

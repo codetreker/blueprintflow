@@ -1,59 +1,105 @@
 # Iteration lifecycle
 
 ```
-Current iteration passes acceptance
+Current implemented blueprint has passed acceptance
    ↓
-Teamlead reminds the user "next-version discussion can open"
-   ↓
-User doesn't respond → AGENTS.md reminder-period repeats the reminder
+Teamlead reminds the user "next selection can open"
    ↓
 User says go
    ↓
-Scan GitHub issues with label `backlog` (clean up + pick, move to `next-iteration`) + brainstorm
+Scan GitHub issues with label `backlog` once (clean up + pick)
    ↓
-Write docs/blueprint/next/ + migration analysis
+Write or resume docs/blueprint/next/ with a status ledger
    ↓
-Four roles + Teamlead/user discuss
+Four roles + Teamlead/user discuss until selected anchors are LOCKED
    ↓
-User signs off (or user authorizes Teamlead to sign off)
+Write docs/blueprint/_meta/<target-version>/source-issues.md for picked issues
    ↓
-Freeze:
-  - docs/blueprint/next/ → docs/blueprint/current/ replacement
-  - Old version gets a git tag (blueprint-vN.M) for history
-  - Write docs/blueprint/_meta/<version>/source-issues.md (link issue # that were pulled in; don't list those that weren't; forks can trace back)
-  - Issues pulled in change label from `next-iteration` to `current-iteration`, then get assigned milestones for execution
-  - Issues kept at `backlog` are untouched (still pending)
-  - Create an empty docs/blueprint/next/ to open the entry point for the next-version discussion
+Architect runs bf-phase-plan against LOCKED next anchors
+   ↓
+docs/tasks/ records Phase -> Milestone -> Task execution path
+   ↓
+Each Task runs one worktree + one branch + one PR
+   ↓
+Task PRs merge, acceptance flips, milestone/phase exit gates pass
+   ↓
+Promote accepted scope from docs/blueprint/next/ to docs/blueprint/current/
+   ↓
+Tag the accepted current version (blueprint-vN.M) and mark next ledger rows CURRENT
 ```
 
-### source-issues.md trail
+## State ownership
 
-At freeze time, list the picked-in issue # in `docs/blueprint/_meta/<version>/source-issues.md`:
+| Artifact | Owns | Does not own |
+|---|---|---|
+| `docs/blueprint/current/` | Implemented, accepted product truth | Planned or in-progress work |
+| `docs/blueprint/next/` | Locked/open blueprint work not yet accepted into current | Task mechanics or PR status |
+| `docs/tasks/` | Execution path from next to current | Product stance source of truth |
+| GitHub `backlog` issues | Initial selection intake | Ongoing implementation state |
+
+Once a backlog issue is selected, do not use GitHub status labels as the workflow source of truth. Preserve the issue number in `source-issues.md` and in task/PR references, then drive recovery from `docs/blueprint/next/README.md` and `docs/tasks/`.
+
+## Next status ledger
+
+`docs/blueprint/next/README.md` is the first file to read after an interruption:
+
+```markdown
+# Blueprint Next State
+
+Target version: vN.M
+Last updated: YYYY-MM-DD
+Resume from: <one concrete next action>
+
+| Anchor | Topic | Decision | Execution | Task path | PR | Blocker | Next action |
+|---|---|---|---|---|---|---|---|
+| RA-1 | Web-triggered configure | LOCKED | TASKING | docs/tasks/phase-6-remote-agent/milestone-2-web-config/task-1-configure-job-api | - | none | finish task four-piece |
+| RA-2 | Helper sandbox stance | OPEN | NO_TASK | - | - | sudo boundary | role discussion |
+| RA-3 | Helper boot/crash | LOCKED | READY_FOR_IMPL | docs/tasks/phase-6-remote-agent/milestone-3-helper-service/task-1-boot-crash | - | none | create worktree |
+| RA-4 | Status and logs UI | LOCKED | IMPLEMENTING | docs/tasks/phase-6-remote-agent/milestone-4-operator-status/task-2-redacted-logs-ui | #812 | none | finish client tests |
+| RA-5 | Revoke behavior | LOCKED | ACCEPTING | docs/tasks/phase-6-remote-agent/milestone-5-revoke/task-1-revoke-helper-auth | #816 | QA review | acceptance signoff |
+| RA-6 | Configure job API | LOCKED | ACCEPTED | docs/tasks/phase-6-remote-agent/milestone-2-web-config/task-1-configure-job-api | #820 | none | promote to current |
+| RA-7 | Legacy helper sandbox | REOPENED | NO_TASK | - | - | product/security conflict | resolve stance |
+| RA-8 | Enrollment status | LOCKED | CURRENT | docs/tasks/archived/task-1-enrollment-status | #801 | none | none |
+```
+
+Decision values: `OPEN`, `LOCKED`, `REOPENED`.
+
+Execution values: `NO_TASK`, `TASKING`, `READY_FOR_IMPL`, `IMPLEMENTING`, `ACCEPTING`, `ACCEPTED`, `CURRENT`.
+
+## source-issues.md trail
+
+When backlog issues are picked into the next version, list them in `docs/blueprint/_meta/<target-version>/source-issues.md`:
 
 ```markdown
 # Source issues for blueprint vN.M
 
-The issues this version of the blueprint draws from (grouped by topic):
+The issues this next blueprint draws from (grouped by topic):
 
 ## Module X
-- gh#123 — title, one sentence on what this version delivers
-- gh#125 — title, one sentence on what this version delivers
-
-## Module Y
-- gh#127 — ...
+- gh#123 — title, one sentence on what this version intends to deliver
+- gh#125 — title, one sentence on what this version intends to deliver
 ```
 
 Effects:
-- Fork users can trace where this version of the blueprint came from (even if the fork can't see upstream issue history, they can see the original numbers and look them up upstream)
-- Issues that weren't picked aren't listed (noise — leave them in the GitHub backlog)
-- Frozen together with the blueprint version, immutable
+- Fork users can trace where this version came from.
+- Issues that were not picked are not listed.
+- The file is traceability for the selected next work; it does not mean the work is current.
 
-### After cutover: trigger a new Phase
+## After lock: trigger Phase planning
 
-When the next-version blueprint becomes the current version (cutover complete, old current archived under git tag), the Architect runs `bf-phase-plan` to split the new blueprint into Phase N+1 (where N is the previous Phase number). The new Phase has its own value loop, exit gate, and milestone list.
+When one or more next anchors are `LOCKED`, the Architect runs `bf-phase-plan` to split them into Phase -> Milestone -> Task under `docs/tasks/`. This starts execution planning, not current promotion.
 
-This is the only path that creates a new Phase — milestone waves inside an existing blueprint version do not (see `bf-phase-plan` "When to start a new Phase vs add a wave").
+## Promotion to current
 
-### Stuck-milestone safety net
+Promote only accepted work:
+- All relevant task PRs are merged.
+- Acceptance templates are ✅ and verifiable.
+- Phase or milestone gates required by `docs/tasks` have passed.
+- `docs/current` is synced when the project uses that convention.
+- User/PM acceptance for user-perceivable behavior is recorded.
 
-If a single milestone is stuck for ≥2 weeks → Architect + PM evaluate, kick it back to backlog or split it; don't drag the whole iteration.
+Then update `docs/blueprint/current/`, tag `blueprint-vN.M`, and mark the corresponding next ledger rows `CURRENT`.
+
+## Stuck-task safety net
+
+If a task is stuck for >=2 weeks, Architect + PM evaluate whether to split the task, reopen the next anchor, or move the remainder back to a future backlog item. Do not drag the whole milestone or Phase indefinitely.

@@ -1,4 +1,4 @@
 interface:
   display_name: "bf-milestone-fourpiece"
-  short_description: "Blueprintflow: Create milestone baseline docs"
-  default_prompt: "Use $bf-milestone-fourpiece to create the spec, stance, content-lock, and acceptance baseline."
+  short_description: "Blueprintflow: Create task baseline docs"
+  default_prompt: "Use $bf-milestone-fourpiece to create a task's spec, stance, content-lock, and acceptance baseline."

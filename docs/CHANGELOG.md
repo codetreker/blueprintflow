@@ -1,5 +1,20 @@
 # Changelog
 
+## v3.0.10 — 2026-05-14
+
+### Blueprint state model correction
+
+- Reframed `docs/blueprint/current/` as implemented, coding-complete, accepted product truth rather than a frozen plan.
+- Reframed `docs/blueprint/next/` as the home for locked, open, or in-progress blueprint work until implementation and acceptance promote it to current.
+- Defined `docs/tasks/` as the next-to-current execution path: Phase -> Milestone -> Task.
+- Changed the PR atom from milestone to task across workflow, git workflow, task four-piece, implementation design, PR review, cron, role prompts, and runtime guidance.
+- Limited GitHub `backlog` labels to initial next-selection intake; ongoing recovery state now lives in `docs/blueprint/next/README.md` and `docs/tasks/`.
+- Added next status ledger guidance with independent Decision and Execution statuses for interrupted-work recovery.
+
+### Plugin version
+
+- `plugin.json` bumped `3.0.9` → `3.0.10` (patch: blueprint state model and task-as-PR correction).
+
 ## v3.0.9 — 2026-05-14
 
 ### Teamlead notebook

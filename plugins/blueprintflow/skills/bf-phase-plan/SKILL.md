@@ -1,11 +1,11 @@
 ---
 name: bf-phase-plan
-description: "Part of the Blueprintflow methodology. Use when a frozen blueprint needs an execution plan, value-loop Phase split, exit gates, or milestone list."
+description: "Part of the Blueprintflow methodology. Use when locked next-blueprint anchors need Phase, Milestone, Task planning, value-loop gates, or execution-path structure."
 ---
 
 # Phase Plan
 
-Once the blueprint is ready, the Architect leads. Break the project into Phases, each anchored to a **value loop** (something an end user can actually use), not to technical layers.
+Once `docs/blueprint/next/` has `LOCKED` anchors, the Architect leads. Break the selected next work into Phases, Milestones, and Tasks. Each Phase anchors to a **value loop** (something an end user can actually use), not to technical layers.
 
 ## Direct Invocation Guard
 
@@ -15,9 +15,19 @@ If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's in
 
 Before using this skill, read `references/preflight.md` to confirm it applies. The decision graph checks: single-file change? mechanical PR type? team <3? blueprint missing? If any → skip the 4-piece flow.
 
+## Phase / Milestone / Task
+
+| Level | Meaning | PR ownership |
+|---|---|---|
+| Phase | Value loop with exit gates | Not a PR by itself |
+| Milestone | Capability or deliverable group inside a Phase | Groups tasks; not a PR by itself |
+| Task | Smallest executable unit | **One task = one worktree + one branch + one PR** |
+
+`docs/tasks/` is the execution path from locked `next` anchors to accepted `current` behavior. It does not replace the product-shape source of truth in `docs/blueprint/next/`.
+
 ## Phase vs wave
 
-Not every batch of milestones is a new Phase. Read `references/phase-vs-wave.md` for the rule: **did the blueprint contract change?** Yes → new Phase. No → wave inside existing Phase. Ad-hoc issue → single milestone.
+Not every batch of work is a new Phase. Read `references/phase-vs-wave.md` for the rule: **did locked next scope introduce a new value loop?** Yes → new Phase. No → milestone wave inside an existing Phase. Ad-hoc issue → single task or task set under the relevant milestone.
 
 ## How to split Phases
 
@@ -36,47 +46,68 @@ Every Phase needs **machine-checkable** + **user-perceivable** exit conditions:
 |---|---|---|
 | **Strict** (machine) | Automated assertions | Cookie crosstalk test, throttle unit test, lint pass |
 | **User-perceivable** (signoff) | Demo + PM ✅ + screenshot | Flagship milestone demo, real human can use it |
-| **Carry-over** (partial OK) | Anchored to Phase N+1 placeholder PR # | Deferred work with a real PR anchor (rule 6) |
+| **Carry-over** (partial OK) | Anchored to a future task path or placeholder PR # | Deferred work with a real recovery anchor (rule 6) |
 
 ## Four drift-prevention gates
 
-Every milestone must have these attached before execution:
+Every task must have these attached before implementation:
 
 | Gate | Owner | What it checks |
 |---|---|---|
 | 1. Template self-check | Architect | Spec brief uses the template correctly |
-| 2. grep §X.Y anchor | Architect | Every milestone cites a blueprint section |
+| 2. grep §X.Y anchor | Architect | Every task cites a blueprint section |
 | 3. Reverse-check table | PM + Architect | Stances writable in one sentence; no drift |
 | 4. Flagship signoff | PM | Demo + screenshot (AI teams skip video) |
 
-Gates 1+2 in spec brief PR, gate 3 in stance + acceptance, gate 4 at demo signoff.
+Gates 1+2 in the task spec brief, gate 3 in stance + acceptance, gate 4 at demo signoff.
 
 ## Deliverables
 
 **Path**: `docs/tasks/`
 
-- **README.md** — cross-milestone index + Phase overview (updated on every PR merge)
-- **00-foundation/** — execution-plan, roadmap, milestone template
-- **<milestone-or-issue>/** — one folder per work unit (see `bf-milestone-fourpiece`)
+- **README.md** — cross-Phase index + resume view (updated on every task PR merge)
+- **phase-N-<name>/phase-plan.md** — value loop, milestone list, exit gates
+- **phase-N-<name>/<milestone>/milestone.md** — capability goal, task list, dependencies
+- **phase-N-<name>/<milestone>/<task>/** — task four-piece, design, progress (see `bf-milestone-fourpiece`)
+
+Example:
+
+```text
+docs/tasks/
+├── README.md
+└── phase-6-remote-agent/
+    ├── phase-plan.md
+    └── milestone-2-web-configure/
+        ├── milestone.md
+        ├── task-1-configure-job-api/
+        │   ├── spec.md
+        │   ├── stance.md
+        │   ├── acceptance.md
+        │   ├── design.md
+        │   └── progress.md
+        └── task-2-helper-runner/
+            └── ...
+```
 
 ## docs/tasks/README.md template
 
 ```
-| Phase | Status | Exit condition | Notes |
-|-------|--------|----------------|-------|
-| Phase 0 foundation | ✅ | G0.x passed | bootstrap |
-| Phase 1 identity | ✅ | G1.x passed | milestone-ids |
-| Phase 2 collaboration ⭐ | 🔄 | strict N + carry-over anchored | milestone-id ⭐ |
-| Phase 3+ | TODO | G3.x + PM signoff | waiting |
+| Phase | Status | Exit condition | Current focus |
+|-------|--------|----------------|---------------|
+| Phase 0 foundation | ARCHIVED | G0.x accepted | archived |
+| Phase 6 remote agent | IMPLEMENTING | G6.x strict + PM signoff | milestone-2/task-1 |
+| Phase 7 next loop | PLANNED | G7.x defined after lock | waiting |
 ```
 
-After every PR merge, update the matching milestone row ⚪→✅ immediately.
+After every task PR merge, update the matching task row immediately. A milestone closes only when all required tasks are accepted. A Phase closes only when its milestone gates pass.
 
 ## Anti-patterns
 
 - ❌ Splitting by technical layer (no value loop)
 - ❌ Exit gates without user perception (machine-only)
 - ❌ Carry-over not anchored to a PR # (rule 6)
+- ❌ Treating a milestone as the PR atom; task is the PR atom
+- ❌ Writing task mechanics into `docs/blueprint/current/` or `docs/blueprint/next/`
 - ❌ PROGRESS not updated promptly
 
 ## How to invoke

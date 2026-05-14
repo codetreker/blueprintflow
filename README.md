@@ -2,7 +2,7 @@
 
 **多 Agent 协作做产品的工作流方法论。**
 
-从模糊概念到可发布软件，6 角色 + Teamlead 协议推进。蓝图先 freeze 再开工，立场漂移 5 层防御，一 milestone 一 PR 闭环交付。
+从模糊概念到可发布软件，6 角色 + Teamlead 协议推进。`current` 只放已实现且验收通过的蓝图，`next` 承载锁定/实现中的蓝图，`tasks` 记录 Phase → Milestone → Task 路径，一 task 一 PR 闭环交付。
 
 ---
 
@@ -20,7 +20,7 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 
 核心思想：
 
-- **蓝图先 freeze 再开工** — 不能边建边改图，改图走 PR + 全员 review（= 工程变更单）
+- **蓝图状态分层** — `current` 是已实现验收，`next` 是待实现/实现中，`tasks` 是 next → current 的施工路径
 - **按价值闭环分期** — Phase 0 地基 / Phase 1 主体 / Phase 2 装修，不按工种分期
 - **阶段性验收签字** — Phase 退出 4 联签 = 阶段验收报告
 - **质量门留痕** — 每个闸门有 commit SHA 锚点，可追溯
@@ -40,19 +40,19 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 
 产品开发最大的风险不是 bug，是**立场漂移**——做着做着偏离了初衷。Blueprintflow 用 5 层防线：
 
-1. **Spec grep 反查** — 每个 milestone 引蓝图 §X.Y 锚点
+1. **Spec grep 反查** — 每个 task 引蓝图 §X.Y 锚点
 2. **Acceptance 反查锚** — 验收模板跟 spec 拆段 1:1 对齐
 3. **Stance 黑名单 grep** — 反约束关键词机器化检查
 4. **Content-lock byte-identical** — UI 文案字面锁定
 5. **PR 跨文件 cross-check** — review 时 spec/stance/acceptance/实施互查
 
-### 一 Milestone 一 PR
+### 一 Task 一 PR
 
-不拆 spec PR、stance PR、implementation PR——4 件套 + 代码在同一 worktree 叠 commit，Teamlead 唯一开 PR，一次 squash merge。好处：
+不拆 spec PR、stance PR、implementation PR——task 的 4 件套 + 代码在同一 worktree 叠 commit，Teamlead 唯一开 PR，一次 squash merge。Milestone 是 task 组，不是 PR 原子。好处：
 
 - 零 PR 串行等待
-- Milestone 产出是原子的——要么全进，要么全不进
-- 历史干净，一个 merge commit = 一个 milestone 闭环
+- Task 产出是原子的——要么全进，要么全不进
+- 历史干净，一个 merge commit = 一个 task 闭环
 
 ### 角色 ≠ 人
 
@@ -63,7 +63,7 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 ```
 ┌─ 概念层 ──────── bf-brainstorm → bf-blueprint-write
 │      ↓
-├─ 计划层 ──────── bf-phase-plan
+├─ 计划层 ──────── bf-phase-plan（Phase → Milestone → Task）
 │      ↓
 ├─ 实施层 ──────── bf-git-workflow + bf-milestone-fourpiece + bf-pr-review-flow
 │      ↓
@@ -92,11 +92,11 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 | [bf-team-roles](plugins/blueprintflow/skills/bf-team-roles/SKILL.md) | 起团 | 6 个 role coordinator prompt 模板 + helper 边界 |
 | [bf-brainstorm](plugins/blueprintflow/skills/bf-brainstorm/SKILL.md) | 讨论 | 多轮讨论锁立场 + 反约束 |
 | [bf-blueprint-write](plugins/blueprintflow/skills/bf-blueprint-write/SKILL.md) | 立项 | 蓝图模板（立场 / 概念 / v0/v1 边界） |
-| [bf-phase-plan](plugins/blueprintflow/skills/bf-phase-plan/SKILL.md) | 规划 | Phase 拆分 + 退出 gate |
-| [bf-blueprint-iteration](plugins/blueprintflow/skills/bf-blueprint-iteration/SKILL.md) | 演进 | 蓝图首版 freeze 后的迭代 (3 状态机 + 版本号 + GitHub issues backlog) |
-| [bf-milestone-fourpiece](plugins/blueprintflow/skills/bf-milestone-fourpiece/SKILL.md) | 实施 | 4 件套（spec / stance / acceptance / content-lock） |
+| [bf-phase-plan](plugins/blueprintflow/skills/bf-phase-plan/SKILL.md) | 规划 | locked next anchors 拆 Phase / Milestone / Task + 退出 gate |
+| [bf-blueprint-iteration](plugins/blueprintflow/skills/bf-blueprint-iteration/SKILL.md) | 演进 | current/next/tasks 状态推进 + backlog intake |
+| [bf-milestone-fourpiece](plugins/blueprintflow/skills/bf-milestone-fourpiece/SKILL.md) | 实施 | task 4 件套（spec / stance / acceptance / content-lock） |
 | [bf-implementation-design](plugins/blueprintflow/skills/bf-implementation-design/SKILL.md) | 实施 | 4 件套后写代码前 Dev 出实现方案设计 + 4 角色 review |
-| [bf-git-workflow](plugins/blueprintflow/skills/bf-git-workflow/SKILL.md) | 实施 | 一 milestone 一 worktree 一 PR |
+| [bf-git-workflow](plugins/blueprintflow/skills/bf-git-workflow/SKILL.md) | 实施 | 一 task 一 worktree 一 PR |
 | [bf-current-doc-standard](plugins/blueprintflow/skills/bf-current-doc-standard/SKILL.md) | 实施/Review | `docs/current` 新建、更新、审查的当前实现文档标准 |
 | [bf-pr-review-flow](plugins/blueprintflow/skills/bf-pr-review-flow/SKILL.md) | Review | 双 review + 标准 squash merge |
 | [bf-e2e-verification](plugins/blueprintflow/skills/bf-e2e-verification/SKILL.md) | Review | UI 改动的 QA 验收必须走三个角度：代码改动是否按预期工作 / 产品是否好用 / 设计是否合理 |
@@ -115,7 +115,7 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 3. bf-team-roles        — 按 runtime capacity 起 role coordinators；helpers 只做 leaf work
 4. bf-brainstorm        — 多轮讨论锁立场
 5. bf-blueprint-write   — 落蓝图
-6. bf-phase-plan        — 拆 Phase
+6. bf-phase-plan        — 拆 Phase / Milestone / Task
 7. (循环) bf-milestone-fourpiece + bf-git-workflow + bf-current-doc-standard（按需）+ bf-pr-review-flow
 8. (巡检) bf-teamlead-fast-cron-checkin + bf-teamlead-slow-cron-checkin
 9. (收尾) bf-phase-exit-gate

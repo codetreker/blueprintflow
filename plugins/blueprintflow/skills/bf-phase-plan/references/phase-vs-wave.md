@@ -1,46 +1,51 @@
 # Phase vs wave
 
-**Core question: did the blueprint contract change?**
+**Core question: did the locked next scope introduce a new value loop?**
 
 | Trigger | What it is | Where it lives |
 |---|---|---|
-| New blueprint version freezes | New **Phase N+1** with exit gate | `docs/tasks/phase-N-{name}/phase-plan.md` |
-| Gap-to-target rewrite (same blueprint) | **Milestone wave** inside existing Phase | `docs/tasks/<wave-name>/phase-plan.md` |
-| Ad-hoc bug / feature from GitHub issue | Single milestone | `docs/tasks/<issue#>-<slug>/` |
+| Locked next anchors define a new user value loop | New **Phase N+1** with exit gate | `docs/tasks/phase-N-<name>/phase-plan.md` |
+| Gap-to-target rewrite inside an existing value loop | **Milestone wave** inside existing Phase | `docs/tasks/phase-N-<name>/<milestone>/` or `docs/tasks/<wave-name>/` |
+| Ad-hoc bug / feature from GitHub issue | Task or task set under the relevant milestone | `docs/tasks/phase-N-<name>/<milestone>/<task>/` |
 
 ## Wave structure
 
-A wave = a milestone set with a shared closure gate. No new Phase row in the overview — just a folder under `docs/tasks/`.
+A wave = a milestone/task set with a shared closure gate inside an existing Phase. No new Phase row in the overview.
 
 ```
-docs/tasks/<wave-name>/
-├── phase-plan.md           # milestone list + closure gate
-├── <milestone-1>/          # leaf folder
-├── <milestone-2>/
+docs/tasks/phase-N-<name>/
+├── phase-plan.md
+├── milestone-1-<name>/
+│   ├── milestone.md
+│   ├── task-1-<name>/
+│   └── task-2-<name>/
+├── milestone-2-<name>/
 └── ...
 ```
 
-### Wave container PR carries
+### Planning task carries
+
+Wave planning is not a container PR exception. If the wave needs a planning change on its own, create a normal task leaf such as `task-0-plan-wave/`; that task PR carries:
 
 1. `phase-plan.md` — milestone list, dependency graph, closure gate
-2. One subdirectory per milestone — placeholder `spec.md` (≤30 lines). Full 4-piece fills in when the milestone actually starts
+2. One subdirectory per milestone — `milestone.md` with task list and dependencies
 3. (Optional) container-level pre-work (e.g. Security pre-work for sensitive paths)
 4. `docs/tasks/README.md` index entry
 
-### Wave container PR does NOT carry
+### Planning task does NOT carry
 
-Leaf-level 4-piece (PM stance / content-lock / acceptance / design) — those live with each leaf milestone when it starts. Container PR is **plan + placeholders**, not specifications.
+Task-level 4-piece (spec / PM stance / content-lock / acceptance / design) — those live with each task when it starts. Container planning is **plan + task list**, not implementation specification.
 
-Each leaf milestone is its own PR; the wave container PR is already merged by then. Leaf milestone PR flow inside a wave is identical to any other milestone PR — `bf-milestone-fourpiece` + `bf-pr-review-flow` apply unchanged.
+Each task is its own PR. Task PR flow inside a wave is identical to any other task PR — `bf-git-workflow` + `bf-milestone-fourpiece` + `bf-pr-review-flow` apply unchanged.
 
 ### Wave closure signoff
 
 | Gate type | Signoff roles | Why |
 |---|---|---|
-| **Phase exit** | Dev + PM + QA + Teamlead | Blueprint-version transition |
+| **Phase exit** | Dev + PM + QA + Teamlead | Accepted scope can promote toward current |
 | **Wave closure** | Dev + PM + QA + Security | Implementation deliverable |
 
-Wave closure = a regular milestone PR (scope = wave's full deliverable). Follows `bf-milestone-fourpiece` + `bf-pr-review-flow`. No separate skill needed.
+Wave closure can be a final task PR (scope = wave closure evidence) or Phase gate artifact, depending on project size. It follows normal task PR review. No separate skill needed.
 
 ## Numbering rules
 
@@ -50,7 +55,7 @@ Phase numbers are historical markers, not counters — downstream dependents (re
 |---|---|---|
 | ID format | `phase-N-{name}` (number) | `<descriptive-name>` (name, no number) |
 | Monotonic? | Yes — only goes up, no skip/rollback/split/merge | N/A — waves have no required order |
-| On close | Transitions to Phase N+1 | Folder moves to `docs/tasks/archived/<wave>/` |
+| On close | Eligible for accepted-scope promotion to current | Folder or completed tasks can move to `docs/tasks/archived/` |
 
 ## Anti-patterns
 
@@ -59,4 +64,5 @@ Phase numbers are historical markers, not counters — downstream dependents (re
 - ❌ Phase number skip / rollback / split (1a/1b) / merge (1.5)
 - ❌ Wave numbering (Wave-1 / Wave-2 — implies sequence that doesn't exist)
 - ❌ Wave name collision
+- ❌ Treating a milestone folder as a PR atom; task folders are PR atoms
 - ❌ Editing archived execution-plan to add a new Phase row (history is frozen; new Phases live in `docs/tasks/`)

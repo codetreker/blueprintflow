@@ -17,7 +17,7 @@ For every milestone in the Phase:
 - Count the total REG entries for this Phase
 - Verify: REG entries resolved + REG entries deferred = total REG entries (the math must close)
 - Every resolved REG should point to the PR that fixed it
-- Every deferred REG should point to a placeholder PR in the next Phase
+- Every deferred REG should point to a future task path or placeholder task PR in the next Phase
 
 ### 3. Gate integrity
 
@@ -28,7 +28,7 @@ For gates marked PARTIAL:
 
 For gates marked DEFERRED:
 
-- Is there a real placeholder PR number, not just "next Phase"?
+- Is there a real future task path or placeholder task PR number, not just "next Phase"?
 
 ## How to sign off
 
@@ -39,7 +39,7 @@ Post a PR comment with:
 - [ ] All acceptance flips anchored to evidence
 - [ ] REG math closes (resolved + deferred = total)
 - [ ] PARTIAL gates have real condition signoffs
-- [ ] DEFERRED gates anchored to placeholder PRs
+- [ ] DEFERRED gates anchored to future task paths or placeholder task PRs
 ✅ / ⚠️ (with details if ⚠️)
 ```
 

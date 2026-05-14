@@ -4,12 +4,12 @@ Your job: confirm that **everything the Phase promised was actually built and sh
 
 ## What to check
 
-### 1. Milestone coverage
+### 1. Milestone and task coverage
 
 Go through every milestone in the Phase. For each one:
 
-- Is the milestone PR merged?
-- Does the merged code match what the milestone spec described?
+- Are all required task PRs merged?
+- Does the merged code match what the milestone and task specs described?
 - Are there any acceptance criteria in the spec that don't have corresponding implementation?
 
 If something was descoped mid-Phase, verify there's a written record (PR comment, blueprint iteration, or DEFERRED gate) — not just a verbal "we decided to skip it".
@@ -24,7 +24,7 @@ Look for things that were supposed to land but didn't:
 
 ### 3. Technical debt anchoring
 
-If the Phase created known technical debt (shortcuts taken to meet deadlines, hardcoded values, missing error handling), verify it's captured in a placeholder PR for the next Phase. Undocumented debt is invisible debt.
+If the Phase created known technical debt (shortcuts taken to meet deadlines, hardcoded values, missing error handling), verify it's captured in a future task path or placeholder task PR for the next Phase. Undocumented debt is invisible debt.
 
 ## How to sign off
 
@@ -32,9 +32,9 @@ Post a PR comment with:
 
 ```
 **Dev signoff**
-- [ ] Every milestone PR merged and matches spec
+- [ ] Every required task PR merged and matches spec
 - [ ] No unanchored implementation gaps
-- [ ] Technical debt captured in placeholder PRs
+- [ ] Technical debt captured in future task paths or placeholder task PRs
 ✅ / ⚠️ (with details if ⚠️)
 ```
 

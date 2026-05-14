@@ -1,13 +1,15 @@
 ---
 name: bf-milestone-fourpiece
-description: "Part of the Blueprintflow methodology. Use when a milestone starts, code has not begun, and the spec/stance/content-lock/acceptance baseline docs need to be created."
+description: "Part of the Blueprintflow methodology. Use when a task under a Phase/Milestone starts, code has not begun, and the spec/stance/content-lock/acceptance baseline docs need to be created."
 ---
 
-# Milestone 4 pieces
+# Task 4 Pieces
 
-Each milestone = **one PR, merged once**. The 4 pieces + implementation + e2e + `docs/current` sync + REG flip + acceptance ⚪→✅ + PROGRESS [x] all in the same PR.
+Compatibility note: the skill name says `milestone-fourpiece`, but the PR atom is now the **Task**. A Milestone groups tasks under a capability objective; it is not itself a PR atom.
 
-**Git workflow**: Teamlead creates `.worktrees/<milestone-or-issue>` + branch. 4-piece authors stack commits in the same worktree. Teamlead is the sole PR opener. See `bf-git-workflow`.
+Each task = **one PR, merged once**. The 4 pieces + implementation + e2e + `docs/current` sync + REG flip + acceptance ⚪→✅ + PROGRESS [x] all land in that task PR.
+
+**Git workflow**: Teamlead creates `.worktrees/<task>` + branch. 4-piece authors stack commits in the same worktree. Teamlead is the sole PR opener. See `bf-git-workflow`.
 
 ## Direct Invocation Guard
 
@@ -15,38 +17,54 @@ If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's in
 
 ## Doc layout
 
-All milestone artifacts in one folder:
+Task artifacts live under Phase -> Milestone -> Task:
 
 ```
-docs/tasks/<milestone-or-issue>/
+docs/tasks/phase-N-<name>/
+├── phase-plan.md
+└── milestone-<n>-<name>/
+    ├── milestone.md
+    └── task-<n>-<name>/
+        ├── spec.md           # Architect spec brief §0-§4
+        ├── stance.md         # PM stance checklist
+        ├── content-lock.md   # PM content lock (UI tasks only)
+        ├── acceptance.md     # QA acceptance template
+        ├── design.md         # Dev implementation design
+        └── progress.md       # per-task progress
+```
+
+Ad-hoc issue tasks may use a compact path when no Phase exists yet:
+
+```
+docs/tasks/<issue#>-<short-slug>/
 ├── spec.md           # Architect spec brief §0-§4
 ├── stance.md         # PM stance checklist
-├── content-lock.md   # PM content lock (UI milestones only)
+├── content-lock.md   # PM content lock (UI tasks only)
 ├── acceptance.md     # QA acceptance template
 ├── design.md         # Dev implementation design
-└── progress.md       # per-milestone progress
+└── progress.md       # per-task progress
 ```
 
 Other locations in `docs/tasks/`:
-- Phase exit artifacts: `docs/tasks/phase-N-exit/` (readiness-review.md / announcement.md)
-- Cross-milestone index: `docs/tasks/README.md`
+- Phase exit task artifacts: `docs/tasks/phase-N-<name>/milestone-phase-exit/task-phase-exit/` (readiness-review.md / announcement.md)
+- Cross-Phase/Milestone/Task index: `docs/tasks/README.md`
 
-When a milestone fully closes (acceptance ✅ + REG flipped + PROGRESS [x]), the whole folder moves to `docs/tasks/archived/`.
+When a task fully closes (acceptance ✅ + REG flipped + PROGRESS [x]), the task folder can move to `docs/tasks/archived/` after its milestone/phase no longer needs it in the active resume view.
 
 ## Naming convention
 
 | Folder type | Name format | Example |
 |---|---|---|
-| Blueprint milestone | Blueprint code | `al-2a-content-lock` |
-| GitHub issue | `<issue#>-<short-slug>` | `698-agent-config-form-overlap` |
-| Phase container | `phase-N-{name}` | `phase-5-multi-host` |
-| Wave container | Descriptive name | `helper-v1-release` |
+| Phase container | `phase-N-<name>` | `phase-5-multi-host` |
+| Milestone container | `milestone-N-<name>` | `milestone-2-web-configure` |
+| Task leaf | `task-N-<name>` | `task-1-configure-job-api` |
+| Ad-hoc GitHub issue task | `<issue#>-<short-slug>` | `698-agent-config-form-overlap` |
 
-Anti-pattern: `m698-*` / `gh698-*` prefixes. Folder name describes the work, not the milestone code.
+Anti-pattern: `m698-*` / `gh698-*` prefixes. Folder name describes the work and level.
 
-Container folders hold `phase-plan.md` + leaf subfolders. See `bf-phase-plan` references/phase-vs-wave.md for container vs leaf details.
+Container folders hold `phase-plan.md` or `milestone.md` plus task leaf subfolders. See `bf-phase-plan` references/phase-vs-wave.md for container vs leaf details.
 
-**Two-level index**: `docs/tasks/README.md` lists top-level entries (non-recursive). `<container>/phase-plan.md` lists milestones inside that container. README references containers by name, doesn't duplicate their milestone list.
+**Index rule**: `docs/tasks/README.md` lists active Phases and the current resume focus. `phase-plan.md` lists milestones. `milestone.md` lists tasks. Do not duplicate every task row in every parent file.
 
 ## The 4 pieces
 
@@ -55,7 +73,7 @@ Container folders hold `phase-plan.md` + leaf subfolders. See `bf-phase-plan` re
 | 1 | Spec brief | Architect | `spec.md` | ≤80 lines, §0-§4 only |
 | 2 | Stance checklist | PM | `stance.md` | ≤80 lines |
 | 3 | Acceptance template | QA | `acceptance.md` | ≤50 lines |
-| 4 | Content lock | PM | `content-lock.md` | ≤40 lines, UI milestones only |
+| 4 | Content lock | PM | `content-lock.md` | ≤40 lines, UI tasks only |
 
 **Spec brief** (§0-§4): key constraints / segmentation ≤3 segments / carry-over boundary / reverse-check grep / not in scope. **§5+ (dispatch / self-review / changelog) not allowed.**
 
@@ -67,7 +85,7 @@ Container folders hold `phase-plan.md` + leaf subfolders. See `bf-phase-plan` re
 
 ## Step 5: implementation design
 
-After 4 pieces, before code, Dev writes `design.md`. Four-role review (Architect / PM / Security / QA) must all ✅ before coding starts. Same worktree, same PR. Full spec in `bf-implementation-design`.
+After 4 pieces, before code, Dev writes `design.md`. Four-role review (Architect / PM / Security / QA) must all ✅ before coding starts. Same task worktree, same task PR. Full spec in `bf-implementation-design`.
 
 ## Literal consistency
 
@@ -76,7 +94,7 @@ The 4 pieces cite each other's §X.Y anchors. Drift gets caught during cross-rev
 ## Dispatch
 
 ```
-1. Teamlead creates .worktrees/<milestone-or-issue> + feat/<milestone-or-issue>
+1. Teamlead creates .worktrees/<task> + feat/<task>
 2. Architect → spec brief (commit + push, no PR)
 3. PM → stance + content lock (commit + push, no PR)
 4. QA → acceptance template (commit + push, no PR)
@@ -89,7 +107,7 @@ The 4 pieces cite each other's §X.Y anchors. Drift gets caught during cross-rev
 
 ## Segmented execution
 
-All segments committed sequentially in the same worktree/branch:
+All segments committed sequentially in the same task worktree/branch:
 
 | Segment | Owner | Content |
 |---|---|---|
@@ -98,7 +116,7 @@ All segments committed sequentially in the same worktree/branch:
 | 1.3 Client | Dev | UI + e2e |
 | 1.4 Current docs | Dev | `docs/current` changes follow `bf-current-doc-standard` |
 | 1.5 Flips | QA/Dev | REG 🟢 + acceptance ✅ + PROGRESS [x] |
-| ∥ 4 pieces | Arch/PM/QA | Parallel with execution |
+| Pre-work | Arch/PM/QA | Four pieces already committed before implementation |
 
 Closure (acceptance / REG / PROGRESS) lands in the same PR. **No follow-up PR.**
 
@@ -113,10 +131,11 @@ Closure (acceptance / REG / PROGRESS) lands in the same PR. **No follow-up PR.**
 ## Anti-patterns
 
 - ❌ Skipping 4 pieces → stance drift uncatchable
-- ❌ Splitting into multiple PRs (actually slower)
+- ❌ Splitting one task into multiple PRs (actually slower)
+- ❌ Treating a milestone as one giant PR when it should be split into tasks
 - ❌ Execution PR doesn't cite spec § anchors
 - ❌ `/tmp/<work>` clone instead of `.worktrees/`
-- ❌ One milestone on multiple branches
+- ❌ One task on multiple branches
 - ❌ Spec brief writing §5+ (dispatch/changelog — info is in PR body + git log)
 - ❌ Content lock written without cross-grepping existing code (orphan drift)
 

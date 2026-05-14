@@ -20,4 +20,4 @@ follow skill bf-teamlead-fast-cron-checkin
 
 ## Execution
 
-Read `references/execution.md` — covers dispatch priority, current-iteration issue scan, merge gate, PR BLOCKED routing, and anti-patterns.
+Read `references/execution.md` — covers dispatch priority, docs/tasks resume-state scan, merge gate, PR BLOCKED routing, and anti-patterns.

@@ -1,11 +1,11 @@
 ---
 name: bf-implementation-design
-description: "Part of the Blueprintflow methodology. Use when the milestone four-piece is in place, code has not started, and a code-facing implementation design needs review."
+description: "Part of the Blueprintflow methodology. Use when the task four-piece is in place, code has not started, and a code-facing implementation design needs review."
 ---
 
 # Implementation Design
 
-After the four-piece set, before code: **Dev writes the implementation design**, four roles review, all ✅ then coding starts.
+After the task four-piece set, before code: **Dev writes the implementation design**, four roles review, all ✅ then coding starts.
 
 **Why**: four-piece locks "what" (stance); this locks "how" (data flow, contracts, edge cases). Skipping → wrong interfaces, missed edge cases, integration mismatches discovered mid-implementation.
 
@@ -19,7 +19,7 @@ If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's in
 
 | Applies | Skip |
 |---|---|
-| Any milestone touching code (schema / server / client) | Docs-only, config-only, wording adjustments |
+| Any task touching code (schema / server / client) | Docs-only, config-only, wording adjustments |
 | Important refactor / cross-module change | — |
 
 If unsure → run it (burden of proof on "we can skip").
@@ -30,7 +30,7 @@ Dev is the primary author (they'll work from it). Architect reviews, doesn't gho
 
 ## Output
 
-**Path**: milestone's leaf folder as `design.md`. **Length**: no fixed limit — long enough to reflect the implementation.
+**Path**: task leaf folder as `design.md`. **Length**: no fixed limit — long enough to reflect the implementation.
 
 - ❌ No padding for length
 - ❌ No skipping key design (data flow / alternatives / edge cases)
@@ -64,7 +64,7 @@ Dev is the primary author (they'll work from it). Architect reviews, doesn't gho
 
 ## PR protocol
 
-The design doc is **not a separate PR**. Everything in one milestone PR:
+The design doc is **not a separate PR**. Everything in one task PR:
 1. Four-piece set → 2. Design doc → 3. Four-role review → 4. Implementation → 5. e2e → 6. Closure → 7. Teamlead opens PR
 
 ## Anti-patterns

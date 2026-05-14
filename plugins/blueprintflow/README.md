@@ -1,6 +1,6 @@
 # Blueprintflow Iteration Flow
 
-Status: next-generation design target. Use this document to design the upcoming child-skill rewrite. Current v4.0.1 skills still carry legacy `Decision` / `Work` / `LOCKED` state in some execution paths; the rewrite must bring those skills into this model before this file becomes the active runtime procedure.
+Status: next-generation design target. Use this document to design the upcoming child-skill rewrite. Current public skills still carry legacy `Decision` / `Work` / `LOCKED` state in some execution paths; the rewrite must bring those skills into this model before this file becomes the active runtime procedure.
 
 Blueprintflow turns selected sources into accepted current behavior through a dependency-ordered path:
 
@@ -110,7 +110,7 @@ Read state values from the relevant owned row, not from logs or inferred file pr
 | Milestone planning | Phase row exists for the target scope. | Each Milestone row under the target Phase has `State = PLANNED`. |
 | Milestone selection | Milestone row `State = PLANNED` and dependencies are satisfied. | One dependency-ready Milestone row has `State = SELECTED`. |
 | Milestone breakdown | Milestone row `State = SELECTED`. | The selected Milestone row has `State = TASK_SET_READY`. |
-| Task execution | Task row is ready for execution. | Each executed Task row reaches `State = ACCEPTED`. |
+| Task execution | Task row `State = READY` for a new task, or `TASKING` / `READY_FOR_IMPL` / `IMPLEMENTING` / `ACCEPTING` when resuming. | Each executed Task row reaches `State = ACCEPTED`. |
 | Milestone close | Required task rows have `State = ACCEPTED`. | The target Milestone row has `State = ACCEPTED`. |
 | Phase exit | Required Milestone rows have `State = ACCEPTED`. | The target Phase row has `State = ACCEPTED`. |
 | Current promotion | Phase row `State = ACCEPTED`. | Corresponding next anchor rows have `State = COMPLETED`. |

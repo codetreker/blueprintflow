@@ -1,5 +1,18 @@
 # Changelog
 
+## v4.0.2 — 2026-05-15
+
+### Skill runtime design
+
+- Reframed the next-generation skill-runtime design around goal-directed operating protocols for probabilistic agents, with code-inspired discipline for state, ownership, routing, and verification rather than pseudo-program execution.
+- Expanded the design checklist for skill shape, invariants, allowed local choices, skill-type differences, state ownership, stage controller behavior, Teamlead/role/helper orchestration, git/GitHub evidence boundaries, scheduler behavior, progressive disclosure, and failure prevention checks.
+- Aligned the iteration-flow README status wording and task-execution entry state with the next-generation runtime contract.
+- Kept the change design-only; public child-skill rewrites remain a follow-up after review.
+
+### Plugin version
+
+- `plugin.json` bumped `4.0.1` -> `4.0.2` (patch: next-generation runtime design clarification).
+
 ## v4.0.1 — 2026-05-14
 
 ### Teamlead drive and execution hierarchy

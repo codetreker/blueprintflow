@@ -1,24 +1,25 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
 skills_root="$repo_root/plugins/blueprintflow/skills"
+active_docs=("$repo_root/README.md" "$skills_root" "$repo_root/plugins/blueprintflow/docs")
 
-stale_refs=$(grep -RInE 'bf-milestone-fourpiece|milestone-fourpiece' "$repo_root/README.md" "$skills_root" || true)
+stale_refs=$(grep -RInE 'bf-milestone-fourpiece|milestone-fourpiece' "${active_docs[@]}" || true)
 if [[ -n "$stale_refs" ]]; then
   printf '%s\n' "$stale_refs" >&2
   echo "Active docs must not reference retired bf-milestone-fourpiece; use bf-task-fourpiece." >&2
   exit 1
 fi
 
-stale_verification_refs=$(grep -RInE 'bf-e2e-verification|e2e-verification' "$repo_root/README.md" "$skills_root" || true)
+stale_verification_refs=$(grep -RInE 'bf-e2e-verification|e2e-verification' "${active_docs[@]}" || true)
 if [[ -n "$stale_verification_refs" ]]; then
   printf '%s\n' "$stale_verification_refs" >&2
   echo "Active docs must not reference retired bf-e2e-verification; use bf-verification." >&2
   exit 1
 fi
 
-stale_workflow_refs=$(grep -RInE 'bf-workflow' "$repo_root/README.md" "$skills_root" || true)
+stale_workflow_refs=$(grep -RInE 'bf-workflow' "${active_docs[@]}" || true)
 if [[ -n "$stale_workflow_refs" ]]; then
   printf '%s\n' "$stale_workflow_refs" >&2
   echo "Active docs must not reference retired bf-workflow; use using-plueprint." >&2

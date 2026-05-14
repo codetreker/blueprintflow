@@ -23,6 +23,8 @@ $EDITOR "$HOME/.blueprint/$repo_dir/teamlead.md"
 - At objective start, read `~/.blueprint/<repo-dir>/teamlead.md` before routing or dispatching work.
 - If the notebook does not exist, create it from the Minimal Template below before proceeding.
 - After every Teamlead dispatch, blocker decision, retraction, PR gate decision, merge, or pause/stop request, update the notebook in the same turn.
+- On pause, stop, interruption, or handoff, record the interrupted action and exact restart action before ending the turn.
+- On resume, reconcile the notebook with source-of-truth docs, PRs, issues, and worktrees; then dispatch the restart action in the same turn. If source-of-truth state changed, name the changed state and execute the updated route, dispatch, blocker decision, or user escalation in the same turn.
 - Before each fast-cron, slow-cron, issue-triage, or role-reminder tick, read the notebook and reconcile it with live PR/issue/task state.
 - Store coordination state only: role lanes, open blockers, active PRs/issues, recent decisions, retractions, and next checks.
 - Do not store secrets, credentials, long logs, raw issue bodies, or large evidence dumps. Link to PRs, issues, commits, worktrees, or docs instead.
@@ -37,6 +39,11 @@ Updated: YYYY-MM-DD HH:MM UTC
 
 ## Active Objective
 - <milestone / issue / PR / Phase / audit objective>
+
+## Restart Action
+- Interrupted action: <what was in progress when work paused/stopped>
+- Restart action: <exact next route/dispatch/merge-gate check>
+- Resume source: <notebook + docs/PR/issue/worktree links to reconcile>
 
 ## Role Lanes
 | Role | Status | Current task | Blocker | Next check |

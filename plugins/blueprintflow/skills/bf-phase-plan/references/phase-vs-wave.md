@@ -2,15 +2,21 @@
 
 **Core question: did the locked next scope introduce a new value loop?**
 
+Create a new Phase only for a dependency-ordered stage inside the active major iteration. Keep a major iteration to <=3 Phases by default. Before adding a fourth Phase, prove the work cannot fit as a milestone wave inside an existing value loop.
+
 | Trigger | What it is | Where it lives |
 |---|---|---|
 | Locked next anchors define a new user value loop | New **Phase N+1** with exit gate | `docs/tasks/phase-N-<name>/phase-plan.md` |
-| Gap-to-target rewrite inside an existing value loop | **Milestone wave** inside existing Phase | `docs/tasks/phase-N-<name>/<milestone>/` or `docs/tasks/<wave-name>/` |
+| Gap-to-target rewrite inside an existing value loop | **Milestone wave** inside existing Phase | `docs/tasks/phase-N-<name>/<milestone>/` |
 | Ad-hoc bug / feature from GitHub issue | Task or task set under the relevant milestone | `docs/tasks/phase-N-<name>/<milestone>/<task>/` |
 
 ## Wave structure
 
-A wave = a milestone/task set with a shared closure gate inside an existing Phase. No new Phase row in the overview.
+Keep each wave inside an existing Phase. Do not add a new Phase row for a wave.
+
+Keep a Phase to <=3 user-facing milestones by default. If a wave adds more, record why the Phase still holds together and why another Phase would be worse.
+
+Treat top-level wave folders such as `docs/tasks/<wave-name>/` as legacy or migration-only. Put new waves under the existing Phase so the Phase -> Milestone -> Task hierarchy stays intact.
 
 ```
 docs/tasks/phase-N-<name>/
@@ -58,9 +64,9 @@ Wave closure can be a final task PR (scope = wave closure evidence) or milestone
 
 Phase numbers are historical markers, not counters — downstream dependents (release notes, migration plans, quarterly reviews) rely on mapping "what was true at Phase N exit" to "what changed between Phase N and Phase N+1".
 
-| Rule | Phase | Wave |
+| Rule | Phase | Milestone wave |
 |---|---|---|
-| ID format | `phase-N-{name}` (number) | `<descriptive-name>` (name, no number) |
+| ID format | `phase-N-{name}` (number) | `phase-N-{name}/milestone-M-{name}` or sibling milestone folders under the existing Phase |
 | Monotonic? | Yes — only goes up, no skip/rollback/split/merge | N/A — waves have no required order |
 | On close | Eligible for accepted-scope promotion to current | Folder or completed tasks can move to `docs/tasks/archived/` |
 

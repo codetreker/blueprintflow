@@ -18,7 +18,7 @@ Use this design before changing `plugins/blueprintflow/skills/*`. Update the des
 | Skills are control units | Each skill owns one stage or boundary and exposes clear entry, action, stop, and handoff rules. |
 | Teamlead is the scheduler | Teamlead routes, dispatches, and resolves blockers; leaf work runs in role/helper agents. |
 | Roles are worker orchestrators | Role coordinators dispatch helpers/reviewers for leaf work, synthesize results, and decide within their role boundary. |
-| Git/GitHub is worker I/O | Teamlead delegates `git` and `gh` operations to worker agents and consumes summaries. |
+| Git/GitHub evidence is worker I/O | Teamlead delegates mechanical `git` and `gh` inspection to worker agents and consumes summaries; Teamlead keeps PR open/merge/review decisions. |
 
 ## Skills As Control Modules
 
@@ -83,21 +83,21 @@ Object state owners:
 | Milestone | `docs/tasks/phase-N-*/phase-plan.md` |
 | Task | `docs/tasks/phase-N-*/milestone-*/milestone.md` |
 
-Completion checks:
+Stage rules:
 
-| Stage | State check |
-|---|---|
-| Source intake | Source batch `State = SELECTED`. |
-| Next blueprint anchors | Each selected source maps to one or more anchor rows; each anchor row has `State = OPEN` or `State = PLANNED`. |
-| Anchor planning | Each anchor selected for execution has `State = PLANNED`. |
-| Phase planning | Each planned Phase row has `State = PLANNED`. |
-| Milestone planning | Each Milestone row under the target Phase has `State = PLANNED`. |
-| Milestone selection | One dependency-ready Milestone row has `State = SELECTED`. |
-| Milestone breakdown | The selected Milestone row has `State = TASK_SET_READY`. |
-| Task execution | Each executed Task row reaches `State = ACCEPTED`. |
-| Milestone close | The target Milestone row has `State = ACCEPTED`. |
-| Phase exit | The target Phase row has `State = ACCEPTED`. |
-| Current promotion | Corresponding next anchor rows have `State = COMPLETED`. |
+| Stage | Entry check | Done state |
+|---|---|---|
+| Source intake | Source candidates exist. | Source batch `State = SELECTED`. |
+| Next blueprint anchors | Source batch `State = SELECTED`. | Each selected source maps to one or more anchor rows; each anchor row has `State = OPEN` or `State = PLANNED`. |
+| Anchor planning | Anchor row `State = OPEN`. | Each anchor selected for execution has `State = PLANNED`. |
+| Phase planning | Anchor row `State = PLANNED`. | Each planned Phase row has `State = PLANNED`. |
+| Milestone planning | Phase row exists for the target scope. | Each Milestone row under the target Phase has `State = PLANNED`. |
+| Milestone selection | Milestone row `State = PLANNED` and dependencies are satisfied. | One dependency-ready Milestone row has `State = SELECTED`. |
+| Milestone breakdown | Milestone row `State = SELECTED`. | The selected Milestone row has `State = TASK_SET_READY`. |
+| Task execution | Task row is ready for execution. | Each executed Task row reaches `State = ACCEPTED`. |
+| Milestone close | Required task rows have `State = ACCEPTED`. | The target Milestone row has `State = ACCEPTED`. |
+| Phase exit | Required Milestone rows have `State = ACCEPTED`. | The target Phase row has `State = ACCEPTED`. |
+| Current promotion | Phase row `State = ACCEPTED`. | Corresponding next anchor rows have `State = COMPLETED`. |
 
 ## Skill Ownership
 
@@ -118,7 +118,7 @@ Completion checks:
 
 | Layer | Owns | Delegates |
 |---|---|---|
-| Teamlead | Global routing, priority, blockers, merge gates, context protection, and forward motion. | Role coordinator assignments and git/GitHub worker I/O. |
+| Teamlead | Global routing, priority, blockers, merge gates, context protection, and forward motion. | Role coordinator assignments and mechanical git/GitHub evidence collection. |
 | Role coordinator | Role-specific judgment: PM value, Architect structure, QA acceptance, Security risk, Dev implementation, Designer interaction. | Helper/reviewer leaf work inside the role boundary. |
 | Helper/reviewer | Bounded reading, drafting, editing, testing, verification, or review evidence. | Nothing. Returns artifacts and findings. |
 

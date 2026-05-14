@@ -97,25 +97,25 @@ Parent ledgers own child row state. Keep each state in one place.
 
 Resume from top to bottom: next anchor row -> Phase row -> Milestone row -> Task row. Detail files may explain scope, acceptance, blockers, or implementation evidence; they do not duplicate parent-owned state.
 
-## Completion Rules
+## Stage Rules
 
-Each stage starts after the previous stage reaches the required state. Read state values from the relevant row or batch, not from logs or inferred file presence.
+Read state values from the relevant row or batch, not from logs or inferred file presence.
 
-| Stage | State check |
-|---|---|
-| Source intake | Source batch `State = SELECTED`. |
-| Next blueprint anchors | Each selected source maps to one or more anchor rows; each anchor row has `State = OPEN` or `State = PLANNED`. |
-| Anchor planning | Each anchor selected for execution has `State = PLANNED`. |
-| Phase planning | Each planned Phase row has `State = PLANNED`. |
-| Milestone planning | Each Milestone row under the target Phase has `State = PLANNED`. |
-| Milestone selection | One dependency-ready Milestone row has `State = SELECTED`. |
-| Milestone breakdown | The selected Milestone row has `State = TASK_SET_READY`. |
-| Task execution | Each executed Task row reaches `State = ACCEPTED`. |
-| Milestone close | The target Milestone row has `State = ACCEPTED`. |
-| Phase exit | The target Phase row has `State = ACCEPTED`. |
-| Current promotion | Corresponding next anchor rows have `State = COMPLETED`. |
+| Stage | Entry check | Done state |
+|---|---|---|
+| Source intake | Source candidates exist. | Source batch `State = SELECTED`. |
+| Next blueprint anchors | Source batch `State = SELECTED`. | Each selected source maps to one or more anchor rows; each anchor row has `State = OPEN` or `State = PLANNED`. |
+| Anchor planning | Anchor row `State = OPEN`. | Each anchor selected for execution has `State = PLANNED`. |
+| Phase planning | Anchor row `State = PLANNED`. | Each planned Phase row has `State = PLANNED`. |
+| Milestone planning | Phase row exists for the target scope. | Each Milestone row under the target Phase has `State = PLANNED`. |
+| Milestone selection | Milestone row `State = PLANNED` and dependencies are satisfied. | One dependency-ready Milestone row has `State = SELECTED`. |
+| Milestone breakdown | Milestone row `State = SELECTED`. | The selected Milestone row has `State = TASK_SET_READY`. |
+| Task execution | Task row is ready for execution. | Each executed Task row reaches `State = ACCEPTED`. |
+| Milestone close | Required task rows have `State = ACCEPTED`. | The target Milestone row has `State = ACCEPTED`. |
+| Phase exit | Required Milestone rows have `State = ACCEPTED`. | The target Phase row has `State = ACCEPTED`. |
+| Current promotion | Phase row `State = ACCEPTED`. | Corresponding next anchor rows have `State = COMPLETED`. |
 
-State belongs to object rows: source batch, anchor, Phase, Milestone, and Task. A stage is done when the relevant row set reaches the required state.
+State belongs to object rows: source batch, anchor, Phase, Milestone, and Task. A stage is done only when the relevant row set reaches the done state.
 
 ## Planning Rules
 

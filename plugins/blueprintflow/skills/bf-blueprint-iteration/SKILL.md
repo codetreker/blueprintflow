@@ -7,7 +7,7 @@ description: "Part of the Blueprintflow methodology. Use when selecting backlog 
 
 Blueprintflow separates implemented truth, planned work, execution path, and issue intake. Do not treat blueprint lock as implementation acceptance.
 
-**When this applies**: a project already has an implemented-and-accepted `docs/blueprint/current/`, and the team is selecting or advancing the next body of work. Early brainstorm + first-version write doesn't go through this skill.
+**When this applies**: a project is selecting, locking, or advancing the next body of work. Early brainstorm + first-version writing stays in `bf-brainstorm` and `bf-blueprint-write`; when first-version anchors are ready to lock for execution, use this skill for lock evidence before Phase planning.
 
 ## Direct Invocation Guard
 

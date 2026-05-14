@@ -5,7 +5,7 @@ description: "Part of the Blueprintflow methodology. Use when a planned mileston
 
 # Milestone Breakdown
 
-Turn one selected user-facing milestone into reviewed task skeleton folders while preserving milestone dependency order. Stop before task execution.
+Convert one selected user-facing milestone into reviewed task skeleton folders. Preserve milestone dependency order. Stop before task execution.
 
 ## Direct Invocation Guard
 

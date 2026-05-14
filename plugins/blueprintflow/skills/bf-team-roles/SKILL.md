@@ -80,9 +80,9 @@ Every code change goes through Security review. Hard rule.
 | Responsibility | Detail |
 |---|---|
 | Hand out work | Assign to roles, watch progress, guard protocol |
-| Drive process continuously | Keep the next Blueprintflow transition moving; cron/reminders are backstops, not the main driver |
-| Keep team utilized | Give every idle teammate useful next work within runtime capacity, or record the specific wait/blocker |
-| Diagnose bottlenecks | If the team is not full, identify why and dispatch the unblock action instead of waiting silently |
+| Drive process continuously | Move the next Blueprintflow transition; treat cron/reminders as backstops |
+| Keep team utilized | Assign every idle teammate useful work within runtime capacity, or record the specific wait/blocker |
+| Diagnose bottlenecks | When the team is not full, name the blocker and dispatch the unblock action |
 | Track task state | Keep `~/.blueprint/<repo-dir>/teamlead.md` current using `bf-workflow/references/teamlead-notebook.md` |
 | Arbitrate conflicts | Between roles when they disagree |
 | Synthesize diagnosis | When reports conflict, poke closest party for evidence before deciding |

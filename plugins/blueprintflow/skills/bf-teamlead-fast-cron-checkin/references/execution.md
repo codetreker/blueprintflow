@@ -1,7 +1,7 @@
 # Fast-cron execution logic
 
 
-The cron is not a status report. It is a forward-motion action and a backstop for the active Teamlead driver. Every check-in must improve at least one Teamlead metric: process progression or team utilization. Every idle role must leave with useful work, a recorded legitimate wait state, or a diagnosed bottleneck with an unblock owner; otherwise you've failed the job.
+Do not use cron as a status report. Use it as a forward-motion backstop. On every check-in, improve process progression or team utilization. Give every idle role useful work, a recorded legitimate wait state, or a bottleneck diagnosis with an unblock owner.
 
 Before dispatching, read the Teamlead notebook at `~/.blueprint/<repo-dir>/teamlead.md` using `bf-workflow/references/teamlead-notebook.md`. After assigning work, recording a legitimate wait state, flagging a blocker, or making a merge-gate decision, update the notebook in the same turn.
 
@@ -18,11 +18,13 @@ Before dispatching, read the Teamlead notebook at `~/.blueprint/<repo-dir>/teaml
 | Anti-patterns | Avoid audit-only or CI-only decisions |
 
 ### 1. The cron must ACT, not just audit
-Every idle role must walk away with new work, a specific wait state, or a bottleneck diagnosis. Only two wait states count:
-- They are waiting on a specific blocker (write down the PR # / dependency and who owns the unblock action).
-- Their current in-flight task hasn't been wrapped up yet, and the wait checkpoint is recorded.
+Give every idle role one of these outcomes:
+- New useful work.
+- A specific blocker wait state with PR # / dependency and unblock owner.
+- A current in-flight task wait state with a recorded checkpoint.
+- A bottleneck diagnosis with an unblock owner.
 
-Cron should not be the first thing that moves the project. If the same forward action appears on two fast check-ins, Teamlead was not driving actively enough between ticks; flag it and dispatch the unblock action immediately.
+Do not let cron become the first project mover. If the same forward action appears on two fast check-ins, flag active-drive failure and dispatch the unblock action immediately.
 
 ### 2. When "waiting on X" counts as legitimate idle
 

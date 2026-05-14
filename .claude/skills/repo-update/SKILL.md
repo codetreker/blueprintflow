@@ -50,11 +50,24 @@ git fetch origin --prune
 
 **Review standard**: see `bf-pr-review-flow` for the full review protocol. Core: read the whole thing + put yourself in others' shoes + hunt for problems before LGTM.
 
+## Skill Writing Standard
+
+Write skills as executable instructions, not essays.
+
+- Use imperative verbs: `Read`, `Create`, `Dispatch`, `Stop`, `Record`, `Verify`.
+- Name the trigger, action, owner, artifact, and stop condition.
+- Prefer tables, numbered steps, and checklists over paragraphs.
+- Keep background only when it changes a decision.
+- Keep wording short. Remove examples or explanations that do not prevent a real mistake.
+- Avoid vague verbs: `consider`, `think about`, `handle`, `support`, `ensure` without a concrete check.
+- Review every changed skill for instruction clarity before LGTM.
+
 ## Anti-patterns
 
 - ❌ Bulk-editing skills with `sed` / scripted replacement before classifying which skills the rule actually applies to.
 - ❌ Treating every `bf-*` skill as the same kind of child skill; entry workflows, repo-maintenance flows, role setup, and execution stages have different invocation boundaries.
 - ❌ Relying on validation scripts as semantic review. Every changed skill must be read as a whole after the edit.
+- ❌ Writing descriptive skill prose when a direct command, checklist, or decision table would remove ambiguity.
 
 ## Rules
 

@@ -9,7 +9,8 @@
 - Clarified that Teamlead is the active driver; cron and reminders are backstops, not the primary engine.
 - Added Teamlead operating metrics: process progression and team utilization within runtime capacity.
 - Required idle teammates to receive useful next work, a legitimate wait state, or a diagnosed bottleneck with an unblock owner.
-- Aligned phase planning, milestone breakdown, milestone progress, role reminder, fast-cron, and README wording with these standards.
+- Required repo-update skill edits to use directive, structured, concise language.
+- Aligned phase planning, milestone breakdown, milestone progress, role reminder, fast-cron, repo-update, and README wording with these standards.
 
 ### Plugin version
 

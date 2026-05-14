@@ -46,7 +46,7 @@ Use when any are true:
 11. If Phase-level exit is needed after milestone or wave closure, keep the next ledger `Work` as `IMPLEMENTING` and hand off to `bf-phase-exit-gate`.
 12. Update the next ledger `Work` to `COMPLETED` only after required milestone, wave, or Phase gates pass and the accepted scope is ready for current promotion.
 
-Preserve Phase and milestone dependency order. Do not jump to a later milestone or Phase while an earlier dependency is open unless the relevant `phase-plan.md` or `milestone.md` records safe parallelism, carry-over, or a waiver.
+Keep Phase and milestone dependency order. Do not jump to a later milestone or Phase while an earlier dependency is open unless the relevant `phase-plan.md` or `milestone.md` records safe parallelism, carry-over, or a waiver.
 
 ## Checks
 

@@ -2,7 +2,7 @@
 
 **Core question: did the locked next scope introduce a new value loop?**
 
-Use a new Phase only for a dependency-ordered stage inside the active major iteration. A major iteration usually has no more than 3 Phases; if a fourth Phase seems necessary, first check whether the work is really a milestone wave inside an existing value loop.
+Create a new Phase only for a dependency-ordered stage inside the active major iteration. Keep a major iteration to <=3 Phases by default. Before adding a fourth Phase, prove the work cannot fit as a milestone wave inside an existing value loop.
 
 | Trigger | What it is | Where it lives |
 |---|---|---|
@@ -12,11 +12,11 @@ Use a new Phase only for a dependency-ordered stage inside the active major iter
 
 ## Wave structure
 
-A wave = a milestone/task set with a shared closure gate inside an existing Phase. No new Phase row in the overview.
+Keep each wave inside an existing Phase. Do not add a new Phase row for a wave.
 
-A Phase usually has no more than 3 user-facing milestones. If a wave would add more, record why the Phase still holds together and why another Phase would be worse.
+Keep a Phase to <=3 user-facing milestones by default. If a wave adds more, record why the Phase still holds together and why another Phase would be worse.
 
-Top-level wave folders such as `docs/tasks/<wave-name>/` are legacy or migration-only. New planning must place waves under the existing Phase so the Phase -> Milestone -> Task hierarchy stays intact.
+Treat top-level wave folders such as `docs/tasks/<wave-name>/` as legacy or migration-only. Put new waves under the existing Phase so the Phase -> Milestone -> Task hierarchy stays intact.
 
 ```
 docs/tasks/phase-N-<name>/

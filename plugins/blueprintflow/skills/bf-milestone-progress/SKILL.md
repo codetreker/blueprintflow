@@ -26,7 +26,7 @@ Use when any are true:
 |---|---|
 | Accepted task status and PR/commit anchor | `milestone.md`, task `progress.md` |
 | Next ready task or blocker | `milestone.md`, `docs/tasks/README.md` |
-| Next-blueprint execution state update | `docs/blueprint/next/README.md` |
+| Next-blueprint coarse work state update | `docs/blueprint/next/README.md` |
 | Milestone closure summary | `milestone.md` |
 | Phase-exit handoff | `docs/tasks/README.md` and Teamlead notebook |
 
@@ -38,10 +38,12 @@ Use when any are true:
 4. Mark the task `ACCEPTED` in `milestone.md` with PR and commit anchors.
 5. Remove closed rows from Active Task Resume.
 6. Pick the next task by dependency order, blocker severity, and milestone priority.
-7. If a next task is ready, mark it `READY`, set the next ledger to `TASK_SET_READY` with `Milestone path` still pointed at the milestone folder, and hand off to `bf-task-execute`.
+7. If a next task is ready, mark it `READY`, keep the next ledger `Work` as `IMPLEMENTING` with `Milestone path` still pointed at the milestone folder, and hand off to `bf-task-execute`.
 8. If tasks remain blocked, record the blocker and dispatch the owning role.
-9. If all required tasks are accepted, write the milestone closure summary and update the next ledger to `ACCEPTED`.
-10. If all Phase milestones are accepted, hand off to `bf-phase-exit-gate`.
+9. If all required tasks are accepted, write the milestone closure summary.
+10. If required milestone or wave gates still need review, keep the next ledger `Work` as `IMPLEMENTING` and finish them in this skill.
+11. If Phase-level exit is needed after milestone or wave closure, keep the next ledger `Work` as `IMPLEMENTING` and hand off to `bf-phase-exit-gate`.
+12. Update the next ledger `Work` to `COMPLETED` only after required milestone, wave, or Phase gates pass and the accepted scope is ready for current promotion.
 
 ## Checks
 
@@ -50,6 +52,7 @@ Use when any are true:
 - Blocked tasks name a concrete owner and unblock action.
 - Milestone closure lists completed tasks, deferred tasks, carry-over anchors, and acceptance evidence.
 - Phase exit is not started until milestone closure is recorded.
+- `COMPLETED` is not set while required milestone, wave, or Phase gates are still pending.
 
 ## Anti-patterns
 

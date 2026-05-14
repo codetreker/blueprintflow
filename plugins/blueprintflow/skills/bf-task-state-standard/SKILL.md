@@ -41,15 +41,14 @@ Use when any are true:
 
 ## Checks
 
-- `docs/blueprint/next/README.md` stops at milestone level.
-- Task paths, task owners, PRs, blockers, and checkbox progress live in `docs/tasks/`.
+- `docs/blueprint/next/README.md` stops at milestone level and uses only `PENDING`, `IMPLEMENTING`, or `COMPLETED` for work state.
 - One active task row maps to one task folder, one worktree, one branch, and one PR.
 - Accepted task facts do not move to `docs/blueprint/current/` until acceptance and promotion happen.
 - Archived folders are not edited.
 
 ## Anti-patterns
 
-- Writing implementation state into `docs/blueprint/next/README.md`.
+- Writing task implementation state into `docs/blueprint/next/README.md`.
 - Treating `docs/tasks/README.md` as a duplicate of every task file.
 - Keeping closed task rows in Active Task Resume.
 - Repairing state by changing archived files.

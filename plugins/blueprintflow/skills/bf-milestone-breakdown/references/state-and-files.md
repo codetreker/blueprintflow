@@ -1,12 +1,12 @@
 # State and Files
 
-## State Meanings
+## `docs/tasks` State Meanings
 
 | State | Checkable meaning |
 |---|---|
-| `MILESTONE_PLANNED` | `phase-plan.md` and `milestone.md` exist; first task seed exists; task skeletons are not reviewed yet |
+| `PLANNED` | `phase-plan.md` and `milestone.md` exist; first task seed exists; task skeletons are not reviewed yet |
 | `BREAKING_DOWN` | Breakdown change is in progress, or task skeletons, review, evidence, or publication are incomplete |
-| `TASK_SET_READY` | Breakdown gate passed and published: the published breakdown change contains the final `TASK_SET_READY` ledger update, or non-PR evidence was recorded in the same update; every task skeleton folder has `task.md`; `milestone.md` names dependency order and first ready task |
+| `TASK_SET_READY` | Breakdown gate passed and published; every task skeleton folder has `task.md`; `milestone.md` names dependency order, first ready task, review result, and publication evidence |
 | `TASKING` | A concrete task has entered `bf-task-execute`; task-level planning, progress, or implementation work is active |
 
 ## File Timeline
@@ -59,7 +59,7 @@ docs/tasks/<phase>/<milestone>/task-1-<name>/
 
 ## Ledger Update
 
-- `docs/blueprint/next/README.md`: `Milestone path` points to the milestone folder only. Do not record task paths, task PRs, task owners, or task checkbox progress in the next ledger.
-- `BREAKING_DOWN`: next ledger stays on the milestone folder; `docs/tasks/README.md` or `milestone.md` points to `task-0-breakdown-*` when a governed breakdown change exists.
-- `TASK_SET_READY`: next ledger stays on the milestone folder; `milestone.md` names the first ready task and records the breakdown review/evidence. In governed-change projects, this row change belongs to the same breakdown change set before publication; do not publish `TASK_SET_READY` separately.
-- `TASKING`: next ledger stays on the milestone folder; task-level recovery lives in `docs/tasks/README.md`, `milestone.md`, and the active task folder.
+- `docs/blueprint/next/README.md`: `Milestone path` points to the milestone folder only. `Work` is only `PENDING`, `IMPLEMENTING`, or `COMPLETED`.
+- Breakdown active: next ledger stays on the milestone folder and `Work` is `IMPLEMENTING`; `docs/tasks/README.md` or `milestone.md` points to `task-0-breakdown-*` when a governed breakdown change exists.
+- Reviewed task set ready: next ledger stays on the milestone folder and `Work` remains `IMPLEMENTING`; `milestone.md` names the first ready task and records the breakdown review/evidence.
+- Tasking: next ledger stays on the milestone folder and `Work` remains `IMPLEMENTING`; task-level recovery lives in `docs/tasks/README.md`, `milestone.md`, and the active task folder.

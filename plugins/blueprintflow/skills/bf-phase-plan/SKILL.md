@@ -116,7 +116,7 @@ Task start adds the four-piece/design/progress files to that task folder.
 | Phase 7 next loop | PLANNED | G7.x defined after lock | waiting |
 ```
 
-This Phase index stops at milestone level. Do not put task paths, task owners, worktrees, branches, PRs, blockers, or checkbox progress here. A milestone closes only when all required tasks are accepted. A Phase closes only when its milestone gates pass.
+This Phase index records only Phase, Status, Exit condition, and Current milestone. A milestone closes only when all required tasks are accepted. A Phase closes only when its milestone gates pass.
 
 ## Anti-patterns
 

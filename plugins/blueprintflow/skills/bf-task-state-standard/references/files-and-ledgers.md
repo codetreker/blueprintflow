@@ -4,7 +4,7 @@
 
 | State | File | Required content |
 |---|---|---|
-| Blueprint decision | `docs/blueprint/next/README.md` | Anchor, decision status, execution status, milestone path |
+| Blueprint decision | `docs/blueprint/next/README.md` | Anchor, decision status, coarse work status, milestone path |
 | Phase resume | `docs/tasks/README.md` | Phase, status, exit condition, current milestone |
 | Active task resume | `docs/tasks/README.md` | Scope, execution, active task, owner, worktree/branch, PR, blocker, progress path |
 | Milestone resume | `docs/tasks/<phase>/<milestone>/milestone.md` | Task index, dependency order, first ready task, blocked tasks, closure state |
@@ -16,12 +16,12 @@
 Keep this ledger at milestone level.
 
 ```markdown
-| Anchor | Decision | Execution | Milestone path | Notes |
+| Anchor | Decision | Work | Milestone path | Notes |
 |---|---|---|---|---|
-| remote-agent §2 | LOCKED | TASK_SET_READY | docs/tasks/phase-6-remote-agent/milestone-2-web-config | first task named in milestone.md |
+| remote-agent §2 | LOCKED | IMPLEMENTING | docs/tasks/phase-6-remote-agent/milestone-2-web-config | see docs/tasks for active state |
 ```
 
-Do not add task paths, task owners, worktrees, branches, PRs, blockers, or checkbox progress.
+Allowed `Work` values: `PENDING`, `IMPLEMENTING`, `COMPLETED`.
 
 ## `docs/tasks/README.md`
 
@@ -99,9 +99,11 @@ Create when a task starts.
 
 ## Consistency Rules
 
-- `TASK_SET_READY` in next ledger requires reviewed `task.md` files and a first ready task in `milestone.md`.
+- `PENDING` in next ledger means no active execution is happening for that anchor, even if Phase/Milestone planning exists.
+- `IMPLEMENTING` in next ledger means active planning, breakdown, task execution, review, acceptance, or Phase gate work is happening in `docs/tasks`.
+- `COMPLETED` in next ledger requires accepted scope ready for current promotion or already reflected in current; required milestone, wave, or Phase gates must be recorded.
 - `TASKING` requires an Active Task Resume row and a task folder.
 - `READY_FOR_IMPL` requires four-piece baseline and reviewed `design.md` for code tasks.
 - `IMPLEMENTING` requires worktree/branch state in Active Task Resume or `progress.md`.
 - `ACCEPTED` requires merged task PR, acceptance evidence, and milestone update.
-- `CURRENT` requires accepted scope reflected in `docs/blueprint/current/`.
+- Use `docs/tasks/README.md`, `milestone.md`, and task `progress.md` for fine-grained task state.

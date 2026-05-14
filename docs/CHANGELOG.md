@@ -9,13 +9,13 @@
 - Defined `docs/tasks/` as the next-to-current execution path where freeze/lock plans Phase -> Milestone before later task execution stages.
 - Clarified that freeze/lock requires a first-milestone task seed for executability, not a complete task tree.
 - Changed the PR atom from milestone to task across workflow, git workflow, task four-piece, implementation design, PR review, cron, role prompts, and runtime guidance.
-- Limited GitHub `backlog` labels to initial next-selection intake; ongoing recovery state now lives in `docs/blueprint/next/README.md` and `docs/tasks/`.
-- Added next status ledger guidance with independent Decision and Execution statuses for interrupted-work recovery.
+- Limited GitHub `backlog` labels to initial next-selection intake; ongoing recovery uses a coarse `docs/blueprint/next/README.md` index plus detailed `docs/tasks/` state.
+- Added next status ledger guidance with independent Decision and Work statuses for interrupted-work recovery.
 - Added `bf-milestone-breakdown` as the stage between Phase/Milestone planning and concrete task start.
 - Added `bf-task-execute` as the task-level orchestrator from reviewed task contract to accepted task closure.
 - Added `bf-milestone-progress` for accepted-task follow-up, next-task selection, milestone closure, and Phase-exit readiness.
 - Added `bf-task-state-standard` for `docs/tasks` ledgers, milestone indexes, task folders, and interrupted-work recovery.
-- Added `BREAKING_DOWN` and `TASK_SET_READY` execution states so task skeleton folders are not confused with active implementation.
+- Added `BREAKING_DOWN` and `TASK_SET_READY` `docs/tasks` milestone states so task skeleton folders are not confused with active implementation.
 - Defined `task.md` as the reviewed task contract for purpose, scope, out-of-scope, anchors, acceptance slice, dependencies, parallelism, and sensitive paths.
 - Kept `milestone.md` as the milestone index, dependency order, first-ready task pointer, and breakdown review summary.
 - Aligned workflow routing, blueprint iteration lifecycle, phase planning, task four-piece, fast cron, role reminder, README, and plugin metadata with the milestone breakdown stage.

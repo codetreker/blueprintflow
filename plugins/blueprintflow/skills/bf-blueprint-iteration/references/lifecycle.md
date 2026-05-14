@@ -12,9 +12,9 @@ accepted current
 -> plan Phase -> Milestone + first task seed
 -> break down selected milestone into reviewed task.md skeletons
 -> execute tasks through docs/tasks
--> accept milestone/phase gates
+-> accept milestone/wave/Phase gates
 -> promote accepted scope to current
--> tag blueprint-vN.M and mark next rows CURRENT
+-> tag blueprint-vN.M and mark next rows COMPLETED
 ```
 
 ## State ownership
@@ -43,28 +43,23 @@ Target version: vN.M
 Last updated: YYYY-MM-DD
 Resume from: <one concrete next action>
 
-| Anchor | Topic | Decision | Execution | Milestone path | Blocker | Next action |
-|---|---|---|---|---|---|---|
-| RA-1 | Web-triggered configure | LOCKED | MILESTONE_PLANNED | docs/tasks/phase-6-remote-agent/milestone-2-web-config | none | run milestone breakdown |
-| RA-2 | Helper sandbox stance | OPEN | NO_PLAN | - | sudo boundary | role discussion |
-| RA-3 | Helper boot/crash | LOCKED | BREAKING_DOWN | docs/tasks/phase-6-remote-agent/milestone-3-helper-service | Dev review | finish breakdown review in milestone.md |
-| RA-4 | Helper service | LOCKED | TASK_SET_READY | docs/tasks/phase-6-remote-agent/milestone-3-helper-service | none | start first ready task from milestone.md |
-| RA-5 | Status and logs UI | LOCKED | IMPLEMENTING | docs/tasks/phase-6-remote-agent/milestone-4-operator-status | none | resume active task from docs/tasks/README.md |
-| RA-6 | Revoke behavior | LOCKED | ACCEPTING | docs/tasks/phase-6-remote-agent/milestone-5-revoke | none | resume acceptance from docs/tasks/README.md |
-| RA-7 | Configure job API | LOCKED | ACCEPTED | docs/tasks/phase-6-remote-agent/milestone-2-web-config | none | promote to current |
-| RA-8 | Legacy helper sandbox | REOPENED | NO_PLAN | - | product/security conflict | resolve stance |
-| RA-9 | Enrollment status | LOCKED | CURRENT | docs/tasks/phase-5-enrollment/milestone-1-status | none | none |
+| Anchor | Topic | Decision | Work | Milestone path | Next action |
+|---|---|---|---|---|---|
+| RA-1 | Web-triggered configure | LOCKED | PENDING | docs/tasks/phase-6-remote-agent/milestone-2-web-config | run or resume from milestone.md |
+| RA-2 | Helper sandbox stance | OPEN | PENDING | - | resolve stance |
+| RA-3 | Helper boot/crash | LOCKED | IMPLEMENTING | docs/tasks/phase-6-remote-agent/milestone-3-helper-service | see docs/tasks for breakdown/task state |
+| RA-4 | Status and logs UI | LOCKED | IMPLEMENTING | docs/tasks/phase-6-remote-agent/milestone-4-operator-status | see docs/tasks for active task |
+| RA-5 | Configure job API | LOCKED | COMPLETED | docs/tasks/phase-6-remote-agent/milestone-2-web-config | promote to current or confirm current sync |
+| RA-6 | Enrollment status | LOCKED | COMPLETED | docs/tasks/phase-5-enrollment/milestone-1-status | none |
 ```
 
 Decision values: `OPEN`, `LOCKED`, `REOPENED`.
 
-Execution values: `NO_PLAN`, `MILESTONE_PLANNED`, `BREAKING_DOWN`, `TASK_SET_READY`, `TASKING`, `READY_FOR_IMPL`, `IMPLEMENTING`, `ACCEPTING`, `ACCEPTED`, `CURRENT`.
+Work values: `PENDING`, `IMPLEMENTING`, `COMPLETED`.
 
 Rules:
-- `Milestone path` stops at the milestone folder. Task paths, task PRs, task owners, task blockers, and checkbox progress live under `docs/tasks/`.
-- `Next action` names the next milestone-level handoff. If execution is already inside a task, it points readers to `docs/tasks/README.md`, `milestone.md`, or the active task folder instead of duplicating task state.
-- `Blocker` records only blueprint-level or milestone-level blockers. Task-level blockers live under `docs/tasks/`.
-- Do not add a PR column here. PRs are task mechanics owned by `docs/tasks/` and GitHub.
+- `Milestone path` stops at the milestone folder.
+- `Next action` names only the next coarse handoff. If work is active, point readers to `docs/tasks/README.md` or `milestone.md` instead of duplicating task state.
 
 ## Source Issues
 
@@ -98,25 +93,25 @@ When a milestone is selected for execution:
 - Create one task skeleton folder per task.
 - Create one `task.md` per task skeleton.
 - Keep `milestone.md` as index, dependency order, review summary, and first-ready pointer.
-- Publish the breakdown gate before `TASK_SET_READY`.
-- In governed-change projects, include the `TASK_SET_READY` ledger update in the same breakdown change before publication.
+- Publish the breakdown gate before task execution starts.
+- In governed-change projects, include the `IMPLEMENTING` next-ledger update in the same breakdown change when the breakdown is actively underway; leave the row `PENDING` when the milestone is planned but idle.
 - Do not start concrete task work in breakdown.
 
-Task work starts after `TASK_SET_READY`.
+Task work starts from the first ready task named in `milestone.md`.
 
 ## Promotion to current
 
 Promote only accepted work. Required:
 - All relevant task PRs are merged.
 - Acceptance templates are ✅ and verifiable.
-- Phase or milestone gates required by `docs/tasks` have passed.
+- Milestone, wave, or Phase gates required by `docs/tasks` have passed.
 - `docs/current` is synced when the project uses that convention.
 - User/PM acceptance for user-perceivable behavior is recorded.
 
 Then:
 - Update `docs/blueprint/current/`.
 - Tag `blueprint-vN.M`.
-- Mark corresponding next ledger rows `CURRENT`.
+- Mark corresponding next ledger rows `COMPLETED`.
 
 ## Stuck-task safety net
 
@@ -127,5 +122,5 @@ Stuck signal:
 
 When stuck:
 - Architect + PM choose one: split task, reopen next anchor, or move remainder to future backlog.
-- Update `docs/tasks/README.md` and the next ledger if scope changes.
+- Update `docs/tasks/README.md` and the coarse next ledger if scope changes.
 - Do not drag the whole milestone or Phase indefinitely.

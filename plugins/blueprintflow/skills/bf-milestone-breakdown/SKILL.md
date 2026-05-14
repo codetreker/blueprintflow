@@ -15,7 +15,7 @@ If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's in
 
 Use when all are true:
 
-- The milestone is `MILESTONE_PLANNED`.
+- The selected milestone exists in `docs/tasks/` and has not been broken into reviewed task contracts.
 - Relevant `docs/blueprint/next` anchors are `LOCKED`.
 - `phase-plan.md` and milestone-level `milestone.md` exist.
 - A first task seed exists in `milestone.md` or `task-seed.md`.
@@ -26,7 +26,7 @@ Use when all are true:
 - `milestone.md` updated as the milestone index: task list, dependency order, first ready task, review summary.
 - One skeleton folder per task under `docs/tasks/<phase>/<milestone>/task-N-<name>/`.
 - One `task.md` contract in every task skeleton folder.
-- `docs/tasks/README.md` and `docs/blueprint/next/README.md` updated with the new resume state.
+- `docs/tasks/README.md` updated with the breakdown/task resume state; `docs/blueprint/next/README.md` remains milestone-level and uses coarse `Work` state.
 
 Output boundary: create task skeletons and `task.md` only. Do not create implementation, four-piece, design, or progress files in this skill.
 
@@ -36,21 +36,22 @@ Output boundary: create task skeletons and `task.md` only. Do not create impleme
 
 | Project mode | Action |
 |---|---|
-| PR-governed | Prepare the project-governed breakdown change workspace and a real planning task folder such as `task-0-breakdown-<milestone>`; do not publish the review yet. In that workspace, mark the selected milestone `BREAKING_DOWN` in the next ledger. |
-| Non-PR-governed | Mark the selected milestone `BREAKING_DOWN` in the next ledger in place. |
+| PR-governed | Prepare the project-governed breakdown change workspace and a real planning task folder such as `task-0-breakdown-<milestone>`; do not publish the review yet. In that workspace, mark the next ledger `Work` as `IMPLEMENTING` and keep `Milestone path` pointed at the milestone folder. |
+| Non-PR-governed | Mark the next ledger `Work` as `IMPLEMENTING` in place and keep `Milestone path` pointed at the milestone folder. |
 
 2. See [references/state-and-files.md](references/state-and-files.md) for the planning task file shape.
 3. Read the milestone inputs listed in [references/task-contract.md](references/task-contract.md).
 4. Create task skeleton folders and `task.md` contracts using [references/task-contract.md](references/task-contract.md).
 5. Update `milestone.md` with the task index, dependency order, parallelism notes, first ready task, and review table.
 6. Run the breakdown review gate using [references/review-checklist.md](references/review-checklist.md).
-7. Complete the breakdown gate. In PR-governed projects, the breakdown change set must contain the task skeletons, review table, and final ledger update to `TASK_SET_READY`; PR mechanics are handled by the project's PR workflow. In non-PR-governed projects, record equivalent review evidence in `milestone.md` and mark `TASK_SET_READY` in the same update.
+7. Complete the breakdown gate. In PR-governed projects, the breakdown change set must contain the task skeletons, review table, `milestone.md` first-ready task update, and coarse next-ledger `IMPLEMENTING` update; PR mechanics are handled by the project's PR workflow. In non-PR-governed projects, record equivalent review evidence in `milestone.md` and keep the next ledger `Work` as `IMPLEMENTING`.
 8. Record the handoff target: the first ready task named in `milestone.md`. Next skill is `bf-task-execute`. Do not start that task in this skill.
 
 ## State Transition
 
 ```text
-MILESTONE_PLANNED -> BREAKING_DOWN -> TASK_SET_READY -> TASKING
+docs/tasks milestone state: PLANNED -> BREAKING_DOWN -> TASK_SET_READY
+docs/blueprint/next Work during breakdown: PENDING -> IMPLEMENTING
 ```
 
 See [references/state-and-files.md](references/state-and-files.md) for status meanings and file examples.
@@ -59,7 +60,7 @@ See [references/state-and-files.md](references/state-and-files.md) for status me
 
 Architect, PM, QA, and Dev must approve every breakdown. They must classify sensitive paths from task scope, anchors, dependencies, APIs, files, and commands; do not rely only on the task author's `Sensitive paths` value. Security is required when any task touches auth, privacy, credentials, dangerous commands, remote agents, admin paths, or project-defined sensitive areas.
 
-Any incomplete review/publication gate keeps the milestone in `BREAKING_DOWN`. Fix `task.md` or `milestone.md`, then re-review. Do not publish `TASK_SET_READY` separately; it belongs in the breakdown change set before publication.
+Any incomplete review/publication gate keeps the milestone in `BREAKING_DOWN` inside `docs/tasks`. Fix `task.md` or `milestone.md`, then re-review. Do not publish the reviewed task set separately from the breakdown change set.
 
 ## Anti-patterns
 

@@ -45,27 +45,20 @@ The states do not mix. `current` is never a plan. `next` is where not-yet-accept
 
 ## Next status ledger
 
-`docs/blueprint/next/README.md` must be the resume point for interrupted work. It tracks stable anchors from next-blueprint files with two independent statuses:
+`docs/blueprint/next/README.md` is the coarse resume index for next-blueprint anchors. It tracks stable anchors from next-blueprint files with two independent statuses:
 
 | Axis | Values | Meaning |
 |---|---|---|
 | Decision | `OPEN` / `LOCKED` / `REOPENED` | Whether the blueprint stance is still being discussed or approved for this version |
-| Execution | `NO_PLAN` / `MILESTONE_PLANNED` / `BREAKING_DOWN` / `TASK_SET_READY` / `TASKING` / `READY_FOR_IMPL` / `IMPLEMENTING` / `ACCEPTING` / `ACCEPTED` / `CURRENT` | How far the locked anchor has moved through `docs/tasks` toward current |
+| Work | `PENDING` / `IMPLEMENTING` / `COMPLETED` | Whether the anchor is waiting, active in `docs/tasks`, or accepted/current-ready |
 
-Execution transition criteria:
+Work transition criteria:
 
 | Status | Checkable meaning |
 |---|---|
-| `NO_PLAN` | No Phase/Milestone plan exists yet. This is expected for `OPEN` or newly `LOCKED` anchors |
-| `MILESTONE_PLANNED` | Phase/Milestone plan exists in `docs/tasks`; milestone breakdown is pending. The first executable milestone has a task seed proving execution can start |
-| `BREAKING_DOWN` | `bf-milestone-breakdown` is active; task skeleton folders, `task.md`, dependency order, breakdown review, CI, merge, or non-PR review evidence are incomplete |
-| `TASK_SET_READY` | Breakdown gate passed; each task has `task.md`; first ready task is named; concrete task work has not started |
-| `TASKING` | A specific task has started; four-piece/design docs are being drafted or reviewed in its task folder/worktree |
-| `READY_FOR_IMPL` | Four-piece exists and implementation design review is ✅ |
-| `IMPLEMENTING` | Task worktree/branch or PR exists with implementation in progress |
-| `ACCEPTING` | Implementation is complete enough for QA/review; acceptance, required reviews, or CI still pending |
-| `ACCEPTED` | Task PRs are merged, acceptance is ✅, required reviews/CI passed, and current promotion is pending |
-| `CURRENT` | Accepted scope has been reflected in `docs/blueprint/current/` |
+| `PENDING` | No active execution is happening for this anchor. Discussion, lock, Phase/Milestone planning, or ready-but-not-started work may exist. Details live in `docs/tasks` if a milestone path exists |
+| `IMPLEMENTING` | The anchor has active planning, breakdown, task execution, review, acceptance, or Phase gate work in `docs/tasks` |
+| `COMPLETED` | The accepted scope is ready for current promotion or has already been reflected in `docs/blueprint/current/` |
 
 Rules:
 - Only `LOCKED` anchors may be planned into `docs/tasks/`.
@@ -73,10 +66,9 @@ Rules:
 - If one topic is half decided, split it into smaller anchors so the locked parts can move while open questions remain visible.
 - Blueprint lock does not require a complete task split. It locks the Phase/Milestone plan and enough first-milestone task seed to prove executability.
 - `bf-milestone-breakdown` creates reviewed task skeleton folders and `task.md` contracts before concrete task work starts.
-- Skeleton task folders do not mean implementation has started; `TASKING` begins only when a specific task enters `bf-task-execute`.
+- Skeleton task folders do not mean task execution has started; task-level state lives in `docs/tasks/README.md`, `milestone.md`, and task folders.
 - Each resulting task still owns one worktree, one branch, and one PR when that task starts.
-- `ACCEPTED` means code is complete and acceptance passed; only then may the accepted scope be promoted to `current`.
-- `CURRENT` means the accepted scope has already been reflected in `docs/blueprint/current/` and should leave the active next queue.
+- `COMPLETED` means code is complete, acceptance passed, and required milestone, wave, or Phase gates are recorded; only then may the accepted scope be promoted to `current`.
 
 ## Version numbers
 

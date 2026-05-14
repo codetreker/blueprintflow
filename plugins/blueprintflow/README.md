@@ -1,9 +1,9 @@
 # Blueprintflow Iteration Flow
 
-Blueprintflow turns selected backlog issues into accepted current behavior through a dependency-ordered path:
+Blueprintflow turns selected sources into accepted current behavior through a dependency-ordered path:
 
 ```text
-GitHub backlog issues
+source intake
 -> source trace
 -> next blueprint anchors
 -> Phase planning
@@ -19,25 +19,43 @@ GitHub backlog issues
 
 ```mermaid
 flowchart TD
-    A["Backlog issues"] --> B["Select issues for this iteration"]
-    B --> C["docs/blueprint/_meta/version/source-issues.md"]
-    C --> D["docs/blueprint/next anchors"]
-    D --> E{Anchor State}
-    E -->|OPEN| D
-    E -->|PLANNED| F["Phase planning"]
-    F --> G["Milestone planning"]
-    G --> H["Select one milestone"]
-    H --> I["Milestone breakdown"]
-    I --> J["Task execution loop"]
-    J --> K["Milestone close"]
-    K --> L{More required milestones?}
-    L -->|Yes| H
-    L -->|No| M["Phase exit"]
-    M --> N{More required phases?}
-    N -->|Yes| F
-    N -->|No| O["Promote accepted scope to current"]
-    O --> P["Anchor State = COMPLETED"]
+    A["New product / module / fuzzy idea"] --> B["bf-brainstorm"]
+    B --> C["bf-blueprint-write"]
+    C --> D["docs/blueprint/_meta/version/source-notes.md"]
+    E["Backlog issues"] --> F["Select issues for this iteration"]
+    F --> G["docs/blueprint/_meta/version/source-issues.md"]
+    H["Non-issue idea"] --> I{"Clear enough?"}
+    I -->|No| B
+    I -->|Yes| C
+    D --> J["docs/blueprint/next anchors"]
+    G --> J
+    C --> J
+    J --> K{Anchor State}
+    K -->|OPEN| J
+    K -->|PLANNED| L["Phase planning"]
+    L --> M["Milestone planning"]
+    M --> N["Select one milestone"]
+    N --> O["Milestone breakdown"]
+    O --> P["Task execution loop"]
+    P --> Q["Milestone close"]
+    Q --> R{More required milestones?}
+    R -->|Yes| N
+    R -->|No| S["Phase exit"]
+    S --> T{More required phases?}
+    T -->|Yes| L
+    T -->|No| U["Promote accepted scope to current"]
+    U --> V["Anchor State = COMPLETED"]
 ```
+
+## Source Intake
+
+| Source | Route | Trace artifact |
+|---|---|---|
+| New product, new module, or fuzzy idea | Run `bf-brainstorm`, then `bf-blueprint-write`. | `docs/blueprint/_meta/<version>/source-notes.md` |
+| Backlog GitHub issues | Select this iteration's issues. | `docs/blueprint/_meta/<version>/source-issues.md` |
+| Non-issue idea in an existing product | Run `bf-brainstorm` when unclear; otherwise run `bf-blueprint-write`. | `docs/blueprint/_meta/<version>/source-notes.md` |
+
+`source-issues.md` maps issue-backed sources to next anchors. `source-notes.md` maps non-issue sources to next anchors. Both are source trace only.
 
 ## State Ledger
 
@@ -69,7 +87,7 @@ Each stage starts after the previous stage has its required state or fields. Use
 
 | Stage | Completion rule |
 |---|---|
-| Backlog selection | `docs/blueprint/_meta/<version>/source-issues.md` exists and maps selected issues to next anchors. |
+| Source intake | `source-issues.md` exists for issue-backed anchors, or `source-notes.md` exists for non-issue anchors; each selected source maps to one or more next anchors. |
 | Next blueprint anchors | `docs/blueprint/next/README.md` has `Anchor`, `Detail anchor`, `Topic`, `State`, and `Milestone path`; each detail anchor points to a concrete `docs/blueprint/next/*.md` section. |
 | Anchor planning | Selected anchor `State` is `PLANNED`. |
 | Phase planning | `docs/tasks/README.md` has a Phase row; `docs/tasks/phase-N-*/phase-plan.md` exists; the Phase has a value loop, dependency order, and exit gate. |

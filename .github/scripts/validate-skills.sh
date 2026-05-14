@@ -1,29 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
 skills_root="$repo_root/plugins/blueprintflow/skills"
-
-stale_refs=$(grep -RInE 'bf-milestone-fourpiece|milestone-fourpiece' "$repo_root/README.md" "$skills_root" || true)
-if [[ -n "$stale_refs" ]]; then
-  printf '%s\n' "$stale_refs" >&2
-  echo "Active docs must not reference retired bf-milestone-fourpiece; use bf-task-fourpiece." >&2
-  exit 1
-fi
-
-stale_verification_refs=$(grep -RInE 'bf-e2e-verification|e2e-verification' "$repo_root/README.md" "$skills_root" || true)
-if [[ -n "$stale_verification_refs" ]]; then
-  printf '%s\n' "$stale_verification_refs" >&2
-  echo "Active docs must not reference retired bf-e2e-verification; use bf-verification." >&2
-  exit 1
-fi
-
-fixed_cadence=$(grep -RInE '7,22,37,52 \* \* \* \*|17 \*/2 \* \* \*|openclaw cron add \.\.\.' "$skills_root" || true)
-if [[ -n "$fixed_cadence" ]]; then
-  printf '%s\n' "$fixed_cadence" >&2
-  echo "Active skills must use complete project-defined cron commands, not fixed cron literals or ellipses." >&2
-  exit 1
-fi
 
 count=0
 for skill_dir in "$skills_root"/*; do

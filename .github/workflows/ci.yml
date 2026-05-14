@@ -24,14 +24,14 @@ jobs:
           jq . plugins/blueprintflow/.claude-plugin/plugin.json >/dev/null
 
       - name: Validate plugin layout
-        run: scripts/validate-plugin-layout.sh
+        run: .github/scripts/validate-plugin-layout.sh
 
       - name: Validate skill metadata
-        run: scripts/validate-skills.sh
+        run: .github/scripts/validate-skills.sh
 
       - name: Validate release version bump
         if: github.event_name == 'pull_request'
-        run: scripts/validate-release-version.sh "origin/${{ github.base_ref }}"
+        run: .github/scripts/validate-release-version.sh "origin/${{ github.base_ref }}"
 
       - name: Check whitespace
         run: |

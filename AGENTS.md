@@ -9,7 +9,7 @@ Blueprintflow is a Markdown-first repository for Claude/OpenClaw/Codex skills, n
 There is no package manager, build step, or automated test runner in this repo. Use lightweight validation commands before opening a PR:
 
 ```bash
-rg --files plugins/blueprintflow .claude docs .github .claude-plugin .agents scripts
+rg --files plugins/blueprintflow .claude docs .github .claude-plugin .agents
 ```
 
 Lists tracked content areas and catches unexpected file placement.
@@ -27,17 +27,21 @@ git diff --check
 Checks for whitespace errors in Markdown and JSON files.
 
 ```bash
-scripts/validate-plugin-layout.sh
+.github/scripts/validate-plugin-layout.sh
 ```
 
 Verifies the single-source plugin package and both marketplace manifests.
 
 ```bash
-scripts/validate-skills.sh
-scripts/validate-release-version.sh origin/main
+.github/scripts/validate-skills.sh
+.github/scripts/validate-release-version.sh origin/main
 ```
 
 Checks public plugin skill frontmatter/references and enforces version bumps for release-facing PR changes.
+
+## Long-Term CI Rules
+
+Long-term CI may enforce only stable, mechanical repository invariants: parseable JSON/YAML, expected file placement, required manifests, version consistency, valid relative references, and whitespace hygiene. Do not add CI checks for one-time migration cleanup, retired names, wording preferences, preferred examples, cron cadence choices, or any rule that encodes a current editorial stance rather than a durable structure contract. If a check would reasonably need removal after a rename, copy edit, workflow rethink, or release train, keep it as a temporary review command in the PR description instead of a permanent CI gate.
 
 ## Coding Style & Naming Conventions
 

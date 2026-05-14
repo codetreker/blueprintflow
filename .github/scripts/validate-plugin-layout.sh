@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
 plugin_root="$repo_root/plugins/blueprintflow"
 codex_marketplace="$repo_root/.agents/plugins/marketplace.json"
 claude_marketplace="$repo_root/.claude-plugin/marketplace.json"

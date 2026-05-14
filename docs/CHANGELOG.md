@@ -1,5 +1,17 @@
 # Changelog
 
+## v5.0.0 — 2026-05-14
+
+### Workflow entrypoint rename
+
+- Renamed public skill `bf-workflow` to `using-plueprint` and moved its package directory to `plugins/blueprintflow/skills/using-plueprint/`.
+- Updated active child-skill guards, runtime/team references, OpenAI metadata, and README startup examples to use `using-plueprint` as the Blueprintflow entrypoint.
+- Added validation coverage so active skill docs and README do not reference the retired `bf-workflow` entrypoint.
+
+### Plugin version
+
+- `plugin.json` bumped `4.0.0` -> `5.0.0` (major: public workflow entrypoint skill rename).
+
 ## v4.0.0 — 2026-05-14
 
 ### Blueprint state and task flow

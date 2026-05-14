@@ -11,7 +11,7 @@ description: "Part of the Blueprintflow methodology. Use when spawning role agen
 
 ## Direct Invocation Guard
 
-If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's input; do nothing else in this skill until it routes back.
+If `using-plueprint` is not active, STOP here. Load `using-plueprint` with the user's input; do nothing else in this skill until it routes back.
 
 ## Role prompt templates
 
@@ -31,10 +31,10 @@ Only read the prompt for your own role (progressive disclosure):
 Every spawned role coordinator must receive three prompt parts:
 
 1. **Common coordinator preamble**: you are `<Role> Coordinator`, not a leaf worker; act as a long-lived teammate for Teamlead; preserve your main-session context for role decisions; dispatch helpers/reviewers for long reading, evidence gathering, drafting, edits, tests, and implementation; synthesize helper evidence back to Teamlead; use `serial fallback` only when helper spawning is truly unavailable, not when user authorization is missing or ambiguous.
-2. **Delegated activation envelope**: `bf-workflow` is active under Teamlead, parent Teamlead identity/contact, concrete objective or active setup scope, allowed child `bf-*` skills, worktree/path scope, runtime/helper capacity, and expected output.
+2. **Delegated activation envelope**: `using-plueprint` is active under Teamlead, parent Teamlead identity/contact, concrete objective or active setup scope, allowed child `bf-*` skills, worktree/path scope, runtime/helper capacity, and expected output.
 3. **Role-specific prompt**: load only `references/<role>.md` for that coordinator's own role.
 
-Role coordinators may call routed `bf-*` skills only inside a valid delegated activation envelope. If the envelope is missing, stale, or outside scope, stop and ask Teamlead for a fresh assignment; do not reload `bf-workflow` or inspect project content on your own.
+Role coordinators may call routed `bf-*` skills only inside a valid delegated activation envelope. If the envelope is missing, stale, or outside scope, stop and ask Teamlead for a fresh assignment; do not reload `using-plueprint` or inspect project content on your own.
 
 ## Coordinator mode
 
@@ -46,7 +46,7 @@ Role coordinators may call routed `bf-*` skills only inside a valid delegated ac
 
 Rules:
 
-- Role agents coordinate by default; helpers execute leaf work. The global coordinator/worker boundary is defined in `bf-workflow` and applies here.
+- Role agents coordinate by default; helpers execute leaf work. The global coordinator/worker boundary is defined in `using-plueprint` and applies here.
 - Helpers need explicit scope, files or commands, expected output, and write boundary.
 - If the runtime truly cannot spawn helpers, the role agent may do leaf work only after declaring `serial fallback` and must report the downgrade. If spawning is blocked by missing or ambiguous user authorization, ask Teamlead to request authorization instead of falling back.
 
@@ -80,7 +80,7 @@ Every code change goes through Security review. Hard rule.
 | Responsibility | Detail |
 |---|---|
 | Hand out work | Assign to roles, watch progress, guard protocol |
-| Track task state | Keep `~/.blueprint/<repo-dir>/teamlead.md` current using `bf-workflow/references/teamlead-notebook.md` |
+| Track task state | Keep `~/.blueprint/<repo-dir>/teamlead.md` current using `using-plueprint/references/teamlead-notebook.md` |
 | Arbitrate conflicts | Between roles when they disagree |
 | Synthesize diagnosis | When reports conflict, poke closest party for evidence before deciding |
 | Broadcast retractions | Changed your mind → tell all affected reviewers |

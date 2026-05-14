@@ -19,7 +19,7 @@ $EDITOR "$HOME/.blueprint/$repo_dir/teamlead.md"
 ## Rules
 
 - Do not read or update the notebook before a concrete objective or explicit ongoing-coordination request exists.
-- Cron skills still honor their Direct Invocation Guard: if `bf-workflow` has not routed back with an active objective, stop before reading the notebook.
+- Cron skills still honor their Direct Invocation Guard: if `using-plueprint` has not routed back with an active objective, stop before reading the notebook.
 - At objective start, read `~/.blueprint/<repo-dir>/teamlead.md` before routing or dispatching work.
 - If the notebook does not exist, create it from the Minimal Template below before proceeding.
 - After every Teamlead dispatch, blocker decision, retraction, PR gate decision, merge, or pause/stop request, update the notebook in the same turn.

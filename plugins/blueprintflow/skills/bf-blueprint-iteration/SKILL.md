@@ -11,7 +11,7 @@ Blueprintflow separates implemented truth, planned work, execution path, and iss
 
 ## Direct Invocation Guard
 
-If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's input; do nothing else in this skill until it routes back.
+If `using-plueprint` is not active, STOP here. Load `using-plueprint` with the user's input; do nothing else in this skill until it routes back.
 
 If this skill is invoked without a concrete objective, enter standby: do not inspect GitHub issues, blueprint files, task docs, git history, PRs, or worktrees. State what this skill coordinates and ask which objective to run.
 

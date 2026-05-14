@@ -9,7 +9,7 @@ The standard flow from PR open to merged.
 
 ## Direct Invocation Guard
 
-If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's input; do nothing else in this skill until it routes back.
+If `using-plueprint` is not active, STOP here. Load `using-plueprint` with the user's input; do nothing else in this skill until it routes back.
 
 ## Pre-requisite: implementation design ✅
 

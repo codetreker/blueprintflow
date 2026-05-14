@@ -1,15 +1,15 @@
 ---
-name: bf-workflow
+name: using-plueprint
 description: "Part of the Blueprintflow methodology. Use first as the Blueprintflow entrypoint/router before any routed bf-* child skill, and when starting the workflow, onboarding a team, choosing the next skill, or coordinating product work."
 ---
 
 # Blueprintflow Workflow
 
-`bf-workflow` is the entry driver for Blueprintflow. It brings up the Teamlead boundary, loads the runtime/team setup path, and routes the user's objective to the child skill that owns the detailed procedure.
+`using-plueprint` is the entry driver for Blueprintflow. It brings up the Teamlead boundary, loads the runtime/team setup path, and routes the user's objective to the child skill that owns the detailed procedure.
 
 ## Activation
 
-Always start by loading `bf-runtime-adapter` and `bf-team-roles` to establish runtime and team boundaries. This entrypoint activation is allowed to load those setup skills even though routed child skills normally require `bf-workflow` to be active first.
+Always start by loading `bf-runtime-adapter` and `bf-team-roles` to establish runtime and team boundaries. This entrypoint activation is allowed to load those setup skills even though routed child skills normally require `using-plueprint` to be active first.
 
 Bring up role coordinators according to runtime capacity. Do not dispatch helpers/reviewers, start cron/sleeper/automation checks, or inspect project content until the user names a concrete objective or explicitly requests ongoing coordination.
 
@@ -48,7 +48,7 @@ Teamlead owns global coordination decisions: routing, priority, conflict arbitra
 
 Teamlead must maintain the project coordination notebook at `~/.blueprint/<repo-dir>/teamlead.md`. Read `references/teamlead-notebook.md` before routing or dispatching a concrete objective, and update the notebook after dispatches, blockers, retractions, PR gate decisions, merges, or pauses.
 
-Teamlead must spawn role coordinators with the `bf-team-roles` delegated activation envelope so they know `bf-workflow` is active, which child skills they may load, and what scope they are allowed to inspect.
+Teamlead must spawn role coordinators with the `bf-team-roles` delegated activation envelope so they know `using-plueprint` is active, which child skills they may load, and what scope they are allowed to inspect.
 
 Leaf work goes through the relevant coordinator to helpers/reviewers:
 
@@ -110,7 +110,7 @@ Route backward when prerequisites are missing: if stances are unsettled, use `bf
 ## How To Invoke
 
 ```text
-follow skill bf-workflow
+follow skill using-plueprint
 ```
 
 Use Blueprintflow for new products, major features, large refactors, multi-role collaboration, stance/blueprint/execution/acceptance tracks, and cross-milestone drift control. Do not use it for one-off single-PR fixes or solo rapid iteration unless the user explicitly wants Blueprintflow governance.

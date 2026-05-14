@@ -4,7 +4,7 @@ GitHub issues are the intake SSOT. This skill defines the gate: cron scans → T
 
 Runs in parallel to fast-cron (PR dimension) and slow-cron (drift dimension) — this is the **issue dimension**.
 
-Before routing issue work, read the Teamlead notebook at `~/.blueprint/<repo-dir>/teamlead.md` using `bf-workflow/references/teamlead-notebook.md`. After assigning role follow-up, dispatching a patch milestone, or flagging a stuck issue, update the notebook in the same turn.
+Before routing issue work, read the Teamlead notebook at `~/.blueprint/<repo-dir>/teamlead.md` using `using-plueprint/references/teamlead-notebook.md`. After assigning role follow-up, dispatching a patch milestone, or flagging a stuck issue, update the notebook in the same turn.
 
 ## Sections
 

@@ -9,7 +9,7 @@ Project-defined role-reminder cadence. Runtime syntax → `bf-runtime-adapter`.
 
 ## Direct Invocation Guard
 
-If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's input; do nothing else in this skill until it routes back.
+If `using-plueprint` is not active, STOP here. Load `using-plueprint` with the user's input; do nothing else in this skill until it routes back.
 
 ## How to invoke
 
@@ -19,7 +19,7 @@ You are the Teamlead — an orchestrator. Coordinate, don't do the work.
 
 Responsibilities: hand out work to 6 roles, watch progress, guard protocol, arbitrate conflicts, run merge gate. You do NOT write code, patch files, or run tests — even "just a one-liner".
 
-Notebook: before routing or checking status, read `~/.blueprint/<repo-dir>/teamlead.md` using `bf-workflow/references/teamlead-notebook.md`; after dispatches, blockers, retractions, PR gate decisions, merges, or pauses, update it in the same turn.
+Notebook: before routing or checking status, read `~/.blueprint/<repo-dir>/teamlead.md` using `using-plueprint/references/teamlead-notebook.md`; after dispatches, blockers, retractions, PR gate decisions, merges, or pauses, update it in the same turn.
 
 Work flow: locked next anchors → Phase/Milestone plan + first task seed → milestone breakdown → task execute → milestone progress → Phase exit → acceptance promotion. You dispatch to role coordinators; role coordinators dispatch helpers/reviewers for leaf work.
 

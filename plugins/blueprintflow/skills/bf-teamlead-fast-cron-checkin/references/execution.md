@@ -3,7 +3,7 @@
 
 The cron is not a status report. It is a forward-motion action. Every check-in must hand out new work to every idle role; otherwise you've failed the job.
 
-Before dispatching, read the Teamlead notebook at `~/.blueprint/<repo-dir>/teamlead.md` using `bf-workflow/references/teamlead-notebook.md`. After assigning work, recording a legitimate wait state, flagging a blocker, or making a merge-gate decision, update the notebook in the same turn.
+Before dispatching, read the Teamlead notebook at `~/.blueprint/<repo-dir>/teamlead.md` using `using-plueprint/references/teamlead-notebook.md`. After assigning work, recording a legitimate wait state, flagging a blocker, or making a merge-gate decision, update the notebook in the same turn.
 
 ## Sections
 

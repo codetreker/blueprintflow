@@ -7,7 +7,7 @@
 | Blueprint decision | `docs/blueprint/next/README.md` | Anchor, decision status, coarse work status, milestone path |
 | Phase resume | `docs/tasks/README.md` | Phase, status, exit condition, current milestone |
 | Active task resume | `docs/tasks/README.md` | Scope, execution, active task, owner, worktree/branch, PR, blocker, progress path |
-| Milestone resume | `docs/tasks/<phase>/<milestone>/milestone.md` | Task index, dependency order, first ready task, blocked tasks, closure state |
+| Milestone resume | `docs/tasks/<phase>/<milestone>/milestone.md` | Breakdown status, task index, dependency order, current task row, blockers, publication evidence, closure state |
 | Task contract | `docs/tasks/<phase>/<milestone>/<task>/task.md` | Scope, anchors, out-of-scope, acceptance slice, dependencies, sensitive paths |
 | Task progress | `docs/tasks/<phase>/<milestone>/<task>/progress.md` | Worktree/branch, PR, checkpoints, blockers, acceptance evidence, current sync |
 
@@ -57,9 +57,16 @@ Required sections:
 | Task | Status | Depends on | PR | Notes |
 |---|---|---|---|---|
 
-## Dependency Order
+## Breakdown
 
-## First Ready Task
+Status: PLANNED / TASK_SET_READY
+
+First ready task: <task id or none>
+
+Review: <LGTM / NOT_LGTM with role rows or link>
+
+Publication evidence:
+- <PR/comment/commit/equivalent evidence>
 
 ## Blockers
 
@@ -113,7 +120,7 @@ Decision: LGTM / HOLD / BLOCK
 ## Consistency Rules
 
 - `PENDING` in next ledger means no active execution is happening for that anchor, even if Phase/Milestone planning exists.
-- `IMPLEMENTING` in next ledger means active planning, breakdown, task execution, review, acceptance, or Phase gate work is happening in `docs/tasks`.
+- `IMPLEMENTING` in next ledger means active planning, milestone breakdown, task execution, review, acceptance, or Phase gate work is happening in `docs/tasks`.
 - `COMPLETED` in next ledger requires accepted scope ready for current promotion or already reflected in current; required milestone, wave, or Phase gates must be recorded.
 - `TASKING` requires an Active Task Resume row and a task folder.
 - `READY_FOR_IMPL` requires four-piece baseline and reviewed `design.md` for code tasks.

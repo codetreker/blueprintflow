@@ -21,12 +21,19 @@ docs/tasks/<phase>/<milestone>/
 ## milestone.md Sections
 
 ```markdown
+## Breakdown
+
+Status: PLANNED | TASK_SET_READY
+
+Publication evidence:
+- <PR/comment/commit/equivalent evidence>
+
 ## Task Index
 
-| Task | Status | Purpose | Depends on | Parallel? | First ready? |
-|---|---|---|---|---|---|
-| task-1-configure-job-api | READY | Web can enqueue configure jobs | none | yes | yes |
-| task-2-helper-runner | PLANNED | Host helper runs queued jobs | task-1 | no | no |
+| Task | Status | Purpose | Depends on | First ready? |
+|---|---|---|---|---|
+| task-1-configure-job-api | READY | Web can enqueue configure jobs | none | yes |
+| task-2-helper-runner | PLANNED | Host helper runs queued jobs | task-1 | no |
 
 ## Breakdown Review
 
@@ -62,9 +69,6 @@ Blueprint anchors:
 Acceptance slice:
 - <one or more checkable outcomes>
 
-Parallelism:
-- <can run with / blocks / blocked by>
-
 Sensitive paths:
 - <auth/privacy/credentials/dangerous-commands/remote-agent/admin/project-sensitive/none>
 ```
@@ -74,8 +78,9 @@ Sensitive paths:
 - One task must fit one PR.
 - Every task must cite at least one locked next-blueprint anchor.
 - Every task must have a checkable acceptance slice.
-- Put task-specific scope in `task.md`; keep `milestone.md` as index and review summary.
+- Put task-specific boundary in `task.md`; keep `milestone.md` as index and review summary.
 - Mark exactly one unblocked first task `READY` when the milestone reaches `TASK_SET_READY`; other tasks start as `PLANNED`, `BLOCKED`, or `DEFERRED`.
+- If no task is unblocked, keep the milestone `PLANNED`, record the blocker owner and next action in `milestone.md`, and route back to the blocker owner or `bf-phase-plan` for replanning.
 - Reviewers must independently classify sensitive paths from scope, anchors, dependencies, APIs, files, and commands.
 - If any task is sensitive, `milestone.md` must include a Security review row and Security must approve before `TASK_SET_READY`.
-- Do not create four-piece files during breakdown.
+- Do not create four-piece, design, implementation, or progress files during breakdown.

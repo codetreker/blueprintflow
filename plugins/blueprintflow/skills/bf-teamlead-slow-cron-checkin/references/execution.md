@@ -1,7 +1,7 @@
 # Slow-cron execution logic
 
 
-`bf-teamlead-fast-cron-checkin` pushes idle dispatches forward; slow-cron pushes drift correction. They don't overlap.
+`bf-teamlead-role-reminder` owns active-work wake-up, utilization, and parallel-dispatch discipline. Slow-cron pushes drift correction. They don't overlap.
 
 Before auditing, read the Teamlead notebook at `~/.blueprint/<repo-dir>/teamlead.md` using `using-plueprint/references/teamlead-notebook.md`. Reconcile notebook state with live docs, PRs, issues, and worktrees. After any drift finding, assignment, blocker, or no-drift conclusion, update the notebook in the same turn.
 
@@ -81,12 +81,12 @@ Confirm `docs/tasks/README.md`, `milestone.md`, and task `progress.md` match rea
 
 - All in sync: "docs in sync, no drift".
 - Drift found: list specific PR # / files / who you're assigning.
-- Dispatch priority follows fast-cron's order (unblock > follow-up > forward > maintenance).
+- Dispatch drift fixes to the owning skill or role immediately; use `bf-teamlead-role-reminder` when utilization or parallel dispatch is the issue.
 - Confirm the notebook was reconciled and updated, or state why no notebook change was needed.
 
 ## Anti-patterns
 
 - Treating audit as forward motion (audit must end in dispatch, otherwise it's wasted).
 - Running all four categories before producing any output (any single finding triggers immediate dispatch — don't wait for the rest).
-- Mixing it with fast-cron's idle dispatch (slow-cron is dedicated to audit, fast-cron is dedicated to idle).
+- Mixing it with utilization management (slow-cron is dedicated to audit; `bf-teamlead-role-reminder` owns idle-team discipline).
 - Auditing from memory without first reconciling `~/.blueprint/<repo-dir>/teamlead.md` against live sources of truth.

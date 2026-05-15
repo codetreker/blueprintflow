@@ -87,16 +87,15 @@ If unsure, use `high`. Sleeper helpers use `low`.
 
 | Need | Codex App | Codex CLI |
 |---|---|---|
-| Fast checkin | Automation prompt with `$bf-teamlead-fast-cron-checkin` | Project-cadence sleeper subagent |
+| Active coordination / role reminder | Automation prompt with `$bf-teamlead-role-reminder` | Parent self-check or project-cadence sleeper subagent |
 | Slow checkin | Automation prompt with `$bf-teamlead-slow-cron-checkin` | Long sleeper only when useful |
-| Role reminder | Automation prompt with `$bf-teamlead-role-reminder` | Parent self-check before implementation |
 | Issue triage | Automation prompt with `$bf-issue-triage` | Sleeper or explicit parent dispatch |
 
 Sleeper prompt:
 
 ```text
-Sleep for the project-defined fast-checkin cadence, then return exactly:
-[auto check-in] $bf-teamlead-fast-cron-checkin
+Sleep for the project-defined role-reminder cadence, then return exactly:
+[auto check-in] $bf-teamlead-role-reminder
 Do not inspect files, run tools, or make decisions.
 ```
 

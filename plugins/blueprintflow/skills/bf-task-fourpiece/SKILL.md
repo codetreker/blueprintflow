@@ -1,6 +1,6 @@
 ---
 name: bf-task-fourpiece
-description: "Part of the Blueprintflow methodology. Use when a reviewed task.md exists, concrete task work is starting, and task baseline docs are missing."
+description: "Part of the Blueprintflow methodology. Use when a task.md exists, concrete task work is starting, and task baseline docs are missing."
 ---
 
 # Task Four-Piece
@@ -15,9 +15,9 @@ If `using-plueprint` is not active, STOP here. Load `using-plueprint` with the u
 
 Use when all are true:
 
-- The milestone is `TASK_SET_READY` or the task is starting.
+- `bf-milestone-breakdown` produced reviewed task boundaries and the task is starting.
 - The task folder exists under `docs/tasks/<phase>/<milestone>/<task>/`.
-- `task.md` exists and was reviewed by milestone breakdown.
+- `task.md` exists and was created by `bf-milestone-breakdown`.
 - The four-piece baseline docs do not exist or need repair before code starts.
 
 ## Outputs
@@ -50,12 +50,12 @@ Do not create `design.md`, implementation files, task PR state, worktree state, 
 - `acceptance.md` has one checkable outcome per spec segment.
 - `stance.md` names what the task is not allowed to become.
 - `content-lock.md` is absent or explicit; no empty placeholder file.
-- No file broadens the reviewed `task.md` scope.
+- No file broadens the `task.md` scope.
 
 ## Anti-patterns
 
 - Skipping one of the required baseline files.
-- Rewriting `task.md` inside this skill; send scope changes back to milestone breakdown.
+- Rewriting `task.md` inside this skill; send scope changes back to `bf-milestone-breakdown` for boundary repair.
 - Writing implementation design or code here.
 - Writing PR, worktree, branch, merge, or cleanup procedure here.
 - Treating a milestone as the task scope.

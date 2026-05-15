@@ -25,9 +25,9 @@ Use when any are true:
 | File | Owns | Must not own |
 |---|---|---|
 | `docs/tasks/README.md` | Phase index, milestone-level resume, active task resume | Full task details, PR review evidence |
-| `docs/tasks/<phase>/phase-plan.md` | Dependency stage, milestones, exit gates | Task skeleton details |
-| `docs/tasks/<phase>/<milestone>/milestone.md` | Milestone task index, dependency order, first ready task, closure summary | Full four-piece content |
-| `docs/tasks/<phase>/<milestone>/<task>/task.md` | Reviewed task contract | Implementation design or progress |
+| `docs/tasks/<phase>/phase-plan.md` | Dependency stage, milestones, exit gates | Task boundary details |
+| `docs/tasks/<phase>/<milestone>/milestone.md` | Task index, dependency order, current task row, blockers, closure summary | Full four-piece content |
+| `docs/tasks/<phase>/<milestone>/<task>/task.md` | Boundary-level task contract | Implementation design or progress |
 | `docs/tasks/<phase>/<milestone>/<task>/progress.md` | Task checkpoints, blockers, PR, acceptance state | Blueprint product truth |
 
 ## Steps

@@ -30,7 +30,7 @@ docs/tasks/phase-N-<name>/
 └── ...
 ```
 
-Task skeleton folders appear under a milestone during `bf-milestone-breakdown`, not during wave planning.
+Task folders appear under a milestone during `bf-milestone-breakdown`, after the milestone is selected for execution, not during Phase or wave planning.
 
 ### Planning task carries
 
@@ -43,7 +43,7 @@ Wave planning is not a container PR exception. If the wave needs a planning chan
 
 ### Planning task does NOT carry
 
-Task skeleton folders and `task.md` contracts — created by `bf-milestone-breakdown` when the milestone is selected for execution.
+Task folders and boundary-level `task.md` contracts — created by `bf-milestone-breakdown` when the selected milestone is broken down.
 
 Task baseline docs (spec / PM stance / acceptance / optional content-lock) and later `design.md` — created only when each task starts.
 

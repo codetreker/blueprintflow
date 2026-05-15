@@ -1,5 +1,22 @@
 # Changelog
 
+## v6.0.0 — 2026-05-15
+
+### Milestone breakdown boundary
+
+- Removed the seed `task-0-breakdown-*` model from `bf-milestone-breakdown`.
+- Kept `bf-milestone-breakdown` responsible for reviewed task folders and boundary-level `task.md` files.
+- Simplified milestone breakdown state to `PLANNED` -> `TASK_SET_READY`; in-progress review stays in the change/PR, not a durable milestone state.
+- Kept four-piece, implementation design, progress, worktree, and PR execution in `bf-task-execute` and downstream skills.
+- Slimmed `bf-blueprint-iteration` lifecycle guidance to current/next/backlog/promotion ownership; downstream task execution details stay in `docs/tasks` skills.
+- Removed public skill `bf-teamlead-fast-cron-checkin`; active-work wake-up, utilization, and parallel-progress discipline now live in `bf-teamlead-role-reminder`.
+- Aligned active routing, lifecycle, phase planning, git workflow, PR review, task four-piece, task state, milestone progress, role reminders, and drift audit wording with the breakdown-to-task-execution boundary.
+- Updated OpenAI metadata for `bf-milestone-breakdown` to describe reviewed task boundary creation.
+
+### Plugin version
+
+- `plugin.json` bumped `5.0.3` -> `6.0.0` (major: public fast-cron skill removal plus milestone breakdown boundary clarification).
+
 ## v5.0.3 — 2026-05-15
 
 ### Phase use rule

@@ -28,7 +28,7 @@ If `using-plueprint` is not active, STOP here. Load `using-plueprint` with the u
 | Notify \<Role\> | Any cross-role message (dispatch, completion, review request) |
 | Create worktree | Teamlead creates task working directory |
 | Commit code | Role does `commit` + `push` in worktree |
-| Start cron checks | Set up project-defined fast active-work check-in + slow drift audit |
+| Start cron checks | Set up project-defined role-reminder active coordination + slow drift audit |
 | Check role status | Teamlead checks whether each role is working or idle |
 
 ## Core rules (all environments)

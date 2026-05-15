@@ -5,7 +5,7 @@ description: "Part of the Blueprintflow methodology. Use when locked next-bluepr
 
 # Phase Plan
 
-Once `docs/blueprint/next/` has `LOCKED` anchors, the Architect leads. Break the selected next work into dependency-ordered Phases and user-facing Milestones. Complete task decomposition waits for `bf-milestone-breakdown`. Create multiple Phases only when a later stage cannot start or be accepted until an earlier Phase exit gate passes; a Phase still closes on demonstrable user value, not technical layers.
+Once `docs/blueprint/next/` has `LOCKED` anchors, the Architect leads. Break the selected next work into dependency-ordered Phases and user-facing Milestones. Task boundary creation waits for `bf-milestone-breakdown`; task execution waits for `bf-task-execute`. Create multiple Phases only when a later stage cannot start or be accepted until an earlier Phase exit gate passes; a Phase still closes on demonstrable user value, not technical layers.
 
 ## Direct Invocation Guard
 
@@ -29,7 +29,7 @@ Default sizing:
 - Phase: at most 3 user-facing Milestones. More than 3 is a stop-and-question signal; resume only after the Architect records the accepted exception rationale in `phase-plan.md`.
 - Task count is not capped during Phase/Milestone planning. Do not pre-split tasks to satisfy a count.
 
-`docs/tasks/` is the execution path from locked `next` anchors to accepted `current` behavior. At freeze/lock time it records Phase/Milestone planning; `bf-milestone-breakdown` later creates reviewed task skeleton folders; each concrete task gains four-piece/design files only when that task starts. It does not replace the product-shape source of truth in `docs/blueprint/next/`.
+`docs/tasks/` is the execution path from locked `next` anchors to accepted `current` behavior. At freeze/lock time it records Phase/Milestone planning; `bf-milestone-breakdown` later creates reviewed task folders and boundary-level `task.md` files for the selected milestone; `bf-task-execute` starts one reviewed task at a time. It does not replace the product-shape source of truth in `docs/blueprint/next/`.
 
 ## Phase vs wave
 
@@ -80,7 +80,7 @@ Gates 1+2 in the task spec brief, gate 3 in stance + acceptance, gate 4 at demo 
 - **README.md** — cross-Phase index + resume view (updated on every task PR merge)
 - **phase-N-<name>/phase-plan.md** — dependency stage, milestone list, exit gates
 - **phase-N-<name>/<milestone>/milestone.md** — capability goal, acceptance boundary, and dependencies
-- **phase-N-<name>/<milestone>/<task>/task.md** — created later by `bf-milestone-breakdown`, not by freeze/lock planning
+- **phase-N-<name>/<milestone>/<task>/task.md** — created later by `bf-milestone-breakdown` when the selected milestone is broken into reviewed task boundaries, not by freeze/lock planning
 - **phase-N-<name>/<milestone>/<task>/{spec,stance,acceptance,design,progress}.md** — created when that task starts
 
 Freeze/lock example:
@@ -96,17 +96,26 @@ docs/tasks/
 
 PR boundary: in a PR-governed project, freeze/lock planning is a normal planning task such as `task-0-plan-phase-6`: one worktree, one branch, one PR. It has a real planning task folder for PR ownership/progress, for example `docs/tasks/phase-6-remote-agent/milestone-planning/task-0-plan-phase-6/progress.md`. The planning task's substantive deliverables are parent `phase-plan.md` and `milestone.md` files; it is not a container PR exception and it does not implement product behavior.
 
-The freeze/lock planning task stops at `phase-plan.md` and `milestone.md`. Do not fabricate task skeleton folders just to make the plan look finished. When the milestone is selected for execution, run `bf-milestone-breakdown` to create reviewed task folders with `task.md`; create four-piece/design/progress files only when each task starts.
+The freeze/lock planning task stops at `phase-plan.md` and `milestone.md`. Do not fabricate task folders just to make the plan look finished. When the milestone is selected for execution, run `bf-milestone-breakdown` to create reviewed boundary-level `task.md` files. Create four-piece/design/progress files only after `bf-task-execute` starts one reviewed task.
 
 After `bf-milestone-breakdown`:
 
 ```text
 docs/tasks/phase-6-remote-agent/milestone-2-web-configure/
-├── milestone.md          # index, dependencies, breakdown review
+├── milestone.md          # task index, dependency order, first ready task
 ├── task-1-configure-job-api/
-│   └── task.md           # task contract only
+│   └── task.md           # boundary-level scope, anchors, acceptance slice
 └── task-2-helper-runner/
     └── task.md
+```
+
+After one `bf-task-execute` task start:
+
+```text
+docs/tasks/phase-6-remote-agent/milestone-2-web-configure/
+├── milestone.md          # task index plus active task row
+├── task-1-configure-job-api/
+│   └── task.md
 ```
 
 Task start adds the four-piece/design/progress files to that task folder.

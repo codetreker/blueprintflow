@@ -1,13 +1,11 @@
 # State and Files
 
-## `docs/tasks` State Meanings
+## Breakdown Status Meanings
 
 | State | Checkable meaning |
 |---|---|
-| `PLANNED` | `phase-plan.md` and `milestone.md` exist; task skeletons are not reviewed yet |
-| `BREAKING_DOWN` | Breakdown change is in progress, or task skeletons, review, evidence, or publication are incomplete |
-| `TASK_SET_READY` | Breakdown gate passed and published; every task skeleton folder has `task.md`; `milestone.md` names dependency order, first ready task, review result, and publication evidence |
-| `TASKING` | A concrete task has entered `bf-task-execute`; task-level planning, progress, or implementation work is active |
+| `PLANNED` | `phase-plan.md` and `milestone.md` exist; reviewed task boundaries are not published yet |
+| `TASK_SET_READY` | Reviewed task folders and boundary-level `task.md` files are published; one unblocked task is marked `READY` |
 
 ## File Timeline
 
@@ -25,24 +23,24 @@ After `bf-milestone-breakdown`:
 ```text
 docs/tasks/<phase>/<milestone>/
 ├── milestone.md
-├── task-0-breakdown-<milestone>/
-│   └── breakdown.md
 ├── task-1-<name>/
 │   └── task.md
 └── task-2-<name>/
     └── task.md
 ```
 
-`task-0-breakdown-<milestone>/` is a planning task folder only when the project requires governed breakdown docs changes. It owns the breakdown publication record; it is not a product task and does not receive four-piece files.
+`milestone.md` contains the task index, dependency order, first ready task, review summary, and publication evidence. Do not create `task-0-breakdown-*` or a seed planning task.
 
-`breakdown.md` contains:
+Each `task.md` contains boundary-level scope only:
 
-- breakdown change owner
-- links to changed `milestone.md` and task skeleton folders
-- review status summary
-- handoff to first ready task
+- purpose
+- scope and out-of-scope
+- dependencies
+- blueprint anchors
+- acceptance slice
+- sensitive paths
 
-Do not create `progress.md` for `task-0-breakdown-*`; use `breakdown.md`.
+Do not create four-piece, `design.md`, implementation files, or `progress.md` during breakdown.
 
 After one task starts:
 
@@ -59,6 +57,6 @@ docs/tasks/<phase>/<milestone>/task-1-<name>/
 ## Ledger Update
 
 - `docs/blueprint/next/README.md`: `Milestone path` points to the milestone folder only. `Work` is only `PENDING`, `IMPLEMENTING`, or `COMPLETED`.
-- Breakdown active: next ledger stays on the milestone folder and `Work` is `IMPLEMENTING`; `docs/tasks/README.md` or `milestone.md` points to `task-0-breakdown-*` when a governed breakdown change exists.
-- Reviewed task set ready: next ledger stays on the milestone folder and `Work` remains `IMPLEMENTING`; `milestone.md` names the first ready task and records the breakdown review/evidence.
+- Breakdown active: next ledger stays on the milestone folder and `Work` is `IMPLEMENTING`; the published milestone state remains `PLANNED` until the reviewed task set is complete.
+- Task set ready: next ledger stays on the milestone folder and `Work` remains `IMPLEMENTING`; `milestone.md` records `TASK_SET_READY`, task index, review evidence, and the first ready task.
 - Tasking: next ledger stays on the milestone folder and `Work` remains `IMPLEMENTING`; task-level recovery lives in `docs/tasks/README.md`, `milestone.md`, and the active task folder.

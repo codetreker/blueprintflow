@@ -29,8 +29,8 @@ Use the router for exact stage entry, but keep this mainline in view:
 ```text
 1. Setup: bf-runtime-adapter + bf-team-roles
 2. Shape: bf-brainstorm -> bf-blueprint-write
-3. Plan locked next scope: bf-blueprint-iteration -> bf-phase-plan (Phase -> Milestone + first task seed)
-4. Break down the selected milestone: bf-milestone-breakdown (reviewed task skeletons)
+3. Plan locked next scope: bf-blueprint-iteration -> bf-phase-plan (Phase -> Milestone)
+4. Review the selected milestone: bf-milestone-breakdown (execution readiness)
 5. Start task loop:
    bf-task-execute (bf-git-workflow -> bf-task-fourpiece -> bf-implementation-design
    -> implementation/current-doc sync -> bf-verification -> bf-pr-review-flow)
@@ -77,14 +77,14 @@ After the user names a concrete objective, load only the matching skill(s):
 | Fuzzy concept or unsettled stance | `bf-brainstorm` |
 | Write or revise product shape before next lock | `bf-blueprint-write` |
 | Select or lock next-blueprint anchors for execution planning | `bf-blueprint-iteration` |
-| Split locked next-blueprint anchors into execution Phases/Milestones, with task seed | `bf-phase-plan` |
-| Break a selected milestone into reviewed task skeletons | `bf-milestone-breakdown` |
+| Split locked next-blueprint anchors into execution Phases/Milestones | `bf-phase-plan` |
+| Review a selected milestone for execution readiness | `bf-milestone-breakdown` |
 | Create, repair, or review `docs/tasks` state | `bf-task-state-standard` |
 | Start or resume task work | `bf-task-execute` |
 | Design before coding | `bf-implementation-design` |
 | Create/update/review `docs/current` | `bf-current-doc-standard` |
 | Review or merge a task PR | `bf-pr-review-flow` |
-| Select next task or close a milestone | `bf-milestone-progress` |
+| Decide next task handoff or close a milestone | `bf-milestone-progress` |
 | Verify task acceptance evidence | `bf-verification` |
 | Triage new/untriaged GitHub issues | `bf-issue-triage` |
 | Read backlog / choose next work / open or resume next discussion | `bf-blueprint-iteration`, then `bf-team-roles` |
@@ -92,16 +92,16 @@ After the user names a concrete objective, load only the matching skill(s):
 | Cron/idle coordination | `bf-teamlead-fast-cron-checkin`, `bf-teamlead-role-reminder`, or `bf-teamlead-slow-cron-checkin` |
 | Close a Phase | `bf-phase-exit-gate` |
 
-Route backward when prerequisites are missing: if stances are unsettled, use `bf-brainstorm`; if next product shape is not locked for execution planning, use `bf-blueprint-write` or `bf-blueprint-iteration`; if Phase/Milestone planning is missing, use `bf-phase-plan`; if milestone task skeletons are missing or unreviewed, use `bf-milestone-breakdown`; if task state is inconsistent, use `bf-task-state-standard`; if a concrete task has not started, use `bf-task-execute` before implementation or PR review.
+Route backward when prerequisites are missing: if stances are unsettled, use `bf-brainstorm`; if next product shape is not locked for execution planning, use `bf-blueprint-write` or `bf-blueprint-iteration`; if Phase/Milestone planning is missing, use `bf-phase-plan`; if selected milestone readiness is missing or unreviewed, use `bf-milestone-breakdown`; if task state is inconsistent, use `bf-task-state-standard`; if a concrete task has not started, use `bf-task-execute` before implementation or PR review.
 
 ## Hard Rules
 
 - Blueprintflow controls Blueprintflow-scoped work; other process skills run only inside Blueprintflow role and stage boundaries.
 - `docs/blueprint/current/` is implemented and accepted only; planned or in-progress work stays in `docs/blueprint/next/`.
-- `docs/tasks/` is the next -> current execution path: Phase -> Milestone first, then reviewed task skeletons at milestone breakdown, then concrete task work.
+- `docs/tasks/` is the next -> current execution path: Phase -> Milestone first, then milestone readiness review, then concrete task work.
 - One task = one worktree = one branch = one PR.
 - `bf-task-execute` is the task-level orchestrator; `bf-git-workflow` owns only worktree/branch/PR lifecycle.
-- Next-blueprint anchors lock before Phase/Milestone planning; `bf-milestone-breakdown` creates reviewed task skeletons before task work; accepted work promotes to current only after coding and acceptance pass.
+- Next-blueprint anchors lock before Phase/Milestone planning; `bf-milestone-breakdown` reviews selected milestone readiness before task work; accepted work promotes to current only after coding and acceptance pass.
 - Teamlead is the sole PR opener/merger for Blueprintflow milestone work.
 - No cron, sleeper, or automation setup without a concrete objective or explicit ongoing-coordination request.
 - No closing role coordinators as task cleanup; treat them as long-lived teammates for the Blueprintflow session.

@@ -9,8 +9,8 @@ accepted current
 -> write/resume docs/blueprint/next + ledger
 -> lock selected anchors
 -> write source-issues.md
--> plan Phase -> Milestone + first task seed
--> break down selected milestone into reviewed task.md skeletons
+-> plan Phase -> Milestone
+-> review selected milestone readiness
 -> execute tasks through docs/tasks
 -> accept milestone/wave/Phase gates
 -> promote accepted scope to current
@@ -47,7 +47,7 @@ Resume from: <one concrete next action>
 |---|---|---|---|---|---|
 | RA-1 | Web-triggered configure | LOCKED | PENDING | docs/tasks/phase-6-remote-agent/milestone-2-web-config | run or resume from milestone.md |
 | RA-2 | Helper sandbox stance | OPEN | PENDING | - | resolve stance |
-| RA-3 | Helper boot/crash | LOCKED | IMPLEMENTING | docs/tasks/phase-6-remote-agent/milestone-3-helper-service | see docs/tasks for breakdown/task state |
+| RA-3 | Helper boot/crash | LOCKED | IMPLEMENTING | docs/tasks/phase-6-remote-agent/milestone-3-helper-service | see docs/tasks for readiness/task state |
 | RA-4 | Status and logs UI | LOCKED | IMPLEMENTING | docs/tasks/phase-6-remote-agent/milestone-4-operator-status | see docs/tasks for active task |
 | RA-5 | Configure job API | LOCKED | COMPLETED | docs/tasks/phase-6-remote-agent/milestone-2-web-config | promote to current or confirm current sync |
 | RA-6 | Enrollment status | LOCKED | COMPLETED | docs/tasks/phase-5-enrollment/milestone-1-status | none |
@@ -84,20 +84,18 @@ Rules:
 
 When one or more next anchors are `LOCKED`:
 - Run Phase/Milestone planning under `docs/tasks/`.
-- Require milestones, dependencies, acceptance boundaries, and first-milestone task seed.
-- Do not require complete task decomposition at lock time.
+- Require milestones, dependency boundaries, acceptance direction, and exit-gate direction.
+- Do not create task seeds or require task decomposition at lock time.
 - Do not promote to current.
 
 When a milestone is selected for execution:
-- Run milestone breakdown.
-- Create one task skeleton folder per task.
-- Create one `task.md` per task skeleton.
-- Keep `milestone.md` as index, dependency order, review summary, and first-ready pointer.
-- Publish the breakdown gate before task execution starts.
-- In governed-change projects, include the `IMPLEMENTING` next-ledger update in the same breakdown change when the breakdown is actively underway; leave the row `PENDING` when the milestone is planned but idle.
-- Do not start concrete task work in breakdown.
+- Run milestone readiness review.
+- Keep `milestone.md` as readiness evidence: scope boundary, acceptance direction, real dependency/conflict constraints, sensitivity/risk notes, blockers, and handoff direction.
+- Publish the readiness review before task execution starts.
+- In governed-change projects, include the `IMPLEMENTING` next-ledger update in the same readiness change when execution is actively being prepared; leave the row `PENDING` when the milestone is planned but idle.
+- Do not create task folders, `task.md` contracts, task dependency order, parallelism plans, or concrete task work in readiness review.
 
-Task work starts from the first ready task named in `milestone.md`.
+Task work starts when `bf-task-execute` creates or resumes a concrete task from the current milestone context.
 
 ## Promotion to current
 

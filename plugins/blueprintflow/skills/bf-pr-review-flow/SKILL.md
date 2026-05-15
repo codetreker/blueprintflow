@@ -51,7 +51,7 @@ Every PR is a task PR. Role artifacts are commits inside that task PR, not separ
 | Task content | Required reviewers before merge |
 |---|---|
 | Code implementation | Architect (architecture) + QA (acceptance) + Security |
-| Milestone breakdown / task skeletons | Architect + PM + QA + Dev + Security if any task is sensitive |
+| Milestone readiness review | Architect + PM + QA + Dev + Security if milestone scope is sensitive |
 | Spec-only task | Dev (executability) + QA (verifiability) + PM (stance) |
 | Stance / content-lock task | Architect + QA |
 | Acceptance / status-flip task | Architect + PM (if v0/v1 stance changes) |

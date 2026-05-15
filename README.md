@@ -2,7 +2,7 @@
 
 **多 Agent 协作做产品的工作流方法论。**
 
-从模糊概念到可发布软件，6 角色 + Teamlead 协议推进。`current` 只放已实现且验收通过的蓝图，`next` 承载锁定/实现中的蓝图，`tasks` 先记录 Phase → Milestone 计划，再做 milestone breakdown 生成 task skeleton，一 task 一 PR 闭环交付。
+从模糊概念到可发布软件，6 角色 + Teamlead 协议推进。`current` 只放已实现且验收通过的蓝图，`next` 承载锁定/实现中的蓝图，`tasks` 先记录 Phase -> Milestone 计划，再做 milestone readiness review，具体 task 在执行时从当前 milestone 上下文创建，一 task 一 PR 闭环交付。
 
 一个大 iteration 通常拆成不超过 3 个有依赖顺序的 Phase；每个 Phase 通常拆成不超过 3 个 user-facing Milestone；Task 才是执行和 PR 原子。Teamlead 是流程驱动者，衡量标准是流程有没有推进、team 有没有在 runtime capacity 内被充分使用。
 
@@ -23,7 +23,7 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 核心思想：
 
 - **蓝图状态分层** — `current` 是已实现验收，`next` 是待实现/实现中，`tasks` 是 next → current 的施工路径
-- **按价值闭环分期** — Phase 是大 iteration 内有依赖顺序的阶段，通常不超过 3 个，不按工种分期
+- **按依赖/集成边界分期** — Phase 是大 iteration 内有真实依赖或集成边界的阶段，通常不超过 3 个，不按工种分期
 - **按用户可见结果拆里程碑** — 每个 Phase 通常不超过 3 个 user-facing Milestone，Task 才是 PR 原子
 - **Teamlead 持续驱动** — 不等 cron；有人空闲就派活，恢复后按 notebook + source of truth 直接续推
 - **阶段性验收签字** — Phase 退出 4 联签 = 阶段验收报告
@@ -96,8 +96,8 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 | [bf-team-roles](plugins/blueprintflow/skills/bf-team-roles/SKILL.md) | 起团 | 6 个 role coordinator prompt 模板 + helper 边界 |
 | [bf-brainstorm](plugins/blueprintflow/skills/bf-brainstorm/SKILL.md) | 讨论 | 多轮讨论锁立场 + 反约束 |
 | [bf-blueprint-write](plugins/blueprintflow/skills/bf-blueprint-write/SKILL.md) | 立项 | 蓝图模板（立场 / 概念 / v0/v1 边界） |
-| [bf-phase-plan](plugins/blueprintflow/skills/bf-phase-plan/SKILL.md) | 规划 | locked next anchors 拆 Phase / Milestone + 首个 task seed + 退出 gate |
-| [bf-milestone-breakdown](plugins/blueprintflow/skills/bf-milestone-breakdown/SKILL.md) | 规划 | selected milestone 拆 reviewed task skeletons + `task.md` contract |
+| [bf-phase-plan](plugins/blueprintflow/skills/bf-phase-plan/SKILL.md) | 规划 | locked next anchors 拆 Phase / Milestone + 依赖边界 + 退出 gate |
+| [bf-milestone-breakdown](plugins/blueprintflow/skills/bf-milestone-breakdown/SKILL.md) | 规划 | selected milestone 做 execution readiness review，不预拆 task |
 | [bf-blueprint-iteration](plugins/blueprintflow/skills/bf-blueprint-iteration/SKILL.md) | 演进 | current/next/tasks 状态推进 + backlog intake + source trace |
 | [bf-task-state-standard](plugins/blueprintflow/skills/bf-task-state-standard/SKILL.md) | 实施 | `docs/tasks` 文件职责、resume ledger、task/milestone 状态标准 |
 | [bf-task-execute](plugins/blueprintflow/skills/bf-task-execute/SKILL.md) | 实施 | 单个 task 从 ready 到 accepted 的总控 |
@@ -124,8 +124,8 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 4. bf-brainstorm        — 多轮讨论锁立场
 5. bf-blueprint-write   — 落蓝图
 6. bf-blueprint-iteration — 已有 accepted current 后，写 source trace、锁定 next anchors
-7. bf-phase-plan        — 拆 Phase / Milestone + 首个 task seed
-8. bf-milestone-breakdown — selected milestone 拆 task skeleton + review
+7. bf-phase-plan        — 拆 Phase / Milestone + 依赖边界 + 退出 gate
+8. bf-milestone-breakdown — selected milestone readiness review
 9. (循环) bf-task-execute（内部串起 git workflow / fourpiece / design / current-doc / verification / PR review）
 10. bf-milestone-progress — accepted task 后选下一个 task 或关闭 milestone
 11. (巡检) bf-teamlead-fast-cron-checkin + bf-teamlead-slow-cron-checkin

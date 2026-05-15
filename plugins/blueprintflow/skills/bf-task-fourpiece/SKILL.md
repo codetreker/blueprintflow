@@ -1,6 +1,6 @@
 ---
 name: bf-task-fourpiece
-description: "Part of the Blueprintflow methodology. Use when a reviewed task.md exists, concrete task work is starting, and task baseline docs are missing."
+description: "Part of the Blueprintflow methodology. Use when bf-task-execute has created or confirmed task.md, concrete task work is starting, and task baseline docs are missing."
 ---
 
 # Task Four-Piece
@@ -15,9 +15,8 @@ If `using-plueprint` is not active, STOP here. Load `using-plueprint` with the u
 
 Use when all are true:
 
-- The milestone is `TASK_SET_READY` or the task is starting.
 - The task folder exists under `docs/tasks/<phase>/<milestone>/<task>/`.
-- `task.md` exists and was reviewed by milestone breakdown.
+- `task.md` exists and its contract review/confirmation was recorded by `bf-task-execute`.
 - The four-piece baseline docs do not exist or need repair before code starts.
 
 ## Outputs
@@ -46,7 +45,8 @@ Do not create `design.md`, implementation files, task PR state, worktree state, 
 
 ## Checks
 
-- Every four-piece file cites the relevant blueprint anchor or task contract section.
+- Every four-piece file cites the relevant blueprint anchor or `task.md` section.
+- `task.md` review/confirmation exists before baseline docs start.
 - `acceptance.md` has one checkable outcome per spec segment.
 - `stance.md` names what the task is not allowed to become.
 - `content-lock.md` is absent or explicit; no empty placeholder file.
@@ -55,7 +55,7 @@ Do not create `design.md`, implementation files, task PR state, worktree state, 
 ## Anti-patterns
 
 - Skipping one of the required baseline files.
-- Rewriting `task.md` inside this skill; send scope changes back to milestone breakdown.
+- Rewriting `task.md` inside this skill; send scope changes back to `bf-task-execute`.
 - Writing implementation design or code here.
 - Writing PR, worktree, branch, merge, or cleanup procedure here.
 - Treating a milestone as the task scope.

@@ -1,5 +1,19 @@
 # Changelog
 
+## v5.0.1 — 2026-05-15
+
+### Planning boundary clarification
+
+- Defined Phase planning as dependency/integration-boundary planning inside a major iteration, with default stop-and-question limits of 3 Phases per iteration and 3 Milestones per Phase.
+- Removed first-task-seed and task-skeleton generation from Phase/Milestone planning language.
+- Reframed `bf-milestone-breakdown` as selected-Milestone readiness review before task execution, without creating task folders or task contracts.
+- Clarified that `bf-task-execute` creates or confirms the concrete task from current Milestone context after readiness review passes.
+- Clarified that `bf-milestone-progress` hands subsequent task creation back to `bf-task-execute` instead of assuming pre-created future tasks.
+
+### Plugin version
+
+- `plugin.json` bumped `5.0.0` -> `5.0.1` (patch: planning-stage responsibility clarification).
+
 ## v5.0.0 — 2026-05-14
 
 ### Workflow entrypoint rename

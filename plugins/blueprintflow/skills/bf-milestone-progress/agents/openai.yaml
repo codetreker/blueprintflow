@@ -1,4 +1,4 @@
 interface:
   display_name: "bf-milestone-progress"
   short_description: "Blueprintflow: Advance and close milestones"
-  default_prompt: "Use $bf-milestone-progress to decide the next task handoff, close a milestone, or check Phase exit readiness."
+  default_prompt: "Use $bf-milestone-progress to select the next task, close a milestone, or check Phase exit readiness."

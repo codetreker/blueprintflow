@@ -7,8 +7,8 @@
 | Blueprint decision | `docs/blueprint/next/README.md` | Anchor, decision status, coarse work status, milestone path |
 | Phase resume | `docs/tasks/README.md` | Phase, status, exit condition, current milestone |
 | Active task resume | `docs/tasks/README.md` | Scope, execution, active task, owner, worktree/branch, PR, blocker, progress path |
-| Milestone resume | `docs/tasks/<phase>/<milestone>/milestone.md` | Readiness review before task execution; task index, real blockers/dependencies, and closure state after tasks start |
-| Task contract | `docs/tasks/<phase>/<milestone>/<task>/task.md` | Scope, anchors, out-of-scope, acceptance slice, dependencies, sensitive paths created or confirmed by `bf-task-execute` |
+| Milestone resume | `docs/tasks/<phase>/<milestone>/milestone.md` | Task index, dependency order, first ready task, blocked tasks, closure state |
+| Task contract | `docs/tasks/<phase>/<milestone>/<task>/task.md` | Scope, anchors, out-of-scope, acceptance slice, dependencies, sensitive paths |
 | Task progress | `docs/tasks/<phase>/<milestone>/<task>/progress.md` | Worktree/branch, PR, checkpoints, blockers, acceptance evidence, current sync |
 
 ## `docs/blueprint/next/README.md`
@@ -52,18 +52,14 @@ Required sections:
 
 ## Goal
 
-## Readiness Review
-
-| Role | Decision | Notes |
-|---|---|---|
-
-Blockers: <none or owner + required action>
-Handoff: <bf-task-execute direction>
-
 ## Task Index
 
 | Task | Status | Depends on | PR | Notes |
 |---|---|---|---|---|
+
+## Dependency Order
+
+## First Ready Task
 
 ## Blockers
 
@@ -71,48 +67,6 @@ Handoff: <bf-task-execute direction>
 ```
 
 Statuses: `PLANNED`, `READY`, `TASKING`, `READY_FOR_IMPL`, `IMPLEMENTING`, `ACCEPTING`, `ACCEPTED`, `DEFERRED`, `BLOCKED`.
-
-## `task.md`
-
-Required sections:
-
-```markdown
-# task-N-short-name
-
-Purpose:
-- <one user/value or system capability slice>
-
-Scope:
-- <included behavior/file/API/data slice>
-
-Out of scope:
-- <nearby behavior intentionally excluded>
-
-Depends on:
-- <task id or none>
-
-Blueprint anchors:
-- <anchor id / section>
-
-Acceptance slice:
-- <one or more checkable outcomes>
-
-Parallelism / conflicts:
-- <can run with / blocks / blocked by / unknown until execution>
-
-Sensitive paths:
-- <auth/privacy/credentials/dangerous-commands/remote-agent/admin/project-sensitive/none>
-
-## Task Contract Review
-
-| Role | Decision | Notes |
-|---|---|---|
-| Architect | pending | - |
-| PM | pending | - |
-| QA | pending | - |
-| Dev | pending | - |
-| Security | N/A or pending | required when sensitive paths are present |
-```
 
 ## `progress.md`
 
@@ -161,7 +115,6 @@ Decision: LGTM / HOLD / BLOCK
 - `PENDING` in next ledger means no active execution is happening for that anchor, even if Phase/Milestone planning exists.
 - `IMPLEMENTING` in next ledger means active planning, breakdown, task execution, review, acceptance, or Phase gate work is happening in `docs/tasks`.
 - `COMPLETED` in next ledger requires accepted scope ready for current promotion or already reflected in current; required milestone, wave, or Phase gates must be recorded.
-- Readiness review does not require a task folder or first ready task.
 - `TASKING` requires an Active Task Resume row and a task folder.
 - `READY_FOR_IMPL` requires four-piece baseline and reviewed `design.md` for code tasks.
 - `IMPLEMENTING` requires worktree/branch state in Active Task Resume or `progress.md`.

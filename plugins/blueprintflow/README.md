@@ -1,6 +1,6 @@
 # Blueprintflow Iteration Flow
 
-Status: package flow reference. Active child skills are the source of truth for stage procedure details.
+Status: next-generation design target. Use this document to design the upcoming child-skill rewrite. Current v4.0.1 skills still carry legacy `Decision` / `Work` / `LOCKED` state in some execution paths; the rewrite must bring those skills into this model before this file becomes the active runtime procedure.
 
 Blueprintflow turns selected sources into accepted current behavior through a dependency-ordered path:
 
@@ -10,7 +10,7 @@ source intake
 -> next blueprint anchors
 -> Phase planning
 -> Milestone planning
--> selected milestone readiness review
+-> selected milestone breakdown
 -> task execution loop
 -> milestone close
 -> Phase exit
@@ -37,7 +37,7 @@ flowchart TD
     K -->|PLANNED| L["Phase planning"]
     L --> M["Milestone planning"]
     M --> N["Select one milestone"]
-    N --> O["Milestone readiness review"]
+    N --> O["Milestone breakdown"]
     O --> P["Task execution loop"]
     P --> Q["Milestone close"]
     Q --> R{More required milestones?}
@@ -108,8 +108,9 @@ Read state values from the relevant owned row, not from logs or inferred file pr
 | Anchor planning | Anchor row `State = OPEN`. | Each anchor selected for execution has `State = PLANNED`. |
 | Phase planning | Anchor row `State = PLANNED`. | Each planned Phase row has `State = PLANNED`. |
 | Milestone planning | Phase row exists for the target scope. | Each Milestone row under the target Phase has `State = PLANNED`. |
-| Milestone readiness review | Phase/Milestone plan exists and the Milestone is selected for execution. | `milestone.md` records readiness evidence, blockers, and handoff direction. |
-| Task execution | Task work is created or resumed from current milestone context. | Each executed Task row reaches `State = ACCEPTED`. |
+| Milestone selection | Milestone row `State = PLANNED` and dependencies are satisfied. | One dependency-ready Milestone row has `State = SELECTED`. |
+| Milestone breakdown | Milestone row `State = SELECTED`. | The selected Milestone row has `State = TASK_SET_READY`. |
+| Task execution | Task row is ready for execution. | Each executed Task row reaches `State = ACCEPTED`. |
 | Milestone close | Required task rows have `State = ACCEPTED`. | The target Milestone row has `State = ACCEPTED`. |
 | Phase exit | Required Milestone rows have `State = ACCEPTED`. | The target Phase row has `State = ACCEPTED`. |
 | Current promotion | Phase row `State = ACCEPTED`. | Corresponding next anchor rows have `State = COMPLETED`. |
@@ -121,5 +122,5 @@ Runtime state belongs to object rows: anchor, Phase, Milestone, and Task. Source
 - Phase is a dependency-ordered stage inside one major iteration. Default to no more than 3 Phases.
 - Milestone is a user-facing deliverable inside a Phase. Default to no more than 3 Milestones per Phase.
 - Task is the execution and PR atom. One task uses one worktree, one branch, and one PR.
-- Milestone readiness review runs for one selected milestone at a time and does not pre-split tasks.
+- Milestone breakdown runs for one selected milestone at a time.
 - Parallel work is valid inside a stage when dependencies are clear and the owning plan records the safe parallelism.

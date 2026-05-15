@@ -1,15 +1,13 @@
 # State and Files
 
-## Ledger Boundary
+## `docs/tasks` State Meanings
 
-Milestone readiness review uses existing ledgers only:
-
-- `docs/blueprint/next/README.md` keeps `Milestone path` at the milestone folder.
-- `docs/blueprint/next/README.md` `Work` is `PENDING` when the milestone is planned but idle, or `IMPLEMENTING` when execution is actively being prepared or run.
-- `milestone.md` records readiness review evidence, blocker owner, and handoff direction.
-- Concrete task state begins only when `bf-task-execute` creates or resumes a task from current milestone context.
-
-Do not add milestone breakdown states such as `BREAKING_DOWN`, `TASK_SET_READY`, or `TASKING` for readiness review.
+| State | Checkable meaning |
+|---|---|
+| `PLANNED` | `phase-plan.md` and `milestone.md` exist; task skeletons are not reviewed yet |
+| `BREAKING_DOWN` | Breakdown change is in progress, or task skeletons, review, evidence, or publication are incomplete |
+| `TASK_SET_READY` | Breakdown gate passed and published; every task skeleton folder has `task.md`; `milestone.md` names dependency order, first ready task, review result, and publication evidence |
+| `TASKING` | A concrete task has entered `bf-task-execute`; task-level planning, progress, or implementation work is active |
 
 ## File Timeline
 
@@ -26,22 +24,25 @@ After `bf-milestone-breakdown`:
 
 ```text
 docs/tasks/<phase>/<milestone>/
-└── milestone.md          # includes readiness review
+├── milestone.md
+├── task-0-breakdown-<milestone>/
+│   └── breakdown.md
+├── task-1-<name>/
+│   └── task.md
+└── task-2-<name>/
+    └── task.md
 ```
 
-Readiness review does not create `task-0-breakdown-*`, `task-N-*`, `task.md`, `breakdown.md`, or `progress.md` files.
+`task-0-breakdown-<milestone>/` is a planning task folder only when the project requires governed breakdown docs changes. It owns the breakdown publication record; it is not a product task and does not receive four-piece files.
 
-`milestone.md` readiness review contains:
+`breakdown.md` contains:
 
-- readiness reviewer decisions
-- scope boundary and acceptance direction
-- real dependency or conflict constraints known now
-- sensitive areas and risk notes
-- blockers with owner and required action
+- breakdown change owner
+- links to changed `milestone.md` and task skeleton folders
 - review status summary
-- handoff direction for `bf-task-execute`
+- handoff to first ready task
 
-Readiness passes only when reviewer decisions are recorded, no unresolved blocker remains, and the handoff direction tells `bf-task-execute` where to create or resume concrete task work. It does not name a first ready task.
+Do not create `progress.md` for `task-0-breakdown-*`; use `breakdown.md`.
 
 After one task starts:
 
@@ -58,6 +59,6 @@ docs/tasks/<phase>/<milestone>/task-1-<name>/
 ## Ledger Update
 
 - `docs/blueprint/next/README.md`: `Milestone path` points to the milestone folder only. `Work` is only `PENDING`, `IMPLEMENTING`, or `COMPLETED`.
-- Readiness active: next ledger stays on the milestone folder and `Work` is `IMPLEMENTING`; `milestone.md` records review evidence and blockers.
-- Readiness passed: next ledger stays on the milestone folder and `Work` remains `IMPLEMENTING`; `milestone.md` records handoff direction, not a first ready task.
-- Task execution: next ledger stays on the milestone folder and `Work` remains `IMPLEMENTING`; task-level recovery lives in `docs/tasks/README.md`, `milestone.md`, and the active task folder after `bf-task-execute` creates or resumes the task.
+- Breakdown active: next ledger stays on the milestone folder and `Work` is `IMPLEMENTING`; `docs/tasks/README.md` or `milestone.md` points to `task-0-breakdown-*` when a governed breakdown change exists.
+- Reviewed task set ready: next ledger stays on the milestone folder and `Work` remains `IMPLEMENTING`; `milestone.md` names the first ready task and records the breakdown review/evidence.
+- Tasking: next ledger stays on the milestone folder and `Work` remains `IMPLEMENTING`; task-level recovery lives in `docs/tasks/README.md`, `milestone.md`, and the active task folder.

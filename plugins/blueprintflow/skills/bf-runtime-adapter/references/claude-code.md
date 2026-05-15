@@ -41,7 +41,7 @@ Every teammate = independent Claude Code process (`claude --agent-id <name>@<tea
 | Notify \<Role\> | `SendMessage("role_name", content)` |
 | Create worktree | `git worktree add .worktrees/<task> -b feat/<task> origin/main` |
 | Commit code | `git add && git commit && git push` in worktree |
-| Start fast-cron | `CronCreate({cron: "<project fast-checkin cron>", prompt: "...", durable: false})` |
+| Start role reminder | `CronCreate({cron: "<project role-reminder cron>", prompt: "...", durable: false})` |
 | Start slow-cron | `CronCreate({cron: "<project slow-drift cron>", prompt: "...", durable: false})` |
 | Check role status | tmux pane output / `SendMessage` |
 | Open PR | `gh pr create` (Teamlead only) |
@@ -130,7 +130,7 @@ Single Claude Code session, no team mode.
 | Notify \<Role\> | Not needed — single session switches roles serially |
 | Create worktree | `git worktree add .worktrees/<task> -b feat/<task> origin/main` |
 | Commit code | `git add && git commit && git push` in worktree |
-| Start fast-cron | `CronCreate({cron: "<project fast-checkin cron>", ...})` — current session runs self-check |
+| Start role reminder | `CronCreate({cron: "<project role-reminder cron>", ...})` — current session runs self-check |
 | Start slow-cron | `CronCreate({cron: "<project slow-drift cron>", ...})` — current session runs drift audit |
 | Check role status | Not needed — you are all the roles |
 | Open PR | `gh pr create` |

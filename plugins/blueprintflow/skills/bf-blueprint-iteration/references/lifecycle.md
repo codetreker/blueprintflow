@@ -9,10 +9,8 @@ accepted current
 -> write/resume docs/blueprint/next + ledger
 -> lock selected anchors
 -> write source-issues.md
--> plan Phase -> Milestone
--> break down selected milestone into reviewed task.md skeletons
--> execute tasks through docs/tasks
--> accept milestone/wave/Phase gates
+-> hand off locked scope to bf-phase-plan
+-> downstream execution completes accepted scope
 -> promote accepted scope to current
 -> tag blueprint-vN.M and mark next rows COMPLETED
 ```
@@ -29,8 +27,8 @@ accepted current
 Rules:
 - After backlog selection, stop using GitHub labels as workflow state.
 - Preserve selected issue numbers in `source-issues.md` and task/PR references.
-- Recover anchor/milestone state from `docs/blueprint/next/README.md`.
-- Recover task state from `docs/tasks/README.md`, `milestone.md`, and task folders.
+- Recover next/current state from `docs/blueprint/next/README.md` and `docs/blueprint/current/`.
+- Recover active execution state through `docs/tasks` skills; return here only for scope changes, reopened anchors, or accepted-scope promotion.
 
 ## Next status ledger
 
@@ -45,10 +43,10 @@ Resume from: <one concrete next action>
 
 | Anchor | Topic | Decision | Work | Milestone path | Next action |
 |---|---|---|---|---|---|
-| RA-1 | Web-triggered configure | LOCKED | PENDING | docs/tasks/phase-6-remote-agent/milestone-2-web-config | run or resume from milestone.md |
+| RA-1 | Web-triggered configure | LOCKED | PENDING | - | hand off to `bf-phase-plan` |
 | RA-2 | Helper sandbox stance | OPEN | PENDING | - | resolve stance |
-| RA-3 | Helper boot/crash | LOCKED | IMPLEMENTING | docs/tasks/phase-6-remote-agent/milestone-3-helper-service | see docs/tasks for breakdown/task state |
-| RA-4 | Status and logs UI | LOCKED | IMPLEMENTING | docs/tasks/phase-6-remote-agent/milestone-4-operator-status | see docs/tasks for active task |
+| RA-3 | Helper boot/crash | LOCKED | IMPLEMENTING | docs/tasks/phase-6-remote-agent/milestone-3-helper-service | see `docs/tasks/README.md` |
+| RA-4 | Status and logs UI | LOCKED | IMPLEMENTING | docs/tasks/phase-6-remote-agent/milestone-4-operator-status | see `docs/tasks/README.md` |
 | RA-5 | Configure job API | LOCKED | COMPLETED | docs/tasks/phase-6-remote-agent/milestone-2-web-config | promote to current or confirm current sync |
 | RA-6 | Enrollment status | LOCKED | COMPLETED | docs/tasks/phase-5-enrollment/milestone-1-status | none |
 ```
@@ -83,21 +81,21 @@ Rules:
 ## After Lock
 
 When one or more next anchors are `LOCKED`:
-- Run Phase/Milestone planning under `docs/tasks/`.
-- Require milestones, dependencies, and acceptance boundaries.
+- Hand off to `bf-phase-plan` for downstream execution planning.
 - Do not require complete task decomposition at lock time.
 - Do not promote to current.
 
-When a milestone is selected for execution:
-- Run milestone breakdown.
-- Create one task skeleton folder per task.
-- Create one `task.md` per task skeleton.
-- Keep `milestone.md` as index, dependency order, review summary, and first-ready pointer.
-- Publish the breakdown gate before task execution starts.
-- In governed-change projects, include the `IMPLEMENTING` next-ledger update in the same breakdown change when the breakdown is actively underway; leave the row `PENDING` when the milestone is planned but idle.
-- Do not start concrete task work in breakdown.
+Return to `bf-blueprint-iteration` only when scope changes, anchors reopen, or accepted downstream scope is ready for current promotion.
 
-Task work starts from the first ready task named in `milestone.md`.
+## Scope Changes
+
+Use this only after a downstream owner decides execution cannot continue inside the locked scope.
+
+1. Record the downstream decision source: task/milestone/Phase path, PR or evidence link, owner, and reason.
+2. If the blueprint stance changed or the locked anchor is no longer valid, mark the affected next row `REOPENED` and reopen the next blueprint section for discussion.
+3. If only part of the locked scope should move later, keep the accepted/active anchor locked and create or update a backlog/future-scope trace for the remainder.
+4. If the scope split changes execution ownership, update only the coarse next ledger fields this skill owns: anchor rows, `Work`, `Milestone path`, and `Next action`.
+5. Hand the revised locked scope back to `bf-phase-plan` or the relevant `docs/tasks` skill. Do not repair task files here.
 
 ## Promotion to current
 
@@ -114,15 +112,3 @@ Then:
 - Mark corresponding next ledger rows `COMPLETED`.
 
 Use [promotion-checklist.md](promotion-checklist.md) for the promotion procedure.
-
-## Stuck-task safety net
-
-Stuck signal:
-- Missed explicit checkpoint in `progress.md` / `Active Task Resume`.
-- No state change across the project-defined stuck threshold.
-- LLM default: two fast check-ins with no owner output, no blocker update, and no artifact change.
-
-When stuck:
-- Architect + PM choose one: split task, reopen next anchor, or move remainder to future backlog.
-- Update `docs/tasks/README.md` and the coarse next ledger if scope changes.
-- Do not drag the whole milestone or Phase indefinitely.

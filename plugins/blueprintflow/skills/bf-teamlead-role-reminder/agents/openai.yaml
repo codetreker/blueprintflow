@@ -1,4 +1,4 @@
 interface:
   display_name: "bf-teamlead-role-reminder"
-  short_description: "Blueprintflow: Reassert Teamlead boundaries"
-  default_prompt: "Use $bf-teamlead-role-reminder to remind the Teamlead to coordinate instead of doing leaf work."
+  short_description: "Blueprintflow: Teamlead active-work wake-up"
+  default_prompt: "Use $bf-teamlead-role-reminder to route active work, check utilization, and keep Teamlead out of leaf work."

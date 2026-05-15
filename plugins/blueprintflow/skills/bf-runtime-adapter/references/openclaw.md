@@ -19,7 +19,7 @@ Shared file system with other agents?
 | Notify \<Role\> | `sessions_send(sessionKey, message)` |
 | Create worktree | `exec("git worktree add .worktrees/<task> -b feat/<task> origin/main")` |
 | Commit code | `exec("git add -A && git commit && git push")` in worktree |
-| Start fast-cron | `exec('openclaw cron add --cron "<project fast-checkin cron>" --message "<prompt>" --to <channel-id>')` |
+| Start role reminder | `exec('openclaw cron add --cron "<project role-reminder cron>" --message "<prompt>" --to <channel-id>')` |
 | Start slow-cron | `exec('openclaw cron add --cron "<project slow-drift cron>" --message "<prompt>" --to <channel-id>')` |
 | Check role status | `sessions_list` / `sessions_history` |
 | Open PR | `exec("gh pr create")` (Teamlead only) |
@@ -36,7 +36,7 @@ Shared file system with other agents?
 | Notify \<Role\> | `message(action=send, target=<channel-id>, message=content)` |
 | Create worktree | Each agent uses `.worktrees/<task>` on the same `feat/<task>` branch, sync via push/pull |
 | Commit code | Local commit + push; others pull |
-| Start fast-cron | `exec('openclaw cron add --cron "<project fast-checkin cron>" --message "<prompt>" --to <channel-id>')` |
+| Start role reminder | `exec('openclaw cron add --cron "<project role-reminder cron>" --message "<prompt>" --to <channel-id>')` |
 | Start slow-cron | `exec('openclaw cron add --cron "<project slow-drift cron>" --message "<prompt>" --to <channel-id>')` |
 | Check role status | Channel message history / `message(action=read)` |
 | Open PR | `exec("gh pr create")` (Teamlead only) |

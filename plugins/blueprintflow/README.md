@@ -10,7 +10,7 @@ source intake
 -> next blueprint anchors
 -> Phase planning
 -> Milestone planning
--> selected milestone breakdown
+-> milestone breakdown into task.md boundaries
 -> task execution loop
 -> milestone close
 -> Phase exit
@@ -109,8 +109,8 @@ Read state values from the relevant owned row, not from logs or inferred file pr
 | Phase planning | Anchor row `State = PLANNED`. | Each planned Phase row has `State = PLANNED`. |
 | Milestone planning | Phase row exists for the target scope. | Each Milestone row under the target Phase has `State = PLANNED`. |
 | Milestone selection | Milestone row `State = PLANNED` and dependencies are satisfied. | One dependency-ready Milestone row has `State = SELECTED`. |
-| Milestone breakdown | Milestone row `State = SELECTED`. | The selected Milestone row has `State = TASK_SET_READY`. |
-| Task execution | Task row is ready for execution. | Each executed Task row reaches `State = ACCEPTED`. |
+| Milestone breakdown | Milestone row `State = SELECTED`. | The selected Milestone row has `State = TASK_SET_READY` and reviewed `task.md` boundaries. |
+| Task execution | Milestone row has `State = TASK_SET_READY` or task row is active. | Each executed Task row reaches `State = ACCEPTED`. |
 | Milestone close | Required task rows have `State = ACCEPTED`. | The target Milestone row has `State = ACCEPTED`. |
 | Phase exit | Required Milestone rows have `State = ACCEPTED`. | The target Phase row has `State = ACCEPTED`. |
 | Current promotion | Phase row `State = ACCEPTED`. | Corresponding next anchor rows have `State = COMPLETED`. |
@@ -122,5 +122,5 @@ Runtime state belongs to object rows: anchor, Phase, Milestone, and Task. Source
 - Phase is a dependency-ordered stage inside one major iteration. Default to no more than 3 Phases.
 - Milestone is a user-facing deliverable inside a Phase. Default to no more than 3 Milestones per Phase.
 - Task is the execution and PR atom. One task uses one worktree, one branch, and one PR.
-- Milestone breakdown runs for one selected milestone at a time.
+- Milestone breakdown runs for one selected milestone at a time and creates boundary-level `task.md` files only.
 - Parallel work is valid inside a stage when dependencies are clear and the owning plan records the safe parallelism.

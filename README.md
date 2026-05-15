@@ -2,7 +2,7 @@
 
 **多 Agent 协作做产品的工作流方法论。**
 
-从模糊概念到可发布软件，6 角色 + Teamlead 协议推进。`current` 只放已实现且验收通过的蓝图，`next` 承载锁定/实现中的蓝图，`tasks` 先记录 Phase → Milestone 计划，再做 milestone breakdown 生成 task skeleton，一 task 一 PR 闭环交付。
+从模糊概念到可发布软件，6 角色 + Teamlead 协议推进。`current` 只放已实现且验收通过的蓝图，`next` 承载锁定/实现中的蓝图，`tasks` 先记录 Phase → Milestone 计划，再由 milestone breakdown 生成边界级 `task.md`，之后一 task 一 PR 闭环交付。
 
 一个大 iteration 通常拆成不超过 3 个有依赖顺序的 Phase；每个 Phase 通常拆成不超过 3 个 user-facing Milestone；Task 才是执行和 PR 原子。Teamlead 是流程驱动者，衡量标准是流程有没有推进、team 有没有在 runtime capacity 内被充分使用。
 
@@ -71,7 +71,7 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 │      ↓
 ├─ 实施层 ──────── bf-task-execute + bf-git-workflow + bf-task-fourpiece + bf-verification + bf-pr-review-flow
 │      ↓
-└─ 协调层 ──────── bf-teamlead-fast-cron-checkin + bf-teamlead-slow-cron-checkin + bf-phase-exit-gate
+└─ 协调层 ──────── bf-teamlead-role-reminder + bf-teamlead-slow-cron-checkin + bf-phase-exit-gate
 ```
 
 ## 适用场景
@@ -97,18 +97,17 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 | [bf-brainstorm](plugins/blueprintflow/skills/bf-brainstorm/SKILL.md) | 讨论 | 多轮讨论锁立场 + 反约束 |
 | [bf-blueprint-write](plugins/blueprintflow/skills/bf-blueprint-write/SKILL.md) | 立项 | 蓝图模板（立场 / 概念 / v0/v1 边界） |
 | [bf-phase-plan](plugins/blueprintflow/skills/bf-phase-plan/SKILL.md) | 规划 | locked next anchors 拆 Phase / Milestone + 退出 gate |
-| [bf-milestone-breakdown](plugins/blueprintflow/skills/bf-milestone-breakdown/SKILL.md) | 规划 | selected milestone 拆 reviewed task skeletons + `task.md` contract |
-| [bf-blueprint-iteration](plugins/blueprintflow/skills/bf-blueprint-iteration/SKILL.md) | 演进 | current/next/tasks 状态推进 + backlog intake + source trace |
+| [bf-milestone-breakdown](plugins/blueprintflow/skills/bf-milestone-breakdown/SKILL.md) | 规划 | selected milestone 生成 reviewed task.md 边界 |
+| [bf-blueprint-iteration](plugins/blueprintflow/skills/bf-blueprint-iteration/SKILL.md) | 演进 | current/next 状态、backlog intake、source trace、accepted scope promotion |
 | [bf-task-state-standard](plugins/blueprintflow/skills/bf-task-state-standard/SKILL.md) | 实施 | `docs/tasks` 文件职责、resume ledger、task/milestone 状态标准 |
-| [bf-task-execute](plugins/blueprintflow/skills/bf-task-execute/SKILL.md) | 实施 | 单个 task 从 ready 到 accepted 的总控 |
+| [bf-task-execute](plugins/blueprintflow/skills/bf-task-execute/SKILL.md) | 实施 | 推进一个 reviewed task.md 到 accepted 的总控 |
 | [bf-task-fourpiece](plugins/blueprintflow/skills/bf-task-fourpiece/SKILL.md) | 实施 | task 4 件套（spec / stance / acceptance / content-lock） |
 | [bf-implementation-design](plugins/blueprintflow/skills/bf-implementation-design/SKILL.md) | 实施 | 4 件套后写代码前 Dev 出实现方案设计 + 4 角色 review |
 | [bf-git-workflow](plugins/blueprintflow/skills/bf-git-workflow/SKILL.md) | 实施 | 一 task 一 worktree 一 PR |
 | [bf-current-doc-standard](plugins/blueprintflow/skills/bf-current-doc-standard/SKILL.md) | 实施/Review | `docs/current` 新建、更新、审查的当前实现文档标准 |
 | [bf-pr-review-flow](plugins/blueprintflow/skills/bf-pr-review-flow/SKILL.md) | Review | 双 review + 标准 squash merge |
 | [bf-verification](plugins/blueprintflow/skills/bf-verification/SKILL.md) | Review | QA 验收证据：UI/API/data/CLI/background 按对应 reference 验证；UI 保留三线 E2E 检查 |
-| [bf-teamlead-fast-cron-checkin](plugins/blueprintflow/skills/bf-teamlead-fast-cron-checkin/SKILL.md) | 巡检 | 项目定义 cadence 的 active-work 派活 |
-| [bf-teamlead-role-reminder](plugins/blueprintflow/skills/bf-teamlead-role-reminder/SKILL.md) | 巡检 | 项目定义 cadence 的 Teamlead 职责自检 |
+| [bf-teamlead-role-reminder](plugins/blueprintflow/skills/bf-teamlead-role-reminder/SKILL.md) | 巡检 | 项目定义 cadence 的 active-work wake-up、Teamlead 职责自检和并行推进 |
 | [bf-teamlead-slow-cron-checkin](plugins/blueprintflow/skills/bf-teamlead-slow-cron-checkin/SKILL.md) | 巡检 | 项目定义 cadence 的偏差 audit |
 | [bf-issue-triage](plugins/blueprintflow/skills/bf-issue-triage/SKILL.md) | 巡检 | 项目定义 cadence 扫 GitHub issues, Teamlead 先判分发到 Architect/PM/QA |
 | [bf-milestone-progress](plugins/blueprintflow/skills/bf-milestone-progress/SKILL.md) | 推进 | task accepted 后选下一个 task、关闭 milestone、检查 Phase exit readiness |
@@ -125,10 +124,10 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 5. bf-blueprint-write   — 落蓝图
 6. bf-blueprint-iteration — 已有 accepted current 后，写 source trace、锁定 next anchors
 7. bf-phase-plan        — 拆 Phase / Milestone + 退出 gate
-8. bf-milestone-breakdown — selected milestone 拆 task skeleton + review
+8. bf-milestone-breakdown — selected milestone task.md boundary review
 9. (循环) bf-task-execute（内部串起 git workflow / fourpiece / design / current-doc / verification / PR review）
 10. bf-milestone-progress — accepted task 后选下一个 task 或关闭 milestone
-11. (巡检) bf-teamlead-fast-cron-checkin + bf-teamlead-slow-cron-checkin
+11. (巡检) bf-teamlead-role-reminder + bf-teamlead-slow-cron-checkin
 12. (收尾) bf-phase-exit-gate
 ```
 

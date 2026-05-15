@@ -22,7 +22,7 @@ Concrete objectives include:
 - Open or resume `docs/blueprint/next/` with status anchors.
 - Lock selected next-blueprint anchors for execution.
 - Promote accepted next work into current after coding and acceptance are complete.
-- Repair or review blueprint/task state before resuming interrupted execution.
+- Repair or review current/next ledger state before resuming blueprint iteration.
 
 Standby response:
 
@@ -38,7 +38,7 @@ Tell me which blueprint iteration objective to coordinate.
 |---|---|---|
 | Current | `docs/blueprint/current/` | Implemented, coding complete, accepted, and user-verifiable |
 | Next | `docs/blueprint/next/` | Locked or in-discussion blueprint work that is not yet accepted into current |
-| Tasks | `docs/tasks/` | The execution path from next to current: Phase -> Milestone plan, reviewed task skeletons, task execution, milestone progress |
+| Tasks | `docs/tasks/` | Downstream execution path owned by task/phase skills |
 | Backlog intake | GitHub issues with `backlog` label | Input scanned only when opening a next selection round |
 
 The states do not mix. `current` is never a plan. `next` is where not-yet-accepted blueprint work lives. `tasks` records how locked `next` anchors become accepted `current` behavior. GitHub backlog issues are intake records, not the ongoing workflow state after selection. Cross-version metadata and traceability files live in `docs/blueprint/_meta/`.
@@ -57,17 +57,14 @@ Work transition criteria:
 | Status | Checkable meaning |
 |---|---|
 | `PENDING` | No active execution is happening for this anchor. Discussion, lock, Phase/Milestone planning, or ready-but-not-started work may exist. Details live in `docs/tasks` if a milestone path exists |
-| `IMPLEMENTING` | The anchor has active planning, breakdown, task execution, review, acceptance, or Phase gate work in `docs/tasks` |
+| `IMPLEMENTING` | The anchor has active downstream work in `docs/tasks` |
 | `COMPLETED` | The accepted scope is ready for current promotion or has already been reflected in `docs/blueprint/current/` |
 
 Rules:
 - Only `LOCKED` anchors may be planned into `docs/tasks/`.
 - `OPEN` or `REOPENED` anchors stay in discussion and cannot start implementation.
 - If one topic is half decided, split it into smaller anchors so the locked parts can move while open questions remain visible.
-- Blueprint lock does not require a complete task split or Phase/Milestone plan in advance. After anchors lock, `bf-phase-plan` records the Phase/Milestone plan.
-- `bf-milestone-breakdown` creates reviewed task skeleton folders and `task.md` contracts before concrete task work starts.
-- Skeleton task folders do not mean task execution has started; task-level state lives in `docs/tasks/README.md`, `milestone.md`, and task folders.
-- Each resulting task still owns one worktree, one branch, and one PR when that task starts.
+- Blueprint lock does not require a task split or Phase/Milestone plan in advance. After anchors lock, hand off to `bf-phase-plan`; return here only for scope changes, reopened anchors, or accepted-scope promotion.
 - `COMPLETED` means code is complete, acceptance passed, and required milestone, wave, or Phase gates are recorded; only then may the accepted scope be promoted to `current`.
 
 ## Version numbers
@@ -93,7 +90,7 @@ The implemented version lives in `docs/blueprint/current/` frontmatter (`accepte
 
 When the current implemented work passes acceptance, the next selection round can open. Its intake is **GitHub issues labeled `backlog`** — scan them once to decide what gets pulled into `docs/blueprint/next/`. After selection, ongoing state lives in `next` and `tasks`, not issue labels.
 
-After the user names a concrete iteration objective, read `references/lifecycle.md` for the full flow: scan backlog → write/resume `docs/blueprint/next/` with a status ledger → lock anchors → plan `docs/tasks` as Phase -> Milestone → run `bf-milestone-breakdown` for reviewed task skeletons → run `bf-task-execute` one task per PR → run `bf-milestone-progress` after accepted tasks → promote accepted scope into `docs/blueprint/current/`. Use [references/promotion-checklist.md](references/promotion-checklist.md) for accepted-scope promotion. Reminder period is project-defined in `AGENTS.md`.
+After the user names a concrete iteration objective, read `references/lifecycle.md` for the current/next/backlog/promotion flow. Use [references/promotion-checklist.md](references/promotion-checklist.md) for accepted-scope promotion. Reminder period is project-defined in `AGENTS.md`.
 
 ## Anti-patterns
 
@@ -101,7 +98,7 @@ After the user names a concrete iteration objective, read `references/lifecycle.
 - ❌ Patch PR without `Closes gh#NNN` (root-cause chain breaks)
 - ❌ Moving unimplemented or unaccepted work into `docs/blueprint/current/`
 - ❌ Using GitHub `current-iteration` / `next-iteration` labels as the ongoing workflow state after selection
-- ❌ Stuck task dragging the whole milestone or Phase (split it or reopen the anchor)
+- ❌ Managing task execution here instead of returning only for scope changes, reopened anchors, or accepted-scope promotion
 - ❌ Cramming many current patches that are actually a new next-blueprint stance
 - ❌ Opening next selection without scanning `backlog` issues first (cleanup window missed)
 
@@ -112,8 +109,6 @@ follow skill bf-blueprint-iteration
 
 # No objective named → standby, ask which iteration objective to coordinate
 # Current accepted → scan backlog → open/resume docs/blueprint/next/
-# docs/blueprint/next/ anchors lock → plan docs/tasks/ Phase -> Milestone
-# selected milestone → bf-milestone-breakdown creates reviewed task skeletons
-# task starts → one task = one worktree + one branch + one PR
-# accepted task/phase scope → promote to docs/blueprint/current/ + tag/meta
+# docs/blueprint/next/ anchors lock → hand off to bf-phase-plan
+# accepted downstream scope or scope change → promote/reopen/update current here
 ```

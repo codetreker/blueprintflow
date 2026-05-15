@@ -2,7 +2,7 @@
 
 GitHub issues are the intake SSOT. This skill defines the gate: cron scans → Teamlead routes → roles classify → issue becomes either an immediate task candidate or a backlog candidate.
 
-Runs in parallel to fast-cron (PR dimension) and slow-cron (drift dimension) — this is the **issue dimension**.
+Runs in parallel to role-reminder active coordination and slow-cron drift audit — this is the **issue dimension**.
 
 Before routing issue work, read the Teamlead notebook at `~/.blueprint/<repo-dir>/teamlead.md` using `using-plueprint/references/teamlead-notebook.md`. After assigning role follow-up, dispatching a patch milestone, or flagging a stuck issue, update the notebook in the same turn.
 
@@ -116,7 +116,7 @@ Every backlog issue must contain:
 - No automatic cleanup — manual scan every time next selection opens
 - Bugfix issues must link `Closes gh#NNN` (bidirectional traceability)
 
-issue-triage owns the **entry gate**; `bf-blueprint-iteration` owns selection, next status tracking, task split, acceptance promotion, tags, and `source-issues.md`.
+issue-triage owns the **entry gate**; `bf-blueprint-iteration` owns selection, next status tracking, accepted-scope promotion, tags, and `source-issues.md`.
 
 ## Triage flow example
 
@@ -142,7 +142,7 @@ issue-triage:
 
 | Skill | Dimension | Frequency |
 |---|---|---|
-| fast-cron | PR | project-defined |
+| role-reminder | Active coordination | project-defined |
 | slow-cron | Drift | project-defined |
 | issue-triage | Issue | project-defined |
 

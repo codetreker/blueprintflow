@@ -1,6 +1,6 @@
 ---
 name: bf-pr-review-flow
-description: "Part of the Blueprintflow methodology. Use when a task PR is open, under review, blocked, ready for merge, or needs standard Blueprintflow merge-gate handling."
+description: "Part of the Blueprintflow methodology. Use when a task PR or milestone breakdown PR is open, under review, blocked, ready for merge, or needs standard Blueprintflow merge-gate handling."
 ---
 
 # PR Review Flow
@@ -46,12 +46,14 @@ Missing fields → lint red. Fix through lint patch flow, don't bypass.
 
 ## Required reviews
 
-Every PR is a task PR. Role artifacts are commits inside that task PR, not separate PR types.
+Every execution PR is a task PR. Role artifacts are commits inside that task PR, not separate PR types.
+
+Milestone breakdown PRs are the narrow planning/boundary exception: they publish reviewed task folders and boundary-level `task.md` files for one selected milestone. They must not create `task-0-breakdown-*`, four-piece files, `design.md`, `progress.md`, implementation, worktree state, or task acceptance evidence.
 
 | Task content | Required reviewers before merge |
 |---|---|
 | Code implementation | Architect (architecture) + QA (acceptance) + Security |
-| Milestone breakdown / task skeletons | Architect + PM + QA + Dev + Security if any task is sensitive |
+| Milestone breakdown review | Architect + PM + QA + Dev + Security if any task is sensitive |
 | Spec-only task | Dev (executability) + QA (verifiability) + PM (stance) |
 | Stance / content-lock task | Architect + QA |
 | Acceptance / status-flip task | Architect + PM (if v0/v1 stance changes) |
@@ -79,7 +81,18 @@ For code changes, task completeness includes `docs/current` sync. QA verifies ex
 
 All three pass → `gh pr merge <N> --squash --delete-branch`. Any missing reviewer, red CI, or unchecked item → don't merge.
 
-Detailed merge gate protocol in `bf-teamlead-fast-cron-checkin` references/execution.md §5.
+Merge-gate decisions stay in this skill. Fast-cron may route back here; it does not own a separate merge protocol.
+
+## Blocked PR Routing
+
+| Block | Owner |
+|---|---|
+| Merge conflict or dirty branch after main moved | Fresh subagent for mechanical rebase/conflict resolution |
+| CI, test, coverage, lint, or E2E failure | Task author or owning role; they know the task stance and implementation |
+| PR body/template/lint-only patch | Fresh subagent for mechanical PR-body or empty-commit fix |
+| Review pending past project threshold | Ping the missing reviewer; do not treat it as author work |
+
+Red CI blocks merge even when it looks unrelated. Track flakes separately, but merge only after required checks pass.
 
 ## Flaky tests
 

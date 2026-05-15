@@ -5,7 +5,7 @@ description: "Part of the Blueprintflow methodology. Use when a task is accepted
 
 # Milestone Progress
 
-Advance a milestone after task acceptance. Do not create task skeletons, implement code, or merge PRs in this skill.
+Advance a milestone after task acceptance. Do not create task folders, implement code, or merge PRs in this skill.
 
 ## Direct Invocation Guard
 

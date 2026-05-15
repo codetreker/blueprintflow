@@ -11,7 +11,7 @@ Minimum viable setup for any coding agent.
 | Notify \<Role\> | Not needed — single agent switches roles serially |
 | Create worktree | `git worktree add` locally |
 | Commit code | Local commit + push |
-| Start fast-cron | Skip — self-check for idle after each task |
+| Start role reminder | Skip — self-check active routing and utilization after each task |
 | Start slow-cron | Skip — drift audit every N tasks |
 | Check role status | Not needed — you know what you're doing |
 | Open PR | `gh pr create` |

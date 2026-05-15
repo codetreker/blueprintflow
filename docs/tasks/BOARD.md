@@ -14,6 +14,6 @@
 | BPF-007 | Service 项目每个 milestone deploy 到 test 环境验证 | Ready | Architect | — |
 | BPF-009 | skill review checklist 加渐进式披露 tradeoff 评估 | Done | Architect | [#7](https://github.com/codetreker/blueprintflow/pull/7) |
 | BPF-010 | Review 所有 skill：哪些需要渐进式披露拆 references | Ready | Architect | — |
-| BPF-011 | fast-cron PR blocker 处理路由（conflict→subagent, CI fail→author） | In Progress | Architect | [#8](https://github.com/codetreker/blueprintflow/pull/8) |
+| BPF-011 | PR blocker 处理路由（conflict→subagent, CI fail→author） | In Progress | Architect | [#8](https://github.com/codetreker/blueprintflow/pull/8) |
 | BPF-013 | Teamlead 必须保证 PROGRESS 准确：反模式——已完成的还标 TODO / 未完成的标 Done | Ready | Architect | — |
 | BPF-014 | Phase exit gate 加 PROGRESS 完整性检查：所有任务是否已完成并打勾，未勾的必须逐条确认 | Ready | Architect | — |

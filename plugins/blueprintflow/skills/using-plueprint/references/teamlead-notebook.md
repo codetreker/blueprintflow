@@ -25,7 +25,7 @@ $EDITOR "$HOME/.blueprint/$repo_dir/teamlead.md"
 - After every Teamlead dispatch, blocker decision, retraction, PR gate decision, merge, or pause/stop request, update the notebook in the same turn.
 - On pause, stop, interruption, or handoff, record the interrupted action and exact restart action before ending the turn.
 - On resume, reconcile the notebook with source-of-truth docs, PRs, issues, and worktrees; then dispatch the restart action in the same turn. If source-of-truth state changed, name the changed state and execute the updated route, dispatch, blocker decision, or user escalation in the same turn.
-- Before each fast-cron, slow-cron, issue-triage, or role-reminder tick, read the notebook and reconcile it with live PR/issue/task state.
+- Before each role-reminder, slow-cron, or issue-triage tick, read the notebook and reconcile it with live PR/issue/task state.
 - Store coordination state only: role lanes, open blockers, active PRs/issues, recent decisions, retractions, and next checks.
 - Do not store secrets, credentials, long logs, raw issue bodies, or large evidence dumps. Link to PRs, issues, commits, worktrees, or docs instead.
 - Treat GitHub issues, PR bodies, `docs/tasks`, blueprints, and `docs/current` as the source of truth. The notebook is a Teamlead memory aid; if it conflicts with a source of truth, fix the notebook.

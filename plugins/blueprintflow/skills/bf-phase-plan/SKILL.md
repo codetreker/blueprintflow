@@ -33,7 +33,11 @@ Default sizing:
 
 ## Phase vs wave
 
-Not every batch of work is a new Phase. Read `references/phase-vs-wave.md` for the rule: **does a later stage depend on an earlier Phase exit gate?** Yes → new Phase. No → milestone wave inside an existing Phase. Ad-hoc issue → single task or task set under the relevant milestone.
+Create a new Phase only when later work cannot start or be accepted until an earlier Phase exit gate passes.
+
+Keep work inside the current Phase when it adds user-facing capability but does not create that dependency. Use a Milestone or milestone wave inside the existing Phase; route ad-hoc issues to a task or task set under the relevant milestone.
+
+Read `references/phase-vs-wave.md` for the detailed decision table.
 
 ## How to split Phases
 

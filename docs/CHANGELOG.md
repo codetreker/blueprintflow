@@ -1,5 +1,15 @@
 # Changelog
 
+## v5.0.3 — 2026-05-15
+
+### Phase use rule
+
+- Moved the Phase creation test into the main `bf-phase-plan` entrypoint so agents can decide when to use a Phase before opening the detailed Phase-vs-wave reference.
+
+### Plugin version
+
+- `plugin.json` bumped `5.0.2` -> `5.0.3` (patch: Phase use rule clarification).
+
 ## v5.0.2 — 2026-05-15
 
 ### Phase planning boundaries

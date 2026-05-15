@@ -35,19 +35,14 @@ Use when either path is true:
 
 ## Steps
 
-1. Run `bf-task-state-standard` if resume state is missing or inconsistent.
-2. Read `milestone.md`, `docs/tasks/README.md`, and the cited next-blueprint anchors. If resuming, also read the existing `task.md`.
-3. Start or resume the task worktree and branch using `bf-git-workflow`.
-4. If no concrete `task.md` exists yet, create one task folder and `task.md` inside that task worktree/branch from the current milestone context and readiness review. The new `task.md` must include purpose, scope, out-of-scope, dependencies, blueprint anchors, acceptance slice, parallelism/conflict notes, and sensitive paths. Add or update the task row in `milestone.md` as `READY`. Stop and route back to `bf-milestone-breakdown` if readiness evidence is missing or blocked.
-5. Confirm the task contract before four-piece starts: Architect, PM, QA, and Dev review `task.md`; add Security when sensitive paths are present. Record reviewer decisions in `task.md` or `milestone.md`. If any reviewer is `NOT_LGTM`, fix `task.md` or route back to `bf-milestone-breakdown` when the issue is milestone-readiness scope.
-6. Set the task row to `TASKING`, create or update Active Task Resume, set the milestone-level next ledger `Work` to `IMPLEMENTING`, and keep `Milestone path` pointed at the milestone folder. Put active task recovery only in `docs/tasks/README.md`, `milestone.md`, and the task folder.
-7. Create or repair task baseline docs using `bf-task-fourpiece`.
-8. For code tasks, run `bf-implementation-design` and require four-role design review before coding; record `READY_FOR_IMPL` only in `docs/tasks`.
-9. Dispatch implementation work through the owning role coordinator using [references/implementation-loop.md](references/implementation-loop.md); Teamlead does not implement. Record task implementation state only in `docs/tasks`.
-10. Check `docs/current` impact with `bf-current-doc-standard` when the project uses current docs.
-11. Run `bf-verification` for the task surfaces. Required acceptance evidence must be complete before PR open; review may re-run or add evidence, not fill missing required evidence.
-12. Open the task PR through `bf-git-workflow`; review and merge-gate it through `bf-pr-review-flow`. When the task enters review/acceptance, record `ACCEPTING` only in `docs/tasks`.
-13. After merge and acceptance evidence, hand off to `bf-milestone-progress` for accepted-task recording, Active Task Resume cleanup, next task handoff, milestone closure, or Phase exit readiness.
+1. Recover state: run `bf-task-state-standard` only if resume state is missing or inconsistent; read `milestone.md`, `docs/tasks/README.md`, cited next-blueprint anchors, and existing `task.md` when resuming.
+2. Start or resume the task worktree and branch through `bf-git-workflow`.
+3. Create or confirm `task.md` inside that task worktree/branch. If creating, derive one concrete task from current Milestone context and readiness review; stop and route back to `bf-milestone-breakdown` when readiness evidence is missing or blocked.
+4. Confirm the task contract before four-piece starts: require Architect, PM, QA, Dev, and Security when sensitive. Record decisions in `task.md` or `milestone.md`; fix `task.md` or route back to readiness review on `NOT_LGTM`.
+5. Enter execution: set the task row to `TASKING`, create/update Active Task Resume, keep the next ledger at Milestone path with `Work = IMPLEMENTING`, and keep task recovery only in `docs/tasks/README.md`, `milestone.md`, and the task folder.
+6. Route baseline and design: use `bf-task-fourpiece`; for code tasks, use `bf-implementation-design` before implementation and record `READY_FOR_IMPL` only in `docs/tasks`.
+7. Route implementation, current-doc sync, verification, and PR gate through the owning skills and role coordinators: [references/implementation-loop.md](references/implementation-loop.md), `bf-current-doc-standard`, `bf-verification`, `bf-git-workflow`, and `bf-pr-review-flow`. Record task state only in `docs/tasks`.
+8. After merge and acceptance evidence, hand off to `bf-milestone-progress` for accepted-task recording, Active Task Resume cleanup, next task handoff, milestone closure, or Phase exit readiness.
 
 Do not mark the task `ACCEPTED`, set next ledger `Work` to `COMPLETED`, remove Active Task Resume, or promote current in this skill. Those are milestone-level follow-up decisions owned by `bf-milestone-progress` and `bf-blueprint-iteration`.
 

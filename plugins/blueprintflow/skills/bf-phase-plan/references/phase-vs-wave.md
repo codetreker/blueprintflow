@@ -1,20 +1,22 @@
 # Phase vs wave
 
-**Core question: did the locked next scope introduce a new value loop?**
+**Core question: does a later stage depend on an earlier Phase exit gate?**
 
-Create a new Phase only for a dependency-ordered stage inside the active major iteration. Keep a major iteration to <=3 Phases by default. Before adding a fourth Phase, prove the work cannot fit as a milestone wave inside an existing value loop.
+Create a new Phase only when a later stage cannot start or be accepted until an earlier Phase exit gate passes. A Phase should close on demonstrable user value, but user value alone does not require a new Phase.
+
+Keep a major iteration to <=3 Phases by default. Before adding a fourth Phase, stop and ask: why so many Phases, is the split dimension correct, can Phases merge, or should some work be a Milestone/wave inside an existing Phase? Resume only after `phase-plan.md` records the accepted exception rationale, merge/split decision, and owner.
 
 | Trigger | What it is | Where it lives |
 |---|---|---|
-| Locked next anchors define a new user value loop | New **Phase N+1** with exit gate | `docs/tasks/phase-N-<name>/phase-plan.md` |
-| Gap-to-target rewrite inside an existing value loop | **Milestone wave** inside existing Phase | `docs/tasks/phase-N-<name>/<milestone>/` |
+| Locked next anchors require a later stage to wait for an earlier Phase exit gate | New **Phase N+1** with exit gate | `docs/tasks/phase-N-<name>/phase-plan.md` |
+| Gap-to-target rewrite or capability expansion inside an existing stage | **Milestone wave** inside existing Phase | `docs/tasks/phase-N-<name>/<milestone>/` |
 | Ad-hoc bug / feature from GitHub issue | Task or task set under the relevant milestone | `docs/tasks/phase-N-<name>/<milestone>/<task>/` |
 
 ## Wave structure
 
 Keep each wave inside an existing Phase. Do not add a new Phase row for a wave.
 
-Keep a Phase to <=3 user-facing milestones by default. If a wave adds more, record why the Phase still holds together and why another Phase would be worse.
+Keep a Phase to <=3 user-facing milestones by default. Before adding a fourth Milestone, stop and ask: why split this way, is the Milestone dimension correct, can Milestones merge, or is task-level detail being misclassified as Milestone scope? Resume only after `phase-plan.md` records the accepted exception rationale, merge/split decision, and owner.
 
 Treat top-level wave folders such as `docs/tasks/<wave-name>/` as legacy or migration-only. Put new waves under the existing Phase so the Phase -> Milestone -> Task hierarchy stays intact.
 
@@ -71,6 +73,7 @@ Phase numbers are historical markers, not counters — downstream dependents (re
 ## Anti-patterns
 
 - ❌ New Phase for every gap-table rewrite (Phase counter inflation)
+- ❌ New Phase for every user-facing capability when no later stage depends on an earlier Phase exit gate
 - ❌ Ad-hoc bug fix as a wave (overhead — single milestone is enough)
 - ❌ Phase number skip / rollback / split (1a/1b) / merge (1.5)
 - ❌ Wave numbering (Wave-1 / Wave-2 — implies sequence that doesn't exist)

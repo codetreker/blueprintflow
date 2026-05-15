@@ -1,11 +1,11 @@
 ---
 name: bf-phase-plan
-description: "Part of the Blueprintflow methodology. Use when locked next-blueprint anchors need Phase/Milestone planning and value-loop gates before milestone breakdown."
+description: "Part of the Blueprintflow methodology. Use when locked next-blueprint anchors need Phase/Milestone planning and Phase exit gates before milestone breakdown."
 ---
 
 # Phase Plan
 
-Once `docs/blueprint/next/` has `LOCKED` anchors, the Architect leads. Break the selected next work into Phases and Milestones. Complete task decomposition waits for `bf-milestone-breakdown`. Each Phase anchors to a **value loop** (something an end user can actually use), not to technical layers.
+Once `docs/blueprint/next/` has `LOCKED` anchors, the Architect leads. Break the selected next work into dependency-ordered Phases and user-facing Milestones. Complete task decomposition waits for `bf-milestone-breakdown`. Create multiple Phases only when a later stage cannot start or be accepted until an earlier Phase exit gate passes; a Phase still closes on demonstrable user value, not technical layers.
 
 ## Direct Invocation Guard
 
@@ -19,24 +19,32 @@ Before using this skill, read `references/preflight.md` to confirm it applies. T
 
 | Level | Meaning | PR ownership |
 |---|---|---|
-| Phase | Value loop with exit gates | Not a PR by itself |
-| Milestone | Capability or deliverable group inside a Phase | Groups tasks; not a PR by itself |
-| Task | Smallest executable unit | **One task = one worktree + one branch + one PR** |
+| Phase | Dependency-ordered stage inside a major iteration; exists when later work depends on earlier Phase exit gates | Not a PR by itself |
+| Milestone | User-facing capability or deliverable group inside a Phase | Groups tasks; not a PR by itself |
+| Task | Work needed inside a Milestone to complete that Milestone | **One task = one worktree + one branch + one PR** |
+
+Default sizing:
+
+- Major iteration: at most 3 Phases. More than 3 is a stop-and-question signal; resume only after the Architect records the accepted exception rationale in `phase-plan.md`.
+- Phase: at most 3 user-facing Milestones. More than 3 is a stop-and-question signal; resume only after the Architect records the accepted exception rationale in `phase-plan.md`.
+- Task count is not capped during Phase/Milestone planning. Do not pre-split tasks to satisfy a count.
 
 `docs/tasks/` is the execution path from locked `next` anchors to accepted `current` behavior. At freeze/lock time it records Phase/Milestone planning; `bf-milestone-breakdown` later creates reviewed task skeleton folders; each concrete task gains four-piece/design files only when that task starts. It does not replace the product-shape source of truth in `docs/blueprint/next/`.
 
 ## Phase vs wave
 
-Not every batch of work is a new Phase. Read `references/phase-vs-wave.md` for the rule: **did locked next scope introduce a new value loop?** Yes → new Phase. No → milestone wave inside an existing Phase. Ad-hoc issue → single task or task set under the relevant milestone.
+Not every batch of work is a new Phase. Read `references/phase-vs-wave.md` for the rule: **does a later stage depend on an earlier Phase exit gate?** Yes → new Phase. No → milestone wave inside an existing Phase. Ad-hoc issue → single task or task set under the relevant milestone.
 
 ## How to split Phases
 
-Split by **value loop**, not by technical layer:
+Split by **prerequisite sequence and acceptance dependency**, not by technical layer:
 
 - ❌ Wrong: Phase 1 schema / Phase 2 server / Phase 3 client (technical layers, no value)
-- ✅ Right: Phase 1 identity loop / Phase 2 collaboration loop / Phase 3 second-dimension product / Phase 4+ remaining (each Phase independently demonstrable)
+- ✅ Right: Phase 1 single-user workspace (exit: one user completes the workflow) / Phase 2 shared workspace (exit: two users complete the workflow together) / Phase 3 organization rollout (exit: admin-managed workspace passes acceptance)
 
-> **Real example (Borgee):** Phase 0 foundation → Phase 1 identity loop → Phase 2 collaboration loop ⭐ → Phase 3 second dimension → Phase 4+ remaining
+Stop before publishing when the plan needs a fourth Phase. Ask: why so many Phases, is the split dimension correct, can Phases merge, or should some work be a Milestone/wave inside an existing Phase? Resume only after `phase-plan.md` records the accepted exception rationale, merge/split decision, and owner.
+
+Stop before publishing when one Phase needs a fourth Milestone. Ask: why split this way, is the Milestone dimension correct, can Milestones merge, or is task-level detail being misclassified as Milestone scope? Resume only after `phase-plan.md` records the accepted exception rationale, merge/split decision, and owner.
 
 ## Exit gate design
 
@@ -66,7 +74,7 @@ Gates 1+2 in the task spec brief, gate 3 in stance + acceptance, gate 4 at demo 
 **Path**: `docs/tasks/`
 
 - **README.md** — cross-Phase index + resume view (updated on every task PR merge)
-- **phase-N-<name>/phase-plan.md** — value loop, milestone list, exit gates
+- **phase-N-<name>/phase-plan.md** — dependency stage, milestone list, exit gates
 - **phase-N-<name>/<milestone>/milestone.md** — capability goal, acceptance boundary, and dependencies
 - **phase-N-<name>/<milestone>/<task>/task.md** — created later by `bf-milestone-breakdown`, not by freeze/lock planning
 - **phase-N-<name>/<milestone>/<task>/{spec,stance,acceptance,design,progress}.md** — created when that task starts
@@ -117,7 +125,7 @@ This Phase index records only Phase, Status, Exit condition, and Current milesto
 
 ## Anti-patterns
 
-- ❌ Splitting by technical layer (no value loop)
+- ❌ Splitting by technical layer (no user-perceivable value)
 - ❌ Exit gates without user perception (machine-only)
 - ❌ Carry-over not anchored to a PR # (rule 6)
 - ❌ Treating a milestone as the PR atom; task is the PR atom

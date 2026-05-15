@@ -31,7 +31,7 @@ digraph phase_plan_preflight {
 
 | # | Check | Skip if | Constraint |
 |---|---|---|---|
-| 1 | `git diff --name-only main \| wc -l` ≤ 1 and no `docs/blueprint` reference | Single-file fix, no blueprint citation | If the change cites §X.Y → route through `bf-workflow` |
+| 1 | `git diff --name-only main \| wc -l` ≤ 1 and no `docs/blueprint` reference | Single-file fix, no blueprint citation | If the change cites §X.Y → route through `using-plueprint` |
 | 2 | PR type is typo / dep bump / lint / refactor / tooling / hotfix | Mechanical change | Breaking dep bump → fall back; hotfix must have retro PR by the project-defined hotfix threshold |
 | 3 | `docs/blueprint/` missing or only README | No blueprint yet | Redirect to `bf-brainstorm` + `bf-blueprint-write` first |
 

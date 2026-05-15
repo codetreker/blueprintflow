@@ -71,7 +71,7 @@ Before changing `plugins/blueprintflow/skills/*`, read `plugins/blueprintflow/do
 When a real Blueprintflow run fails because an agent stalled, serialized independent work, bypassed a gate, misrouted, lost context, or required repeated user correction:
 
 1. Record the failure as `symptom -> missing/weak instruction -> owning skill/reference -> prevention check`.
-2. Patch the owning skill/reference. Do not add generic reminders to `bf-workflow` unless the failure is entry setup, routing, or global coordination.
+2. Patch the owning skill/reference. Do not add generic reminders to `using-plueprint` unless the failure is entry setup, routing, or global coordination.
 3. Add the prevention check to the Local Skill Review Gate prompt: `Would this exact instruction have prevented the observed failure? If not, return NOT LGTM with the missing command.`
 4. Record the prevention check result in the PR `Local Skill Review Gate` artifact.
 5. Stop before PR readiness if the prevention check is missing or NOT LGTM.

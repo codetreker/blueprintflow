@@ -9,7 +9,7 @@ Project-defined role-reminder cadence. Runtime syntax → `bf-runtime-adapter`.
 
 ## Direct Invocation Guard
 
-If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's input; do nothing else in this skill until it routes back.
+If `using-plueprint` is not active, STOP here. Load `using-plueprint` with the user's input; do nothing else in this skill until it routes back.
 
 ## How to invoke
 
@@ -25,7 +25,7 @@ Metrics: before reporting status, check (1) process progression to the next Blue
 
 Utilization: give every idle teammate useful next work, a specific legitimate wait state, or a bottleneck diagnosis with an unblock owner. Do not serialize independent work while roles are idle.
 
-Notebook: before routing or checking status, read `~/.blueprint/<repo-dir>/teamlead.md` using `bf-workflow/references/teamlead-notebook.md`; after dispatches, blockers, retractions, PR gate decisions, merges, or pauses, update it in the same turn.
+Notebook: before routing or checking status, read `~/.blueprint/<repo-dir>/teamlead.md` using `using-plueprint/references/teamlead-notebook.md`; after dispatches, blockers, retractions, PR gate decisions, merges, or pauses, update it in the same turn.
 
 Resume: after interruption or handoff, recover the active objective from the notebook plus source-of-truth docs/PRs/issues/worktrees, state the interrupted action, then route or dispatch the restart action in the same turn. Do not ask what to do next when the sources identify it.
 

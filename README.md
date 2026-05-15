@@ -92,7 +92,7 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 
 | Skill | 触发 | 用途 |
 |---|---|---|
-| [bf-workflow](plugins/blueprintflow/skills/bf-workflow/SKILL.md) | 起步 | 入口 driver：建立 Teamlead/runtime/team 边界，然后按目标路由 |
+| [using-plueprint](plugins/blueprintflow/skills/using-plueprint/SKILL.md) | 起步 | 入口 driver：建立 Teamlead/runtime/team 边界，然后按目标路由 |
 | [bf-team-roles](plugins/blueprintflow/skills/bf-team-roles/SKILL.md) | 起团 | 6 个 role coordinator prompt 模板 + helper 边界 |
 | [bf-brainstorm](plugins/blueprintflow/skills/bf-brainstorm/SKILL.md) | 讨论 | 多轮讨论锁立场 + 反约束 |
 | [bf-blueprint-write](plugins/blueprintflow/skills/bf-blueprint-write/SKILL.md) | 立项 | 蓝图模板（立场 / 概念 / v0/v1 边界） |
@@ -118,7 +118,7 @@ Blueprintflow 跟大型城市工程的协作模式同构——
 ## 起步
 
 ```
-1. bf-workflow          — 建立 Teamlead 边界，按目标路由
+1. using-plueprint          — 建立 Teamlead 边界，按目标路由
 2. bf-runtime-adapter    — 确认运行模式
 3. bf-team-roles        — 按 runtime capacity 起 role coordinators；helpers 只做 leaf work
 4. bf-brainstorm        — 多轮讨论锁立场
@@ -147,7 +147,7 @@ ln -s $(pwd)/blueprintflow/plugins/blueprintflow/skills/* ~/.claude/skills/
 
 **ClawHub：**
 ```bash
-clawhub install bf-workflow
+clawhub install using-plueprint
 # 或安装全部
 clawhub search blueprintflow
 ```
@@ -163,19 +163,19 @@ codex plugin marketplace add codetreker/blueprintflow
 codex plugin marketplace add .
 ```
 
-Codex marketplace 读取 `.agents/plugins/marketplace.json`，安装其中的 `./plugins/blueprintflow` 插件包；该包内含 `.codex-plugin/` 和 `skills/`，安装后加载 `blueprintflow:bf-*` skills。
+Codex marketplace 读取 `.agents/plugins/marketplace.json`，安装其中的 `./plugins/blueprintflow` 插件包；该包内含 `.codex-plugin/` 和 `skills/`，安装后加载 `blueprintflow:using-plueprint` 和 `blueprintflow:bf-*` skills。
 
 安装后可验证：
 
 ```bash
-codex debug prompt-input 'test' | rg 'blueprintflow:bf-'
+codex debug prompt-input 'test' | rg 'blueprintflow:(using-plueprint|bf-)'
 ```
 
 安装后从 Codex 里启动：
 
 ```
 Use Blueprintflow in Codex mode.
-Use blueprintflow:bf-workflow, then use blueprintflow:bf-runtime-adapter with the Codex reference.
+Use blueprintflow:using-plueprint, then use blueprintflow:bf-runtime-adapter with the Codex reference.
 Act as Teamlead in the parent thread; run the Codex activation check before Phase or milestone work.
 ```
 

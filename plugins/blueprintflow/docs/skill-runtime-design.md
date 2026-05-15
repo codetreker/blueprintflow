@@ -26,7 +26,7 @@ Treat a skill like a callable control module, not a prose document.
 
 | Code concept | Skill equivalent |
 |---|---|
-| Function signature | Skill metadata description and `bf-workflow` route. |
+| Function signature | Skill metadata description and `using-plueprint` route. |
 | Preconditions | Direct invocation guard and required state checks. |
 | Inputs | User objective, state ledgers, source artifacts, assigned role scope. |
 | Function body | Directive steps and referenced procedures. |
@@ -103,7 +103,7 @@ Stage rules:
 
 | Skill | Owns | Reads | Writes state |
 |---|---|---|---|
-| `bf-workflow` | Entry routing and Teamlead boundary. | User objective, Teamlead notebook, top-level state. | No product state. |
+| `using-plueprint` | Entry routing and Teamlead boundary. | User objective, Teamlead notebook, top-level state. | No product state. |
 | `bf-brainstorm` | Fuzzy idea and stance convergence. | User input, existing product context when routed. | No runtime state; hands stances to `bf-blueprint-write`. |
 | `bf-blueprint-write` | Next blueprint product shape and anchors. | Brainstorm output or clear non-issue source. | Anchor rows as `OPEN` or ready for `PLANNED`. |
 | `bf-blueprint-iteration` | Source intake, anchor selection, current promotion. | Source artifacts, next ledger, accepted task/Phase state. | Source trace mapping, anchor `State`. |
@@ -141,6 +141,6 @@ Route to the owner of the first row that is missing the next required state. The
 
 1. Update this design document when the behavior change affects state, ownership, or routing.
 2. Patch only the skills and references that own the changed behavior.
-3. Keep `bf-workflow` as the entry router, not the place for child-stage procedure details.
+3. Keep `using-plueprint` as the entry router, not the place for child-stage procedure details.
 4. Keep cron skills as schedulers; route stage logic to the owning skill.
 5. Run validation and the `repo-update` local review gate before marking a skill change ready.

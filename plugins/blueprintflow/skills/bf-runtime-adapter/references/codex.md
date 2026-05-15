@@ -63,7 +63,7 @@ Rules:
 - Coordinators coordinate; helpers execute bounded leaf work.
 - Reuse relevant coordinator/helper subagents when their context is still valid; spawn fresh only for independent review, materially different scope, stale/biased context, overload, parallelism, or required Security/review separation.
 - Name helpers `bf-<role>:<task>`.
-- Spawn role coordinators with the `bf-team-roles` common preamble, delegated activation envelope, and role-specific prompt so they can load routed `bf-*` skills inside scope without re-entering `bf-workflow`.
+- Spawn role coordinators with the `bf-team-roles` common preamble, delegated activation envelope, and role-specific prompt so they can load routed `bf-*` skills inside scope without re-entering `using-plueprint`.
 - If capacity is insufficient, Teamlead runs missing roles as serial lenses and records the downgrade.
 - In Codex, bare activation may set up Teamlead/runtime boundaries and role coordinators, but it does not authorize helper dispatch, project content inspection, or sleeper/automation setup. Those start only after the user names a concrete Blueprintflow-scoped objective or explicitly requests ongoing coordination, such as a Phase, milestone, task, issue, PR review, drift audit, or cron check-in.
 - Missing or ambiguous user authorization is not a spawn-capacity failure. If Codex host policy or the current tool contract requires explicit user authorization before spawning role/helper agents, Teamlead must ask the user for that authorization instead of declaring `serial fallback`.
@@ -121,7 +121,7 @@ Do not call `close_agent` on role coordinators as task cleanup; continue existin
 
 ```text
 Use Blueprintflow in Codex mode.
-Use bf-workflow, then this Codex adapter reference.
+Use using-plueprint, then this Codex adapter reference.
 Act as Teamlead in the parent thread and run the activation check before Phase, milestone, or task work.
 ```
 

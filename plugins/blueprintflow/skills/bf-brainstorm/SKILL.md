@@ -9,14 +9,14 @@ Converge a fuzzy idea into core stances, concept model, and constraints. Teamlea
 
 ## Direct Invocation Guard
 
-If `bf-workflow` is not active, STOP here. Load `bf-workflow` with the user's input; do nothing else in this skill until it routes back.
+If `using-plueprint` is not active, STOP here. Load `using-plueprint` with the user's input; do nothing else in this skill until it routes back.
 
 ## When to use / not use
 
 | Use | Don't use |
 |---|---|
 | New product starting up (→ `bf-blueprint-write`) | Implementation choices (SQLite vs Postgres → spec brief) |
-| New module added to existing product | Milestone/task execution with stance already locked (route via `bf-workflow`) |
+| New module added to existing product | Milestone/task execution with stance already locked (route via `using-plueprint`) |
 | Existing stances in conflict | Mechanical PRs, small patches, hotfixes |
 | Major blueprint rewrite | — |
 

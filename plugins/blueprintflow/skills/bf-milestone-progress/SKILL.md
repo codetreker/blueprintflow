@@ -1,6 +1,6 @@
 ---
 name: bf-milestone-progress
-description: "Part of the Blueprintflow methodology. Use when a task is accepted, the next execution step must be chosen, a milestone may close, or Phase exit readiness must be checked."
+description: "Part of the Blueprintflow methodology. Use when a task is accepted, the next task must be selected, a milestone may close, or Phase exit readiness must be checked."
 ---
 
 # Milestone Progress
@@ -16,7 +16,7 @@ If `using-plueprint` is not active, STOP here. Load `using-plueprint` with the u
 Use when any are true:
 
 - A task PR merged and acceptance evidence exists.
-- `milestone.md` needs the next execution step selected.
+- `milestone.md` needs the next ready task selected.
 - A milestone may be complete, blocked, or ready for closure.
 - A Phase may be ready for `bf-phase-exit-gate`.
 
@@ -25,7 +25,7 @@ Use when any are true:
 | Output | File |
 |---|---|
 | Accepted task status and PR/commit anchor | `milestone.md`, task `progress.md` |
-| Next execution step or blocker | `milestone.md`, `docs/tasks/README.md` |
+| Next ready task or blocker | `milestone.md`, `docs/tasks/README.md` |
 | Next-blueprint coarse work state update | `docs/blueprint/next/README.md` |
 | Milestone closure summary | `milestone.md` |
 | Milestone/wave closure evidence | [references/closure-evidence.md](references/closure-evidence.md) |
@@ -38,8 +38,8 @@ Use when any are true:
 3. Confirm the task is actually accepted: PR merged, acceptance evidence recorded, required reviews/CI passed, current-doc sync done or N/A.
 4. Mark the task `ACCEPTED` in `milestone.md` with PR and commit anchors.
 5. Remove closed rows from Active Task Resume.
-6. Decide whether the milestone needs another concrete task, has blockers, or can close.
-7. If another task is needed, record the next execution direction in `milestone.md`, keep the next ledger `Work` as `IMPLEMENTING` with `Milestone path` still pointed at the milestone folder, and hand off to `bf-task-execute` to create or resume exactly one concrete task.
+6. Pick the next task by dependency order, blocker severity, and milestone priority.
+7. If a next task is ready, mark it `READY`, keep the next ledger `Work` as `IMPLEMENTING` with `Milestone path` still pointed at the milestone folder, and hand off to `bf-task-execute`.
 8. If tasks remain blocked, record the blocker and dispatch the owning role.
 9. If all required tasks are accepted, write the milestone closure summary using [references/closure-evidence.md](references/closure-evidence.md).
 10. If required milestone or wave gates still need review, keep the next ledger `Work` as `IMPLEMENTING` and finish them in this skill.
@@ -51,7 +51,7 @@ Keep Phase and milestone dependency order. Do not jump to a later milestone or P
 ## Checks
 
 - No task is marked `ACCEPTED` without merged PR and acceptance evidence.
-- The next execution direction has all prerequisites accepted or explicitly waived.
+- The next selected task has all dependencies accepted or explicitly waived.
 - Blocked tasks name a concrete owner and unblock action.
 - Milestone closure lists completed tasks, deferred tasks, carry-over anchors, and acceptance evidence.
 - Milestone/wave closure evidence follows [references/closure-evidence.md](references/closure-evidence.md).
@@ -65,7 +65,7 @@ Keep Phase and milestone dependency order. Do not jump to a later milestone or P
 - Closing a milestone with blocked or unaccepted required tasks.
 - Moving scope to `current` from milestone progress without acceptance promotion.
 - Leaving Active Task Resume rows after accepted-task reconciliation.
-- Selecting parallel work without checking dependencies and ownership risk.
+- Selecting parallel tasks without checking dependency order.
 
 ## How to invoke
 

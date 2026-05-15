@@ -1,20 +1,20 @@
 # Phase vs wave
 
-**Core question: does the locked next scope require a new dependency-ordered stage or later integration boundary?**
+**Core question: did the locked next scope introduce a new value loop?**
 
-Create a new Phase only for staged progress inside the active major iteration when prerequisite dependencies or integration boundaries make it useful. Keep a major iteration to <=3 Phases by default. Before adding a fourth Phase, stop and ask whether the split dimension is wrong, Phases can merge, or some work belongs as a milestone wave inside an existing Phase.
+Create a new Phase only for a dependency-ordered stage inside the active major iteration. Keep a major iteration to <=3 Phases by default. Before adding a fourth Phase, prove the work cannot fit as a milestone wave inside an existing value loop.
 
 | Trigger | What it is | Where it lives |
 |---|---|---|
-| Locked next anchors define a real prerequisite or integration boundary | New **Phase N+1** with exit gate | `docs/tasks/phase-N-<name>/phase-plan.md` |
-| Gap-to-target rewrite inside an existing Phase boundary | **Milestone wave** inside existing Phase | `docs/tasks/phase-N-<name>/<milestone>/` |
+| Locked next anchors define a new user value loop | New **Phase N+1** with exit gate | `docs/tasks/phase-N-<name>/phase-plan.md` |
+| Gap-to-target rewrite inside an existing value loop | **Milestone wave** inside existing Phase | `docs/tasks/phase-N-<name>/<milestone>/` |
 | Ad-hoc bug / feature from GitHub issue | Task or task set under the relevant milestone | `docs/tasks/phase-N-<name>/<milestone>/<task>/` |
 
 ## Wave structure
 
 Keep each wave inside an existing Phase. Do not add a new Phase row for a wave.
 
-Keep a Phase to <=3 user-facing milestones by default. Before adding a fourth Milestone, stop and ask whether the split dimension is wrong, Milestones can merge, or task-level detail is being misclassified as Milestone scope.
+Keep a Phase to <=3 user-facing milestones by default. If a wave adds more, record why the Phase still holds together and why another Phase would be worse.
 
 Treat top-level wave folders such as `docs/tasks/<wave-name>/` as legacy or migration-only. Put new waves under the existing Phase so the Phase -> Milestone -> Task hierarchy stays intact.
 
@@ -22,30 +22,32 @@ Treat top-level wave folders such as `docs/tasks/<wave-name>/` as legacy or migr
 docs/tasks/phase-N-<name>/
 ├── phase-plan.md
 ├── milestone-1-<name>/
-│   └── milestone.md
+│   ├── milestone.md
+│   └── task-seed.md
 ├── milestone-2-<name>/
 │   └── milestone.md
 └── ...
 ```
 
-Task folders do not appear during wave planning.
+Task skeleton folders appear under a milestone during `bf-milestone-breakdown`, not during wave planning.
 
-### Planning change carries
+### Planning task carries
 
-Wave planning is not a container PR exception. If the wave needs a planning change on its own, publish one planning change when feasible. The planning change carries:
+Wave planning is not a container PR exception. If the wave needs a planning change on its own, create a real planning task folder such as `task-0-plan-wave/` for PR ownership/progress; that task has one worktree, one branch, and one PR. The planning task PR carries:
 
 1. `phase-plan.md` — milestone list, dependency graph, closure gate
-2. One subdirectory per milestone — `milestone.md` with `Readiness State: PLANNED`, capability goal, acceptance boundary, coarse dependencies, and readiness direction
-3. (Optional) container-level pre-work (e.g. Security pre-work for sensitive paths)
-4. `docs/tasks/README.md` index entry
+2. One subdirectory per milestone — `milestone.md` with capability goal, acceptance boundary, dependencies, and task-split trigger
+3. First-milestone task seed, enough to prove the wave can start without pretending every task is known
+4. (Optional) container-level pre-work (e.g. Security pre-work for sensitive paths)
+5. `docs/tasks/README.md` index entry
 
-### Planning change does NOT carry
+### Planning task does NOT carry
 
-Task folders, task skeletons, likely first tasks, and `task.md` contracts.
+Task skeleton folders and `task.md` contracts — created by `bf-milestone-breakdown` when the milestone is selected for execution.
 
 Task baseline docs (spec / PM stance / acceptance / optional content-lock) and later `design.md` — created only when each task starts.
 
-Container planning is **Phase/Milestone plan**, not implementation specification.
+Container planning is **Phase/Milestone plan + first task seed**, not implementation specification.
 
 Each task is its own PR. Task PR flow inside a wave is identical to any other task PR — `bf-git-workflow` + `bf-task-fourpiece` + `bf-pr-review-flow` apply unchanged.
 
@@ -72,7 +74,6 @@ Phase numbers are historical markers, not counters — downstream dependents (re
 
 - ❌ New Phase for every gap-table rewrite (Phase counter inflation)
 - ❌ Ad-hoc bug fix as a wave (overhead — single milestone is enough)
-- ❌ Creating more than 3 Phases or more than 3 Milestones per Phase without stopping to question the split
 - ❌ Phase number skip / rollback / split (1a/1b) / merge (1.5)
 - ❌ Wave numbering (Wave-1 / Wave-2 — implies sequence that doesn't exist)
 - ❌ Wave name collision

@@ -7,8 +7,8 @@
 | Blueprint decision | `docs/blueprint/next/README.md` | Anchor, decision status, coarse work status, milestone path |
 | Phase resume | `docs/tasks/README.md` | Phase, status, exit condition, current milestone |
 | Active task resume | `docs/tasks/README.md` | Scope, execution, active task, owner, worktree/branch, PR, blocker, progress path |
-| Milestone resume | `docs/tasks/<phase>/<milestone>/milestone.md` | Readiness State, readiness summary, active task index after tasks exist, blocked tasks, closure state |
-| Task scope | `docs/tasks/<phase>/<milestone>/<task>/task.md` | Scope, anchors, out-of-scope, acceptance slice, dependencies, sensitive paths |
+| Milestone resume | `docs/tasks/<phase>/<milestone>/milestone.md` | Task index, dependency order, first ready task, blocked tasks, closure state |
+| Task contract | `docs/tasks/<phase>/<milestone>/<task>/task.md` | Scope, anchors, out-of-scope, acceptance slice, dependencies, sensitive paths |
 | Task progress | `docs/tasks/<phase>/<milestone>/<task>/progress.md` | Worktree/branch, PR, checkpoints, blockers, acceptance evidence, current sync |
 
 ## `docs/blueprint/next/README.md`
@@ -52,25 +52,19 @@ Required sections:
 
 ## Goal
 
-## Readiness State
-
-`PLANNED` / `READINESS_REVIEW` / `READY_FOR_EXECUTION` / `TASKING`
-
-## Readiness Summary
-
-## Coarse Dependencies
-
 ## Task Index
 
 | Task | Status | Depends on | PR | Notes |
 |---|---|---|---|---|
 
+## Dependency Order
+
+## First Ready Task
+
 ## Blockers
 
 ## Closure Summary
 ```
-
-Create `Task Index` rows only as concrete tasks start or are accepted. Do not pre-fill future tasks during Phase/Milestone planning or readiness review.
 
 Statuses: `PLANNED`, `READY`, `TASKING`, `READY_FOR_IMPL`, `IMPLEMENTING`, `ACCEPTING`, `ACCEPTED`, `DEFERRED`, `BLOCKED`.
 

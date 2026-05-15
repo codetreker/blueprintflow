@@ -9,8 +9,8 @@ accepted current
 -> write/resume docs/blueprint/next + ledger
 -> lock selected anchors
 -> write source-issues.md
--> plan Phase -> Milestone + dependency boundary
--> review selected milestone for execution readiness
+-> plan Phase -> Milestone + first task seed
+-> break down selected milestone into reviewed task.md skeletons
 -> execute tasks through docs/tasks
 -> accept milestone/wave/Phase gates
 -> promote accepted scope to current
@@ -84,18 +84,20 @@ Rules:
 
 When one or more next anchors are `LOCKED`:
 - Run Phase/Milestone planning under `docs/tasks/`.
-- Require milestones, dependencies, acceptance boundaries, and readiness direction.
+- Require milestones, dependencies, acceptance boundaries, and first-milestone task seed.
 - Do not require complete task decomposition at lock time.
 - Do not promote to current.
 
 When a milestone is selected for execution:
-- Run milestone readiness review.
-- Keep `milestone.md` as the readiness summary with milestone boundary, acceptance direction, coarse dependencies, review result, and handoff direction.
-- Publish the readiness gate before task execution starts.
-- In governed-change projects, include the `IMPLEMENTING` next-ledger update in the same readiness change when readiness review is actively underway; leave the row `PENDING` when the milestone is planned but idle.
-- Do not create task folders, task skeletons, task contracts, or concrete task work in readiness review.
+- Run milestone breakdown.
+- Create one task skeleton folder per task.
+- Create one `task.md` per task skeleton.
+- Keep `milestone.md` as index, dependency order, review summary, and first-ready pointer.
+- Publish the breakdown gate before task execution starts.
+- In governed-change projects, include the `IMPLEMENTING` next-ledger update in the same breakdown change when the breakdown is actively underway; leave the row `PENDING` when the milestone is planned but idle.
+- Do not start concrete task work in breakdown.
 
-Task work starts from current execution context after readiness review passes.
+Task work starts from the first ready task named in `milestone.md`.
 
 ## Promotion to current
 

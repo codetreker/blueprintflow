@@ -1,4 +1,4 @@
 interface:
   display_name: "bf-milestone-breakdown"
-  short_description: "Blueprintflow: Review milestone readiness"
-  default_prompt: "Use $bf-milestone-breakdown to review a planned milestone for execution readiness."
+  short_description: "Blueprintflow: Split milestones into reviewed tasks"
+  default_prompt: "Use $bf-milestone-breakdown to split a planned milestone into reviewed task skeletons."

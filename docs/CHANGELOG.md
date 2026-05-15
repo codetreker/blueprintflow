@@ -1,19 +1,5 @@
 # Changelog
 
-## v5.0.1 — 2026-05-15
-
-### Planning boundaries
-
-- Reframed `bf-phase-plan` as Phase/Milestone planning only, with dependency and integration boundaries instead of task seeds.
-- Added stop-and-question defaults for more than 3 Phases per major iteration or more than 3 Milestones per Phase.
-- Reframed `bf-milestone-breakdown` as milestone readiness review instead of task skeleton or `task.md` contract generation.
-- Updated workflow routing, README, OpenAI metadata, Teamlead checks, and execution handoff wording to keep concrete task creation in execution context.
-- Removed the repo-update requirement to read the unfinished skill-runtime design before editing public skills.
-
-### Plugin version
-
-- `plugin.json` bumped `5.0.0` -> `5.0.1` (patch: planning-stage boundary clarification).
-
 ## v5.0.0 — 2026-05-14
 
 ### Workflow entrypoint rename

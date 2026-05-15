@@ -116,7 +116,7 @@ Every backlog issue must contain:
 - No automatic cleanup — manual scan every time next selection opens
 - Bugfix issues must link `Closes gh#NNN` (bidirectional traceability)
 
-issue-triage owns the **entry gate**; `bf-blueprint-iteration` owns selection, next status tracking, execution planning, acceptance promotion, tags, and `source-issues.md`.
+issue-triage owns the **entry gate**; `bf-blueprint-iteration` owns selection, next status tracking, task split, acceptance promotion, tags, and `source-issues.md`.
 
 ## Triage flow example
 

@@ -1,5 +1,17 @@
 # Changelog
 
+## v5.0.2 — 2026-05-15
+
+### Phase planning boundaries
+
+- Clarified that Phase planning creates dependency-ordered stages when later work depends on earlier Phase exit gates, not a Phase for every value loop or capability.
+- Made more than 3 Phases per major iteration and more than 3 Milestones per Phase explicit stop-and-question signals.
+- Aligned `bf-task-state-standard` ownership wording with the Phase planning boundary.
+
+### Plugin version
+
+- `plugin.json` bumped `5.0.1` -> `5.0.2` (patch: Phase planning boundary clarification).
+
 ## v5.0.1 — 2026-05-15
 
 ### Planning boundary cleanup

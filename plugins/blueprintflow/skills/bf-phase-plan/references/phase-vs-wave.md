@@ -35,10 +35,9 @@ Task skeleton folders appear under a milestone during `bf-milestone-breakdown`, 
 Wave planning is not a container PR exception. If the wave needs a planning change on its own, create a real planning task folder such as `task-0-plan-wave/` for PR ownership/progress; that task has one worktree, one branch, and one PR. The planning task PR carries:
 
 1. `phase-plan.md` — milestone list, dependency graph, closure gate
-2. One subdirectory per milestone — `milestone.md` with capability goal, acceptance boundary, dependencies, and breakdown notes
-3. Milestone-level pre-work notes, when needed, without naming a task
-4. (Optional) container-level pre-work (e.g. Security pre-work for sensitive paths)
-5. `docs/tasks/README.md` index entry
+2. One subdirectory per milestone — `milestone.md` with capability goal, acceptance boundary, and dependencies
+3. (Optional) container-level pre-work (e.g. Security pre-work for sensitive paths)
+4. `docs/tasks/README.md` index entry
 
 ### Planning task does NOT carry
 

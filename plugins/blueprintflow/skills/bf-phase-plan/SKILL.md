@@ -67,7 +67,7 @@ Gates 1+2 in the task spec brief, gate 3 in stance + acceptance, gate 4 at demo 
 
 - **README.md** — cross-Phase index + resume view (updated on every task PR merge)
 - **phase-N-<name>/phase-plan.md** — value loop, milestone list, exit gates
-- **phase-N-<name>/<milestone>/milestone.md** — capability goal, acceptance boundary, dependencies, and breakdown notes
+- **phase-N-<name>/<milestone>/milestone.md** — capability goal, acceptance boundary, and dependencies
 - **phase-N-<name>/<milestone>/<task>/task.md** — created later by `bf-milestone-breakdown`, not by freeze/lock planning
 - **phase-N-<name>/<milestone>/<task>/{spec,stance,acceptance,design,progress}.md** — created when that task starts
 

@@ -64,7 +64,7 @@ Rules:
 - Only `LOCKED` anchors may be planned into `docs/tasks/`.
 - `OPEN` or `REOPENED` anchors stay in discussion and cannot start implementation.
 - If one topic is half decided, split it into smaller anchors so the locked parts can move while open questions remain visible.
-- Blueprint lock does not require a complete task split. It locks the Phase/Milestone plan.
+- Blueprint lock does not require a complete task split or Phase/Milestone plan in advance. After anchors lock, `bf-phase-plan` records the Phase/Milestone plan.
 - `bf-milestone-breakdown` creates reviewed task skeleton folders and `task.md` contracts before concrete task work starts.
 - Skeleton task folders do not mean task execution has started; task-level state lives in `docs/tasks/README.md`, `milestone.md`, and task folders.
 - Each resulting task still owns one worktree, one branch, and one PR when that task starts.

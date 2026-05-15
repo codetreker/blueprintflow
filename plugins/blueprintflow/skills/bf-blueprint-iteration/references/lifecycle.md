@@ -9,7 +9,7 @@ accepted current
 -> write/resume docs/blueprint/next + ledger
 -> lock selected anchors
 -> write source-issues.md
--> plan Phase -> Milestone + first task seed
+-> plan Phase -> Milestone
 -> break down selected milestone into reviewed task.md skeletons
 -> execute tasks through docs/tasks
 -> accept milestone/wave/Phase gates
@@ -84,7 +84,7 @@ Rules:
 
 When one or more next anchors are `LOCKED`:
 - Run Phase/Milestone planning under `docs/tasks/`.
-- Require milestones, dependencies, acceptance boundaries, and first-milestone task seed.
+- Require milestones, dependencies, and acceptance boundaries.
 - Do not require complete task decomposition at lock time.
 - Do not promote to current.
 

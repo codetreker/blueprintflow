@@ -3,7 +3,7 @@ set -euo pipefail
 
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
 skills_root="$repo_root/plugins/blueprintflow/skills"
-active_docs=("$repo_root/README.md" "$skills_root" "$repo_root/plugins/blueprintflow/docs")
+active_docs=("$repo_root/README.md" "$skills_root")
 
 stale_refs=$(grep -RInE 'bf-milestone-fourpiece|milestone-fourpiece' "${active_docs[@]}" || true)
 if [[ -n "$stale_refs" ]]; then

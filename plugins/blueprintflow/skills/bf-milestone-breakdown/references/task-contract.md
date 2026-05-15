@@ -6,7 +6,6 @@
 - Cited `docs/blueprint/next/*.md` sections
 - `docs/tasks/<phase>/phase-plan.md`
 - `docs/tasks/<phase>/<milestone>/milestone.md`
-- First task seed from `milestone.md` or `task-seed.md`
 
 ## Folder Shape
 

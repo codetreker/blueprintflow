@@ -29,7 +29,7 @@ Use the router for exact stage entry, but keep this mainline in view:
 ```text
 1. Setup: bf-runtime-adapter + bf-team-roles
 2. Shape: bf-brainstorm -> bf-blueprint-write
-3. Plan locked next scope: bf-blueprint-iteration -> bf-phase-plan (Phase -> Milestone + first task seed)
+3. Plan locked next scope: bf-blueprint-iteration -> bf-phase-plan (Phase -> Milestone)
 4. Break down the selected milestone: bf-milestone-breakdown (reviewed task skeletons)
 5. Start task loop:
    bf-task-execute (bf-git-workflow -> bf-task-fourpiece -> bf-implementation-design
@@ -77,7 +77,7 @@ After the user names a concrete objective, load only the matching skill(s):
 | Fuzzy concept or unsettled stance | `bf-brainstorm` |
 | Write or revise product shape before next lock | `bf-blueprint-write` |
 | Select or lock next-blueprint anchors for execution planning | `bf-blueprint-iteration` |
-| Split locked next-blueprint anchors into execution Phases/Milestones, with task seed | `bf-phase-plan` |
+| Split locked next-blueprint anchors into execution Phases/Milestones | `bf-phase-plan` |
 | Break a selected milestone into reviewed task skeletons | `bf-milestone-breakdown` |
 | Create, repair, or review `docs/tasks` state | `bf-task-state-standard` |
 | Start or resume task work | `bf-task-execute` |

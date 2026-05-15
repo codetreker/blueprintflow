@@ -18,7 +18,6 @@ Use when all are true:
 - The selected milestone exists in `docs/tasks/` and has not been broken into reviewed task contracts.
 - Relevant `docs/blueprint/next` anchors are `LOCKED`.
 - `phase-plan.md` and milestone-level `milestone.md` exist.
-- A first task seed exists in `milestone.md` or `task-seed.md`.
 - Dependencies are clear enough to start this milestone.
 
 ## Outputs
@@ -61,7 +60,7 @@ docs/blueprint/next Work during breakdown: PENDING -> IMPLEMENTING
 - Creating `progress.md` for `task-0-breakdown-*`; use `breakdown.md`.
 - Treating skeleton folders as task worktrees or implementation PRs.
 - Leaving task scope only in `milestone.md`; task details belong in each `task.md`.
-- Skipping review because the first task seed looked obvious.
+- Skipping review because the first task looked obvious.
 - Creating a task too large for one PR, or splitting by technical layer when value-slice tasks are possible.
 
 ## How to invoke

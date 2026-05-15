@@ -4,7 +4,7 @@
 
 | State | Checkable meaning |
 |---|---|
-| `PLANNED` | `phase-plan.md` and `milestone.md` exist; first task seed exists; task skeletons are not reviewed yet |
+| `PLANNED` | `phase-plan.md` and `milestone.md` exist; task skeletons are not reviewed yet |
 | `BREAKING_DOWN` | Breakdown change is in progress, or task skeletons, review, evidence, or publication are incomplete |
 | `TASK_SET_READY` | Breakdown gate passed and published; every task skeleton folder has `task.md`; `milestone.md` names dependency order, first ready task, review result, and publication evidence |
 | `TASKING` | A concrete task has entered `bf-task-execute`; task-level planning, progress, or implementation work is active |
@@ -17,8 +17,7 @@ After `bf-phase-plan`:
 docs/tasks/<phase>/
 ├── phase-plan.md
 └── <milestone>/
-    ├── milestone.md
-    └── task-seed.md
+    └── milestone.md
 ```
 
 After `bf-milestone-breakdown`:

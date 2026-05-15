@@ -1,11 +1,11 @@
 ---
 name: bf-phase-plan
-description: "Part of the Blueprintflow methodology. Use when locked next-blueprint anchors need Phase/Milestone planning, value-loop gates, or first task seed before milestone breakdown."
+description: "Part of the Blueprintflow methodology. Use when locked next-blueprint anchors need Phase/Milestone planning and value-loop gates before milestone breakdown."
 ---
 
 # Phase Plan
 
-Once `docs/blueprint/next/` has `LOCKED` anchors, the Architect leads. Break the selected next work into Phases and Milestones, with enough first-milestone task seed to prove execution can start. Complete task decomposition waits for `bf-milestone-breakdown`. Each Phase anchors to a **value loop** (something an end user can actually use), not to technical layers.
+Once `docs/blueprint/next/` has `LOCKED` anchors, the Architect leads. Break the selected next work into Phases and Milestones. Complete task decomposition waits for `bf-milestone-breakdown`. Each Phase anchors to a **value loop** (something an end user can actually use), not to technical layers.
 
 ## Direct Invocation Guard
 
@@ -67,7 +67,7 @@ Gates 1+2 in the task spec brief, gate 3 in stance + acceptance, gate 4 at demo 
 
 - **README.md** — cross-Phase index + resume view (updated on every task PR merge)
 - **phase-N-<name>/phase-plan.md** — value loop, milestone list, exit gates
-- **phase-N-<name>/<milestone>/milestone.md** — capability goal, acceptance boundary, dependencies, task-split trigger, and first task seed when this is the first executable milestone
+- **phase-N-<name>/<milestone>/milestone.md** — capability goal, acceptance boundary, and dependencies
 - **phase-N-<name>/<milestone>/<task>/task.md** — created later by `bf-milestone-breakdown`, not by freeze/lock planning
 - **phase-N-<name>/<milestone>/<task>/{spec,stance,acceptance,design,progress}.md** — created when that task starts
 
@@ -79,15 +79,12 @@ docs/tasks/
 └── phase-6-remote-agent/
     ├── phase-plan.md
     └── milestone-2-web-configure/
-        ├── milestone.md
-        └── task-seed.md        # optional file; seed may also be in milestone.md
+        └── milestone.md
 ```
 
-The first-milestone task seed may be a section in `milestone.md` or a small `task-seed.md`. It names the likely first task, cited next-blueprint anchors, prerequisites, expected PR atom, and first acceptance check. It is not a four-piece set and does not start implementation.
+PR boundary: in a PR-governed project, freeze/lock planning is a normal planning task such as `task-0-plan-phase-6`: one worktree, one branch, one PR. It has a real planning task folder for PR ownership/progress, for example `docs/tasks/phase-6-remote-agent/milestone-planning/task-0-plan-phase-6/progress.md`. The planning task's substantive deliverables are parent `phase-plan.md` and `milestone.md` files; it is not a container PR exception and it does not implement product behavior.
 
-PR boundary: in a PR-governed project, freeze/lock planning is a normal planning task such as `task-0-plan-phase-6`: one worktree, one branch, one PR. It has a real planning task folder for PR ownership/progress, for example `docs/tasks/phase-6-remote-agent/milestone-planning/task-0-plan-phase-6/progress.md`. The planning task's substantive deliverables are parent `phase-plan.md`, `milestone.md`, and task seed files; it is not a container PR exception and it does not implement product behavior.
-
-The freeze/lock planning task may stop at `phase-plan.md`, `milestone.md`, and the first-milestone task seed. Do not fabricate task skeleton folders just to make the plan look finished. When the milestone is selected for execution, run `bf-milestone-breakdown` to create reviewed task folders with `task.md`; create four-piece/design/progress files only when each task starts.
+The freeze/lock planning task stops at `phase-plan.md` and `milestone.md`. Do not fabricate task skeleton folders just to make the plan look finished. When the milestone is selected for execution, run `bf-milestone-breakdown` to create reviewed task folders with `task.md`; create four-piece/design/progress files only when each task starts.
 
 After `bf-milestone-breakdown`:
 

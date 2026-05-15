@@ -64,7 +64,7 @@ Rules:
 - Only `LOCKED` anchors may be planned into `docs/tasks/`.
 - `OPEN` or `REOPENED` anchors stay in discussion and cannot start implementation.
 - If one topic is half decided, split it into smaller anchors so the locked parts can move while open questions remain visible.
-- Blueprint lock does not require a complete task split. It locks the Phase/Milestone plan and enough first-milestone task seed to prove executability.
+- Blueprint lock does not require a complete task split or Phase/Milestone plan in advance. After anchors lock, `bf-phase-plan` records the Phase/Milestone plan.
 - `bf-milestone-breakdown` creates reviewed task skeleton folders and `task.md` contracts before concrete task work starts.
 - Skeleton task folders do not mean task execution has started; task-level state lives in `docs/tasks/README.md`, `milestone.md`, and task folders.
 - Each resulting task still owns one worktree, one branch, and one PR when that task starts.
@@ -93,7 +93,7 @@ The implemented version lives in `docs/blueprint/current/` frontmatter (`accepte
 
 When the current implemented work passes acceptance, the next selection round can open. Its intake is **GitHub issues labeled `backlog`** — scan them once to decide what gets pulled into `docs/blueprint/next/`. After selection, ongoing state lives in `next` and `tasks`, not issue labels.
 
-After the user names a concrete iteration objective, read `references/lifecycle.md` for the full flow: scan backlog → write/resume `docs/blueprint/next/` with a status ledger → lock anchors → plan `docs/tasks` as Phase -> Milestone with first-milestone task seed → run `bf-milestone-breakdown` for reviewed task skeletons → run `bf-task-execute` one task per PR → run `bf-milestone-progress` after accepted tasks → promote accepted scope into `docs/blueprint/current/`. Use [references/promotion-checklist.md](references/promotion-checklist.md) for accepted-scope promotion. Reminder period is project-defined in `AGENTS.md`.
+After the user names a concrete iteration objective, read `references/lifecycle.md` for the full flow: scan backlog → write/resume `docs/blueprint/next/` with a status ledger → lock anchors → plan `docs/tasks` as Phase -> Milestone → run `bf-milestone-breakdown` for reviewed task skeletons → run `bf-task-execute` one task per PR → run `bf-milestone-progress` after accepted tasks → promote accepted scope into `docs/blueprint/current/`. Use [references/promotion-checklist.md](references/promotion-checklist.md) for accepted-scope promotion. Reminder period is project-defined in `AGENTS.md`.
 
 ## Anti-patterns
 
@@ -112,7 +112,7 @@ follow skill bf-blueprint-iteration
 
 # No objective named → standby, ask which iteration objective to coordinate
 # Current accepted → scan backlog → open/resume docs/blueprint/next/
-# docs/blueprint/next/ anchors lock → plan docs/tasks/ Phase -> Milestone + task seed
+# docs/blueprint/next/ anchors lock → plan docs/tasks/ Phase -> Milestone
 # selected milestone → bf-milestone-breakdown creates reviewed task skeletons
 # task starts → one task = one worktree + one branch + one PR
 # accepted task/phase scope → promote to docs/blueprint/current/ + tag/meta

@@ -1,5 +1,17 @@
 # Changelog
 
+## v5.0.1 — 2026-05-15
+
+### Planning boundary cleanup
+
+- Removed first-task-seed requirements and `task-seed.md` examples from Phase/Milestone planning and milestone breakdown inputs.
+- Removed the next-generation `plugins/blueprintflow/docs/` package docs from the shipped plugin.
+- Updated `repo-update` so active skill edits use the owning skill and direct references instead of requiring the removed runtime-design doc.
+
+### Plugin version
+
+- `plugin.json` bumped `5.0.0` -> `5.0.1` (patch: planning boundary cleanup).
+
 ## v5.0.0 — 2026-05-14
 
 ### Workflow entrypoint rename

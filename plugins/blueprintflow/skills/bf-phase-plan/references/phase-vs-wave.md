@@ -22,8 +22,7 @@ Treat top-level wave folders such as `docs/tasks/<wave-name>/` as legacy or migr
 docs/tasks/phase-N-<name>/
 ├── phase-plan.md
 ├── milestone-1-<name>/
-│   ├── milestone.md
-│   └── task-seed.md
+│   └── milestone.md
 ├── milestone-2-<name>/
 │   └── milestone.md
 └── ...
@@ -36,10 +35,9 @@ Task skeleton folders appear under a milestone during `bf-milestone-breakdown`, 
 Wave planning is not a container PR exception. If the wave needs a planning change on its own, create a real planning task folder such as `task-0-plan-wave/` for PR ownership/progress; that task has one worktree, one branch, and one PR. The planning task PR carries:
 
 1. `phase-plan.md` — milestone list, dependency graph, closure gate
-2. One subdirectory per milestone — `milestone.md` with capability goal, acceptance boundary, dependencies, and task-split trigger
-3. First-milestone task seed, enough to prove the wave can start without pretending every task is known
-4. (Optional) container-level pre-work (e.g. Security pre-work for sensitive paths)
-5. `docs/tasks/README.md` index entry
+2. One subdirectory per milestone — `milestone.md` with capability goal, acceptance boundary, and dependencies
+3. (Optional) container-level pre-work (e.g. Security pre-work for sensitive paths)
+4. `docs/tasks/README.md` index entry
 
 ### Planning task does NOT carry
 
@@ -47,7 +45,7 @@ Task skeleton folders and `task.md` contracts — created by `bf-milestone-break
 
 Task baseline docs (spec / PM stance / acceptance / optional content-lock) and later `design.md` — created only when each task starts.
 
-Container planning is **Phase/Milestone plan + first task seed**, not implementation specification.
+Container planning is **Phase/Milestone plan**, not implementation specification.
 
 Each task is its own PR. Task PR flow inside a wave is identical to any other task PR — `bf-git-workflow` + `bf-task-fourpiece` + `bf-pr-review-flow` apply unchanged.
 

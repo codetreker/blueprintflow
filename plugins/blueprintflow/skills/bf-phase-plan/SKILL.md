@@ -1,11 +1,11 @@
 ---
 name: bf-phase-plan
-description: "Part of the Blueprintflow methodology. Use when locked next-blueprint anchors need Phase/Milestone planning, value-loop gates, or first task seed before milestone breakdown."
+description: "Part of the Blueprintflow methodology. Use when locked next-blueprint anchors need Phase/Milestone planning, dependency boundaries, and exit gates before execution readiness."
 ---
 
 # Phase Plan
 
-Once `docs/blueprint/next/` has `LOCKED` anchors, the Architect leads. Break the selected next work into Phases and Milestones, with enough first-milestone task seed to prove execution can start. Complete task decomposition waits for `bf-milestone-breakdown`. Each Phase anchors to a **value loop** (something an end user can actually use), not to technical layers.
+Once `docs/blueprint/next/` has `LOCKED` anchors, the Architect leads. Break the selected next work into only the Phases and Milestones needed to express staged progress, prerequisite dependencies, and later integration boundaries. Stop at Phase/Milestone planning; concrete tasks are created later from current execution context.
 
 ## Direct Invocation Guard
 
@@ -19,24 +19,33 @@ Before using this skill, read `references/preflight.md` to confirm it applies. T
 
 | Level | Meaning | PR ownership |
 |---|---|---|
-| Phase | Value loop with exit gates | Not a PR by itself |
-| Milestone | Capability or deliverable group inside a Phase | Groups tasks; not a PR by itself |
+| Phase | Dependency-ordered stage inside a major iteration, with an integration boundary and exit gates | Not a PR by itself |
+| Milestone | User-facing capability or deliverable group inside a Phase | Execution target; not a PR by itself |
 | Task | Smallest executable unit | **One task = one worktree + one branch + one PR** |
 
-`docs/tasks/` is the execution path from locked `next` anchors to accepted `current` behavior. At freeze/lock time it records Phase/Milestone planning; `bf-milestone-breakdown` later creates reviewed task skeleton folders; each concrete task gains four-piece/design files only when that task starts. It does not replace the product-shape source of truth in `docs/blueprint/next/`.
+`docs/tasks/` is the execution path from locked `next` anchors to accepted `current` behavior. At freeze/lock time it records Phase/Milestone planning only. It does not replace the product-shape source of truth in `docs/blueprint/next/`.
 
 ## Phase vs wave
 
-Not every batch of work is a new Phase. Read `references/phase-vs-wave.md` for the rule: **did locked next scope introduce a new value loop?** Yes → new Phase. No → milestone wave inside an existing Phase. Ad-hoc issue → single task or task set under the relevant milestone.
+Not every batch of work is a new Phase. Read `references/phase-vs-wave.md` for the rule: **does this scope need a dependency-ordered stage or later integration boundary?** Yes → new Phase. No → milestone wave inside an existing Phase. Ad-hoc issue → single task or task set under the relevant milestone.
 
 ## How to split Phases
 
-Split by **value loop**, not by technical layer:
+Split by **dependency/progression boundary**, not by technical layer or quota:
 
 - ❌ Wrong: Phase 1 schema / Phase 2 server / Phase 3 client (technical layers, no value)
-- ✅ Right: Phase 1 identity loop / Phase 2 collaboration loop / Phase 3 second-dimension product / Phase 4+ remaining (each Phase independently demonstrable)
+- ✅ Right: Phase 1 identity prerequisites / Phase 2 collaboration loop / Phase 3 second-dimension integration (each Phase has a real progression boundary)
 
-> **Real example (Borgee):** Phase 0 foundation → Phase 1 identity loop → Phase 2 collaboration loop ⭐ → Phase 3 second dimension → Phase 4+ remaining
+Do not create multiple Phases unless the dependency or integration boundary is real.
+
+## Default Limits
+
+| Limit | Stop-and-question rule |
+|---|---|
+| Major iteration has more than 3 Phases | Stop. Ask why there are so many Phases, whether the split dimension is correct, whether Phases can merge, or whether some work is only a Milestone/wave inside an existing Phase. |
+| Phase has more than 3 Milestones | Stop. Ask why the work is split this way, whether the Milestone dimension is correct, whether Milestones can merge, or whether task-level detail is being misclassified as Milestone scope. |
+
+These are defaults, not quotas. A major iteration may have fewer than 3 Phases, and a Phase may have fewer than 3 Milestones when the boundary is clear.
 
 ## Exit gate design
 
@@ -50,7 +59,7 @@ Every Phase needs **machine-checkable** + **user-perceivable** exit conditions:
 
 ## Four drift-prevention gates
 
-Every task must have these attached before implementation:
+Every Milestone should point toward these checks so later task execution can attach them before implementation:
 
 | Gate | Owner | What it checks |
 |---|---|---|
@@ -59,16 +68,16 @@ Every task must have these attached before implementation:
 | 3. Reverse-check table | PM + Architect | Stances writable in one sentence; no drift |
 | 4. Flagship signoff | PM | Demo + screenshot (AI teams skip video) |
 
-Gates 1+2 in the task spec brief, gate 3 in stance + acceptance, gate 4 at demo signoff.
+Record only the milestone-level direction here. Task-level gates are attached when concrete tasks are created during execution.
 
 ## Deliverables
 
 **Path**: `docs/tasks/`
 
 - **README.md** — cross-Phase index + resume view (updated on every task PR merge)
-- **phase-N-<name>/phase-plan.md** — value loop, milestone list, exit gates
-- **phase-N-<name>/<milestone>/milestone.md** — capability goal, acceptance boundary, dependencies, task-split trigger, and first task seed when this is the first executable milestone
-- **phase-N-<name>/<milestone>/<task>/task.md** — created later by `bf-milestone-breakdown`, not by freeze/lock planning
+- **phase-N-<name>/phase-plan.md** — staged progress boundary, milestone list, exit gates
+- **phase-N-<name>/<milestone>/milestone.md** — `Readiness State: PLANNED`, capability goal, acceptance boundary, coarse dependencies, and readiness direction
+- **phase-N-<name>/<milestone>/<task>/task.md** — not created by Phase/Milestone planning
 - **phase-N-<name>/<milestone>/<task>/{spec,stance,acceptance,design,progress}.md** — created when that task starts
 
 Freeze/lock example:
@@ -79,28 +88,10 @@ docs/tasks/
 └── phase-6-remote-agent/
     ├── phase-plan.md
     └── milestone-2-web-configure/
-        ├── milestone.md
-        └── task-seed.md        # optional file; seed may also be in milestone.md
+        └── milestone.md
 ```
 
-The first-milestone task seed may be a section in `milestone.md` or a small `task-seed.md`. It names the likely first task, cited next-blueprint anchors, prerequisites, expected PR atom, and first acceptance check. It is not a four-piece set and does not start implementation.
-
-PR boundary: in a PR-governed project, freeze/lock planning is a normal planning task such as `task-0-plan-phase-6`: one worktree, one branch, one PR. It has a real planning task folder for PR ownership/progress, for example `docs/tasks/phase-6-remote-agent/milestone-planning/task-0-plan-phase-6/progress.md`. The planning task's substantive deliverables are parent `phase-plan.md`, `milestone.md`, and task seed files; it is not a container PR exception and it does not implement product behavior.
-
-The freeze/lock planning task may stop at `phase-plan.md`, `milestone.md`, and the first-milestone task seed. Do not fabricate task skeleton folders just to make the plan look finished. When the milestone is selected for execution, run `bf-milestone-breakdown` to create reviewed task folders with `task.md`; create four-piece/design/progress files only when each task starts.
-
-After `bf-milestone-breakdown`:
-
-```text
-docs/tasks/phase-6-remote-agent/milestone-2-web-configure/
-├── milestone.md          # index, dependencies, breakdown review
-├── task-1-configure-job-api/
-│   └── task.md           # task contract only
-└── task-2-helper-runner/
-    └── task.md
-```
-
-Task start adds the four-piece/design/progress files to that task folder.
+PR boundary: in a PR-governed project, Phase/Milestone planning is a normal planning change with one worktree, one branch, and one PR when feasible. Its substantive deliverables are `phase-plan.md`, `milestone.md`, and `docs/tasks/README.md` index updates. It does not implement product behavior and does not create task folders.
 
 ## docs/tasks/README.md template
 
@@ -124,8 +115,9 @@ This Phase index records only Phase, Status, Exit condition, and Current milesto
 - ❌ Exit gates without user perception (machine-only)
 - ❌ Carry-over not anchored to a PR # (rule 6)
 - ❌ Treating a milestone as the PR atom; task is the PR atom
+- ❌ Creating task seeds, likely first tasks, task folders, task skeletons, or task contracts during Phase/Milestone planning
 - ❌ Writing task mechanics into `docs/blueprint/current/` or `docs/blueprint/next/`
-- ❌ PROGRESS not updated promptly
+- ❌ Planning state not updated promptly
 
 ## How to invoke
 

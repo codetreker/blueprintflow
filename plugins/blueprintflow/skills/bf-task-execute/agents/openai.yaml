@@ -1,4 +1,4 @@
 interface:
   display_name: "bf-task-execute"
   short_description: "Blueprintflow: Orchestrate one task to accepted"
-  default_prompt: "Use $bf-task-execute to advance a reviewed task from ready state through implementation, review, merge, and acceptance."
+  default_prompt: "Use $bf-task-execute to create or resume one concrete task and advance it through implementation, review, merge, and acceptance."

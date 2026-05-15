@@ -29,7 +29,7 @@ Every idle role must walk away with new work. Only two exceptions:
 **Not legitimate**: the agent sent one message and went idle without actually waiting for anything. Kick them with new work.
 
 How to tell: if an agent has no new output by the next fast check-in and has not recorded a wait checkpoint, it has most likely stopped after speaking. Hand it new work. While the merge agent is running, everyone else can work in parallel:
-- Dev → start implementing the next ready task in its own worktree
+- Dev → start or resume one concrete task in its own worktree
 - Architect → next batch of task spec briefs / blueprint patches / reviewing older PRs
 - PM → next batch of stance cross-checks / content lock / demo screenshots
 - QA → next batch of acceptance templates / REG flips / e2e flake fixes
@@ -48,11 +48,11 @@ Before reaching for the default dispatch list, read `docs/blueprint/next/README.
 For each idle role:
 1. Find `LOCKED` next anchors with `Work` = `PENDING`, `IMPLEMENTING`, or `COMPLETED`.
 2. If `Work` is `PENDING` and no milestone plan exists, dispatch Architect to run `bf-phase-plan`.
-3. If `Work` is `PENDING` and the selected milestone is planned but not broken down, dispatch `bf-milestone-breakdown`.
-4. If `Work` is `IMPLEMENTING`, read `docs/tasks/README.md`, `milestone.md`, and the relevant task `progress.md`, then dispatch the next missing action: breakdown fix/review, `bf-task-execute`, implementation owner, PR gate owner, acceptance owner, `bf-milestone-progress`, or `bf-phase-exit-gate`.
+3. If `Work` is `PENDING` and the selected milestone is planned but readiness has not passed, dispatch `bf-milestone-breakdown`.
+4. If `Work` is `IMPLEMENTING`, read `docs/tasks/README.md`, `milestone.md`, and the relevant task `progress.md` when it exists, then dispatch the next missing action: readiness fix/review, `bf-task-execute`, implementation owner, PR gate owner, acceptance owner, `bf-milestone-progress`, or `bf-phase-exit-gate`.
 5. If `Work` is `COMPLETED`, confirm required milestone, wave, or Phase gates are recorded, then dispatch `bf-blueprint-iteration` for accepted-scope promotion toward current unless the row already reflects current sync.
 6. Skip if already assigned or already linked to an open PR.
-7. Dispatch the exact role action needed in the milestone plan, task contract folder, task folder, or task worktree.
+7. Dispatch the exact role action needed in the milestone plan, readiness summary, task folder, or task worktree.
 8. Only if no active planned milestone or task needs the role, fall back to the default dispatch list below.
 
 Use the project-defined stuck threshold. LLM default: two fast check-ins with no owner output, no blocker update, and no artifact change.
@@ -60,8 +60,8 @@ Use the project-defined stuck threshold. LLM default: two fast check-ins with no
 Stuck signals:
 - `LOCKED` next anchor remains `PENDING` with no Phase/Milestone plan past the threshold.
 - Selected milestone remains planned with clear dependencies past the threshold.
-- Breakdown has no review/CI/merge/evidence movement past the threshold.
-- Reviewed task set has no first-task owner by the next fast check-in.
+- Readiness review has no review/CI/merge/evidence movement past the threshold.
+- Ready milestone has no active task owner by the next fast check-in.
 
 Flag stuck signals in the cron report and dispatch the unblock action immediately.
 
@@ -100,7 +100,7 @@ CI green + required LGTMs collected ≠ ready to merge. **You must check that th
 
 ## Default dispatch list (per role)
 
-**Dev**: implement the next ready task / firefighting bugs exposed by the last PR / schema spike for the next task.
+**Dev**: implement the active concrete task / firefighting bugs exposed by the last PR / schema spike for the next task.
 **Architect**: review queue / next task spec brief / patches to accepted current or locked next blueprints.
 **PM**: stance cross-check sheet / demo screenshot copy / README / onboarding content lock.
 **QA**: acceptance template / REG flip / e2e flake fix.
@@ -140,9 +140,9 @@ When a PR is blocked, **look at the type of block first**, then decide who to as
 - Assuming "parallel will conflict" and refusing to parallelize (under the protocol, one task has one worktree; independent tasks run in parallel naturally).
 - **Skipping the `docs/tasks` queue and going straight to the default dispatch list** — if there are active tasks, an idle role should pick one up before maintenance work (see §3.1).
 - **A `LOCKED` next anchor sitting `PENDING` with no plan past the stuck threshold** — that's stuck, not parked. Flag it and unblock.
-- **A selected milestone with dependencies clear but no breakdown** — run `bf-milestone-breakdown`.
-- **A breakdown with no review/CI/merge/evidence movement past the stuck threshold** — dispatch the missing reviewer, task-contract fix, CI-failure owner, merge-gate owner, or non-PR evidence recorder.
-- **A reviewed task set with no first-task owner** — assign the first ready task through `bf-task-execute`.
+- **A selected milestone with dependencies clear but no readiness review** — run `bf-milestone-breakdown`.
+- **A readiness review with no review/CI/merge/evidence movement past the stuck threshold** — dispatch the missing reviewer, milestone-readiness fix, CI-failure owner, merge-gate owner, or non-PR evidence recorder.
+- **A ready milestone with no active task owner** — assign the next concrete task through `bf-task-execute`.
 - **"CI is green so merge"** — you must first read the PR body's Acceptance / Test plan and confirm every item is ticked (see §5).
 - **"subagent LGTM = merge signal"** — a subagent doesn't audit task completion. The Teamlead reads the PR body in person.
 - **CI fail → grab a subagent** — the author knows their own task best. Send it back to the author (see "PR BLOCKED routing").

@@ -54,8 +54,6 @@ git fetch origin --prune
 
 Write skills as executable instructions, not essays.
 
-Before changing `plugins/blueprintflow/skills/*`, read `plugins/blueprintflow/docs/skill-runtime-design.md`. If the change follows a future design target that is not yet implemented by the owning skills, label it as a future target or update the owning skills in the same PR.
-
 - Use imperative verbs: `Read`, `Create`, `Dispatch`, `Stop`, `Record`, `Verify`.
 - Name the trigger, action, owner, artifact, and stop condition.
 - Prefer positive commands. Replace prohibition text with the required action, required state, or stop condition.

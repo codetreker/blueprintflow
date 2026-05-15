@@ -109,7 +109,7 @@ Update this row when owner, branch, PR, blocker, or checkpoint changes. Do not r
 ## Pairs with
 
 - `bf-task-fourpiece` — task four-piece set commits in the same worktree
-- `bf-milestone-breakdown` — reviewed task skeletons and `task.md` contracts before task work starts
+- `bf-milestone-breakdown` — milestone readiness review before task work starts
 - `bf-task-execute` — task-level orchestration from ready task to accepted task
 - `bf-task-state-standard` — `docs/tasks` resume and progress file contract
 - `bf-pr-review-flow` — dual review + squash merge after Teamlead opens PR

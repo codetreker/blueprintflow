@@ -1,0 +1,29 @@
+{
+  "bf_compat": ">=0.1",
+  "id": "product-engineering",
+  "version": "1.0.0-alpha",
+  "description": "Blueprint-driven product engineering Pack: blueprint → phase → milestone → task hierarchy, with stance / four-piece / acceptance gates inherited from BF v6.",
+  "schemas": {
+    "task":      "./schemas/task.json"
+  },
+  "flows": [
+    "./flows/brainstorm-task.json",
+    "./flows/breakdown-milestone-to-task.json",
+    "./flows/loop-milestone.json",
+    "./flows/close-leaf-task.json"
+  ],
+  "roles_dir": "./roles",
+  "protocols_dir": "./protocols",
+  "routing": {
+    "task,new":          "brainstorm-task",
+    "milestone,shaped":  "breakdown-milestone-to-task",
+    "milestone,broken_down": "loop-milestone",
+    "task,doing":        "close-leaf-task"
+  },
+  "state_aliases": {
+    "reviewed_task_ready": "shaped",
+    "accepted_task":       "done",
+    "milestone_planned":   "shaped",
+    "milestone_done":      "done"
+  }
+}

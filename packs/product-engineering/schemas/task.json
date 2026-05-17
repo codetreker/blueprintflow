@@ -1,0 +1,13 @@
+{
+  "id": "task",
+  "pack": "product-engineering",
+  "description": "Work Object schema for product-engineering tasks: the leaf execution unit shaped from a Phase, with a single Objective, Boundary, and Acceptance criteria, completed via the new -> shaped -> doing -> done lifecycle.",
+  "states": ["new", "shaped", "doing", "done"],
+  "default_desired_state": "done",
+  "wo_md_sections": {
+    "required": ["Objective", "Boundary", "Acceptance criteria"],
+    "optional": ["Notes", "Four-piece", "References"]
+  },
+  "acceptance_lint_profile": "task",
+  "capability_required_hints": ["implementation", "code-review", "verification"]
+}

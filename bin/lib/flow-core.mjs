@@ -495,7 +495,7 @@ export function cmdSeal(args) {
   for (const f of files) {
     const lower = f.toLowerCase();
     let type = null;
-    if (/^eval-.*\.md$/i.test(f)) type = "eval";
+    if (/^eval(-.+)?\.md$/i.test(f)) type = "eval";
     else if (/^screenshot.*\.(png|jpg|jpeg|gif|webp)$/i.test(f)) type = "screenshot";
     else if (/^(command-output|cli-output).*\.(txt|log)$/i.test(f) || /\.log$/i.test(f)) type = "cli-output";
     else if (/^test-.*\.json$/i.test(f)) type = "test-result";

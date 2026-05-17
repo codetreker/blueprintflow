@@ -44,6 +44,12 @@ Use the multi-role review template at
 [`../../../pipeline/role-evaluator-prompt.md`](../../../pipeline/role-evaluator-prompt.md)
 to format each role's input.
 
+**Output filename convention:** Each reviewer writes their eval as
+`eval-<role>.md` (e.g. `eval-tester.md`, `eval-skeptic-owner.md`) so
+the harness can distinguish independent agents. A bare `eval.md` also
+works for single-reviewer nodes but cannot satisfy review nodes that
+require ≥2 distinct evals.
+
 Round structure (per `bf-brainstorm` Multi-round structure, scoped
 down):
 

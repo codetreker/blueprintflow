@@ -121,6 +121,12 @@ using the **Review Output Format** section. Findings must cite
 `file:line`, include `reasoning:` and `fix:`, and obey the severity
 calibration (🔴 / 🟡 / 🔵).
 
+**Output filename convention:** Each reviewer writes their eval as
+`eval-<role>.md` (e.g. `eval-tester.md`, `eval-skeptic-owner.md`) so
+the harness can distinguish independent agents. A bare `eval.md` also
+works for single-reviewer nodes but cannot satisfy review nodes that
+require ≥2 distinct evals.
+
 Verdict mapping (derived from v6 `bf-pr-review-flow` three-gate
 merge rule, scoped to in-flow review only — the PR merge itself is
 out of flow):

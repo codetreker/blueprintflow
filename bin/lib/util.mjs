@@ -4,7 +4,7 @@
 import { writeFileSync, renameSync, symlinkSync, unlinkSync, readlinkSync, existsSync, mkdirSync, readdirSync, statSync, rmSync, realpathSync } from "fs";
 import { resolve, join, dirname } from "path";
 import { createHash, randomBytes } from "crypto";
-import { homedir } from "os";
+import { homedir, tmpdir } from "os";
 import { execSync } from "child_process";
 
 // ── CLI flag parsing ────────────────────────────────────────────
@@ -46,9 +46,15 @@ export function resolveDir(args, opts = {}) {
   let cwd;
   try { cwd = realpathSync(process.cwd()); } catch { cwd = process.cwd(); }
   const opcBase = join(homedir(), ".bf", "sessions");
-  // Allow: under cwd OR under ~/.bf/sessions/ (session dirs)
-  if (!resolved.startsWith(cwd + "/") && resolved !== cwd && !resolved.startsWith(opcBase + "/")) {
-    console.error(`ERROR: --dir resolved to '${resolved}' which is outside cwd '${cwd}' and ~/.bf/sessions/`);
+  const tmpBfPattern = join(tmpdir(), "bf-");
+  // Allow: under cwd OR under ~/.bf/sessions/ (session dirs) OR $TMPDIR/bf-*
+  if (
+    !resolved.startsWith(cwd + "/") &&
+    resolved !== cwd &&
+    !resolved.startsWith(opcBase + "/") &&
+    !resolved.startsWith(tmpBfPattern)
+  ) {
+    console.error(`ERROR: --dir resolved to '${resolved}' which is outside cwd '${cwd}', ~/.bf/sessions/, and ${tmpBfPattern}*`);
     process.exit(1);
   }
   return resolved;

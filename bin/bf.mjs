@@ -10,5 +10,7 @@ if (verb === "help" || !knownVerb) {
   process.exit(verb === "help" ? 0 : 2);
 }
 
-const mod = await import(`./lib/verbs/${verb}.mjs`);
+const escapeVerbs = new Set(["skip", "pass", "stop", "goto", "resume"]);
+const modPath = escapeVerbs.has(verb) ? "./lib/verbs/escape.mjs" : `./lib/verbs/${verb}.mjs`;
+const mod = await import(modPath);
 await mod[verb]({ args, flags });

@@ -33,6 +33,7 @@ files present in upstream were copied.
 |---|---|---|
 | 2026-05-17 | (initial vendor) | Fork point captured above |
 | 2026-05-17 | roles/*.md (21 files), test/deferred-tests.txt, test/run-all.sh | Vendor OPC roles so harness mandatory-role checks work; add a skip-by-name mechanism to run-all.sh and defer test-install-hooks.sh (depends on bin/opc.mjs which is not vendored). Discovered during Task 1.3 baseline run. |
+| 2026-05-17 | runtime/*.mjs (rename map), test/*.sh (rename map), runtime/lib/clean.mjs (BF_DIR_PATTERN) | Brand renames per spec § 'Replaced (brand words)': opc-harness → bf-harness; .harness → .bf (with .harness still recognized for legacy cleanup in clean.mjs); ~/.opc → ~/.bf; opc_compat → bf_compat; OPC_* env vars → BF_*; user-visible help text 'OPC' → 'BF'. Generic vocabulary (flow / node / verdict / handshake / gate / route / transition / synthesize / FLOW_TEMPLATES / HARNESS_VERSION) kept. Suite remains at 108 passed / 0 failed / 1 deferred. |
 
 ## Deferred to Stage 4 (bf-run skill)
 

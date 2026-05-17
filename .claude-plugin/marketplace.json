@@ -7,7 +7,12 @@
     {
       "name": "blueprintflow",
       "source": "./plugins/blueprintflow",
-      "description": "Blueprint-driven multi-agent collaboration workflow"
+      "description": "Blueprint-driven multi-agent collaboration workflow (v6.0.0; v1 migration in progress)"
+    },
+    {
+      "name": "bf",
+      "source": "./plugins/bf",
+      "description": "Blueprintflow — general evidence-gated work loop framework (alpha)"
     }
   ]
 }

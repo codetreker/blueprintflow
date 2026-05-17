@@ -18,8 +18,8 @@ Blueprintflow today is one plugin: a product-engineering governance workflow wit
 | D1 | OPC relationship | **Narrow fork** — long-term divergence, no upstream pump after v1 |
 | D2 | Fork scope | OPC harness + selective reusable roles. OPC's `skill.md` and product-engineering protocols are NOT taken. |
 | D3 | Naming policy | Brand words replaced (OPC, opc-harness, .harness/, .opc/); generic vocabulary kept (flow, node, edge, verdict, handshake, gate, route, transition) |
-| D4 | Repo layout | Same `blueprintflow` repo; single `plugins/bf/` plugin with Packs embedded at `plugins/bf/packs/<pack-id>/` (e.g. `product-engineering`). Old `plugins/blueprintflow/` content migrates in. |
-| D5 | Distribution | Marketplace only at v1; npm deferred until non-Claude-Code consumers appear |
+| D4 | Repo layout | Same `blueprintflow` git repo; the repo root is the npm package `@codetreker/bf` (bare skill). Packs are embedded at `packs/<pack-id>/` (e.g. `product-engineering`). Old `plugins/blueprintflow/` (v6 plugin) stays in `plugins/` for backward compat until v1 cuts over. |
+| D5 | Distribution | **npm-first as bare skill** (`@codetreker/bf`). Postinstall copies content to `~/.claude/skills/bf/`. Marketplace registration deferred (was the original v1 plan; revisited after Stage 1+2 review concluded bare-skill+npm better matches BF's general-framework narrative and OPC's distribution form). |
 | D6 | Pack work | Parallel — Core contracts and product-engineering Pack built side-by-side, each pressure-testing the other |
 
 ## Non-goals
@@ -36,27 +36,28 @@ Blueprintflow today is one plugin: a product-engineering governance workflow wit
 ```
 ┌─────────────────────────────────────────────────┐
 │ Pack layer (domain instances)                   │
-│   plugins/bf/packs/product-engineering/         │
-│   plugins/bf/packs/<future-packs>/              │
+│   packs/product-engineering/                    │
+│   packs/<future>/                               │
 └────────────┬────────────────────────────────────┘
              │ consumes
              ▼
 ┌─────────────────────────────────────────────────┐
 │ BF Core (domain-general contracts + entry)      │
-│   plugins/bf/core/        ← 6 contracts         │
-│   plugins/bf/skills/bf-run/ ← public entry      │
-│   plugins/bf/roles/       ← Core roles          │
+│   SKILL.md                ← bare-skill entry    │
+│   references/             ← 5 Core contract docs│
+│   roles/                  ← Core roles          │
+│   pipeline/               ← Core node protocols │
 └────────────┬────────────────────────────────────┘
              │ invokes
              ▼
 ┌─────────────────────────────────────────────────┐
 │ Runtime (vendored harness)                      │
-│   plugins/bf/runtime/bf-harness.mjs             │
-│   plugins/bf/runtime/lib/*.mjs                  │
+│   bin/bf-harness.mjs                            │
+│   bin/lib/*.mjs                                 │
 └─────────────────────────────────────────────────┘
 ```
 
-All three layers ship inside one `plugins/bf/` plugin in v1. Packs are subdirectories of `bf/packs/`, not separate plugins. See [layering-principles.md](./2026-05-16-bf-fork-design/layering-principles.md) §3 for the design rationale and the future migration path to externalized Packs.
+All three layers ship inside a single npm package `@codetreker/bf`, distributed as a bare Claude Code skill. The package root is the skill root (`SKILL.md` at top); npm postinstall copies the skill into `~/.claude/skills/bf/`. See [layering-principles.md](./2026-05-16-bf-fork-design/layering-principles.md) §3 for design rationale and future external Pack support.
 
 ### Conceptual reversal vs OPC
 
@@ -74,36 +75,37 @@ In OPC, flow is primary; the run is what's tracked. In BF, **Work Object is prim
 ### Repository layout
 
 ```
-blueprintflow/
-├── .claude-plugin/marketplace.json    ← single bf plugin entry
-├── plugins/
-│   └── bf/                            ← Core + runtime + embedded Packs
-│       ├── .claude-plugin/plugin.json
-│       ├── runtime/                   ← vendored from OPC
-│       │   ├── bf-harness.mjs
-│       │   └── lib/*.mjs
-│       ├── core/                      ← BF Core contracts (docs)
-│       │   ├── work-object.md
-│       │   ├── flow.md                 ← also documents Artifact as sub-shape
-│       │   ├── gate.md
-│       │   ├── wo-home.md
-│       │   └── pack.md
-│       ├── roles/                     ← Core roles (cross-Pack)
-│       ├── skills/
-│       │   └── bf-run/                ← public entry
-│       ├── packs/                     ← embedded Pack directory
-│       │   └── product-engineering/   ← migrated from old plugins/blueprintflow/
-│       │       ├── pack.json
-│       │       ├── flows/             ← Pack flow graphs
-│       │       ├── schemas/           ← Pack Work Object schemas
-│       │       ├── roles/             ← Pack roles (domain-specific)
-│       │       ├── protocols/         ← Pack node protocols
-│       │       └── skills/            ← Pack-invocable skills (e.g. using-bf)
-│       └── UPSTREAM.md                ← OPC fork point + delta log
-└── (plugins/blueprintflow/ retired — content moved to plugins/bf/packs/product-engineering/)
+blueprintflow/                          ← git repo root = npm package root (@codetreker/bf)
+├── SKILL.md                            ← bare-skill entry
+├── package.json                        ← npm metadata (bin: bf, bf-harness)
+├── README.md                           ← npm package README
+├── UPSTREAM.md                         ← OPC fork point + delta log
+├── bin/                                ← vendored from OPC bin/
+│   ├── bf-harness.mjs                  ← runtime CLI
+│   ├── bf.mjs                          ← dispatcher (Stage 4 fleshes out)
+│   └── lib/*.mjs
+├── pipeline/                           ← Core node protocols (Stage 3 vendors)
+├── roles/                              ← 21 vendored OPC roles (Stage 3 sorts Core vs Pack)
+├── packs/                              ← embedded domain Packs (Stage 3+)
+│   └── product-engineering/            ← v6 BF migrates here in Stage 3
+├── references/                         ← 5 Core contract docs
+│   ├── README.md
+│   ├── work-object.md
+│   ├── flow.md
+│   ├── gate.md
+│   ├── wo-home.md
+│   └── pack.md
+├── scripts/postinstall.mjs             ← copies skill content to ~/.claude/skills/bf/
+├── test/                               ← harness test suite (108/0/1)
+├── docs/                               ← repo docs (NOT in npm tarball)
+│   └── specs/                          ← design spec + companions
+├── plugins/blueprintflow/              ← legacy v6 plugin (kept in marketplace)
+└── .claude-plugin/marketplace.json     ← registers only blueprintflow (v6); bf is npm-only
 ```
 
-**One plugin, embedded Packs.** Pack discovery in `bf-run` is written to allow a future `plugins/bf-pack-*/` external Pack form (third-party or independently-released Packs) without core refactor. See [layering-principles.md](./2026-05-16-bf-fork-design/layering-principles.md) §3.
+**Bare skill + npm.** BF is published as `@codetreker/bf` on npm. Postinstall copies the skill (SKILL.md + bin/ + pipeline/ + roles/ + packs/ + references/ + test/ + UPSTREAM.md + README.md) into `~/.claude/skills/bf/`, exposing the skill to Claude Code; the `bf` and `bf-harness` binaries go on `PATH` for non-CC consumers (Codex, plain terminal, CI). The legacy v6 plugin at `plugins/blueprintflow/` remains marketplace-installable.
+
+Pack discovery scans `packs/*/pack.json` at startup. Future external Packs can use the `bf-pack-*` npm prefix and the discovery mechanism extends without core refactor.
 
 ## Core contracts (overview)
 
@@ -173,25 +175,22 @@ Rule: if a word is industry-generic and a reader from outside BF would recognize
 
 ## Distribution
 
-### v1: marketplace, single plugin
+### v1: npm, bare skill
 
-- `.claude-plugin/marketplace.json` lists one entry: `bf`
-- The previous `blueprintflow` plugin entry is removed; its content moves into `plugins/bf/packs/product-engineering/`
-- Users install via `/plugin install` in Claude Code
-- `bf-harness.mjs` invoked from skills via `node ${CLAUDE_PLUGIN_ROOT}/runtime/bf-harness.mjs`
-- No external download, no npm
+- `@codetreker/bf` on npm. Source at `https://github.com/codetreker/blueprintflow` (the same monorepo that holds v6).
+- `npm install -g @codetreker/bf` → postinstall copies skill to `~/.claude/skills/bf/` + puts `bf` and `bf-harness` on PATH.
+- The legacy v6 plugin (`plugins/blueprintflow/`) remains marketplace-installable; both can coexist on one machine until v1 cuts over.
 
 ### Deferred to v2 (gated by demand)
 
-- External Pack form: `plugins/bf-pack-*/` for third-party or independently-released Packs (bf-run discovery already designed to extend; see [layering-principles.md](./2026-05-16-bf-fork-design/layering-principles.md) §3)
-- npm publish for non-Claude-Code consumers
-- Standalone CLI invocation (`bf` binary on PATH)
-- Codex / generic-CLI runtime adapter
+- External Pack form: separate `@codetreker/bf-pack-*` npm packages discoverable by `bf-run`
+- Marketplace re-entry for bf (currently npm-only)
+- Codex / generic-CLI runtime adapter beyond CC (the binaries already work; Stage 4 will validate the non-CC path explicitly)
 - Extension system re-enabled (capability routing)
 
 ## Pack: product-engineering
 
-The existing `plugins/blueprintflow/` plugin's content moves into `plugins/bf/packs/product-engineering/` and becomes the first Pack. Skill-by-skill migration plan in [bf-skill-migration.md](./2026-05-16-bf-fork-design/bf-skill-migration.md); layering rationale in [layering-principles.md](./2026-05-16-bf-fork-design/layering-principles.md).
+The existing `plugins/blueprintflow/` plugin's content moves into `packs/product-engineering/` and becomes the first Pack. Skill-by-skill migration plan in [bf-skill-migration.md](./2026-05-16-bf-fork-design/bf-skill-migration.md); layering rationale in [layering-principles.md](./2026-05-16-bf-fork-design/layering-principles.md).
 
 Migration categories (skills map onto Core's four flow types):
 
@@ -199,7 +198,7 @@ Migration categories (skills map onto Core's four flow types):
 2. **Skills → Breakdown flow protocols** — `bf-phase-plan`, `bf-milestone-breakdown`, `bf-implementation-design` describe how to produce child WOs
 3. **Skills → Loop / Close flow protocols** — `bf-milestone-progress`, `bf-task-execute`, `bf-pr-review-flow`, `bf-verification`, `bf-phase-exit-gate` describe how to drive children to done and how to validate at close
 4. **Skills → Work Object schemas** — `bf-task-state-standard`, `bf-current-doc-standard` define state enums and `wo.md` content conventions
-5. **Skills → Roles** — `bf-team-roles` splits into Pack-level `roles/*.md` (PM / Architect / Dev / QA / Teamlead); Core-eligible roles (tester / security / a11y / etc.) live in `plugins/bf/roles/`
+5. **Skills → Roles** — `bf-team-roles` splits into Pack-level `packs/product-engineering/roles/*.md` (PM / Architect / Dev / QA / Teamlead); Core-eligible roles (tester / security / a11y / etc.) live in `roles/` (Core)
 6. **Skills retained as user entry** — `using-plueprint` (renamed `using-bf`) is the Pack's routing skill at `packs/product-engineering/skills/using-bf/`
 7. **Skills retired** — `bf-runtime-adapter` and `bf-teamlead-*` subsumed by BF Core + runtime
 8. **Issue triage** — `bf-issue-triage` becomes a Pack protocol invoked by Core verb `intake` (deferred to v2)
@@ -212,22 +211,24 @@ Six stages, each a runnable checkpoint. Stages run sequentially; each ends with 
 - This spec, reviewed and approved
 - Implementation plan written via `superpowers:writing-plans`
 
-### Stage 1 — runtime vendoring
-- Create `plugins/bf/` skeleton
-- Vendor `bin/` from OPC → `plugins/bf/runtime/`
+### Stage 1 — runtime vendoring + bare-skill layout
+- Vendor `bin/` from OPC → repo root `bin/`
 - Apply brand renames (D3)
 - Run OPC's test suite under new names; all green = stage done
+- Author `SKILL.md`, `package.json`, `scripts/postinstall.mjs`, `bin/bf.mjs` (placeholder)
 - Write `UPSTREAM.md`
 
 ### Stage 2 — BF Core contracts v0.2
-- Author `plugins/bf/core/*.md` (5 files: work-object, flow, gate, wo-home, pack)
+- Author `references/*.md` (5 files: work-object, flow, gate, wo-home, pack) + `references/README.md`
 - Each contract: purpose, fields, lifecycle, where stored, examples
 - Open questions parked in each file's "Open Questions" section
 - This stage now starts from the v0.2 drafts in [core-contracts.md](./2026-05-16-bf-fork-design/core-contracts.md), not v0.1
 
 ### Stage 3 — first Pack: product-engineering v0.1 (3 migration probes)
-- Move `plugins/blueprintflow/` content into `plugins/bf/packs/product-engineering/`
+- Move `plugins/blueprintflow/` content into `packs/product-engineering/`
 - Create `packs/product-engineering/pack.json` with **`state_aliases`** mapping (existing v6 state names → canonical Core states `new` / `shaped` / `broken_down` / `doing` / `children_done` / `done`)
+- Vendor / write the **Core node protocols** into `pipeline/` (left empty in Stage 1+2 placeholder; decide which OPC pipeline/*.md to bring across vs leave to Pack)
+- Sort `roles/` (currently 21 vendored OPC roles): keep Core-eligible in `roles/`, move product-engineering-specific into `packs/product-engineering/roles/`
 - Create **at least one flow of each Core type** to stress-test:
   - `flows/brainstorm-task.json` — shaping a task (covers `bf-task-fourpiece`)
   - `flows/breakdown-milestone.json` — breaking a milestone into tasks (covers `bf-milestone-breakdown`)
@@ -236,10 +237,11 @@ Six stages, each a runnable checkpoint. Stages run sequentially; each ends with 
 - Record discoveries in Core contracts' Open Questions
 - DO NOT migrate all 20 skills yet
 
-### Stage 4 — public entry: bf-run
-- Write `plugins/bf/skills/bf-run/SKILL.md` from scratch (not vendored from OPC)
-- BF-flavored: Work Object first, Pack discovery (scan `bf/packs/*`, with hook for future `plugins/bf-pack-*/`), then flow dispatch
-- Update `.claude-plugin/marketplace.json` to a single `bf` entry; remove the old `blueprintflow` entry
+### Stage 4 — live `/bf` dispatcher + npm publish
+- Replace `bin/bf.mjs` placeholder with the real dispatcher: task inference, Pack discovery (scan `packs/*/pack.json` + future `@codetreker/bf-pack-*` npm sibling packages), flow selection, role dispatch
+- Sweep deferred `/opc <verb>` strings in `bin/lib/flow-escape.mjs` and `bin/lib/loop-advance.mjs` (see `UPSTREAM.md` "Deferred to Stage 4")
+- Publish first npm version: `npm publish --access public` for `@codetreker/bf` v0.2.0 (Stage 4 milestone)
+- Update README.md install / use sections to match shipped behavior
 - bf-run accepts **verb-first commands** (scriptable, predictable) **AND natural language** (LLM parses, transcribes to verb form, then executes). See [bf-run-commands.md](./2026-05-16-bf-fork-design/bf-run-commands.md) for the verb catalog and parsing rules.
 
 ### Stage 5 — demo: first runnable end-to-end flow

@@ -403,16 +403,16 @@ Domain-specific instantiation of BF Core. Manifest binding schemas + flows + rol
 
 ### Lifecycle
 
-1. **Registered** — Pack lives at `plugins/bf/packs/<pack-id>/`; bf-run discovers by scanning that directory
+1. **Registered** — Pack lives at `packs/<pack-id>/`; bf-run discovers by scanning that directory
 2. **Selected** — `bf-run` reads installed Packs; chooses one by user hint, by WO's `pack` field, or by routing default
 3. **Active** — flows / roles / protocols / schemas loaded
 4. **Versioned** — Pack `version` declared in its own `pack.json`; in v1 ships inside `bf`, but the field exists so future external Packs version independently
 
 ### Where stored
 
-- Manifest: `plugins/bf/packs/<pack-id>/pack.json`
+- Manifest: `packs/<pack-id>/pack.json`
 - Pack contents: same directory (`flows/`, `schemas/`, `roles/`, `protocols/`, `skills/`)
-- Discovery: `bf-run` scans `plugins/bf/packs/*/pack.json` at startup. Also accepts `plugins/bf-pack-*/pack.json` in the future (external Pack form, v2).
+- Discovery: `bf-run` scans `packs/*/pack.json` at startup. Also accepts `@codetreker/bf-pack-* (npm)/pack.json` in the future (external Pack form, v2).
 
 ### Role resolution
 

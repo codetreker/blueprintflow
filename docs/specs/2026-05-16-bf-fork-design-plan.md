@@ -1,5 +1,7 @@
 # BF Fork OPC — Stage 1 + Stage 2 Implementation Plan
 
+> **Status (2026-05-17):** This plan has been executed. Paths and structure below reflect the **original plan** as written (`plugins/bf/...`). The actual implementation reorganized into bare-skill + npm form (bf content lives at repo root, distributed as `@codetreker/bf` on npm) — see the main spec § Repository layout and UPSTREAM.md delta log for the final layout. Paths in this plan are kept as-was for traceability; refer to the spec for the current shape.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Vendor OPC's harness execution core into `plugins/bf/runtime/`, apply brand renames, get the full OPC test suite green under the new names, and author the 5 BF Core contract docs.

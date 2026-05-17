@@ -4,8 +4,8 @@ Companion to [../2026-05-16-bf-fork-design.md](../2026-05-16-bf-fork-design.md).
 
 Decision policy for each of OPC's 16 roles. Three buckets:
 
-- **Adopt to BF Core (`plugins/bf/roles/`)** — generic enough for any Pack
-- **Adopt to product-engineering Pack (`plugins/bf/packs/product-engineering/roles/`)** — specific to product engineering
+- **Adopt to BF Core (`roles/`)** — generic enough for any Pack
+- **Adopt to product-engineering Pack (`packs/product-engineering/roles/`)** — specific to product engineering
 - **Skip** — too OPC-specific or redundant with BF's own role definitions
 
 ## Decision rule

@@ -15,7 +15,7 @@ Buckets:
 - **→ Skill (kept)** — remains a user-invocable skill in either BF Core or Pack
 - **→ Retire** — superseded by BF Core / runtime; archived in commit history
 
-In the migration table below, `pack/` is shorthand for `plugins/bf/packs/product-engineering/`.
+In the migration table below, `pack/` is shorthand for `packs/product-engineering/`.
 
 ## Migration table
 
@@ -45,17 +45,17 @@ In the migration table below, `pack/` is shorthand for `plugins/bf/packs/product
 
 ## Skills in BF Core
 
-Only **one** user-invocable skill lives in `plugins/bf/`:
+Only **one** user-invocable skill lives at the bf-package root:
 
-- `bf-run` — public entry. Routes raw input, selects Pack, dispatches flow via runtime. Written from scratch.
+- `bf` (originally drafted as `bf-run`) — public entry. Routes raw input, selects Pack, dispatches flow via runtime. Written from scratch.
 
-All other Core content is documentation / contracts in `plugins/bf/core/` plus runtime in `plugins/bf/runtime/`. Roles in `plugins/bf/roles/` are loaded by flows, not invoked directly.
+All other Core content is documentation / contracts in `references/` plus runtime in `bin/`. Roles in `roles/` are loaded by flows, not invoked directly.
 
 ## Migration order
 
 Stage 3 (probe, just enough to stress-test Core):
 
-1. Move `plugins/blueprintflow/` content into `plugins/bf/packs/product-engineering/`
+1. Move `plugins/blueprintflow/` content into `packs/product-engineering/`
 2. Write `pack.json` with `state_aliases` for existing v6 state names
 3. Migrate four protocols — one per Core flow type:
    - `brainstorm-task.md` (from `bf-task-fourpiece`)

@@ -46,15 +46,17 @@ export function resolveDir(args, opts = {}) {
   let cwd;
   try { cwd = realpathSync(process.cwd()); } catch { cwd = process.cwd(); }
   const opcBase = join(homedir(), ".bf", "sessions");
+  const woBase = join(homedir(), ".bf", "wo");
   const tmpBfPattern = join(tmpdir(), "bf-");
-  // Allow: under cwd OR under ~/.bf/sessions/ (session dirs) OR $TMPDIR/bf-*
+  // Allow: under cwd OR under ~/.bf/sessions/ OR ~/.bf/wo/ OR $TMPDIR/bf-*
   if (
     !resolved.startsWith(cwd + "/") &&
     resolved !== cwd &&
     !resolved.startsWith(opcBase + "/") &&
+    !resolved.startsWith(woBase + "/") &&
     !resolved.startsWith(tmpBfPattern)
   ) {
-    console.error(`ERROR: --dir resolved to '${resolved}' which is outside cwd '${cwd}', ~/.bf/sessions/, and ${tmpBfPattern}*`);
+    console.error(`ERROR: --dir resolved to '${resolved}' which is outside cwd '${cwd}', ~/.bf/sessions/, ~/.bf/wo/, and ${tmpBfPattern}*`);
     process.exit(1);
   }
   return resolved;

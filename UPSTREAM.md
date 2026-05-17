@@ -12,6 +12,7 @@ BF's `runtime/` and `test/` directories were vendored from OPC at the fork point
   - `bin/lib/*.mjs` (40 files) → `runtime/lib/*.mjs`
   - `test/run-all.sh` + `test/test-*.sh` (110 scripts) + `test/test-helpers.sh` + `test/fixtures/`
   - `roles/*.md` (21 files)
+  - `pipeline/*.md` (7 files)
 
 Note: the fork plan estimated 111 `test-*.sh` scripts; actual count at the
 captured SHA is 110. The plan's count appears to have included `run-all.sh`
@@ -35,6 +36,7 @@ files present in upstream were copied.
 | 2026-05-17 | roles/*.md (21 files), test/deferred-tests.txt, test/run-all.sh | Vendor OPC roles so harness mandatory-role checks work; add a skip-by-name mechanism to run-all.sh and defer test-install-hooks.sh (depends on bin/opc.mjs which is not vendored). Discovered during Task 1.3 baseline run. |
 | 2026-05-17 | runtime/*.mjs (rename map), test/*.sh (rename map), runtime/lib/clean.mjs (BF_DIR_PATTERN) | Brand renames per spec § 'Replaced (brand words)': opc-harness → bf-harness; .harness → .bf (with .harness still recognized for legacy cleanup in clean.mjs); ~/.opc → ~/.bf; opc_compat → bf_compat; OPC_* env vars → BF_*; user-visible help text 'OPC' → 'BF'. Generic vocabulary (flow / node / verdict / handshake / gate / route / transition / synthesize / FLOW_TEMPLATES / HARNESS_VERSION) kept. Suite remains at 108 passed / 0 failed / 1 deferred. |
 | 2026-05-17 | repo layout (runtime/→bin/, core/→references/, plugins/bf/ → root), +package.json +SKILL.md +scripts/postinstall.mjs +bin/bf.mjs +pipeline/.gitkeep | Reorganized from plugin form to bare-skill + npm form (@codetreker/bf). Mirrors OPC's distribution model. .claude-plugin/marketplace.json no longer registers bf — npm is the only distribution channel. Tests still 108/0/1 under new layout. |
+| 2026-05-17 | pipeline/{gate-protocol,handoff-template,criteria-lint,report-format,context-brief,role-evaluator-prompt,evaluator-prompt}.md, pipeline/README.md | Stage 3: vendor 7 Core node protocols from OPC pipeline/. Pack-specific protocols (implementer-prompt, executor-protocol, discussion-protocol, test-design-protocol, ux-*) intentionally not vendored — they belong inside each Pack's protocols/ folder. |
 
 ## Deferred to Stage 4 (bf-run skill)
 

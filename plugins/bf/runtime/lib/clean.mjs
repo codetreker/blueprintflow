@@ -1,23 +1,23 @@
-// Clean up .harness* directories from a target project directory.
+// Clean up .bf* directories from a target project directory (post-rename); .harness* also matched for legacy cleanup.
 
 import { readdirSync, rmSync, statSync } from "fs";
 import { join, resolve } from "path";
 
-const HARNESS_PATTERN = /^\.harness(-.*)?$/;
+const BF_DIR_PATTERN = /^\.(bf|harness)(-.*)?$/;
 
 /**
- * Find all .harness* directories under targetDir (non-recursive, top-level only).
+ * Find all .bf* / .harness* directories under targetDir (non-recursive, top-level only).
  */
 export function findHarnessDirs(targetDir) {
   const resolved = resolve(targetDir);
   return readdirSync(resolved)
-    .filter(name => HARNESS_PATTERN.test(name))
+    .filter(name => BF_DIR_PATTERN.test(name))
     .map(name => join(resolved, name))
     .filter(p => statSync(p).isDirectory());
 }
 
 /**
- * Remove all .harness* directories under targetDir.
+ * Remove all .bf* / .harness* directories under targetDir.
  * Returns list of removed paths.
  */
 export function cleanHarnessDirs(targetDir, { dryRun = false } = {}) {

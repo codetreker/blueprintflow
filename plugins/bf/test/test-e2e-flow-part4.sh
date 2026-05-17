@@ -181,10 +181,10 @@ echo "=== E2E TEST 14: clean command removes .bf dirs ==="
 # ═══════════════════════════════════════════════════════════════
 
 rm -rf .bf .harness-*
-mkdir -p .harness-bf .harness-ext .harness-old
-echo '{}' > .harness-bf/flow-state.json
+mkdir -p .bf-foo .bf-bar .bf-baz
+echo '{}' > .bf-foo/flow-state.json
 $HARNESS clean 2>/dev/null
-if [ ! -d .harness-bf ] && [ ! -d .harness-ext ] && [ ! -d .harness-old ]; then
+if [ ! -d .bf-foo ] && [ ! -d .bf-bar ] && [ ! -d .bf-baz ]; then
   echo "  ✅ clean removes all .harness dirs"
   PASS=$((PASS + 1))
 else

@@ -453,8 +453,8 @@ export function cmdSeal(args) {
   // Find the latest run dir
   const nodeDir = join(dir, "nodes", nodeId);
   if (!existsSync(nodeDir)) {
-    console.log(JSON.stringify({ sealed: false, error: `node dir not found: nodes/${nodeId}` }));
-    return;
+    // Auto-create node dir so seal can lazily provision run_1 below.
+    mkdirSync(nodeDir, { recursive: true });
   }
 
   let runDir;
@@ -470,10 +470,14 @@ export function cmdSeal(args) {
         return nb - na;
       });
     if (runs.length === 0) {
-      console.log(JSON.stringify({ sealed: false, error: `no run_N directories found in nodes/${nodeId}` }));
-      return;
+      // Auto-create run_1 so dispatcher/protocols can drop artifacts and call
+      // seal directly without an explicit mkdir step. An empty run_1/ still
+      // hits the "no artifacts" check below — correct semantics.
+      mkdirSync(join(nodeDir, "run_1"), { recursive: true });
+      runDir = join(nodeDir, "run_1");
+    } else {
+      runDir = join(nodeDir, runs[0].name);
     }
-    runDir = join(nodeDir, runs[0].name);
   }
 
   if (!existsSync(runDir)) {
@@ -500,6 +504,14 @@ export function cmdSeal(args) {
     else continue; // skip unknown files
 
     artifacts.push({ type, path: `${runId}/${f}` });
+  }
+
+  // Empty seal (no recognized artifact files) is meaningless — fail explicitly
+  // so callers don't accidentally seal an empty node when run_1 was just
+  // auto-provisioned above.
+  if (artifacts.length === 0) {
+    console.log(JSON.stringify({ sealed: false, error: `no artifacts found in ${runId} for nodes/${nodeId}` }));
+    return;
   }
 
   // Infer verdict from eval files

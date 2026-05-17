@@ -16,7 +16,7 @@ fi
 TOTAL_PASS=0
 TOTAL_FAIL=0
 
-for f in "$DIR"/test-*.sh "$DIR"/harness-hardening/test-*.sh "$DIR"/dispatcher/test-*.sh; do
+for f in "$DIR"/test-*.sh "$DIR"/harness-hardening/test-*.sh "$DIR"/dispatcher/test-*.sh "$DIR"/verbs/test-*.sh; do
   [ -f "$f" ] || continue
   [ "$(basename "$f")" = "test-helpers.sh" ] && continue
   base="$(basename "$f")"

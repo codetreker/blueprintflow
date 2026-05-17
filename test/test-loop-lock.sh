@@ -4,7 +4,7 @@ set -euo pipefail
 # Test: file locking in loop-tick and loop-advance
 
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-HARNESS="node $SCRIPT_DIR/runtime/bf-harness.mjs"
+HARNESS="node $SCRIPT_DIR/bin/bf-harness.mjs"
 PASS=0; FAIL=0
 
 check() {

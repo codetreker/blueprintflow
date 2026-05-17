@@ -87,7 +87,7 @@ export BF_EXTENSIONS_DIR="$EXT_DIR"
 export BF_BREAKER_STATE=disabled
 
 cd "$TMP" || exit 1
-OPC="node $REPO_ROOT/runtime/bf-harness.mjs"
+OPC="node $REPO_ROOT/bin/bf-harness.mjs"
 
 echo "=== TEST: Run 2 STRICT mode (BF_STRICT_EXTENSIONS=1) ==="
 

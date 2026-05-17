@@ -37,10 +37,10 @@ echo "================================================"
 HOME_NO_JQ="$TMP/home-no-jq"
 NO_JQ_PATH="$TMP/no-jq-path"
 mkdir -p "$HOME_NO_JQ" "$NO_JQ_PATH"
-HOME="$HOME_NO_JQ" "$NODE_BIN" "$REPO_ROOT/runtime/opc.mjs" install > /dev/null
+HOME="$HOME_NO_JQ" "$NODE_BIN" "$REPO_ROOT/bin/opc.mjs" install > /dev/null
 
 set +e
-OUT=$(HOME="$HOME_NO_JQ" PATH="$NO_JQ_PATH" "$NODE_BIN" "$REPO_ROOT/runtime/opc.mjs" install-hooks 2>&1)
+OUT=$(HOME="$HOME_NO_JQ" PATH="$NO_JQ_PATH" "$NODE_BIN" "$REPO_ROOT/bin/opc.mjs" install-hooks 2>&1)
 STATUS=$?
 set -e
 
@@ -50,8 +50,8 @@ if [ ! -f "$HOME_NO_JQ/.claude/settings.json" ]; then ok "settings not written a
 
 HOME_OK="$TMP/home-ok"
 mkdir -p "$HOME_OK"
-HOME="$HOME_OK" "$NODE_BIN" "$REPO_ROOT/runtime/opc.mjs" install > /dev/null
-OUT_OK=$(HOME="$HOME_OK" "$NODE_BIN" "$REPO_ROOT/runtime/opc.mjs" install-hooks 2>&1)
+HOME="$HOME_OK" "$NODE_BIN" "$REPO_ROOT/bin/opc.mjs" install > /dev/null
+OUT_OK=$(HOME="$HOME_OK" "$NODE_BIN" "$REPO_ROOT/bin/opc.mjs" install-hooks 2>&1)
 assert_contains "$OUT_OK" "Verified: hook scripts present and jq available" "successful install verifies hook prereqs"
 
 SETTINGS="$HOME_OK/.claude/settings.json"

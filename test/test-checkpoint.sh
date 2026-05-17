@@ -4,7 +4,7 @@ set -euo pipefail
 # Test: checkpoint (tick-N-summary.md) + resume prompt
 
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-HARNESS="node $SCRIPT_DIR/runtime/bf-harness.mjs"
+HARNESS="node $SCRIPT_DIR/bin/bf-harness.mjs"
 PASS=0; FAIL=0
 
 check() {

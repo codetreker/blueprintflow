@@ -1,0 +1,44 @@
+{
+  "name": "@codetreker/bf",
+  "version": "0.1.0-alpha",
+  "description": "Blueprintflow — general evidence-gated work loop framework. Bare Claude Code skill + standalone CLI harness.",
+  "type": "module",
+  "bin": {
+    "bf": "bin/bf.mjs",
+    "bf-harness": "bin/bf-harness.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "bin",
+    "scripts",
+    "SKILL.md",
+    "roles",
+    "references",
+    "pipeline",
+    "packs",
+    "test",
+    "UPSTREAM.md",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "bash test/run-all.sh",
+    "postinstall": "node scripts/postinstall.mjs"
+  },
+  "keywords": [
+    "claude-code",
+    "ai-agent",
+    "work-loop",
+    "evidence-gated",
+    "blueprintflow",
+    "skill"
+  ],
+  "author": "codetreker",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codetreker/blueprintflow.git"
+  },
+  "homepage": "https://github.com/codetreker/blueprintflow#readme"
+}

@@ -4,7 +4,7 @@ set -euo pipefail
 # Test: crash recovery (in_progress timeout) + VALID_LOOP_STATUSES export
 
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-HARNESS="node $SCRIPT_DIR/runtime/bf-harness.mjs"
+HARNESS="node $SCRIPT_DIR/bin/bf-harness.mjs"
 PASS=0; FAIL=0
 
 check() {
@@ -103,10 +103,10 @@ check "custom timeout triggers recovery" 'echo "$RESULT3" | grep -q "in_progress
 echo ""
 echo "=== TEST GROUP 4: VALID_LOOP_STATUSES export ==="
 
-VSIZE=$(node --input-type=module -e "import { VALID_LOOP_STATUSES } from '$SCRIPT_DIR/runtime/lib/util.mjs'; console.log(VALID_LOOP_STATUSES.size)" 2>&1)
+VSIZE=$(node --input-type=module -e "import { VALID_LOOP_STATUSES } from '$SCRIPT_DIR/bin/lib/util.mjs'; console.log(VALID_LOOP_STATUSES.size)" 2>&1)
 check "VALID_LOOP_STATUSES has 5 entries" '[ "$VSIZE" = "5" ]'
 
-TSIZE=$(node --input-type=module -e "import { TERMINAL_LOOP_STATUSES } from '$SCRIPT_DIR/runtime/lib/util.mjs'; console.log(TERMINAL_LOOP_STATUSES.size)" 2>&1)
+TSIZE=$(node --input-type=module -e "import { TERMINAL_LOOP_STATUSES } from '$SCRIPT_DIR/bin/lib/util.mjs'; console.log(TERMINAL_LOOP_STATUSES.size)" 2>&1)
 check "TERMINAL_LOOP_STATUSES has 3 entries" '[ "$TSIZE" = "3" ]'
 
 echo ""

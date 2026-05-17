@@ -112,7 +112,7 @@ export HOME="$TMP/fake-home"
 mkdir -p "$HOME"
 
 cd "$TMP" || exit 1
-OPC="node $REPO_ROOT/runtime/bf-harness.mjs"
+OPC="node $REPO_ROOT/bin/bf-harness.mjs"
 
 echo "=== TEST: Run 2 E2E — sections 4-6 (artifact, failures, isolation) ==="
 

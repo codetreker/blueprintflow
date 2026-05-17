@@ -4,7 +4,7 @@
 #   source "$(dirname "$0")/test-helpers.sh"
 
 # ── Repo-relative harness path (portable, no hardcoded install path) ──
-HARNESS="node $(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/runtime/bf-harness.mjs"
+HARNESS="node $(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/bin/bf-harness.mjs"
 
 # ── Counters ──
 PASS=0

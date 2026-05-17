@@ -71,7 +71,7 @@ cat > "$HARNESS/acceptance-criteria.md" <<'EOF'
 - OUT-1: preflight hook fires and writes artifacts
 EOF
 
-HARNESS_BIN="node $REPO_ROOT/runtime/bf-harness.mjs"
+HARNESS_BIN="node $REPO_ROOT/bin/bf-harness.mjs"
 
 echo "═══ Preflight Hook Tests ═══"
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-OPC_BIN="$(dirname "$(dirname "$(realpath "$0")")")/runtime/bf-harness.mjs"
+OPC_BIN="$(dirname "$(dirname "$(realpath "$0")")")/bin/bf-harness.mjs"
 
 source "$(dirname "$0")/test-helpers.sh"
 setup_tmpdir

@@ -60,7 +60,7 @@ export BF_HOOK_TIMEOUT_MS=500
 export BF_HOOK_FAILURE_THRESHOLD=1
 
 cd "$TMP" || exit 1
-OPC="node $REPO_ROOT/runtime/bf-harness.mjs"
+OPC="node $REPO_ROOT/bin/bf-harness.mjs"
 
 echo "=== TEST: Run 2 bypass-chain (methods 5-8) ==="
 

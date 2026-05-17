@@ -48,7 +48,7 @@ echo "=== TEST: writeFailureReport cross-command merge (U2.8c JSON sidecar) ==="
 echo "--- 1.1: writeFailureReport called twice with disjoint failures → union ---"
 
 cat > "$TMP/merge.mjs" <<EOF
-import { writeFailureReport } from "$REPO_ROOT/runtime/lib/extensions.mjs";
+import { writeFailureReport } from "$REPO_ROOT/bin/lib/extensions.mjs";
 const dir = "$TMP/run";
 import { mkdirSync } from "fs";
 mkdirSync(dir, { recursive: true });
@@ -131,7 +131,7 @@ echo "--- 4.1: writeFailureReport called twice with SAME failure → dedup ---"
 
 DEDUP_DIR="$TMP/dedup"
 cat > "$TMP/dedup.mjs" <<EOF
-import { writeFailureReport } from "$REPO_ROOT/runtime/lib/extensions.mjs";
+import { writeFailureReport } from "$REPO_ROOT/bin/lib/extensions.mjs";
 import { mkdirSync } from "fs";
 const dir = "$DEDUP_DIR";
 mkdirSync(dir, { recursive: true });
@@ -160,7 +160,7 @@ echo "--- 5.1: empty registry on second call MUST NOT wipe prior failures ---"
 
 EMPTY_DIR="$TMP/empty"
 cat > "$TMP/empty.mjs" <<EOF
-import { writeFailureReport } from "$REPO_ROOT/runtime/lib/extensions.mjs";
+import { writeFailureReport } from "$REPO_ROOT/bin/lib/extensions.mjs";
 import { mkdirSync } from "fs";
 const dir = "$EMPTY_DIR";
 mkdirSync(dir, { recursive: true });
@@ -195,7 +195,7 @@ echo "--- 6.1: dedup key tolerates '|' inside fields (no false collisions) ---"
 
 PIPE_DIR="$TMP/pipe"
 cat > "$TMP/pipe.mjs" <<EOF
-import { writeFailureReport } from "$REPO_ROOT/runtime/lib/extensions.mjs";
+import { writeFailureReport } from "$REPO_ROOT/bin/lib/extensions.mjs";
 import { mkdirSync } from "fs";
 const dir = "$PIPE_DIR";
 mkdirSync(dir, { recursive: true });
@@ -232,7 +232,7 @@ echo "--- 7.1: droppedTotal accumulates across CLI invocations (cap-overflow sig
 
 DROP_DIR="$TMP/drop"
 cat > "$TMP/drop.mjs" <<EOF
-import { writeFailureReport } from "$REPO_ROOT/runtime/lib/extensions.mjs";
+import { writeFailureReport } from "$REPO_ROOT/bin/lib/extensions.mjs";
 import { mkdirSync } from "fs";
 const dir = "$DROP_DIR";
 mkdirSync(dir, { recursive: true });

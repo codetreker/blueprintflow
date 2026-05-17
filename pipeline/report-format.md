@@ -5,7 +5,7 @@
 ### Review
 
 ```
-## OPC Review — {task summary}
+## BF Review — {task summary}
 
 ### 🔴 Critical ({count})
 {findings}
@@ -27,7 +27,7 @@ Coordinator: {N challenged, M dismissed, K downgraded}
 ### Analysis
 
 ```
-## OPC Analysis — {task summary}
+## BF Analysis — {task summary}
 
 ### Current State
 {What exists and how it works — 2-5 sentences with file:line references}
@@ -48,7 +48,7 @@ Agents: {list}
 ### Build (with evaluation)
 
 ```
-## OPC Build — {task summary}
+## BF Build — {task summary}
 
 ### Implementation
 Node {NODE_ID} — {what was built, 2-3 sentences}
@@ -87,7 +87,7 @@ Recommendation: {coordinator's pick with rationale}
 ### Plan
 
 ```
-## OPC Plan — {task summary}
+## BF Plan — {task summary}
 
 ### Overview
 {1-2 sentences: what this plan covers and the approach}
@@ -226,10 +226,10 @@ Map pipeline task types to `mode` for backward compatibility with OPC Viewer:
 After any flow completes (single flow or loop pipeline), generate a self-contained HTML report:
 
 ```bash
-node "$BF_HARNESS/../opc-report.mjs" --dir $SESSION_DIR --output $SESSION_DIR/report.html --title "{task summary}"
+node "$BF_HARNESS/../bf-report.mjs" --dir $SESSION_DIR --output $SESSION_DIR/report.html --title "{task summary}"
 ```
 
-The tool (`bin/opc-report.mjs`) mechanically parses `$SESSION_DIR/` eval files and produces a dark-theme HTML page with:
+The tool (`bin/bf-report.mjs`, deferred — not yet vendored from OPC's `opc-report.mjs`) mechanically parses `$SESSION_DIR/` eval files and produces a dark-theme HTML page with:
 - Header: title, subtitle, date, git hash, overall verdict badge
 - Pipeline: visual node progression (from `loop-state.json` or `flow-state.json`)
 - Stat cards: R1 severity counts (🔴🟡🔵) + R2 fix status (✅⚠️❌)

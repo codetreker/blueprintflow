@@ -231,8 +231,8 @@ echo "--- 2.2: transition refused missing mandatory role ---"
 DIR=$(mktemp -d)
 cd "$DIR"
 $HARNESS init --flow review --entry review --dir .bf 2>/dev/null
-write_good_eval .bf review engineer
-write_good_eval .bf review frontend
+write_good_eval .bf review tester
+write_good_eval .bf review security
 write_handshake .bf review "Review done" "PASS"
 TRANS=$($HARNESS transition --from review --to gate --verdict PASS --flow review --dir .bf 2>/dev/null)
 if echo "$TRANS" | grep -q "Missing mandatory role"; then
@@ -261,7 +261,7 @@ echo "--- 2.3b: transition refused with mix of known/unknown roles missing manda
 DIR=$(mktemp -d)
 cd "$DIR"
 $HARNESS init --flow review --entry review --dir .bf 2>/dev/null
-write_good_eval .bf review engineer
+write_good_eval .bf review tester
 write_good_eval .bf review custom-role
 write_handshake .bf review "Review done" "PASS"
 TRANS=$($HARNESS transition --from review --to gate --verdict PASS --flow review --dir .bf 2>/dev/null)
@@ -276,8 +276,8 @@ echo "--- 2.4: error includes missingRoles array ---"
 DIR=$(mktemp -d)
 cd "$DIR"
 $HARNESS init --flow review --entry review --dir .bf 2>/dev/null
-write_good_eval .bf review engineer
-write_good_eval .bf review frontend
+write_good_eval .bf review tester
+write_good_eval .bf review security
 write_handshake .bf review "Review done" "PASS"
 TRANS=$($HARNESS transition --from review --to gate --verdict PASS --flow review --dir .bf 2>/dev/null)
 if echo "$TRANS" | grep -q '"missingRoles"'; then

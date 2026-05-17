@@ -76,13 +76,13 @@ export function cmdTransition(args) {
     return;
   }
   try {
-    _cmdTransitionLocked(from, to, verdict, flow, dir, template, statePath);
+    _cmdTransitionLocked(from, to, verdict, flow, dir, template, statePath, getFlag(args, "pack"));
   } finally {
     lock.release();
   }
 }
 
-function _cmdTransitionLocked(from, to, verdict, flow, dir, template, statePath) {
+function _cmdTransitionLocked(from, to, verdict, flow, dir, template, statePath, packPath) {
   let state;
   if (existsSync(statePath)) {
     try {
@@ -209,6 +209,23 @@ function _cmdTransitionLocked(from, to, verdict, flow, dir, template, statePath)
         if (/mandatory:\s*true/i.test(fm)) {
           mandatoryRoles.push(rf.replace(/\.md$/, ""));
         }
+      }
+    }
+    if (mandatoryRoles.length > 0 || true) {
+      // Stage 4 task 4.2e — Pack-overridable mandatory roles. If --pack
+      // points to a pack.json with `mandatory_roles: [...]`, merge those
+      // into the Core-default list (which comes from roles/*.md with
+      // `mandatory: true` in frontmatter). Absence of --pack preserves
+      // Core-only behavior.
+      if (packPath) {
+        try {
+          const pkg = JSON.parse(readFileSync(packPath, "utf8"));
+          if (Array.isArray(pkg.mandatory_roles)) {
+            for (const r of pkg.mandatory_roles) {
+              if (!mandatoryRoles.includes(r)) mandatoryRoles.push(r);
+            }
+          }
+        } catch { /* malformed pack.json — fall back to Core list */ }
       }
     }
     if (mandatoryRoles.length > 0) {

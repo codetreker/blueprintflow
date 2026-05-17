@@ -25,5 +25,6 @@
     "accepted_task":       "done",
     "milestone_planned":   "shaped",
     "milestone_done":      "done"
-  }
+  },
+  "mandatory_roles": ["skeptic-owner"]
 }

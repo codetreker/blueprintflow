@@ -1,0 +1,5 @@
+{
+  "name": "bf",
+  "version": "0.1.0-alpha",
+  "description": "Blueprintflow — general evidence-gated work loop framework. BF Core + runtime; Packs (e.g. product-engineering) live under bf/packs/."
+}

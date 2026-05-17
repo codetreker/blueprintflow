@@ -38,9 +38,10 @@ files present in upstream were copied.
 | 2026-05-17 | repo layout (runtime/→bin/, core/→references/, plugins/bf/ → root), +package.json +SKILL.md +scripts/postinstall.mjs +bin/bf.mjs +pipeline/.gitkeep | Reorganized from plugin form to bare-skill + npm form (@codetreker/bf). Mirrors OPC's distribution model. .claude-plugin/marketplace.json no longer registers bf — npm is the only distribution channel. Tests still 108/0/1 under new layout. |
 | 2026-05-17 | pipeline/{gate-protocol,handoff-template,criteria-lint,report-format,context-brief,role-evaluator-prompt,evaluator-prompt}.md, pipeline/README.md | Stage 3: vendor 7 Core node protocols from OPC pipeline/. Pack-specific protocols (implementer-prompt, executor-protocol, discussion-protocol, test-design-protocol, ux-*) intentionally not vendored — they belong inside each Pack's protocols/ folder. |
 | 2026-05-17 | roles/* (9 kept, 11 moved to packs/product-engineering/roles/, 1 deleted), test/test-guardrails.sh (fixture rename) | Stage 3 task 3.4: triage of 21 vendored OPC roles per docs/specs/2026-05-16-bf-fork-design/opc-role-mapping.md. Core retains: planner, architect, tester, security, a11y, compliance, devil-advocate, skeptic-owner, user-simulator. Pack receives: pm, designer, frontend, backend, devops, mobile, engineer, dd-engineer, new-user, active-user, churned-user. Deleted: investor (not in BF's path). test-guardrails.sh fixtures swapped engineer/frontend → tester/security (the original choice was incidental; mandatory-role enforcement mechanism is what's under test). |
+| 2026-05-17 | bin/lib/{flow-escape,runbooks,loop-advance}.mjs | Stage 4 task 4.1: sweep 9 deferred `/opc <verb>` user-facing strings to `/bf <verb>`. The literal word "OPC" referring to the upstream project name is unchanged. |
 
 ## Deferred to Stage 4 (bf-run skill)
 
-User-visible slash-command strings still reference `/opc` (e.g. `flow-escape.mjs` "SKIPPED via /opc skip", "/opc pass only works on gates", "Use /opc skip instead", and `loop-advance.mjs` "Execute unit … using /opc …"). These belong to the dispatcher UX, which is replaced by the `bf-run` skill in Stage 4. They will be swept at that time.
-
-Search to find them later: `grep -rn '/opc ' plugins/bf/runtime/ --include='*.mjs'`
+(Section closed: Stage 4 swept all 9 deferred `/opc <verb>` user-facing
+strings to `/bf <verb>` in commit <SHA>. Search to confirm later:
+`grep -rn '/opc ' bin/lib/`.)

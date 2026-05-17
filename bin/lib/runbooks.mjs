@@ -1,7 +1,7 @@
 // runbooks.mjs — OPC Runbook schema v1 + loader + matcher
 //
 // Runbooks are reusable task recipes. When the user invokes
-//   /opc loop <task>
+//   /bf loop <task>
 // the loop-protocol checks `~/.bf/runbooks/` (or the configured dir)
 // for a runbook whose `match:` patterns cover the task, and uses its
 // `units:` list as the decomposition — avoiding a fresh decompose on

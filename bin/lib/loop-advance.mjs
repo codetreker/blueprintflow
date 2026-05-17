@@ -14,7 +14,7 @@ const OPC_ROOT = join(__dirname, "..", "..");
 
 // ── Next-loop carry-forward seed ──────────────────────────────
 // On pipeline_complete, emit `.harness/next-loop-seed.md` summarising
-// open backlog items so the NEXT `/opc loop` invocation can ingest them
+// open backlog items so the NEXT `/bf loop` invocation can ingest them
 // automatically instead of the operator copy-pasting. Idempotent: overwrites
 // any prior seed from this directory.
 function _writeNextLoopSeed(dir, state, backlogSummary) {
@@ -548,7 +548,7 @@ function _buildResumePrompt(dir, state, unitDetails, unitType, contextHints, pla
     `## Instructions`,
     `1. Read the plan file to understand the full scope`,
     `2. Read the checkpoint above to understand where we left off`,
-    `3. Execute unit ${state.next_unit} using /opc with the ${contextHints.recommended_flow} flow`,
+    `3. Execute unit ${state.next_unit} using /bf with the ${contextHints.recommended_flow} flow`,
     `4. After completion, run: bf-harness complete-tick --unit ${state.next_unit} --artifacts <paths> --description "<summary>" --delta "<technical decisions made>"`,
     `5. Then run: bf-harness next-tick to get the next unit`,
   );

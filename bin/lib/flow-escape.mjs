@@ -33,7 +33,7 @@ function loadState(dir) {
 }
 
 // ─── skip ───────────────────────────────────────────────────────
-/** /opc skip — advance current node via PASS edge without executing */
+/** /bf skip — advance current node via PASS edge without executing */
 
 export function cmdSkip(args) {
   const dir = resolveDir(args);
@@ -104,7 +104,7 @@ export function cmdSkip(args) {
       runId: `run_${(state.history.filter(h => h.nodeId === current).length || 0) + 1}`,
       status: "completed",
       verdict: null,
-      summary: "SKIPPED via /opc skip",
+      summary: "SKIPPED via /bf skip",
       timestamp: new Date().toISOString(),
       artifacts: [],
       skipped: true,
@@ -129,7 +129,7 @@ export function cmdSkip(args) {
 }
 
 // ─── pass ───────────────────────────────────────────────────────
-/** /opc pass — force current gate to PASS */
+/** /bf pass — force current gate to PASS */
 
 export function cmdPass(args) {
   const dir = resolveDir(args);
@@ -143,7 +143,7 @@ export function cmdPass(args) {
   const current = state.currentNode;
   const nodeType = template.nodeTypes?.[current];
   if (nodeType !== "gate" && current !== "gate" && !current.startsWith("gate-")) {
-    console.log(JSON.stringify({ error: `'${current}' is not a gate node — /opc pass only works on gates` }));
+    console.log(JSON.stringify({ error: `'${current}' is not a gate node — /bf pass only works on gates` }));
     return;
   }
 
@@ -183,7 +183,7 @@ export function cmdPass(args) {
         const mechVerdict = synthResult.verdict;
         if (mechVerdict === "ITERATE" || mechVerdict === "FAIL") {
           console.log(JSON.stringify({
-            error: `Cannot force-pass: upstream verdict is ${mechVerdict}. Use /opc skip instead.`,
+            error: `Cannot force-pass: upstream verdict is ${mechVerdict}. Use /bf skip instead.`,
             allowed: false,
           }));
           return;
@@ -214,7 +214,7 @@ export function cmdPass(args) {
 }
 
 // ─── stop ───────────────────────────────────────────────────────
-/** /opc stop — terminate flow, preserve state */
+/** /bf stop — terminate flow, preserve state */
 
 export function cmdStop(args) {
   const dir = resolveDir(args);
@@ -249,7 +249,7 @@ export function cmdStop(args) {
 }
 
 // ─── goto ───────────────────────────────────────────────────────
-/** /opc goto <nodeId> — manual jump (cycle limits still enforced) */
+/** /bf goto <nodeId> — manual jump (cycle limits still enforced) */
 
 export function cmdGoto(args) {
   const dir = resolveDir(args);

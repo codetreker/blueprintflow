@@ -221,7 +221,7 @@ export function cmdCriteriaLint(args) {
   const tier = getFlag(args, "tier");
 
   if (!file) {
-    console.error("Usage: opc-harness criteria-lint <file> [--tier <t>]");
+    console.error("Usage: bf-harness criteria-lint <file> [--tier <t>]");
     process.exit(1);
   }
 

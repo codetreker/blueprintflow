@@ -1,7 +1,7 @@
 // bypass-args.mjs — parse CLI flags for extension bypass / whitelist.
 // Single source of truth so init, prompt-context, extension-verdict all behave the same.
 //
-// Flags recognized (highest priority first, after env OPC_DISABLE_EXTENSIONS):
+// Flags recognized (highest priority first, after env BF_DISABLE_EXTENSIONS):
 //   --no-extensions           → disable all extensions
 //   --extensions <csv>        → whitelist these extensions only
 //

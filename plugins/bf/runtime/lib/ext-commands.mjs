@@ -67,7 +67,7 @@ function readNodeCapabilities(dir, node, args) {
 
 export async function cmdPromptContext(args) {
   if (args.includes("--help")) {
-    console.error("Usage: opc-harness prompt-context --node <id> --role <role> --dir <harness-dir>");
+    console.error("Usage: bf-harness prompt-context --node <id> --role <role> --dir <harness-dir>");
     console.error("Output: JSON { append: string, applied: string[], nodeCapabilities: string[] }");
     return;
   }
@@ -77,7 +77,7 @@ export async function cmdPromptContext(args) {
   const dir = resolveDirReadOnly(args);
 
   if (!node || !role) {
-    console.error("Usage: opc-harness prompt-context --node <id> --role <role> --dir <harness-dir>");
+    console.error("Usage: bf-harness prompt-context --node <id> --role <role> --dir <harness-dir>");
     process.exit(1);
   }
 
@@ -138,7 +138,7 @@ export async function cmdPromptContext(args) {
 
 export async function cmdExtensionTest(args) {
   if (args.includes("--help")) {
-    console.error("Usage: opc-harness extension-test --ext <path> [--hook <hookname>] [--context <json>] [--all-hooks] [--fixture-dir <path>] [--lint] [--lint-strict]");
+    console.error("Usage: bf-harness extension-test --ext <path> [--hook <hookname>] [--context <json>] [--all-hooks] [--fixture-dir <path>] [--lint] [--lint-strict]");
     console.error("  --fixture-dir <path>  Copy fixture dir to a fresh tmpdir and set ctx.flowDir/ctx.runDir to it.");
     console.error("                        Symlinks are dereferenced to prevent sandbox escape. The tmpdir is");
     console.error("                        cleaned up on every exit path (success, error, lint-only).");
@@ -177,7 +177,7 @@ export async function cmdExtensionTest(args) {
   const lintStrict = args.includes("--lint-strict");
 
   if (!extPath) {
-    console.error("Usage: opc-harness extension-test --ext <path> [--hook <hookname>] [--context <json>] [--all-hooks] [--fixture-dir <path>] [--lint|--lint-strict]");
+    console.error("Usage: bf-harness extension-test --ext <path> [--hook <hookname>] [--context <json>] [--all-hooks] [--fixture-dir <path>] [--lint|--lint-strict]");
     process.exit(1);
   }
 
@@ -395,7 +395,7 @@ export async function cmdExtensionTest(args) {
 
 export async function cmdExtensionVerdict(args) {
   if (args.includes("--help")) {
-    console.error("Usage: opc-harness extension-verdict --node <id> --dir <harness-dir>");
+    console.error("Usage: bf-harness extension-verdict --node <id> --dir <harness-dir>");
     console.error("Loads extensions, fires verdict.append, writes eval-extensions.md to latest run dir.");
     return;
   }
@@ -404,7 +404,7 @@ export async function cmdExtensionVerdict(args) {
   const dir = resolveDirReadOnly(args);
 
   if (!node) {
-    console.error("Usage: opc-harness extension-verdict --node <id> --dir <harness-dir>");
+    console.error("Usage: bf-harness extension-verdict --node <id> --dir <harness-dir>");
     process.exit(1);
   }
 
@@ -469,7 +469,7 @@ export async function cmdExtensionVerdict(args) {
 
 export async function cmdExtensionArtifact(args) {
   if (args.includes("--help")) {
-    console.error("Usage: opc-harness extension-artifact --node <id> --dir <harness-dir>");
+    console.error("Usage: bf-harness extension-artifact --node <id> --dir <harness-dir>");
     console.error("Fires execute.run + artifact.emit hooks. Emitted files go to <runDir>/ext-<name>/, paths merged into handshake.artifacts[].");
     return;
   }
@@ -478,7 +478,7 @@ export async function cmdExtensionArtifact(args) {
   const dir = resolveDirReadOnly(args);
 
   if (!node) {
-    console.error("Usage: opc-harness extension-artifact --node <id> --dir <harness-dir>");
+    console.error("Usage: bf-harness extension-artifact --node <id> --dir <harness-dir>");
     process.exit(1);
   }
 
@@ -556,11 +556,11 @@ export async function cmdExtensionArtifact(args) {
 // executes. Extension preflight() is a pure function: it receives context
 // and returns data. Core writes the artifacts to the session dir.
 //
-// Usage: opc-harness node-preflight --node <id> --dir <harness-dir>
+// Usage: bf-harness node-preflight --node <id> --dir <harness-dir>
 
 export async function cmdNodePreflight(args) {
   if (args.includes("--help")) {
-    console.error("Usage: opc-harness node-preflight --node <id> --dir <harness-dir>");
+    console.error("Usage: bf-harness node-preflight --node <id> --dir <harness-dir>");
     console.error("Fires preflight hook on matching extensions. Writes design artifacts to session dir.");
     return;
   }
@@ -569,7 +569,7 @@ export async function cmdNodePreflight(args) {
   const dir = resolveDirReadOnly(args);
 
   if (!node) {
-    console.error("Usage: opc-harness node-preflight --node <id> --dir <harness-dir>");
+    console.error("Usage: bf-harness node-preflight --node <id> --dir <harness-dir>");
     process.exit(1);
   }
 

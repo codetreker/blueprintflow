@@ -16,7 +16,7 @@ export function cmdReinitLoop(args) {
   const subUnitsRaw = getFlag(args, "sub-units");
 
   if (!targetUnit || !subUnitsRaw) {
-    console.error('Usage: opc-harness reinit-loop --unit <stalledUnit> --sub-units "X.1: type — desc, X.2: type — desc" --dir <path>');
+    console.error('Usage: bf-harness reinit-loop --unit <stalledUnit> --sub-units "X.1: type — desc, X.2: type — desc" --dir <path>');
     process.exit(1);
   }
 

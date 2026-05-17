@@ -29,7 +29,7 @@ export function cmdTransition(args) {
   const to = toRaw === "null" ? null : toRaw;
 
   if (!from || !verdict) {
-    console.error("Usage: opc-harness transition --from <node> --to <node|null> --verdict <V> --flow <template> [--flow-file <path>] --dir <path>");
+    console.error("Usage: bf-harness transition --from <node> --to <node|null> --verdict <V> --flow <template> [--flow-file <path>] --dir <path>");
     process.exit(1);
   }
 
@@ -96,7 +96,7 @@ function _cmdTransitionLocked(from, to, verdict, flow, dir, template, statePath)
       return;
     }
     if (state._written_by !== WRITER_SIG || !state._write_nonce) {
-      console.log(JSON.stringify({ allowed: false, reason: "flow-state.json was not written by opc-harness — possible direct edit" }));
+      console.log(JSON.stringify({ allowed: false, reason: "flow-state.json was not written by bf-harness — possible direct edit" }));
       return;
     }
   } else {
@@ -391,7 +391,7 @@ export function cmdValidateChain(args) {
   // Load config to get requiredExtensions
   let requiredExtensions = [];
   try {
-    const configPath = join(os.homedir(), ".opc", "config.json");
+    const configPath = join(os.homedir(), ".bf", "config.json");
     if (existsSync(configPath)) {
       const cfg = JSON.parse(readFileSync(configPath, "utf8"));
       requiredExtensions = Array.isArray(cfg.requiredExtensions) ? cfg.requiredExtensions : [];
@@ -534,7 +534,7 @@ export function cmdAdvance(args) {
   const upstreamNode = upstreamEntry.nodeId;
 
   // Find the harness binary path (same dir as this module)
-  const harnessPath = join(dirname(fileURLToPath(import.meta.url)), "..", "opc-harness.mjs");
+  const harnessPath = join(dirname(fileURLToPath(import.meta.url)), "..", "bf-harness.mjs");
 
   // Step 1: synthesize
   console.error(`[advance] synthesizing ${upstreamNode}...`);
@@ -652,7 +652,7 @@ export function cmdFinalize(args) {
   }
 
   if (state._written_by !== WRITER_SIG) {
-    console.log(JSON.stringify({ finalized: false, error: "flow-state.json was not written by opc-harness" }));
+    console.log(JSON.stringify({ finalized: false, error: "flow-state.json was not written by bf-harness" }));
     return;
   }
 

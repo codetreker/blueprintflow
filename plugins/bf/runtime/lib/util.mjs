@@ -15,20 +15,20 @@ export function getFlag(args, name, fallback = null) {
 
 // ── Safe directory resolution with path traversal guard ─────────
 // When no --dir is given, prefer the latest session dir (if one exists).
-// Falls back to ".harness" for backward compatibility.
+// Falls back to ".bf" for backward compatibility.
 export function resolveDir(args, opts = {}) {
   const hasExplicit = args.includes("--dir");
   let raw;
   if (hasExplicit) {
-    raw = getFlag(args, "dir", ".harness");
+    raw = getFlag(args, "dir", ".bf");
   } else {
     // Auto-resolve: latest session dir > .harness (if exists) > error
     const latest = getLatestSessionDir();
     if (latest) {
       raw = latest;
-    } else if (existsSync(resolve(".harness", "flow-state.json"))) {
-      console.error("WARN: falling back to legacy .harness dir — consider running `opc-harness init` for session-based flow");
-      raw = ".harness";  // backward compat: legacy .harness dir with active flow
+    } else if (existsSync(resolve(".bf", "flow-state.json"))) {
+      console.error("WARN: falling back to legacy .harness dir — consider running `bf-harness init` for session-based flow");
+      raw = ".bf";  // backward compat: legacy .harness dir with active flow
     } else if (opts.optional) {
       return null;  // caller handles missing dir gracefully
     } else {
@@ -37,7 +37,7 @@ export function resolveDir(args, opts = {}) {
       const base = getSessionsBaseDir(cwd);
       console.error(`ERROR: No active session found for cwd '${cwd}' (hash: ${hash}).`);
       console.error(`  Looked in: ${base}/`);
-      console.error(`  Tip: use --dir <path> to target an existing session, or run 'opc-harness ls' to list all.`);
+      console.error(`  Tip: use --dir <path> to target an existing session, or run 'bf-harness ls' to list all.`);
       process.exit(1);
     }
   }
@@ -45,10 +45,10 @@ export function resolveDir(args, opts = {}) {
   try { resolved = realpathSync(resolve(raw)); } catch { resolved = resolve(raw); }
   let cwd;
   try { cwd = realpathSync(process.cwd()); } catch { cwd = process.cwd(); }
-  const opcBase = join(homedir(), ".opc", "sessions");
-  // Allow: under cwd OR under ~/.opc/sessions/ (session dirs)
+  const opcBase = join(homedir(), ".bf", "sessions");
+  // Allow: under cwd OR under ~/.bf/sessions/ (session dirs)
   if (!resolved.startsWith(cwd + "/") && resolved !== cwd && !resolved.startsWith(opcBase + "/")) {
-    console.error(`ERROR: --dir resolved to '${resolved}' which is outside cwd '${cwd}' and ~/.opc/sessions/`);
+    console.error(`ERROR: --dir resolved to '${resolved}' which is outside cwd '${cwd}' and ~/.bf/sessions/`);
     process.exit(1);
   }
   return resolved;
@@ -57,7 +57,7 @@ export function resolveDir(args, opts = {}) {
 // ── Read-only dir resolution (no path traversal guard) ─────────
 // For read-only commands (viz, replay, ext-commands) that need session
 // auto-resolve but don't need write-path guards.
-export function resolveDirReadOnly(args, fallback = ".harness") {
+export function resolveDirReadOnly(args, fallback = ".bf") {
   if (args.includes("--dir")) return getFlag(args, "dir", fallback);
   return resolveDir(args, { optional: true }) || fallback;
 }
@@ -78,11 +78,11 @@ export const EVIDENCE_TYPES = new Set(["test-result", "screenshot", "cli-output"
 export const VALID_LOOP_STATUSES = new Set(["initialized", "in_progress", "pipeline_complete", "terminated", "stalled"]);
 export const TERMINAL_LOOP_STATUSES = new Set(["pipeline_complete", "terminated", "stalled"]);
 
-export const WRITER_SIG = "opc-harness";
+export const WRITER_SIG = "bf-harness";
 export const IDEMPOTENCY_WINDOW_MS = 5000;
 
 // ── Session directory management ────────────────────────────────
-// ~/.opc/sessions/{project-hash}/{session-id}/
+// ~/.bf/sessions/{project-hash}/{session-id}/
 // Solves multi-window bug: each init gets its own dir, no clobbering.
 
 /**
@@ -121,7 +121,7 @@ export function createSessionId() {
 }
 
 export function getSessionsBaseDir(cwd = process.cwd()) {
-  return join(homedir(), ".opc", "sessions", getProjectHash(cwd));
+  return join(homedir(), ".bf", "sessions", getProjectHash(cwd));
 }
 
 /**
@@ -156,7 +156,7 @@ export function createSessionDir(cwd = process.cwd()) {
 export function getLatestSessionDir(cwd = process.cwd()) {
   // Try new hash (git-root-based) first, then legacy hash (raw cwd) for migration
   for (const hash of [getProjectHash(cwd), getLegacyProjectHash(cwd)]) {
-    const base = join(homedir(), ".opc", "sessions", hash);
+    const base = join(homedir(), ".bf", "sessions", hash);
     const latestLink = join(base, "latest");
     try {
       const target = readlinkSync(latestLink);
@@ -216,7 +216,7 @@ export function gcSessions(cwd = process.cwd(), { maxAgeDays = 7 } = {}) {
 }
 
 /**
- * CLI: opc-harness gc [--max-age <days>] [--base <cwd>]
+ * CLI: bf-harness gc [--max-age <days>] [--base <cwd>]
  */
 export function cmdGc(args) {
   const maxAge = parseInt(getFlag(args, "max-age", "7"), 10);

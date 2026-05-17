@@ -26,8 +26,8 @@ function tmp() {
   return p;
 }
 function writeRepoCfg(dir, cfg) {
-  mkdirSync(join(dir, ".opc"), { recursive: true });
-  writeFileSync(join(dir, ".opc", "config.json"), JSON.stringify(cfg, null, 2));
+  mkdirSync(join(dir, ".bf"), { recursive: true });
+  writeFileSync(join(dir, ".bf", "config.json"), JSON.stringify(cfg, null, 2));
 }
 /** Isolate HOME so user-config path lookup can't see the real ~/.opc. */
 function withIsolatedHome(homeOverride, fn) {
@@ -42,8 +42,8 @@ function withIsolatedHome(homeOverride, fn) {
   }
 }
 function writeUserCfg(home, cfg) {
-  mkdirSync(join(home, ".opc"), { recursive: true });
-  writeFileSync(join(home, ".opc", "config.json"), JSON.stringify(cfg, null, 2));
+  mkdirSync(join(home, ".bf"), { recursive: true });
+  writeFileSync(join(home, ".bf", "config.json"), JSON.stringify(cfg, null, 2));
 }
 
 // ─── tests ───────────────────────────────────────────────────────
@@ -68,7 +68,7 @@ describe("U1.4 — findRepoConfigPath (ancestor walk)", () => {
     writeRepoCfg(join(base, "a"), { extensions: ["x"] });
     withIsolatedHome(tmp(), () => {
       const found = findRepoConfigPath(nested);
-      assert.equal(found, join(base, "a", ".opc", "config.json"));
+      assert.equal(found, join(base, "a", ".bf", "config.json"));
     });
   });
 
@@ -79,7 +79,7 @@ describe("U1.4 — findRepoConfigPath (ancestor walk)", () => {
     writeRepoCfg(join(base, "a", "b"), { extensions: ["inner"] });
     withIsolatedHome(tmp(), () => {
       const found = findRepoConfigPath(nested);
-      assert.equal(found, join(base, "a", "b", ".opc", "config.json"));
+      assert.equal(found, join(base, "a", "b", ".bf", "config.json"));
     });
   });
 });
@@ -170,14 +170,14 @@ describe("U1.4 — loadLayeredOpcConfig (merging)", () => {
     writeRepoCfg(repo, { b: 2 });
     withIsolatedHome(home, () => {
       const out = loadLayeredOpcConfig(repo, {});
-      assert.equal(out._paths.user, join(home, ".opc", "config.json"));
-      assert.equal(out._paths.repo, join(repo, ".opc", "config.json"));
+      assert.equal(out._paths.user, join(home, ".bf", "config.json"));
+      assert.equal(out._paths.repo, join(repo, ".bf", "config.json"));
     });
   });
 
   test("malformed JSON in any layer is silently ignored (does not throw)", () => {
-    mkdirSync(join(home, ".opc"), { recursive: true });
-    writeFileSync(join(home, ".opc", "config.json"), "{ not valid json");
+    mkdirSync(join(home, ".bf"), { recursive: true });
+    writeFileSync(join(home, ".bf", "config.json"), "{ not valid json");
     writeRepoCfg(repo, { ok: true });
     withIsolatedHome(home, () => {
       // stderr warning is emitted but execution continues — capture to avoid test noise
@@ -268,8 +268,8 @@ describe("U1.4r — input validation & provenance reservation", () => {
   });
 
   test("non-object JSON (array) at user layer is rejected with stderr warning", () => {
-    mkdirSync(join(home, ".opc"), { recursive: true });
-    writeFileSync(join(home, ".opc", "config.json"), '["not","an","object"]');
+    mkdirSync(join(home, ".bf"), { recursive: true });
+    writeFileSync(join(home, ".bf", "config.json"), '["not","an","object"]');
     writeRepoCfg(repo, { ok: true });
     const warnings = [];
     const origErr = console.error; console.error = (m) => warnings.push(m);
@@ -296,8 +296,8 @@ describe("U1.4r — input validation & provenance reservation", () => {
   });
 
   test("malformed JSON emits one-line stderr warning", () => {
-    mkdirSync(join(home, ".opc"), { recursive: true });
-    writeFileSync(join(home, ".opc", "config.json"), "{ broken json");
+    mkdirSync(join(home, ".bf"), { recursive: true });
+    writeFileSync(join(home, ".bf", "config.json"), "{ broken json");
     const warnings = [];
     const origErr = console.error; console.error = (m) => warnings.push(m);
     try {
@@ -385,7 +385,7 @@ describe("U1.4r v2 — nested proto sanitization on single-layer passthrough", (
 
 describe("U1.4r — CLI --dir missing value", () => {
   test("`config resolve --dir` with no value exits non-zero", () => {
-    const harnessBin = join(process.cwd(), "bin", "opc-harness.mjs");
+    const harnessBin = join(process.cwd(), "bin", "bf-harness.mjs");
     let threw = false;
     try {
       execFileSync("node", [harnessBin, "config", "resolve", "--dir"], {
@@ -401,7 +401,7 @@ describe("U1.4r — CLI --dir missing value", () => {
   });
 });
 
-describe("U1.4 — opc-harness config resolve CLI", () => {
+describe("U1.4 — bf-harness config resolve CLI", () => {
   let home, repo;
   beforeEach(() => { home = tmp(); repo = tmp(); });
   afterEach(() => {
@@ -412,7 +412,7 @@ describe("U1.4 — opc-harness config resolve CLI", () => {
   test("`config resolve --dir <p>` prints merged JSON with _source", () => {
     writeUserCfg(home, { devServerUrl: "http://u" });
     writeRepoCfg(repo, { extensions: ["a"] });
-    const harnessBin = join(process.cwd(), "bin", "opc-harness.mjs");
+    const harnessBin = join(process.cwd(), "bin", "bf-harness.mjs");
     const stdout = execFileSync("node", [harnessBin, "config", "resolve", "--dir", repo], {
       env: { ...process.env, HOME: home, USERPROFILE: home },
       encoding: "utf8",
@@ -425,7 +425,7 @@ describe("U1.4 — opc-harness config resolve CLI", () => {
   });
 
   test("unknown subcommand exits non-zero", () => {
-    const harnessBin = join(process.cwd(), "bin", "opc-harness.mjs");
+    const harnessBin = join(process.cwd(), "bin", "bf-harness.mjs");
     let threw = false;
     try {
       execFileSync("node", [harnessBin, "config", "bogus"], {

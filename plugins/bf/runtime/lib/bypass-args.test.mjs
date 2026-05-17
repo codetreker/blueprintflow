@@ -11,7 +11,7 @@ describe("parseBypassArgs", () => {
   });
 
   test("unrelated args → {}", () => {
-    assert.deepEqual(parseBypassArgs(["--flow", "review", "--dir", ".harness"]), {});
+    assert.deepEqual(parseBypassArgs(["--flow", "review", "--dir", ".bf"]), {});
   });
 
   test("--no-extensions → { noExtensions: true }", () => {

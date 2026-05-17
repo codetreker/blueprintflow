@@ -23,7 +23,7 @@ export function cmdRoute(args) {
   const verdict = getFlag(args, "verdict");
 
   if (!node || !verdict) {
-    console.error("Usage: opc-harness route --node <gateId> --verdict <PASS|FAIL|ITERATE> --flow <template> [--flow-file <path>]");
+    console.error("Usage: bf-harness route --node <gateId> --verdict <PASS|FAIL|ITERATE> --flow <template> [--flow-file <path>]");
     process.exit(1);
   }
 
@@ -135,7 +135,7 @@ export async function cmdInit(args) {
 
   // ─── Persist .ext-registry.json (which extensions this flow will use) ────
   // This is also the observable surface for the benchmark bypass: running
-  // `init` under OPC_DISABLE_EXTENSIONS=1 / --no-extensions must produce an
+  // `init` under BF_DISABLE_EXTENSIONS=1 / --no-extensions must produce an
   // empty applied[] so the benchmark harness can assert on the file.
   // Wrap in try/catch — a failed cache write (readonly dir, disk full) must
   // NOT crash init. The registry is recomputed at hook fire time anyway.
@@ -367,7 +367,7 @@ export function validateHandshakeData(data, opts = {}) {
 export function cmdValidate(args) {
   const file = args[0];
   if (!file) {
-    console.error("Usage: opc-harness validate <handshake.json>");
+    console.error("Usage: bf-harness validate <handshake.json>");
     process.exit(1);
   }
 
@@ -421,7 +421,7 @@ export function cmdSeal(args) {
   const dir = resolveDir(args);
 
   if (!nodeId) {
-    console.error("Usage: opc-harness seal --node <nodeId> [--run <N>] [--dir <path>]");
+    console.error("Usage: bf-harness seal --node <nodeId> [--run <N>] [--dir <path>]");
     process.exit(1);
   }
 
@@ -592,7 +592,7 @@ export function cmdValidateContext(args) {
   const dir = resolveDir(args);
 
   if (!node) {
-    console.error("Usage: opc-harness validate-context --flow <template> [--flow-file <path>] --node <nodeId> --dir <path>");
+    console.error("Usage: bf-harness validate-context --flow <template> [--flow-file <path>] --node <nodeId> --dir <path>");
     process.exit(1);
   }
 

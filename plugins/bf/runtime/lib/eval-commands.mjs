@@ -11,7 +11,7 @@ import { checkBaselineCoverage, generateTierTestCases, VALID_TIERS, TEST_LAYERS,
 export function cmdVerify(args) {
   const file = args[0];
   if (!file) {
-    console.error("Usage: opc-harness verify <file> [--base <dir>]");
+    console.error("Usage: bf-harness verify <file> [--base <dir>]");
     process.exit(1);
   }
 
@@ -131,8 +131,8 @@ export function cmdSynthesize(args) {
   const nodeIdx = args.indexOf("--node");
 
   if (!dir || (waveIdx === -1 && nodeIdx === -1)) {
-    console.error("Usage: opc-harness synthesize [<dir>] --node <nodeId> [--run <N>]");
-    console.error("       opc-harness synthesize <dir> --wave <N>           (legacy)");
+    console.error("Usage: bf-harness synthesize [<dir>] --node <nodeId> [--run <N>]");
+    console.error("       bf-harness synthesize <dir> --wave <N>           (legacy)");
     console.error("       When <dir> is omitted, auto-resolves to latest session dir.");
     process.exit(1);
   }
@@ -195,7 +195,7 @@ export function cmdSynthesize(args) {
 
     const prefix = `evaluation-wave-${wave}-`;
     const mergedName = `evaluation-wave-${wave}.md`;
-    const harnessDir = join(dir, ".harness");
+    const harnessDir = join(dir, ".bf");
 
     const ROUND_RE = /^evaluation-wave-\d+-round\d+/;
     try {
@@ -766,7 +766,7 @@ export function cmdTierBaseline(args) {
   const tier = getFlag(args, "tier");
 
   if (!tier) {
-    console.error("Usage: opc-harness tier-baseline --tier <functional|polished|delightful>");
+    console.error("Usage: bf-harness tier-baseline --tier <functional|polished|delightful>");
     process.exit(1);
   }
 

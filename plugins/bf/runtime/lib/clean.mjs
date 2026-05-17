@@ -31,7 +31,7 @@ export function cleanHarnessDirs(targetDir, { dryRun = false } = {}) {
 }
 
 /**
- * CLI: opc-harness clean [<target-dir>] [--dry-run]
+ * CLI: bf-harness clean [<target-dir>] [--dry-run]
  * Defaults to cwd if no target-dir given.
  */
 export function cmdClean(args) {

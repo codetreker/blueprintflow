@@ -973,14 +973,14 @@ export async function verdictAppend() {
 
 describe("resolveBypass", () => {
   let origEnv;
-  beforeEach(() => { origEnv = process.env.OPC_DISABLE_EXTENSIONS; });
+  beforeEach(() => { origEnv = process.env.BF_DISABLE_EXTENSIONS; });
   afterEach(() => {
-    if (origEnv === undefined) delete process.env.OPC_DISABLE_EXTENSIONS;
-    else process.env.OPC_DISABLE_EXTENSIONS = origEnv;
+    if (origEnv === undefined) delete process.env.BF_DISABLE_EXTENSIONS;
+    else process.env.BF_DISABLE_EXTENSIONS = origEnv;
   });
 
-  test("env OPC_DISABLE_EXTENSIONS=1 → disable-all/env (highest priority)", () => {
-    process.env.OPC_DISABLE_EXTENSIONS = "1";
+  test("env BF_DISABLE_EXTENSIONS=1 → disable-all/env (highest priority)", () => {
+    process.env.BF_DISABLE_EXTENSIONS = "1";
     // Even with conflicting flags, env wins
     const r = resolveBypass({ noExtensions: true, extensionWhitelist: ["a"], quietBypass: true });
     assert.equal(r.mode, "disable-all");
@@ -988,14 +988,14 @@ describe("resolveBypass", () => {
   });
 
   test("config.noExtensions=true → disable-all/flag", () => {
-    delete process.env.OPC_DISABLE_EXTENSIONS;
+    delete process.env.BF_DISABLE_EXTENSIONS;
     const r = resolveBypass({ noExtensions: true, extensionWhitelist: ["a"], quietBypass: true });
     assert.equal(r.mode, "disable-all");
     assert.equal(r.source, "flag");
   });
 
   test("config.extensionWhitelist → whitelist/flag", () => {
-    delete process.env.OPC_DISABLE_EXTENSIONS;
+    delete process.env.BF_DISABLE_EXTENSIONS;
     const r = resolveBypass({ extensionWhitelist: ["alpha", "beta"], quietBypass: true });
     assert.equal(r.mode, "whitelist");
     assert.equal(r.source, "flag");
@@ -1003,13 +1003,13 @@ describe("resolveBypass", () => {
   });
 
   test("no env + no flags → default", () => {
-    delete process.env.OPC_DISABLE_EXTENSIONS;
+    delete process.env.BF_DISABLE_EXTENSIONS;
     const r = resolveBypass({ quietBypass: true });
     assert.equal(r.mode, "default");
   });
 
   test("whitelist filters out empty/non-string names", () => {
-    delete process.env.OPC_DISABLE_EXTENSIONS;
+    delete process.env.BF_DISABLE_EXTENSIONS;
     const r = resolveBypass({ extensionWhitelist: ["alpha", "", null, undefined, "beta"], quietBypass: true });
     assert.deepEqual(r.names, ["alpha", "beta"]);
   });
@@ -1019,12 +1019,12 @@ describe("loadExtensions — benchmark bypass", () => {
   let tmpBase, origEnv;
   beforeEach(() => {
     tmpBase = makeTmpDir();
-    origEnv = process.env.OPC_DISABLE_EXTENSIONS;
+    origEnv = process.env.BF_DISABLE_EXTENSIONS;
   });
   afterEach(() => {
     rmSync(tmpBase, { recursive: true, force: true });
-    if (origEnv === undefined) delete process.env.OPC_DISABLE_EXTENSIONS;
-    else process.env.OPC_DISABLE_EXTENSIONS = origEnv;
+    if (origEnv === undefined) delete process.env.BF_DISABLE_EXTENSIONS;
+    else process.env.BF_DISABLE_EXTENSIONS = origEnv;
   });
 
   function writeAlphaAndBeta(extDir) {
@@ -1038,8 +1038,8 @@ export async function promptAppend() { return "BETA"; }
 `);
   }
 
-  test("OPC_DISABLE_EXTENSIONS=1 returns empty registry without scanning disk", async () => {
-    process.env.OPC_DISABLE_EXTENSIONS = "1";
+  test("BF_DISABLE_EXTENSIONS=1 returns empty registry without scanning disk", async () => {
+    process.env.BF_DISABLE_EXTENSIONS = "1";
     const extDir = join(tmpBase, "exts");
     writeAlphaAndBeta(extDir);
     const registry = await loadExtensions({ extensionsDir: extDir, quietBypass: true });
@@ -1047,8 +1047,8 @@ export async function promptAppend() { return "BETA"; }
     assert.deepEqual(registry.extensions, []);
   });
 
-  test("OPC_DISABLE_EXTENSIONS=1 waives required extensions (benchmark reproducibility)", async () => {
-    process.env.OPC_DISABLE_EXTENSIONS = "1";
+  test("BF_DISABLE_EXTENSIONS=1 waives required extensions (benchmark reproducibility)", async () => {
+    process.env.BF_DISABLE_EXTENSIONS = "1";
     const extDir = join(tmpBase, "exts");
     // Don't write any extensions, but declare one required. Must NOT throw.
     const registry = await loadExtensions({
@@ -1060,7 +1060,7 @@ export async function promptAppend() { return "BETA"; }
   });
 
   test("config.noExtensions=true returns empty registry", async () => {
-    delete process.env.OPC_DISABLE_EXTENSIONS;
+    delete process.env.BF_DISABLE_EXTENSIONS;
     const extDir = join(tmpBase, "exts");
     writeAlphaAndBeta(extDir);
     const registry = await loadExtensions({ extensionsDir: extDir, noExtensions: true, quietBypass: true });
@@ -1068,7 +1068,7 @@ export async function promptAppend() { return "BETA"; }
   });
 
   test("config.extensionWhitelist=['alpha'] loads only alpha", async () => {
-    delete process.env.OPC_DISABLE_EXTENSIONS;
+    delete process.env.BF_DISABLE_EXTENSIONS;
     const extDir = join(tmpBase, "exts");
     writeAlphaAndBeta(extDir);
     const registry = await loadExtensions({
@@ -1080,7 +1080,7 @@ export async function promptAppend() { return "BETA"; }
   });
 
   test("empty whitelist → loads nothing", async () => {
-    delete process.env.OPC_DISABLE_EXTENSIONS;
+    delete process.env.BF_DISABLE_EXTENSIONS;
     const extDir = join(tmpBase, "exts");
     writeAlphaAndBeta(extDir);
     const registry = await loadExtensions({
@@ -1093,7 +1093,7 @@ export async function promptAppend() { return "BETA"; }
 
   test("priority: env beats noExtensions beats whitelist", async () => {
     // env + flag combo → env wins (disable-all)
-    process.env.OPC_DISABLE_EXTENSIONS = "1";
+    process.env.BF_DISABLE_EXTENSIONS = "1";
     const extDir = join(tmpBase, "exts");
     writeAlphaAndBeta(extDir);
     const r1 = await loadExtensions({
@@ -1105,7 +1105,7 @@ export async function promptAppend() { return "BETA"; }
     assert.deepEqual(r1.applied, []);
 
     // noExtensions + whitelist → noExtensions wins
-    delete process.env.OPC_DISABLE_EXTENSIONS;
+    delete process.env.BF_DISABLE_EXTENSIONS;
     const r2 = await loadExtensions({
       extensionsDir: extDir,
       noExtensions: true,
@@ -1116,7 +1116,7 @@ export async function promptAppend() { return "BETA"; }
   });
 
   test("whitelist respects required-extensions: missing required still throws", async () => {
-    delete process.env.OPC_DISABLE_EXTENSIONS;
+    delete process.env.BF_DISABLE_EXTENSIONS;
     const extDir = join(tmpBase, "exts");
     writeAlphaAndBeta(extDir);
     // Require beta but whitelist only alpha → beta is effectively missing → throw
@@ -2237,7 +2237,7 @@ describe("U1.6 — extension-artifact CLI integration", () => {
     );
 
     // Harness layout with flow template + node run dir
-    const harnessDir = join(tmpBase, ".harness");
+    const harnessDir = join(tmpBase, ".bf");
     const nodeId = "exec-node";
     const runDir = join(harnessDir, "nodes", nodeId, "run_1");
     mkdirSync(runDir, { recursive: true });
@@ -2260,7 +2260,7 @@ describe("U1.6 — extension-artifact CLI integration", () => {
     writeFileSync(
       join(harnessDir, "flow.json"),
       JSON.stringify({
-        opc_compat: ">=0.0",
+        bf_compat: ">=0.0",
         nodes: [nodeId],
         edges: { [nodeId]: { PASS: null } },
         limits: { maxLoopsPerEdge: 3, maxTotalSteps: 10, maxNodeReentry: 5 },
@@ -2270,9 +2270,9 @@ describe("U1.6 — extension-artifact CLI integration", () => {
       "utf8"
     );
     // Config pointing at extensions dir — repo layer: <harnessDir>/.opc/config.json
-    mkdirSync(join(harnessDir, ".opc"), { recursive: true });
+    mkdirSync(join(harnessDir, ".bf"), { recursive: true });
     writeFileSync(
-      join(harnessDir, ".opc", "config.json"),
+      join(harnessDir, ".bf", "config.json"),
       JSON.stringify({ extensionsDir: extDir }),
       "utf8"
     );
@@ -2316,7 +2316,7 @@ describe("U1.6 — extension-artifact CLI integration", () => {
        export async function executeRun() { throw new Error("execute boom"); }`
     );
 
-    const harnessDir = join(tmpBase, ".harness");
+    const harnessDir = join(tmpBase, ".bf");
     const nodeId = "exec-node";
     const runDir = join(harnessDir, "nodes", nodeId, "run_1");
     mkdirSync(runDir, { recursive: true });
@@ -2329,7 +2329,7 @@ describe("U1.6 — extension-artifact CLI integration", () => {
     writeFileSync(
       join(harnessDir, "flow.json"),
       JSON.stringify({
-        opc_compat: ">=0.0",
+        bf_compat: ">=0.0",
         nodes: [nodeId],
         edges: { [nodeId]: { PASS: null } },
         limits: { maxLoopsPerEdge: 3, maxTotalSteps: 10, maxNodeReentry: 5 },
@@ -2338,9 +2338,9 @@ describe("U1.6 — extension-artifact CLI integration", () => {
       }),
       "utf8"
     );
-    mkdirSync(join(harnessDir, ".opc"), { recursive: true });
+    mkdirSync(join(harnessDir, ".bf"), { recursive: true });
     writeFileSync(
-      join(harnessDir, ".opc", "config.json"),
+      join(harnessDir, ".bf", "config.json"),
       JSON.stringify({ extensionsDir: extDir }),
       "utf8"
     );
@@ -2487,7 +2487,7 @@ describe("U1.6r — extension-artifact CLI includes nodeCapabilities (contract #
       `export const meta = { name: "noop", provides: ["nodecap@1"] };
        export async function executeRun() { return; }`
     );
-    const harnessDir = join(tmpBase, ".harness");
+    const harnessDir = join(tmpBase, ".bf");
     const nodeId = "exec-node";
     const runDir = join(harnessDir, "nodes", nodeId, "run_1");
     mkdirSync(runDir, { recursive: true });
@@ -2499,7 +2499,7 @@ describe("U1.6r — extension-artifact CLI includes nodeCapabilities (contract #
     writeFileSync(
       join(harnessDir, "flow.json"),
       JSON.stringify({
-        opc_compat: ">=0.0",
+        bf_compat: ">=0.0",
         nodes: [nodeId],
         edges: { [nodeId]: { PASS: null } },
         limits: { maxLoopsPerEdge: 3, maxTotalSteps: 10, maxNodeReentry: 5 },
@@ -2507,9 +2507,9 @@ describe("U1.6r — extension-artifact CLI includes nodeCapabilities (contract #
         nodeCapabilities: { [nodeId]: ["nodecap@1"] },
       })
     );
-    mkdirSync(join(harnessDir, ".opc"), { recursive: true });
+    mkdirSync(join(harnessDir, ".bf"), { recursive: true });
     writeFileSync(
-      join(harnessDir, ".opc", "config.json"),
+      join(harnessDir, ".bf", "config.json"),
       JSON.stringify({ extensionsDir: extDir })
     );
 

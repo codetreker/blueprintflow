@@ -226,7 +226,7 @@ export function applyBreakerState(registry, state) {
   // U5.8r: surface the restoration so operators can diagnose "my ext
   // stopped firing". One stderr line per load, naming the extensions.
   if (restored.length > 0) {
-    console.error(`[opc] restored disabled state from .extension-state.json: ${restored.join(", ")} (use 'opc-harness init' to clear or set OPC_BREAKER_STATE=disabled)`);
+    console.error(`[opc] restored disabled state from .extension-state.json: ${restored.join(", ")} (use 'bf-harness init' to clear or set OPC_BREAKER_STATE=disabled)`);
   }
 }
 
@@ -305,7 +305,7 @@ function resolveExtensionsDir(config = {}) {
 // ─── Bypass resolution (benchmark mode) ──────────────────────────
 //
 // Priority (highest wins):
-//   1. OPC_DISABLE_EXTENSIONS=1 env  → disable-all
+//   1. BF_DISABLE_EXTENSIONS=1 env  → disable-all
 //   2. config.noExtensions === true (from CLI `--no-extensions`) → disable-all
 //   3. Array.isArray(config.extensionWhitelist) (from CLI `--extensions a,b`) → whitelist
 //   4. default → load all found extensions
@@ -319,7 +319,7 @@ function resolveExtensionsDir(config = {}) {
 // config.quietBypass === true (useful for tests).
 export function resolveBypass(config = {}) {
   let decision;
-  if (process.env.OPC_DISABLE_EXTENSIONS === "1") {
+  if (process.env.BF_DISABLE_EXTENSIONS === "1") {
     decision = { mode: "disable-all", source: "env" };
   } else if (config.noExtensions === true) {
     decision = { mode: "disable-all", source: "flag" };
@@ -334,7 +334,7 @@ export function resolveBypass(config = {}) {
   }
   if (!config.quietBypass) {
     if (decision.mode === "disable-all") {
-      console.error(`[opc] extensions disabled via ${decision.source === "env" ? "OPC_DISABLE_EXTENSIONS" : "--no-extensions"}`);
+      console.error(`[opc] extensions disabled via ${decision.source === "env" ? "BF_DISABLE_EXTENSIONS" : "--no-extensions"}`);
     } else if (decision.mode === "whitelist") {
       console.error(`[opc] extensions whitelisted via --extensions: ${decision.names.join(", ") || "(empty)"}`);
     }
@@ -460,7 +460,7 @@ export function normalizeCapability(cap) {
  * - ok=true, reason="bare" → `foo` (still valid, auto-upgrades to @1 with WARN)
  * - ok=false, reason="not-a-string" | "empty" | "invalid-shape" → lint failure
  *
- * Used by `opc-harness extension-test` to surface authoring mistakes as WARN
+ * Used by `bf-harness extension-test` to surface authoring mistakes as WARN
  * (not FAIL) before the extension is ever loaded by the harness.
  */
 export function lintCapability(cap) {

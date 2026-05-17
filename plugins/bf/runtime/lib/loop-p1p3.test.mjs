@@ -10,7 +10,7 @@ import { execFileSync } from "child_process";
 
 import { getGitHeadHash, detectPreCommitHooks, detectTestScript } from "./loop-helpers.mjs";
 
-const HARNESS = join(import.meta.dirname, "..", "opc-harness.mjs");
+const HARNESS = join(import.meta.dirname, "..", "bf-harness.mjs");
 
 function runHarness(args, { cwd } = {}) {
   try {
@@ -178,7 +178,7 @@ describe("P3: complete-tick structured terminal error", () => {
         unit: "F1.1",
         status: "stalled",
         next_unit: "F1.2",
-        _written_by: "opc-harness/1.0",
+        _written_by: "bf-harness/1.0",
         _write_nonce: "abc123",
         _last_modified: new Date().toISOString(),
       };
@@ -207,7 +207,7 @@ describe("P3: next-tick structured stall output", () => {
         status: "in_progress",
         next_unit: "F1.2",
         plan_file: join(tmp, "plan.md"),
-        _written_by: "opc-harness/1.0",
+        _written_by: "bf-harness/1.0",
         _write_nonce: "abc123",
         _in_progress_since: oldTime,
         _last_modified: oldTime,
@@ -241,7 +241,7 @@ describe("P3: next-tick 3-tick stall detection", () => {
         status: "completed",
         next_unit: "F1.1",
         plan_file: join(tmp, "plan.md"),
-        _written_by: "opc-harness/1.0",
+        _written_by: "bf-harness/1.0",
         _write_nonce: "abc123",
         _last_modified: new Date().toISOString(),
         _tick_history: [
@@ -278,7 +278,7 @@ describe("P3: next-tick oscillation stall detection", () => {
         status: "completed",
         next_unit: "F1.1",
         plan_file: join(tmp, "plan.md"),
-        _written_by: "opc-harness/1.0",
+        _written_by: "bf-harness/1.0",
         _write_nonce: "abc123",
         _last_modified: new Date().toISOString(),
         _tick_history: [
@@ -318,7 +318,7 @@ describe("P3: next-tick maxTotalTicks exhaustion", () => {
         status: "completed",
         next_unit: "F1.2",
         plan_file: join(tmp, "plan.md"),
-        _written_by: "opc-harness/1.0",
+        _written_by: "bf-harness/1.0",
         _write_nonce: "abc123",
         _last_modified: new Date().toISOString(),
         _tick_history: [{ unit: "F1.1", tick: 1, status: "completed" }],
@@ -352,7 +352,7 @@ describe("P3: next-tick wall-clock deadline", () => {
         status: "completed",
         next_unit: "F1.2",
         plan_file: join(tmp, "plan.md"),
-        _written_by: "opc-harness/1.0",
+        _written_by: "bf-harness/1.0",
         _write_nonce: "abc123",
         _last_modified: new Date().toISOString(),
         _tick_history: [{ unit: "F1.1", tick: 1, status: "completed" }],
@@ -387,7 +387,7 @@ describe("P3: stall detection does NOT fire when last tick succeeded", () => {
         status: "completed",
         next_unit: "F1.1",
         plan_file: join(tmp, "plan.md"),
-        _written_by: "opc-harness/1.0",
+        _written_by: "bf-harness/1.0",
         _write_nonce: "abc123",
         _last_modified: new Date().toISOString(),
         _tick_history: [
@@ -425,7 +425,7 @@ describe("_runTestScript: timeout vs real failure distinction", () => {
         status: "in_progress",
         next_unit: "F1.1",
         plan_file: join(tmp, "plan.md"),
-        _written_by: "opc-harness/1.0",
+        _written_by: "bf-harness/1.0",
         _write_nonce: "abc123",
         _last_modified: new Date().toISOString(),
         _git_head: null,
@@ -459,7 +459,7 @@ describe("_runTestScript: timeout vs real failure distinction", () => {
         status: "in_progress",
         next_unit: "F1.1",
         plan_file: join(tmp, "plan.md"),
-        _written_by: "opc-harness/1.0",
+        _written_by: "bf-harness/1.0",
         _write_nonce: "abc123",
         _last_modified: new Date().toISOString(),
         _git_head: null,

@@ -265,7 +265,7 @@ export function cmdUxVerdict(args) {
   const run = getFlag(args, "run");
 
   if (!run) {
-    console.error("Usage: opc-harness ux-verdict --dir <p> --run <N>");
+    console.error("Usage: bf-harness ux-verdict --dir <p> --run <N>");
     process.exit(1);
   }
 
@@ -401,7 +401,7 @@ export function cmdUxFrictionAggregate(args) {
   const output = getFlag(args, "output");
 
   if (!run || !output) {
-    console.error("Usage: opc-harness ux-friction-aggregate --dir <p> --run <N> --output <path>");
+    console.error("Usage: bf-harness ux-friction-aggregate --dir <p> --run <N> --output <path>");
     process.exit(1);
   }
 

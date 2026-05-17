@@ -169,7 +169,7 @@ export function cmdPass(args) {
     const upstreamHandshakePath = join(dir, "nodes", upstreamId, "handshake.json");
     if (existsSync(upstreamHandshakePath)) {
       try {
-        const harnessPath = join(dirname(fileURLToPath(import.meta.url)), "..", "opc-harness.mjs");
+        const harnessPath = join(dirname(fileURLToPath(import.meta.url)), "..", "bf-harness.mjs");
         const synthOutput = execFileSync(
           "node",
           [harnessPath, "synthesize", "--node", upstreamId, "--dir", dir, "--no-strict"],
@@ -264,7 +264,7 @@ export function cmdGoto(args) {
   }
   const targetNode = positional[0] || null;
   if (!targetNode) {
-    console.error("Usage: opc-harness goto <nodeId> [--dir <path>]");
+    console.error("Usage: bf-harness goto <nodeId> [--dir <path>]");
     process.exit(1);
   }
 
@@ -363,14 +363,14 @@ export function cmdLs(args) {
     try {
       const entries = readdirSync(base, { withFileTypes: true });
       for (const e of entries) {
-        if (e.isDirectory() && (e.name === ".harness" || e.name.startsWith(".harness-"))) {
+        if (e.isDirectory() && (e.name === ".bf" || e.name.startsWith(".harness-"))) {
           addCandidate(join(base, e.name));
         }
       }
     } catch { /* unreadable dir */ }
 
     // Also check .harness/*/flow-state.json (named harness pattern)
-    const harnessDir = join(base, ".harness");
+    const harnessDir = join(base, ".bf");
     if (existsSync(harnessDir)) {
       try {
         const subs = readdirSync(harnessDir, { withFileTypes: true });
@@ -388,7 +388,7 @@ export function cmdLs(args) {
   // Scan the base dir
   scanBaseDir(baseDir);
 
-  // Scan ~/.opc/sessions/{project-hash}/ for session-based flows
+  // Scan ~/.bf/sessions/{project-hash}/ for session-based flows
   try {
     const sessionsBase = getSessionsBaseDir(baseDir === "." ? process.cwd() : baseDir);
     if (existsSync(sessionsBase)) {

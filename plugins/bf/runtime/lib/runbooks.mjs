@@ -2,7 +2,7 @@
 //
 // Runbooks are reusable task recipes. When the user invokes
 //   /opc loop <task>
-// the loop-protocol checks `~/.opc/runbooks/` (or the configured dir)
+// the loop-protocol checks `~/.bf/runbooks/` (or the configured dir)
 // for a runbook whose `match:` patterns cover the task, and uses its
 // `units:` list as the decomposition — avoiding a fresh decompose on
 // every run.
@@ -290,7 +290,7 @@ export function parseRunbook(path, src) {
  * skipped with a stderr WARN naming the file + error. Duplicate ids
  * (second occurrence) are skipped with WARN. Missing dir returns [];
  * if opts.explicit is true, a WARN is emitted for the missing dir
- * (default `~/.opc/runbooks/` legitimately may not exist yet).
+ * (default `~/.bf/runbooks/` legitimately may not exist yet).
  */
 export function loadRunbooks(dir, opts = {}) {
   if (!dir) return [];

@@ -34,7 +34,7 @@ export function cmdReport(args) {
   const dir = args[0];
   if (!dir) {
     console.error(
-      "Usage: opc-harness report <dir> --mode <mode> --task <task> [--challenged N] [--dismissed N] [--downgraded N]"
+      "Usage: bf-harness report <dir> --mode <mode> --task <task> [--challenged N] [--dismissed N] [--downgraded N]"
     );
     process.exit(1);
   }
@@ -50,7 +50,7 @@ export function cmdReport(args) {
   const dismissed = parseInt(getFlag(args, "dismissed", "0"), 10);
   const downgraded = parseInt(getFlag(args, "downgraded", "0"), 10);
 
-  const harnessDir = join(dir, ".harness");
+  const harnessDir = join(dir, ".bf");
   const ROLE_FILE_RE = /^evaluation-wave-\d+-(?!round\d)(.+)\.md$/;
   const SINGLE_EVAL_RE = /^evaluation-wave-(\d+)\.md$/;
   let roleFiles;
@@ -102,7 +102,7 @@ export function cmdReport(args) {
 export function cmdDiff(args) {
   const [file1, file2] = args;
   if (!file1 || !file2) {
-    console.error("Usage: opc-harness diff <file1> <file2>");
+    console.error("Usage: bf-harness diff <file1> <file2>");
     process.exit(1);
   }
 

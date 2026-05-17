@@ -34,7 +34,7 @@ import { existsSync, readFileSync } from "fs";
 import { join, resolve, dirname } from "path";
 import os from "os";
 
-const USER_CONFIG_PATH = () => join(os.homedir(), ".opc", "config.json");
+const USER_CONFIG_PATH = () => join(os.homedir(), ".bf", "config.json");
 
 // Keys that must never flow into the merged output — either reserved for OPC
 // provenance (`_*`) or dangerous to the prototype chain.
@@ -61,7 +61,7 @@ export function findRepoConfigPath(start) {
   const root = resolve("/");
   const userPath = USER_CONFIG_PATH();
   while (true) {
-    const candidate = join(dir, ".opc", "config.json");
+    const candidate = join(dir, ".bf", "config.json");
     // Skip home-dir collision: do not return user-layer path as the repo layer.
     if (candidate !== userPath && existsSync(candidate)) return candidate;
     if (dir === root) return null;
@@ -238,11 +238,11 @@ export function stripProvenance(cfg) {
   return out;
 }
 
-// ─── CLI: opc-harness config resolve [--dir <p>] ────────────────────
+// ─── CLI: bf-harness config resolve [--dir <p>] ────────────────────
 
 export async function cmdConfigResolve(args) {
   if (args.includes("--help") || args.includes("-h")) {
-    console.error("Usage: opc-harness config resolve [--dir <harness-dir>]");
+    console.error("Usage: bf-harness config resolve [--dir <harness-dir>]");
     console.error("Prints merged OPC config as JSON, including _source map per top-level key.");
     return;
   }

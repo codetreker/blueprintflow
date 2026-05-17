@@ -119,11 +119,11 @@ export const FLOW_TEMPLATES = {
 // Scans ~/.claude/flows/*.json and merges into FLOW_TEMPLATES.
 // Built-in templates take precedence (external cannot override).
 
-// Simple semver-range check: supports ">=X.Y" format only (good enough for opc_compat)
+// Simple semver-range check: supports ">=X.Y" format only (good enough for bf_compat)
 function satisfiesVersion(range, version) {
   if (!range || !version) return true; // missing = no constraint
   const m = range.match(/^>=(\d+)\.(\d+)/);
-  if (!m) { console.error(`⚠️  malformed opc_compat range: '${range}' — rejecting`); return false; }
+  if (!m) { console.error(`⚠️  malformed bf_compat range: '${range}' — rejecting`); return false; }
   const rMaj = parseInt(m[1], 10);
   const rMin = parseInt(m[2], 10);
   const v = version.match(/^(\d+)\.(\d+)/);
@@ -140,9 +140,9 @@ function loadExternalFlows() {
     const files = readdirSync(flowDir).filter((f) => f.endsWith(".json"));
     if (files.length > 0) {
       // Emit deprecation warning at most once per process, and allow opt-out
-      // via OPC_QUIET_DEPRECATIONS=1 (flow-templates is called from many commands;
-      // repeating the banner on every opc-harness invocation is noise).
-      if (!loadExternalFlows._warned && !process.env.OPC_QUIET_DEPRECATIONS) {
+      // via BF_QUIET_DEPRECATIONS=1 (flow-templates is called from many commands;
+      // repeating the banner on every bf-harness invocation is noise).
+      if (!loadExternalFlows._warned && !process.env.BF_QUIET_DEPRECATIONS) {
         console.error(`⚠️  ~/.claude/flows/ is deprecated — use --flow-file instead. Found: ${files.join(", ")}`);
         loadExternalFlows._warned = true;
       }
@@ -278,9 +278,9 @@ function loadExternalFlows() {
           if (pdErr) { console.error(`⚠️  Skipping ${f}: ${pdErr}`); continue; }
           data._resolvedProtocolDir = resolve(flowDir, data.protocolDir);
         }
-        // Check opc_compat version constraint
-        if (data.opc_compat && !satisfiesVersion(data.opc_compat, HARNESS_VERSION)) {
-          console.error(`⚠️  Skipping ${f}: requires opc_compat ${data.opc_compat} but harness is ${HARNESS_VERSION}`);
+        // Check bf_compat version constraint
+        if (data.bf_compat && !satisfiesVersion(data.bf_compat, HARNESS_VERSION)) {
+          console.error(`⚠️  Skipping ${f}: requires bf_compat ${data.bf_compat} but harness is ${HARNESS_VERSION}`);
           continue;
         }
         FLOW_TEMPLATES[name] = data;
@@ -375,12 +375,12 @@ export function loadFlowFromFile(filePath) {
     data._resolvedProtocolDir = resolve(flowDir, data.protocolDir);
   }
 
-  // Check opc_compat version constraint (REQUIRED field)
-  if (!data.opc_compat) {
-    return { error: "missing required field: opc_compat" };
+  // Check bf_compat version constraint (REQUIRED field)
+  if (!data.bf_compat) {
+    return { error: "missing required field: bf_compat" };
   }
-  if (!satisfiesVersion(data.opc_compat, HARNESS_VERSION)) {
-    return { error: `requires opc_compat ${data.opc_compat} but harness is ${HARNESS_VERSION}` };
+  if (!satisfiesVersion(data.bf_compat, HARNESS_VERSION)) {
+    return { error: `requires bf_compat ${data.bf_compat} but harness is ${HARNESS_VERSION}` };
   }
 
   // Guard: --flow-file cannot override built-in template names

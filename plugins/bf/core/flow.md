@@ -47,7 +47,7 @@ Inherits OPC `flow-template` JSON; BF additions in **bold**.
 | `softEvidence` | boolean | optional | (OPC) warn vs error on missing evidence |
 | `rolesDir` | string | optional | (OPC) relative to flow file |
 | `protocolDir` | string | optional | (OPC) relative to flow file |
-| `unitHandlers` | object | optional | (OPC) Loop-mode dispatch — see external-skill integration in [layering-principles.md](./layering-principles.md) §8 |
+| `unitHandlers` | object | optional | (OPC) Loop-mode dispatch — see external-skill integration in [layering-principles.md](../../../docs/specs/2026-05-16-bf-fork-design/layering-principles.md) §8 |
 
 ## Lifecycle
 

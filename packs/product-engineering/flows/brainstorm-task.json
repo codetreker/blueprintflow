@@ -1,0 +1,21 @@
+{
+  "bf_compat": ">=0.1",
+  "id": "brainstorm-task",
+  "core_type": "brainstorm",
+  "accepts": { "schema": ["task"], "current_state": ["new"] },
+  "produces": { "desired_state": "shaped" },
+  "nodes": ["discuss", "write-criteria", "criteria-lint", "gate"],
+  "edges": {
+    "discuss":        { "PASS": "write-criteria" },
+    "write-criteria": { "PASS": "criteria-lint" },
+    "criteria-lint":  { "PASS": "gate", "ITERATE": "write-criteria" },
+    "gate":           { "PASS": null, "FAIL": "discuss", "ITERATE": "write-criteria" }
+  },
+  "nodeTypes": {
+    "discuss": "discussion",
+    "write-criteria": "build",
+    "criteria-lint": "execute",
+    "gate": "gate"
+  },
+  "limits": { "maxLoopsPerEdge": 3, "maxTotalSteps": 15, "maxNodeReentry": 5 }
+}

@@ -165,6 +165,7 @@ Implement the email/password login form on `/login`, with session cookie persist
 - `depends_on` resolution: cross-tree references (`other-wo-id`) or only siblings? (lean: siblings-only in v1; cross-tree deferred)
 - "child WO has stale state because user manually edited its `wo.md`" — harness should detect by file mtime vs `runtime.updated_at`? (deferred)
 - **Per-WO live-state file for parent-watching-children** — Stage 3 probe `loop-milestone` (commit 64dad9a) flagged that `loop`'s `await-children` node needs a stable on-disk location to read child terminal state (currently inferred from `wo.md` frontmatter or a hypothetical `runs/current/state.json` that Core does not yet specify). Stage 4 must standardize the live-state file and choose poll vs notify semantics for the parent watch loop.
+- **`wo.md` frontmatter parser is line-based** — Stage 4 `bin/lib/dispatcher/wo-resolver.mjs::parseFrontmatter` (commit 3da08cb) matches `^(\w+):\s*(.+)$` per line only. Multi-line YAML values (lists with `-` items on subsequent lines, block scalars, nested maps) are silently dropped. `runtime.*` and `acceptance_criteria` therefore must fit on a single line today. Stage 5 should adopt a real YAML parser before WO schemas grow structured frontmatter fields.
 
 ---
 

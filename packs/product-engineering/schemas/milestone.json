@@ -1,0 +1,13 @@
+{
+  "id": "milestone",
+  "pack": "product-engineering",
+  "description": "Work Object schema for product-engineering milestones: a mid-level scope unit shaped from a phase, broken down into N child task WOs, and considered done only when its children complete. Lifecycle: new -> shaped -> broken_down -> children_done -> done.",
+  "states": ["new", "shaped", "broken_down", "children_done", "done"],
+  "default_desired_state": "done",
+  "wo_md_sections": {
+    "required": ["Objective", "Boundary", "Acceptance criteria"],
+    "optional": ["Notes", "Task index", "References"]
+  },
+  "acceptance_lint_profile": "milestone",
+  "capability_required_hints": ["planning", "architecture", "code-review"]
+}

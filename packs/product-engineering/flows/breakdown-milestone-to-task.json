@@ -1,0 +1,21 @@
+{
+  "bf_compat": ">=0.1",
+  "id": "breakdown-milestone-to-task",
+  "core_type": "breakdown",
+  "accepts": { "schema": ["milestone"], "current_state": ["shaped"] },
+  "produces": { "desired_state": "broken_down" },
+  "nodes": ["plan-children", "write-children", "review-breakdown", "gate"],
+  "edges": {
+    "plan-children":     { "PASS": "write-children" },
+    "write-children":    { "PASS": "review-breakdown" },
+    "review-breakdown":  { "PASS": "gate", "ITERATE": "write-children", "FAIL": "plan-children" },
+    "gate":              { "PASS": null, "FAIL": "plan-children", "ITERATE": "write-children" }
+  },
+  "nodeTypes": {
+    "plan-children": "discussion",
+    "write-children": "build",
+    "review-breakdown": "review",
+    "gate": "gate"
+  },
+  "limits": { "maxLoopsPerEdge": 3, "maxTotalSteps": 18, "maxNodeReentry": 5 }
+}

@@ -43,5 +43,5 @@ files present in upstream were copied.
 ## Deferred to Stage 4 (bf-run skill)
 
 (Section closed: Stage 4 swept all 9 deferred `/opc <verb>` user-facing
-strings to `/bf <verb>` in commit <SHA>. Search to confirm later:
+strings to `/bf <verb>` in commit 3f155a7. Search to confirm later:
 `grep -rn '/opc ' bin/lib/`.)

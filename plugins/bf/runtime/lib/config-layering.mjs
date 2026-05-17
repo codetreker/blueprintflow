@@ -243,7 +243,7 @@ export function stripProvenance(cfg) {
 export async function cmdConfigResolve(args) {
   if (args.includes("--help") || args.includes("-h")) {
     console.error("Usage: bf-harness config resolve [--dir <harness-dir>]");
-    console.error("Prints merged OPC config as JSON, including _source map per top-level key.");
+    console.error("Prints merged BF config as JSON, including _source map per top-level key.");
     return;
   }
 

@@ -34,13 +34,13 @@ import { atomicWriteSync } from "./util.mjs";
 
 // ─── Constants ───────────────────────────────────────────────────
 
-const HOOK_TIMEOUT_MS = Number(process.env.OPC_HOOK_TIMEOUT_MS) || 60_000;
+const HOOK_TIMEOUT_MS = Number(process.env.BF_HOOK_TIMEOUT_MS) || 60_000;
 
 // Circuit-breaker: after N consecutive failures, the extension is auto-disabled
-// for the remainder of the process. Override via OPC_HOOK_FAILURE_THRESHOLD.
+// for the remainder of the process. Override via BF_HOOK_FAILURE_THRESHOLD.
 // Set to 0 to disable the breaker (still records failures, never trips).
 const HOOK_FAILURE_THRESHOLD = (() => {
-  const raw = process.env.OPC_HOOK_FAILURE_THRESHOLD;
+  const raw = process.env.BF_HOOK_FAILURE_THRESHOLD;
   if (raw === undefined || raw === "") return 3;
   const n = Number(raw);
   return Number.isFinite(n) && n >= 0 ? Math.floor(n) : 3;
@@ -50,7 +50,7 @@ const HOOK_FAILURE_THRESHOLD = (() => {
 // processes. Oldest entries are dropped FIFO once the cap is reached, and a
 // running drop counter is exposed via registry.failuresDropped.
 const FAILURE_LOG_CAP = (() => {
-  const raw = process.env.OPC_HOOK_FAILURE_LOG_CAP;
+  const raw = process.env.BF_HOOK_FAILURE_LOG_CAP;
   if (raw === undefined || raw === "") return 200;
   const n = Number(raw);
   return Number.isFinite(n) && n > 0 ? Math.floor(n) : 200;
@@ -99,7 +99,7 @@ function recordFailure(registry, ext, hook, kind, message) {
   if (HOOK_FAILURE_THRESHOLD > 0 && ext._failStreak >= HOOK_FAILURE_THRESHOLD && ext.enabled) {
     ext.enabled = false;
     ext.disabledReason = `circuit-breaker tripped after ${ext._failStreak} consecutive failures`;
-    console.error(`[opc] CIRCUIT-BREAKER: extension '${ext.name}' disabled after ${ext._failStreak} consecutive failures (last: ${kind} in ${hook})`);
+    console.error(`[bf] CIRCUIT-BREAKER: extension '${ext.name}' disabled after ${ext._failStreak} consecutive failures (last: ${kind} in ${hook})`);
     appendFailure(registry, {
       ext: ext.name,
       hook: "_circuit_breaker",
@@ -172,14 +172,14 @@ export const BREAKER_STATE_FILE = ".extension-state.json";
 let _breakerSchemaWarned = false;
 
 /**
- * Master switch for persistence. `OPC_BREAKER_STATE=disabled` skips all
+ * Master switch for persistence. `BF_BREAKER_STATE=disabled` skips all
  * load/save — useful for tests that share a harness dir across scenarios
  * and don't want breaker state to leak between them. The previous
  * workaround (`rm -f .extension-state.json` between test phases) worked
  * but leaked into every user test script. (U5.8r finding.)
  */
 function breakerPersistenceEnabled() {
-  return process.env.OPC_BREAKER_STATE !== "disabled";
+  return process.env.BF_BREAKER_STATE !== "disabled";
 }
 
 export function loadBreakerState(flowDir) {
@@ -226,7 +226,7 @@ export function applyBreakerState(registry, state) {
   // U5.8r: surface the restoration so operators can diagnose "my ext
   // stopped firing". One stderr line per load, naming the extensions.
   if (restored.length > 0) {
-    console.error(`[opc] restored disabled state from .extension-state.json: ${restored.join(", ")} (use 'bf-harness init' to clear or set OPC_BREAKER_STATE=disabled)`);
+    console.error(`[bf] restored disabled state from .extension-state.json: ${restored.join(", ")} (use 'bf-harness init' to clear or set BF_BREAKER_STATE=disabled)`);
   }
 }
 
@@ -296,7 +296,7 @@ export function clearBreakerState(flowDir) {
 
 function resolveExtensionsDir(config = {}) {
   return (
-    process.env.OPC_EXTENSIONS_DIR ||
+    process.env.BF_EXTENSIONS_DIR ||
     config.extensionsDir ||
     join(os.homedir(), ".claude", "skills", "opc-extension")
   );
@@ -334,9 +334,9 @@ export function resolveBypass(config = {}) {
   }
   if (!config.quietBypass) {
     if (decision.mode === "disable-all") {
-      console.error(`[opc] extensions disabled via ${decision.source === "env" ? "BF_DISABLE_EXTENSIONS" : "--no-extensions"}`);
+      console.error(`[bf] extensions disabled via ${decision.source === "env" ? "BF_DISABLE_EXTENSIONS" : "--no-extensions"}`);
     } else if (decision.mode === "whitelist") {
-      console.error(`[opc] extensions whitelisted via --extensions: ${decision.names.join(", ") || "(empty)"}`);
+      console.error(`[bf] extensions whitelisted via --extensions: ${decision.names.join(", ") || "(empty)"}`);
     }
   }
   return decision;
@@ -446,7 +446,7 @@ export function normalizeCapability(cap) {
   if (CAPABILITY_BARE_RE.test(cap)) {
     if (!_bareCapabilityWarnings.has(cap)) {
       _bareCapabilityWarnings.add(cap);
-      console.error(`[opc] WARN: capability '${cap}' missing version suffix — auto-upgrading to '${cap}@1'. Declare '${cap}@1' explicitly to silence this.`);
+      console.error(`[bf] WARN: capability '${cap}' missing version suffix — auto-upgrading to '${cap}@1'. Declare '${cap}@1' explicitly to silence this.`);
     }
     return `${cap}@1`;
   }
@@ -1197,7 +1197,7 @@ export function survivingExtensions(registry) {
 }
 
 // ─── Strict mode (CI enforcement) ────────────────────────────────
-// OPC_STRICT_EXTENSIONS=1 turns recorded extension hook failures into a
+// BF_STRICT_EXTENSIONS=1 turns recorded extension hook failures into a
 // non-zero process exit. Default mode isolates failures (per-extension
 // breaker) and returns 0 — strict mode preserves the same isolation +
 // breaker behavior but signals failure to the caller (CI build).
@@ -1213,7 +1213,7 @@ export function survivingExtensions(registry) {
 //   - Exits with code 2 (distinguishes strict-trip from generic CLI errors
 //     which use exit 1).
 export function strictModeEnabled() {
-  return process.env.OPC_STRICT_EXTENSIONS === "1";
+  return process.env.BF_STRICT_EXTENSIONS === "1";
 }
 
 export function enforceStrictMode(registry) {
@@ -1221,7 +1221,7 @@ export function enforceStrictMode(registry) {
   const failures = Array.isArray(registry?.failures) ? registry.failures : [];
   if (failures.length === 0) return;
   for (const f of failures) {
-    console.error(`[opc] STRICT: ${f.ext} failed ${f.hook} — exiting non-zero`);
+    console.error(`[bf] STRICT: ${f.ext} failed ${f.hook} — exiting non-zero`);
   }
   process.exit(2);
 }

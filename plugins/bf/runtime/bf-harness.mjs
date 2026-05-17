@@ -65,7 +65,7 @@ switch (command) {
   case "gc":                    cmdGc(args);                     break;
   case "audit":                 cmdAudit(args);                  break;
   default:
-    console.log("bf-harness — Mechanical verification for OPC evaluations");
+    console.log("bf-harness — Mechanical verification for BF evaluations");
     console.log();
     console.log("Flow commands:");
     console.log("  init --flow <tpl> [--flow-file <p>] [--entry <node>] [--dir <p>]");
@@ -107,7 +107,7 @@ switch (command) {
     console.log("  criteria-lint <file> [--tier <t>]                  Lint acceptance criteria DoD");
     console.log();
     console.log("Config commands:");
-    console.log("  config resolve [--dir <p>]                         Print merged OPC config w/ _source map");
+    console.log("  config resolve [--dir <p>]                         Print merged BF config w/ _source map");
     console.log();
     console.log("Runbook commands:");
     console.log("  runbook list [--dir <p>]                           List all runbooks");

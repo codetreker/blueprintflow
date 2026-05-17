@@ -153,17 +153,17 @@ describe("loadExtensions", () => {
     );
   });
 
-  test("OPC_EXTENSIONS_DIR env overrides default", async () => {
+  test("BF_EXTENSIONS_DIR env overrides default", async () => {
     const extDir = join(tmpBase, "env-extensions");
     mkdirSync(extDir);
-    const origEnv = process.env.OPC_EXTENSIONS_DIR;
-    process.env.OPC_EXTENSIONS_DIR = extDir;
+    const origEnv = process.env.BF_EXTENSIONS_DIR;
+    process.env.BF_EXTENSIONS_DIR = extDir;
     try {
       const registry = await loadExtensions({});
       assert.deepEqual(registry.applied, []);
     } finally {
-      if (origEnv === undefined) delete process.env.OPC_EXTENSIONS_DIR;
-      else process.env.OPC_EXTENSIONS_DIR = origEnv;
+      if (origEnv === undefined) delete process.env.BF_EXTENSIONS_DIR;
+      else process.env.BF_EXTENSIONS_DIR = origEnv;
     }
   });
 
@@ -347,13 +347,13 @@ export async function promptAppend() { return 42; }
 
   test("prompt.append slow hook is bounded by timeout", async () => {
     // Lower timeout for this test
-    const origTimeout = process.env.OPC_HOOK_TIMEOUT_MS;
-    process.env.OPC_HOOK_TIMEOUT_MS = "200";
+    const origTimeout = process.env.BF_HOOK_TIMEOUT_MS;
+    process.env.BF_HOOK_TIMEOUT_MS = "200";
     try {
       // Must re-import extensions.mjs with new env — but that's complicated.
       // Instead, use a hook that sleeps longer than our actual configured timeout
       // and rely on the current test runtime reading the env var. Since extensions.mjs
-      // reads OPC_HOOK_TIMEOUT_MS at module-load time, we instead test by using a short-sleep
+      // reads BF_HOOK_TIMEOUT_MS at module-load time, we instead test by using a short-sleep
       // hook against the real 60s timeout — this test confirms timeout code-path exists
       // rather than actually triggering timeout within the test duration.
       // We verify a hook that sleeps briefly DOES resolve, confirming the timeout wrapper doesn't break normal path.
@@ -369,8 +369,8 @@ export async function promptAppend() {
       const result = await firePromptAppend(registry, ctx({ nodeCapabilities: ["cap"] }));
       assert.ok(result.includes("## done after 50ms"));
     } finally {
-      if (origTimeout === undefined) delete process.env.OPC_HOOK_TIMEOUT_MS;
-      else process.env.OPC_HOOK_TIMEOUT_MS = origTimeout;
+      if (origTimeout === undefined) delete process.env.BF_HOOK_TIMEOUT_MS;
+      else process.env.BF_HOOK_TIMEOUT_MS = origTimeout;
     }
   });
 });
@@ -1493,7 +1493,7 @@ describe("U1.3 — failure isolation in firePromptAppend", () => {
   });
 
   test("timeout is recorded as kind=timeout", async () => {
-    process.env.OPC_HOOK_TIMEOUT_MS = "50";
+    process.env.BF_HOOK_TIMEOUT_MS = "50";
     const mod = await import(`./extensions.mjs?timeout=${Date.now()}`);
     writeExtension(
       join(tmpBase, "slow"),
@@ -1511,7 +1511,7 @@ describe("U1.3 — failure isolation in firePromptAppend", () => {
       assert.equal(result.failures.length, 1);
       assert.equal(result.failures[0].kind, "timeout");
     } finally {
-      delete process.env.OPC_HOOK_TIMEOUT_MS;
+      delete process.env.BF_HOOK_TIMEOUT_MS;
     }
   });
 
@@ -1541,7 +1541,7 @@ describe("U1.3 — circuit-breaker", () => {
   beforeEach(() => { tmpBase = makeTmpDir(); });
   afterEach(() => {
     try { rmSync(tmpBase, { recursive: true, force: true }); } catch {}
-    delete process.env.OPC_HOOK_FAILURE_THRESHOLD;
+    delete process.env.BF_HOOK_FAILURE_THRESHOLD;
   });
 
   test("breaker trips after 3 consecutive failures (default threshold)", async () => {
@@ -1567,10 +1567,10 @@ describe("U1.3 — circuit-breaker", () => {
     });
   });
 
-  test("OPC_HOOK_FAILURE_THRESHOLD=0 disables the breaker", async () => {
+  test("BF_HOOK_FAILURE_THRESHOLD=0 disables the breaker", async () => {
     // The threshold is read at module load via process.env, so we reload via
     // dynamic import with a fresh URL query each time.
-    process.env.OPC_HOOK_FAILURE_THRESHOLD = "0";
+    process.env.BF_HOOK_FAILURE_THRESHOLD = "0";
     const mod = await import(`./extensions.mjs?breaker0=${Date.now()}`);
     writeExtension(
       join(tmpBase, "doomed"),
@@ -1775,13 +1775,13 @@ describe("U1.3r — failures[] cap (resilience 🟡)", () => {
   beforeEach(() => { tmpBase = makeTmpDir(); });
   afterEach(() => {
     try { rmSync(tmpBase, { recursive: true, force: true }); } catch {}
-    delete process.env.OPC_HOOK_FAILURE_LOG_CAP;
-    delete process.env.OPC_HOOK_FAILURE_THRESHOLD;
+    delete process.env.BF_HOOK_FAILURE_LOG_CAP;
+    delete process.env.BF_HOOK_FAILURE_THRESHOLD;
   });
 
   test("failures[] is bounded; oldest dropped FIFO; failuresDropped tracks loss", async () => {
-    process.env.OPC_HOOK_FAILURE_LOG_CAP = "5";
-    process.env.OPC_HOOK_FAILURE_THRESHOLD = "0"; // disable breaker so we can pump
+    process.env.BF_HOOK_FAILURE_LOG_CAP = "5";
+    process.env.BF_HOOK_FAILURE_THRESHOLD = "0"; // disable breaker so we can pump
     const mod = await import(`./extensions.mjs?cap=${Date.now()}`);
     writeExtension(
       join(tmpBase, "flaky"),
@@ -2037,7 +2037,7 @@ describe("U1.6 — fireExecuteRun", () => {
   });
 
   test("timeout is recorded as kind=timeout", async () => {
-    process.env.OPC_HOOK_TIMEOUT_MS = "50";
+    process.env.BF_HOOK_TIMEOUT_MS = "50";
     const mod = await import(`./extensions.mjs?u16timeout=${Date.now()}`);
     writeExtension(
       join(tmpBase, "slow"),
@@ -2056,7 +2056,7 @@ describe("U1.6 — fireExecuteRun", () => {
       assert.equal(result.failures[0].kind, "timeout");
       assert.equal(result.failures[0].hook, "execute.run");
     } finally {
-      delete process.env.OPC_HOOK_TIMEOUT_MS;
+      delete process.env.BF_HOOK_TIMEOUT_MS;
     }
   });
 
@@ -2403,7 +2403,7 @@ describe("U1.6r — circuit-breaker trips on persistent artifact.emit write fail
   });
   afterEach(() => {
     try { rmSync(tmpBase, { recursive: true, force: true }); } catch {}
-    delete process.env.OPC_HOOK_FAILURE_THRESHOLD;
+    delete process.env.BF_HOOK_FAILURE_THRESHOLD;
   });
 
   test("per-item write failure is NOT undone by recordSuccess; _failStreak grows", async () => {
@@ -3238,7 +3238,7 @@ describe("U5.7 F5 — persistent circuit-breaker state", () => {
     assert.ok(!after.extensions.flaky.disabledReason, "disabledReason must be cleared");
   });
 
-  test("U5.8r: OPC_BREAKER_STATE=disabled disables both load and save (no file reads/writes)", async () => {
+  test("U5.8r: BF_BREAKER_STATE=disabled disables both load and save (no file reads/writes)", async () => {
     const extsDir = join(tmpBase, "extensions");
     mkdirSync(extsDir, { recursive: true });
     writeFlaky(extsDir);
@@ -3251,20 +3251,20 @@ describe("U5.7 F5 — persistent circuit-breaker state", () => {
       extensions: { flaky: { enabled: false, failStreak: 3, disabledReason: "x" } },
     }));
 
-    const prev = process.env.OPC_BREAKER_STATE;
-    process.env.OPC_BREAKER_STATE = "disabled";
+    const prev = process.env.BF_BREAKER_STATE;
+    process.env.BF_BREAKER_STATE = "disabled";
     try {
       const reg = await loadExtensions({ extensionsDir: extsDir, flowDir, quietBypass: true });
       // Load was skipped — extension must appear enabled
-      assert.equal(reg.extensions[0].enabled, true, "with OPC_BREAKER_STATE=disabled, the stale-disabled state must not apply");
+      assert.equal(reg.extensions[0].enabled, true, "with BF_BREAKER_STATE=disabled, the stale-disabled state must not apply");
       // Save is also a no-op
       saveBreakerState(flowDir, reg);
       const after = JSON.parse(readFileSync(statePath, "utf8"));
       // File unchanged (still shows flaky disabled from the seed)
       assert.equal(after.extensions.flaky.enabled, false, "file must be unchanged when persistence is disabled");
     } finally {
-      if (prev === undefined) delete process.env.OPC_BREAKER_STATE;
-      else process.env.OPC_BREAKER_STATE = prev;
+      if (prev === undefined) delete process.env.BF_BREAKER_STATE;
+      else process.env.BF_BREAKER_STATE = prev;
     }
   });
 });

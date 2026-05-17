@@ -153,7 +153,7 @@ export function cmdNextTick(args) {
   // Concurrent tick guard
   if (state.status === "in_progress") {
     // Crash recovery: if in_progress for longer than timeout, auto-stall
-    const rawTimeout = Number(process.env.OPC_TICK_TIMEOUT_HOURS) || 1;
+    const rawTimeout = Number(process.env.BF_TICK_TIMEOUT_HOURS) || 1;
     const timeoutHours = Math.max(rawTimeout, 0.1); // 6-minute floor
     const sinceRaw = state._in_progress_since || state._last_modified;
     // Validate timestamp: must be parseable, in the past, not older than 30 days
@@ -501,7 +501,7 @@ function _buildResumePrompt(dir, state, unitDetails, unitType, contextHints, pla
   }
 
   const parts = [
-    `You are resuming an OPC loop pipeline. This is tick ${lastTick + 1}.`,
+    `You are resuming a BF loop pipeline. This is tick ${lastTick + 1}.`,
     "",
     `## Project`,
     `- Working directory: ${state.projectDir || process.cwd()}`,

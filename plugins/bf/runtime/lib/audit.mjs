@@ -124,7 +124,7 @@ export function cmdAudit(args) {
   }
 
   if (sessions.length === 0) {
-    console.error("No OPC sessions found.");
+    console.error("No BF sessions found.");
     process.exit(1);
   }
 
@@ -211,7 +211,7 @@ export function cmdAudit(args) {
   }
 
   // Table format
-  console.log(`\n  OPC Process Conformance Audit — ${scorecards.length} session(s)\n`);
+  console.log(`\n  BF Process Conformance Audit — ${scorecards.length} session(s)\n`);
   const pad = (s, n) => s.slice(0, n).padEnd(n);
   console.log(`  ${pad("Session",24)} ${pad("Flow",14)} ${pad("Tier",5)} Skept Div   Depth NoBP  AC    Done  Score`);
   console.log("  " + "─".repeat(100));

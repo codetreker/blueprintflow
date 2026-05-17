@@ -419,7 +419,7 @@ export function cmdValidateChain(args) {
     }
   }
   if (bypassActive && requiredExtensions.length > 0) {
-    console.error(`[opc] validate-chain: waiving requiredExtensions (${requiredExtensions.join(", ")}) — bypass active via ${bypassSource}`);
+    console.error(`[bf] validate-chain: waiving requiredExtensions (${requiredExtensions.join(", ")}) — bypass active via ${bypassSource}`);
     waivedRequiredExtensions = requiredExtensions.slice();
     requiredExtensions = [];
   }

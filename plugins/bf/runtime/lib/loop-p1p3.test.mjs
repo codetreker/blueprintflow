@@ -18,7 +18,7 @@ function runHarness(args, { cwd } = {}) {
       encoding: "utf8",
       timeout: 10000,
       cwd: cwd || undefined,
-      env: { ...process.env, OPC_TICK_TIMEOUT_HOURS: "0.001" },
+      env: { ...process.env, BF_TICK_TIMEOUT_HOURS: "0.001" },
     });
     return JSON.parse(out.trim().split("\n").pop());
   } catch (err) {

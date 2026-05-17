@@ -36,6 +36,7 @@ export async function execute({ args, flags }) {
     }
 
     const r = await runFlowToCompletion({ wo, pack, flowId });
+    if (r.status === "agents-needed") { console.log(JSON.stringify(r)); return; }
     if (r.error) { console.log(JSON.stringify({ ...r, wo: woId, attemptedFlow: flowId })); return; }
     if (flags.oneStep) { console.log(JSON.stringify({ ...r, oneStep: true })); return; }
   }

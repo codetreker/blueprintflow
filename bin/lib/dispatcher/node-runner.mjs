@@ -40,14 +40,35 @@ export async function runNode({ packPath, flowFile, runDir, nodeId, transitionTo
   const runPath = path.join(runDir, "nodes", nodeId, "run_1");
   await mkdir(runPath, { recursive: true });
 
-  // v0.2 stub: emit one eval per role the node needs.
   const roles = flow.roles?.[nodeId] ?? defaultRolesForType(nodeType);
-  for (const role of roles) {
-    await writeFile(path.join(runPath, `eval-${role}.md`), stubEvalFor(role, nodeId));
-  }
-  // execute-type nodes also need cli-output evidence
-  if (nodeType === "execute") {
-    await writeFile(path.join(runPath, "cli-output.log"), `[stub] ${nodeId} executed OK\n`);
+  const expectedArtifacts = roles.map(r => `eval-${r}.md`);
+  if (nodeType === "execute") expectedArtifacts.push("cli-output.log");
+
+  if (process.env.BF_RESUME_NODE === nodeId) {
+    // Artifacts assumed already written by the orchestrator; skip both
+    // stub-emit and agents-needed branches and fall through to seal.
+  } else if (process.env.BF_ORCHESTRATOR === "skill") {
+    return {
+      status: "agents-needed",
+      sealed: false,
+      nodeId,
+      runDir: runPath,
+      roles,
+      nodeType,
+      woPath: runDir,
+      flowFile,
+      expectedArtifacts,
+      next: { action: "spawn-agents-then-re-run-execute-with-BF_RESUME_NODE" },
+    };
+  } else {
+    // v0.2 stub: emit one eval per role the node needs.
+    for (const role of roles) {
+      await writeFile(path.join(runPath, `eval-${role}.md`), stubEvalFor(role, nodeId));
+    }
+    // execute-type nodes also need cli-output evidence
+    if (nodeType === "execute") {
+      await writeFile(path.join(runPath, "cli-output.log"), `[stub] ${nodeId} executed OK\n`);
+    }
   }
 
   const sealOut = sh(`${HARNESS} seal --node ${nodeId} --dir ${runDir} --pack ${packPath}/pack.json`);

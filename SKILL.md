@@ -4,102 +4,94 @@ version: 0.1.0-alpha
 description: "Blueprintflow — general evidence-gated work loop framework. Moves Work Objects from raw input through brainstorm → breakdown → loop → close via mechanical gates and independent review. Use when starting any non-trivial work that needs structured progress tracking with evidence, not just LLM consensus."
 ---
 
-# bf — Blueprintflow
+# bf — Blueprintflow orchestrator
 
-> **Status: v0.1.0-alpha.** Core contracts (5) and runtime are in place
-> (Stage 1+2 of the fork plan). The full dispatcher logic (task inference,
-> Pack selection, flow execution) lands in Stage 4. This SKILL.md is the
-> bare-skill entry; full execution behavior is a placeholder for now.
+You are the BF orchestrator. When invoked via `/bf <input>`, your job
+is to drive Work Objects through Pack flows by alternating between
+`bf` CLI calls (which manipulate state on disk) and Agent subagent
+dispatches (which produce the artifacts the CLI verifies).
 
-## What this skill is
+## Dispatch loop
 
-BF is a general work-loop framework: it moves **Work Objects** (bounded
-pieces of uncertain work) through state transitions using **flows**
-(directed graphs of typed nodes) gated by **mechanical evidence checks**
-(no LLM-only consensus).
+1. **Parse input**: if the first token is a known BF verb, run that
+   verb directly (see `bf help` or `references/README.md` for the
+   catalog). Otherwise, transcribe natural language to a verb form:
+   - Default verb: `execute`
+   - If the input names an action ("create X", "show Y", "discard Z"),
+     map it to the matching verb.
+   - Print the transcription before executing:
+     `[bf] transcribed: bf <verb> <args>`
 
-The skill is one user-facing entry. Behind it sits:
+2. **Run the verb** under `BF_ORCHESTRATOR=skill`:
 
-- A vendored harness (CLI: `bf-harness`) that executes the flow graph,
-  validates handshakes, computes gate verdicts mechanically, and detects
-  oscillation / cycle limits.
-- Five Core contracts: Work Object, Flow, Gate, WO Home, Pack. See
-  [`references/`](references/) for each one's full definition.
-- A roles library (21 specialist agent prompts inherited from OPC).
-- A protocols library (empty in v0.1; Stage 3 vendors Core node protocols).
-- A Pack directory for domain-specific instantiation (product-engineering
-  Pack lands in Stage 3).
+   ```bash
+   BF_ORCHESTRATOR=skill node bin/bf.mjs <verb> <args>
+   ```
 
-## When to use
+3. **Read the JSON envelope** on stdout. Three cases:
 
-- Starting any non-trivial work (≥3 distinct decisions, ≥1 review needed)
-- Need structured progress tracking that survives session restarts
-- Want mechanical evidence gates rather than LLM-only "looks good"
-- Multi-agent collaboration with independent verification
+   **a. `{status: "agents-needed", nodeId, runDir, roles, nodeType, woPath, flowFile, expectedArtifacts, ...}`**
 
-**Not for:**
-- Trivial one-shot tasks (bug fixes, single function tweaks) — use plain Claude
-- Pure conversation / brainstorming — use [brainstorming](https://docs.anthropic.com/skills) or similar
-- Already-running OPC flow (we're a fork, not a peer)
+   This node needs subagent work before sealing. For each `role` in
+   `roles`:
 
-## How to invoke (v0.1.0-alpha)
+   - Read the role's prompt: `cat roles/<role>.md` if Core, else
+     `cat packs/<pack>/roles/<role>.md`.
+   - Read the node's protocol from
+     `packs/<pack>/protocols/<flow-id>.md` and locate the section for
+     `nodeId`.
+   - Read the WO: the WO's `wo.md` lives two directories above
+     `runDir` (which is `<wo>/runs/run-<ts>/nodes/<nodeId>/run_1`).
+   - Spawn one Agent subagent (model `sonnet` for review/build nodes;
+     `haiku` for mechanical execute nodes), prompt structured as:
 
-```
-/bf <task description>
-```
+     ```
+     You are the <role> for this product-engineering work object.
 
-In v0.1.0-alpha this prints a status message and pointers. The dispatcher
-implementation lives at `bin/bf.mjs` and is intentionally a stub until
-Stage 4.
+     <role prompt from roles/<role>.md>
 
-The runtime harness is **fully functional** today:
+     Work object context:
+     <wo.md content>
 
-```bash
-bf-harness --help
-bf-harness init --flow build-verify --entry build --dir .bf/run-1
-bf-harness transition --from build --to code-review --verdict PASS \
-  --flow build-verify --dir .bf/run-1
-```
+     Node protocol (current node: <nodeId>):
+     <relevant section of protocols/<flow>.md>
 
-See `bin/bf-harness.mjs --help` for the complete CLI.
+     Output: write your evaluation to <runDir>/eval-<role>.md
+     Format: YAML frontmatter (role, verdict ∈ {PASS, FAIL, ITERATE}),
+     then a markdown body explaining the verdict against the WO's
+     acceptance criteria.
+     ```
 
-## How BF is laid out
+   - Wait for the subagent to write the file.
 
-```
-bf/
-├── SKILL.md           ← this file
-├── bin/
-│   ├── bf.mjs         ← dispatcher (Stage 4)
-│   ├── bf-harness.mjs ← runtime CLI (fully functional)
-│   └── lib/           ← 40 mjs modules (vendored from OPC)
-├── pipeline/          ← Core node protocols (Stage 3)
-├── roles/             ← 21 role prompts (Stage 3 sorts Core vs Pack)
-├── packs/             ← embedded domain Packs (Stage 3+)
-├── references/        ← 5 Core contract docs
-├── test/              ← harness test suite (108 / 0 / 1)
-├── scripts/           ← postinstall
-└── UPSTREAM.md        ← OPC fork provenance
-```
+   When every `expectedArtifacts` file exists in `runDir`, re-invoke:
 
-## See also
+   ```bash
+   BF_ORCHESTRATOR=skill BF_RESUME_NODE=<nodeId> node bin/bf.mjs <verb> <args>
+   ```
 
-For full design rationale: `docs/specs/2026-05-16-bf-fork-design.md`
-(in the source repo; not bundled in the npm package).
+   Loop back to step 3.
 
-For Core contract details: `references/work-object.md`, `flow.md`,
-`gate.md`, `wo-home.md`, `pack.md`, plus [`references/README.md`](references/README.md)
-as the reading-order index.
+   **b. `{finalized: true, terminalNode, newState, ...}`**
+   The flow completed; the WO's `current_state` is updated. Re-invoke
+   `bf execute <wo>` to drive the next core-type flow (or exit if
+   `current_state == desired_state`).
 
-For acceptance judgement model (criteria-lint + review + execute + gate):
-`docs/specs/2026-05-16-bf-fork-design/acceptance-judgement.md`.
+   **c. `{error: ...}` / `{stuck: true, ...}` / `{deferred: ...}` / `{done: true}`**
+   Print to the user and exit. Don't loop on errors.
 
-## Status
+4. **Stop conditions**:
+   - WO reaches `desired_state` (envelope shows `{done: true}`).
+   - Three consecutive `{error}` envelopes (likely an unfixable
+     contract gap).
+   - `{deferred: true}` returned (e.g. `loop` core_type pending the
+     child-run primitive).
 
-| Stage | What | Done? |
-|---|---|---|
-| 1 | Vendor + brand-rename OPC harness | ✅ |
-| 2 | Author 5 Core contract docs | ✅ |
-| 3 | First Pack (product-engineering) + protocol library | pending |
-| 4 | Live dispatcher (`/bf <task>` actually runs flows) | pending |
-| 5 | End-to-end demo flow | pending |
-| 6 | v6 → v1 migration guide | pending |
+## Reference
+
+- Verb catalog: `bf help` or
+  `docs/specs/2026-05-16-bf-fork-design/bf-run-commands.md`
+- Core contracts: `references/{work-object,flow,gate,wo-home,pack}.md`
+- Active Pack: `packs/product-engineering/{pack.json,flows/,protocols/,roles/,schemas/}`
+- Stage 4 retro (known limitations):
+  `docs/specs/2026-05-17-stage-4-retro.md`

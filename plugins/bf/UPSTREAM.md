@@ -11,6 +11,7 @@ BF's `runtime/` and `test/` directories were vendored from OPC at the fork point
   - `bin/opc-harness.mjs` → `runtime/opc-harness.mjs` (entry file renamed to `bf-harness.mjs` in Task 1.4; the rename is recorded in the delta log below)
   - `bin/lib/*.mjs` (40 files) → `runtime/lib/*.mjs`
   - `test/run-all.sh` + `test/test-*.sh` (110 scripts) + `test/test-helpers.sh` + `test/fixtures/`
+  - `roles/*.md` (21 files)
 
 Note: the fork plan estimated 111 `test-*.sh` scripts; actual count at the
 captured SHA is 110. The plan's count appears to have included `run-all.sh`
@@ -31,3 +32,4 @@ files present in upstream were copied.
 | Date | Files | Reason |
 |---|---|---|
 | 2026-05-17 | (initial vendor) | Fork point captured above |
+| 2026-05-17 | roles/*.md (21 files), test/deferred-tests.txt, test/run-all.sh | Vendor OPC roles so harness mandatory-role checks work; add a skip-by-name mechanism to run-all.sh and defer test-install-hooks.sh (depends on bin/opc.mjs which is not vendored). Discovered during Task 1.3 baseline run. |

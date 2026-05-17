@@ -1,0 +1,4 @@
+# Tests deferred because they depend on files not vendored.
+# Each line: one test filename (basename), with optional `# reason` comment.
+
+test-install-hooks.sh    # depends on bin/opc.mjs (deferred to Stage 4; see plugins/bf/UPSTREAM.md)

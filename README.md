@@ -3,8 +3,8 @@
 > General evidence-gated work loop framework. Moves Work Objects through states
 > via flow graphs, mechanical gates, and independent verification.
 
-**Status: alpha (v0.1.0-alpha).** Core contracts + runtime in place; the
-`bf-run` entry skill, packs, and end-to-end flow demos land in later stages.
+**Status: alpha (v0.2.0-alpha).** Verb-first dispatcher + harness hardening
+landed in Stage 4. End-to-end demo with real agent dispatch is Stage 5.
 
 BF is a [bare Claude Code skill](https://docs.anthropic.com/en/docs/claude-code/skills),
 distributed via npm. The package installs a harness binary and post-installs
@@ -33,66 +33,70 @@ Core contract details: [`references/`](references/).
 
 ## Install
 
-### npm (recommended)
+### As a Claude Code skill (recommended)
 
 ```bash
 npm install -g @codetreker/bf
 ```
 
-Postinstall copies the skill content to `~/.claude/skills/bf/`, and exposes
-two binaries on `PATH`:
+postinstall copies the skill into `~/.claude/skills/bf/`. From inside
+Claude Code you can then invoke:
 
-- `bf-harness` — runtime CLI (init, transition, validate, synthesize, ...)
-- `bf` — entry dispatcher (Stage 4 placeholder until the bf-run skill lands)
+```
+/bf execute <wo-id>
+/bf help
+```
 
-### Manual (no npm)
+### As a CLI (no Claude Code)
+
+The `bf` binary works standalone for everything except natural-language
+mode (which needs the surrounding Claude Code LLM):
 
 ```bash
-git clone https://github.com/codetreker/blueprintflow.git
-cp -r blueprintflow ~/.claude/skills/bf/
+bf help
+bf create "implement v1 auth" --pack product-engineering
+bf show auth-v1
+bf tree
 ```
 
-## Use it
+## Usage tour (v0.2-alpha)
 
-In Claude Code:
+`bf` is verb-first. The 18 verbs group by purpose:
 
-```
-/bf <task>
-```
-
-(In v0.1.0-alpha the `/bf` skill is a placeholder; the live `bf-run` entry
-ships in Stage 4. The harness binary is fully functional today — `bf-harness
---help`.)
-
-## Status by stage
-
-| Stage | What | Status |
+| Group | Verbs | Notes |
 |---|---|---|
-| 1 | Vendor + brand-rename OPC harness | ✅ done |
-| 2 | Author 5 Core contract docs | ✅ done |
-| 3 | First Pack: product-engineering | pending |
-| 4 | bf-run public entry skill | pending |
-| 5 | End-to-end demo flow | pending |
-| 6 | Remaining pack migration + v6 → v1 migration guide | pending |
+| Lifecycle | `create`, `execute`, `brainstorm`, `breakdown`, `loop`, `close` | `execute` drives a WO to its `desired_state`; the 4 specific verbs run one core flow each |
+| Inspection | `show`, `tree`, `list`, `discard` | Read or remove the WO home (`~/.bf/wo/`) |
+| Escape | `skip`, `pass`, `stop`, `goto`, `resume` | Operate on the currently active run |
+| Meta | `pack`, `flow`, `help` | Inspect installed Packs / flows / usage |
 
-Stage progress and design source-of-truth:
-[`docs/specs/2026-05-16-bf-fork-design.md`](docs/specs/2026-05-16-bf-fork-design.md).
+### Driving a task through
 
-## What's in this package
+```bash
+bf create "shape login form acceptance" --pack product-engineering --schema task
+# → creates ~/.bf/wo/shape-login-form-acceptance/wo.md at state 'new'
 
+bf execute shape-login-form-acceptance
+# → walks brainstorm-task flow; ends at state 'shaped'
+
+# (Stage 4 v0.2 limitation: leaf tasks go from shaped → doing manually
+# until the Stage 5 demo lands the leaf-fast-path.)
+vim ~/.bf/wo/shape-login-form-acceptance/wo.md  # set current_state: doing
+
+bf execute shape-login-form-acceptance
+# → walks close-leaf-task flow; ends at state 'done'
 ```
-bf/  (npm package root + skill root)
-├── SKILL.md           ← bare-skill entry (Stage 4 fleshes this out)
-├── bin/               ← harness CLI + lib/
-├── pipeline/          ← Core node protocols (Stage 3 decides what to vendor)
-├── roles/             ← 21 OPC roles, vendored; Stage 3 sorts into Core vs Pack
-├── packs/             ← embedded Packs (Stage 3 onwards)
-├── references/        ← the 5 Core contract docs
-├── test/              ← harness test suite (108 passed / 0 failed / 1 deferred)
-├── scripts/           ← postinstall
-├── UPSTREAM.md        ← OPC fork provenance + delta log
-└── package.json
-```
+
+### Status (Stage 4 v0.2)
+
+- verb-first dispatch (all 18 verbs)
+- harness-level mechanics (init, seal, transition, finalize, viz with back-edges)
+- packs-relative flow loading (no global flow registry needed)
+- `npm pack --dry-run` clean
+- stub agent dispatch — every role's eval is auto-PASS; Stage 5 plumbs real Claude subagent calls
+- `loop` verb defers with a "child-WO dispatch — Stage 5" message
+- NL parse handles deterministic patterns only; LLM-driven transcription deferred
+- not yet `npm publish`-ed; first publish lands when Stage 5 demo succeeds end-to-end
 
 ## Repository layout
 

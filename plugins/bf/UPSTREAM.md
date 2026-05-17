@@ -8,7 +8,7 @@ BF's `runtime/` and `test/` directories were vendored from OPC at the fork point
 - Commit: bf7910aa38a5310cb8ac392472b87568c5d7c779
 - HARNESS_VERSION at fork: 0.10.0 (see runtime/lib/flow-templates.mjs)
 - Files vendored verbatim:
-  - `bin/opc-harness.mjs` → `runtime/opc-harness.mjs` (renamed in delta below)
+  - `bin/opc-harness.mjs` → `runtime/opc-harness.mjs` (entry file renamed to `bf-harness.mjs` in Task 1.4; the rename is recorded in the delta log below)
   - `bin/lib/*.mjs` (40 files) → `runtime/lib/*.mjs`
   - `test/run-all.sh` + `test/test-*.sh` (110 scripts) + `test/test-helpers.sh` + `test/fixtures/`
 

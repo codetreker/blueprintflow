@@ -1,0 +1,4 @@
+interface:
+  display_name: "using-plueprint"
+  short_description: "Blueprintflow: Start and route workflow"
+  default_prompt: "Use $using-plueprint as the entrypoint to choose the right Blueprintflow stage and coordination boundary."

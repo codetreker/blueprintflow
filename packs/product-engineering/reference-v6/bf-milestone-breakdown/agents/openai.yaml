@@ -1,0 +1,4 @@
+interface:
+  display_name: "bf-milestone-breakdown"
+  short_description: "Blueprintflow: Create reviewed task boundaries"
+  default_prompt: "Use $bf-milestone-breakdown to turn a selected milestone into reviewed task.md boundaries."

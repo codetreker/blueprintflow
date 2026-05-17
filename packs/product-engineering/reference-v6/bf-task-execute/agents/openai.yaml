@@ -1,0 +1,4 @@
+interface:
+  display_name: "bf-task-execute"
+  short_description: "Blueprintflow: Start or advance one task to accepted"
+  default_prompt: "Use $bf-task-execute to start or advance one reviewed task.md through implementation, review, merge, and acceptance."

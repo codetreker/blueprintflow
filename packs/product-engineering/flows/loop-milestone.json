@@ -1,0 +1,21 @@
+{
+  "bf_compat": ">=0.1",
+  "id": "loop-milestone",
+  "core_type": "loop",
+  "accepts": { "schema": ["milestone"], "current_state": ["broken_down"] },
+  "produces": { "desired_state": "children_done" },
+  "nodes": ["dispatch-children", "await-children", "aggregate", "gate"],
+  "edges": {
+    "dispatch-children": { "PASS": "await-children" },
+    "await-children":    { "PASS": "aggregate", "ITERATE": "dispatch-children" },
+    "aggregate":         { "PASS": "gate", "FAIL": "dispatch-children" },
+    "gate":              { "PASS": null, "FAIL": "dispatch-children", "ITERATE": "aggregate" }
+  },
+  "nodeTypes": {
+    "dispatch-children": "execute",
+    "await-children": "execute",
+    "aggregate": "review",
+    "gate": "gate"
+  },
+  "limits": { "maxLoopsPerEdge": 5, "maxTotalSteps": 30, "maxNodeReentry": 10 }
+}

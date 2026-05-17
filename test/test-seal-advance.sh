@@ -46,7 +46,11 @@ EVALEOF
 
 SEAL_OUT=$(cd "$D1" && $HARNESS seal --node review --dir "$D1" 2>/dev/null)
 check "seal produces JSON" 'echo "$SEAL_OUT" | python3 -c "import json,sys; json.load(sys.stdin)" 2>/dev/null'
-check "seal reports sealed=true" 'echo "$SEAL_OUT" | python3 -c "import json,sys; d=json.load(sys.stdin); assert d[\"sealed\"]==True"'
+# Stage 4 task 4.2d: seal returns sealed:false whenever validationErrors is
+# non-empty. This fixture has mixed verdicts (last eval PASS, but
+# findings.critical > 0) which the handshake validator flags — that is now a
+# hard sealed:false rather than the previous lenient sealed:true.
+check "seal reports sealed=false (validationErrors non-empty)" 'echo "$SEAL_OUT" | python3 -c "import json,sys; d=json.load(sys.stdin); assert d[\"sealed\"]==False"'
 check "seal finds 2 artifacts" 'echo "$SEAL_OUT" | python3 -c "import json,sys; d=json.load(sys.stdin); assert d[\"artifacts\"]==2, str(d[\"artifacts\"])"'
 
 # Check handshake.json was written

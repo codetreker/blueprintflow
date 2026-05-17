@@ -581,7 +581,7 @@ export function cmdSeal(args) {
   for (const w of warnings) console.error(`⚠️  ${w}`);
 
   console.log(JSON.stringify({
-    sealed: true,
+    sealed: errors.length === 0,
     handshakePath,
     artifacts: artifacts.length,
     verdict,

@@ -1,0 +1,21 @@
+{
+  "bf_compat": ">=0.1",
+  "id": "close-leaf-task",
+  "core_type": "close",
+  "accepts": { "schema": ["task"], "current_state": ["doing"] },
+  "produces": { "desired_state": "done" },
+  "nodes": ["implement", "code-review", "verify", "gate"],
+  "edges": {
+    "implement":   { "PASS": "code-review" },
+    "code-review": { "PASS": "verify", "ITERATE": "implement", "FAIL": "implement" },
+    "verify":      { "PASS": "gate", "ITERATE": "implement", "FAIL": "implement" },
+    "gate":        { "PASS": null, "ITERATE": "implement", "FAIL": "implement" }
+  },
+  "nodeTypes": {
+    "implement": "build",
+    "code-review": "review",
+    "verify": "execute",
+    "gate": "gate"
+  },
+  "limits": { "maxLoopsPerEdge": 4, "maxTotalSteps": 25, "maxNodeReentry": 8 }
+}

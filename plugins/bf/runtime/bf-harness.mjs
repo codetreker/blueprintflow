@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// bf-harness — Mechanical verification for OPC evaluations
+// bf-harness — Mechanical verification for BF evaluations
 // This is the CLI entry point. All logic lives in lib/.
 
 import { cmdVerify, cmdSynthesize, cmdTierBaseline } from "./lib/eval-commands.mjs";

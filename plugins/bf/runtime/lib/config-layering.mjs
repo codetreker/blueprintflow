@@ -76,12 +76,12 @@ function safeReadJson(path) {
   try {
     const parsed = JSON.parse(readFileSync(path, "utf8"));
     if (!isPlainObject(parsed)) {
-      console.error(`opc: warning: ${path} is not a JSON object (got ${Array.isArray(parsed) ? "array" : typeof parsed}), ignoring`);
+      console.error(`bf: warning: ${path} is not a JSON object (got ${Array.isArray(parsed) ? "array" : typeof parsed}), ignoring`);
       return null;
     }
     return parsed;
   } catch (err) {
-    console.error(`opc: warning: ${path} is not valid JSON (${err.message}), ignoring`);
+    console.error(`bf: warning: ${path} is not valid JSON (${err.message}), ignoring`);
     return null;
   }
 }

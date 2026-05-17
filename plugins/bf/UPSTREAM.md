@@ -33,3 +33,9 @@ files present in upstream were copied.
 |---|---|---|
 | 2026-05-17 | (initial vendor) | Fork point captured above |
 | 2026-05-17 | roles/*.md (21 files), test/deferred-tests.txt, test/run-all.sh | Vendor OPC roles so harness mandatory-role checks work; add a skip-by-name mechanism to run-all.sh and defer test-install-hooks.sh (depends on bin/opc.mjs which is not vendored). Discovered during Task 1.3 baseline run. |
+
+## Deferred to Stage 4 (bf-run skill)
+
+User-visible slash-command strings still reference `/opc` (e.g. `flow-escape.mjs` "SKIPPED via /opc skip", "/opc pass only works on gates", "Use /opc skip instead", and `loop-advance.mjs` "Execute unit … using /opc …"). These belong to the dispatcher UX, which is replaced by the `bf-run` skill in Stage 4. They will be swept at that time.
+
+Search to find them later: `grep -rn '/opc ' plugins/bf/runtime/ --include='*.mjs'`

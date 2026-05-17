@@ -54,18 +54,36 @@ export function cmdViz(args) {
     return;
   }
 
-  // ASCII output — prefer FAIL over ITERATE for display
+  // ASCII output — render ALL non-PASS back-edges per node (Stage 4 task 4.2f).
+  // Previously the renderer dropped second/third back-edges (FAIL preferred
+  // over ITERATE) which hid loop structure for gate nodes that branch to
+  // multiple targets.
   const loopMap = {};
   for (const lb of loopbacks) {
-    if (!loopMap[lb.gate] || lb.verdict === "FAIL") loopMap[lb.gate] = lb;
+    if (!loopMap[lb.gate]) loopMap[lb.gate] = [];
+    loopMap[lb.gate].push(lb);
+  }
+  // Stable order: FAIL before ITERATE before others
+  const verdictOrder = { FAIL: 0, ITERATE: 1, BLOCKED: 2 };
+  for (const k of Object.keys(loopMap)) {
+    loopMap[k].sort((a, b) =>
+      (verdictOrder[a.verdict] ?? 99) - (verdictOrder[b.verdict] ?? 99));
   }
 
   for (let i = 0; i < template.nodes.length; i++) {
     const id = template.nodes[i];
     const marker = getMarker(id, state);
+    const lbs = loopMap[id] || [];
     let line = `  ${marker} ${id}`;
-    if (loopMap[id]) line += `          ← ${loopMap[id].verdict} → ${loopMap[id].target}`;
+    if (lbs.length > 0) {
+      line += `          ← ${lbs[0].verdict} → ${lbs[0].target}`;
+    }
     console.log(line);
+    // Render additional back-edges as continuation rows under the same node
+    for (let j = 1; j < lbs.length; j++) {
+      const pad = " ".repeat(`  ${marker} ${id}`.length);
+      console.log(`${pad}          ← ${lbs[j].verdict} → ${lbs[j].target}`);
+    }
     if (i < template.nodes.length - 1) console.log("  │");
   }
 }

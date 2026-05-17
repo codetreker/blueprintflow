@@ -4,7 +4,7 @@ set -e
 source "$(dirname "$0")/test-helpers.sh"
 setup_tmpdir
 
-mkdir -p .harness/nodes/code-review/run_1
+mkdir -p .bf/nodes/code-review/run_1
 
 jq_field() {
   echo "$1" | python3 -c "import sys,json; d=json.load(sys.stdin); v=d.get('$2'); print('__NULL__' if v is None else json.dumps(v))" 2>/dev/null
@@ -51,7 +51,7 @@ echo "=== TEST GROUP 10: D3 — Iteration escalation ==="
 # ═══════════════════════════════════════════════════════════════
 
 echo "--- 10.1: --iteration 2 + thinEvalWarnings → FAIL ---"
-rm -f .harness/nodes/code-review/run_1/eval-*.md
+rm -f .bf/nodes/code-review/run_1/eval-*.md
 {
   echo "# Short"
   echo ""
@@ -59,21 +59,21 @@ rm -f .harness/nodes/code-review/run_1/eval-*.md
   echo "→ fix"
   echo ""
   echo "VERDICT: PASS FINDINGS[1]"
-} > .harness/nodes/code-review/run_1/eval-thin.md
+} > .bf/nodes/code-review/run_1/eval-thin.md
 
-OUT=$($HARNESS synthesize .harness --node code-review --iteration 2 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node code-review --iteration 2 2>/dev/null)
 assert_field_eq "iteration 2 escalates to FAIL" "$OUT" "verdict" '"FAIL"'
 assert_contains "escalation reason" "$OUT" "persist after 2 iterations"
 
 echo ""
 echo "--- 10.2: --iteration 1 + D2 triggers → FAIL (enforce default) ---"
-OUT=$($HARNESS synthesize .harness --node code-review --iteration 1 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node code-review --iteration 1 2>/dev/null)
 assert_field_eq "iteration 1 FAIL (D2 enforce)" "$OUT" "verdict" '"FAIL"'
 
 echo ""
 echo "--- 10.3: --iteration 2 but clean eval → no escalation ---"
-rm -f .harness/nodes/code-review/run_1/eval-*.md
-cat > .harness/nodes/code-review/run_1/eval-clean.md <<'EVALEOF'
+rm -f .bf/nodes/code-review/run_1/eval-*.md
+cat > .bf/nodes/code-review/run_1/eval-clean.md <<'EVALEOF'
 # Thorough Code Review
 
 ## Architecture
@@ -129,7 +129,7 @@ Overall patterns are consistent and well-maintained.
 VERDICT: ITERATE FINDINGS[4]
 EVALEOF
 
-cat > .harness/nodes/code-review/run_1/eval-skeptic-owner.md <<'SOEOF'
+cat > .bf/nodes/code-review/run_1/eval-skeptic-owner.md <<'SOEOF'
 # Skeptic-Owner Evaluation
 
 ## Mechanism Audit
@@ -146,7 +146,7 @@ Reasoning: Hard shutdown drops in-flight requests during deployment.
 2 suggestions. No critical or warning issues.
 SOEOF
 
-OUT=$($HARNESS synthesize .harness --node code-review --iteration 2 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node code-review --iteration 2 2>/dev/null)
 assert_not_contains "no escalation for clean eval" "$OUT" "persist after"
 
 

@@ -1,10 +1,10 @@
 #!/bin/bash
-# Shared test helpers for opc-harness test suite
+# Shared test helpers for bf-harness test suite
 # Source this file at the top of each test script:
 #   source "$(dirname "$0")/test-helpers.sh"
 
 # ── Repo-relative harness path (portable, no hardcoded install path) ──
-HARNESS="node $(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/bin/opc-harness.mjs"
+HARNESS="node $(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/runtime/bf-harness.mjs"
 
 # ── Counters ──
 PASS=0

@@ -121,8 +121,8 @@ echo ""
 echo "── 3.1: report with zero findings"
 # eval-report.mjs expects evaluation-wave-N.md or evaluation-wave-N-role.md files
 D=$(mktemp -d)
-mkdir -p "$D/.harness"
-cat > "$D/.harness/evaluation-wave-1.md" << 'EOF'
+mkdir -p "$D/.bf"
+cat > "$D/.bf/evaluation-wave-1.md" << 'EOF'
 # Review — clean code
 
 No issues found.
@@ -219,14 +219,14 @@ echo ""
 echo "── 6.1: complete-tick with unknown unit type"
 D=$(mktemp -d)
 cd "$D"
-mkdir -p .harness
-cat > .harness/plan.md << 'EOF'
+mkdir -p .bf
+cat > .bf/plan.md << 'EOF'
 - u1.1: foobar — do something unknown type
 EOF
-$HARNESS init-loop --skip-scope --dir .harness > /dev/null 2>&1
-$HARNESS next-tick --dir .harness > /dev/null 2>&1
+$HARNESS init-loop --skip-scope --dir .bf > /dev/null 2>&1
+$HARNESS next-tick --dir .bf > /dev/null 2>&1
 echo '{"pass": true}' > artifact.json
-OUT=$($HARNESS complete-tick --dir .harness --unit u1.1 --status completed --artifacts "$(pwd)/artifact.json" 2>/dev/null)
+OUT=$($HARNESS complete-tick --dir .bf --unit u1.1 --status completed --artifacts "$(pwd)/artifact.json" 2>/dev/null)
 assert_field_eq "$OUT" "['completed']" "True" "6.1a: unknown unit type still completes"
 cd "$ORIG_DIR"
 rm -rf "$D"

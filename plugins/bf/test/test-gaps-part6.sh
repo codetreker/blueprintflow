@@ -104,7 +104,7 @@ python3 -c "
 import json
 d = json.load(open('.h-lt3/loop-state.json'))
 d['status'] = 'terminated'
-d['_written_by'] = 'opc-harness'
+d['_written_by'] = 'bf-harness'
 json.dump(d, open('.h-lt3/loop-state.json', 'w'), indent=2)
 "
 OUT=$($HARNESS complete-tick --unit F1.1 --artifacts dummy.txt --dir .h-lt3 2>/dev/null)
@@ -150,7 +150,7 @@ import json
 d = json.load(open('.h-lt4/loop-state.json'))
 d['next_unit'] = 'F1.1'
 d['status'] = 'initialized'
-d['_written_by'] = 'opc-harness'
+d['_written_by'] = 'bf-harness'
 json.dump(d, open('.h-lt4/loop-state.json', 'w'), indent=2)
 "
 OUT=$($HARNESS complete-tick --unit F1.1 --artifacts zero-dur-art.json --dir .h-lt4 2>/dev/null)
@@ -190,7 +190,7 @@ d = json.load(open('.h-lt6/loop-state.json'))
 d['tick'] = 2
 d['next_unit'] = 'F1.3'
 d['_git_head'] = 'aaa'  # will differ from current HEAD
-d['_written_by'] = 'opc-harness'
+d['_written_by'] = 'bf-harness'
 d['_last_modified'] = '2026-01-01T00:00:00Z'
 # Store eval hashes (simulating review tick output)
 h1 = hashlib.sha256(open('eval-engineer.md','rb').read()).hexdigest()[:16]
@@ -218,7 +218,7 @@ import json
 d = json.load(open('.h-lt6/loop-state.json'))
 d['tick'] = 2
 d['next_unit'] = 'F1.3'
-d['_written_by'] = 'opc-harness'
+d['_written_by'] = 'bf-harness'
 json.dump(d, open('.h-lt6/loop-state.json', 'w'), indent=2)
 "
 OUT=$($HARNESS complete-tick --unit F1.3 --artifacts fix-notes.md --dir .h-lt6 2>/dev/null)
@@ -251,7 +251,7 @@ import json
 d = json.load(open('.h-lt8/loop-state.json'))
 d['tick'] = 1
 d['next_unit'] = 'F1.2'
-d['_written_by'] = 'opc-harness'
+d['_written_by'] = 'bf-harness'
 d['_last_modified'] = '2026-01-01T00:00:00Z'
 json.dump(d, open('.h-lt8/loop-state.json', 'w'), indent=2)
 "
@@ -275,7 +275,7 @@ import json
 d = json.load(open('.h-lt9/loop-state.json'))
 d['tick'] = 1
 d['next_unit'] = 'F1.2'
-d['_written_by'] = 'opc-harness'
+d['_written_by'] = 'bf-harness'
 json.dump(d, open('.h-lt9/loop-state.json', 'w'), indent=2)
 "
 cat > dup-eval-a.md << 'EVAL'

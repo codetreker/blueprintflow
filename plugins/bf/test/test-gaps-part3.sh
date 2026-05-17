@@ -191,10 +191,10 @@ assert_contains "evaluator role" "$OUT" "evaluator"
 
 echo ""
 echo "--- 7.7: Synthesize ROUND_RE filter ---"
-rm -rf .h-wave && mkdir -p .h-wave/.harness
+rm -rf .h-wave && mkdir -p .h-wave/.bf
 # Fat eval to clear compound defense — legacy --wave mode still runs
 # synthesize against eval-parser which applies thin-eval checks.
-cat > .h-wave/.harness/evaluation-wave-1-security.md << 'EVAL'
+cat > .h-wave/.bf/evaluation-wave-1-security.md << 'EVAL'
 # Security Review
 
 ## Scope
@@ -250,10 +250,10 @@ A follow-up review of the new microservice is scheduled for next sprint.
 VERDICT: PASS FINDINGS[0]
 EVAL
 # This round file should be excluded
-cat > .h-wave/.harness/evaluation-wave-1-round1-security.md << 'EVAL'
+cat > .h-wave/.bf/evaluation-wave-1-round1-security.md << 'EVAL'
 Round 1 draft — should be filtered
 EVAL
-cat > .h-wave/.harness/evaluation-wave-1-skeptic-owner.md << 'SOEOF'
+cat > .h-wave/.bf/evaluation-wave-1-skeptic-owner.md << 'SOEOF'
 # Skeptic-Owner Evaluation
 
 ## Mechanism Audit

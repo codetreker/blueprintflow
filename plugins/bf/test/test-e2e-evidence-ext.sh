@@ -69,7 +69,7 @@ cat > "$RUND2/eval-skeptic.md" << 'EVAL'
 
 ### 🔵 [OPEN] E2E verified
 
-**Evidence**: Triggered `opc-harness init` then observed e2e-evidence artifact changed within 5s.
+**Evidence**: Triggered `bf-harness init` then observed e2e-evidence artifact changed within 5s.
 Before/after diff confirms state transition. Exit code 0.
 Command output captured in command-output-1.txt.
 

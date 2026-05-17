@@ -194,9 +194,9 @@ assert_contains "ls finds .harness-*" "$OUT" ".harness-test1"
 
 echo ""
 echo "--- 6.8: ls with nested harness ---"
-rm -rf .harness && mkdir -p .harness/subflow
+rm -rf .bf && mkdir -p .bf/subflow
 # Create a nested flow-state
-$HARNESS init --flow review --dir .harness/subflow >/dev/null 2>/dev/null
+$HARNESS init --flow review --dir .bf/subflow >/dev/null 2>/dev/null
 OUT=$($HARNESS ls --base . 2>/dev/null)
 assert_contains "ls finds nested" "$OUT" "subflow"
 

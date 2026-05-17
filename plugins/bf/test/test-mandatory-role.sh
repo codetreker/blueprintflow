@@ -6,10 +6,10 @@ setup_tmpdir
 
 # ── Setup: create a minimal session with eval files missing mandatory role ──
 
-mkdir -p .harness/nodes/code-review/run_1
+mkdir -p .bf/nodes/code-review/run_1
 
 # flow-state.json with code-review as current node
-cat > .harness/flow-state.json <<'EOF'
+cat > .bf/flow-state.json <<'EOF'
 {
   "flowTemplate": "build-verify",
   "currentNode": "code-review",
@@ -20,7 +20,7 @@ cat > .harness/flow-state.json <<'EOF'
 EOF
 
 # Write a valid eval file for frontend role (NOT skeptic-owner)
-cat > .harness/nodes/code-review/run_1/eval-frontend.md <<'EOF'
+cat > .bf/nodes/code-review/run_1/eval-frontend.md <<'EOF'
 # Frontend Review
 
 ## Summary
@@ -42,7 +42,7 @@ echo ""
 
 # ── Test 1: synthesize detects missing mandatory role ──
 echo "1. Missing mandatory role → warning emitted"
-OUT=$($HARNESS synthesize .harness --node code-review --run 1 --no-strict 2>/dev/null || true)
+OUT=$($HARNESS synthesize .bf --node code-review --run 1 --no-strict 2>/dev/null || true)
 
 if echo "$OUT" | grep -q "mandatory role.*skeptic-owner.*not present"; then
   echo "  ✅ mandatory role warning detected"
@@ -76,7 +76,7 @@ fi
 echo ""
 echo "2. With skeptic-owner present → no mandatory warning"
 
-cat > .harness/nodes/code-review/run_1/eval-skeptic-owner.md <<'EOF'
+cat > .bf/nodes/code-review/run_1/eval-skeptic-owner.md <<'EOF'
 # Skeptic Owner Review
 
 ## Summary
@@ -94,7 +94,7 @@ Mechanism validated: error boundary renders fallback, no uncaught promise reject
 PASS — mechanism works as designed.
 EOF
 
-OUT2=$($HARNESS synthesize .harness --node code-review --run 1 --no-strict 2>/dev/null || true)
+OUT2=$($HARNESS synthesize .bf --node code-review --run 1 --no-strict 2>/dev/null || true)
 
 if echo "$OUT2" | grep -q "mandatory role.*skeptic-owner"; then
   echo "  ❌ mandatory warning still present with skeptic-owner eval"

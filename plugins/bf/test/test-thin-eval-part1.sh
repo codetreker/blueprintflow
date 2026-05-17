@@ -62,11 +62,11 @@ echo "=== TEST GROUP 1: Thin eval detection in synthesize ==="
 # ═══════════════════════════════════════════════════════════════
 
 # Setup: create a .harness-like structure for synthesize
-mkdir -p .harness/nodes/code-review/run_1
+mkdir -p .bf/nodes/code-review/run_1
 
 echo "--- 1.1: Thin eval (< 50 lines) → warning ---"
 # Create a thin eval (20 lines)
-cat > .harness/nodes/code-review/run_1/eval-short.md <<'EOF'
+cat > .bf/nodes/code-review/run_1/eval-short.md <<'EOF'
 # Short Review
 
 🔵 src/main.ts:10 — Minor issue
@@ -77,7 +77,7 @@ VERDICT: PASS FINDINGS[1]
 EOF
 
 # Create a normal-length eval (60+ lines)
-cat > .harness/nodes/code-review/run_1/eval-long.md <<'EVALEOF'
+cat > .bf/nodes/code-review/run_1/eval-long.md <<'EVALEOF'
 # Thorough Code Review
 
 ## Architecture
@@ -129,7 +129,7 @@ Line 51: Additional padding for test purposes.
 VERDICT: PASS FINDINGS[3]
 EVALEOF
 
-cat > .harness/nodes/code-review/run_1/eval-skeptic-owner.md <<'SOEOF'
+cat > .bf/nodes/code-review/run_1/eval-skeptic-owner.md <<'SOEOF'
 # Skeptic-Owner Evaluation
 
 ## Mechanism Audit
@@ -146,21 +146,21 @@ Reasoning: Hard shutdown drops in-flight requests during deployment.
 2 suggestions. No critical or warning issues.
 SOEOF
 
-OUT=$($HARNESS synthesize .harness --node code-review 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node code-review 2>/dev/null)
 # Short eval has reasoning + fix + file ref → substance exempt from thinEval
 assert_not_contains "thin eval exempted (substance)" "$OUT" "eval is thin"
 assert_field_eq "verdict PASS (substance exempt)" "$OUT" "verdict" '"PASS"'
 
 echo ""
 echo "--- 1.2: All evals thick → no thinEvalWarnings ---"
-rm -f .harness/nodes/code-review/run_1/eval-short.md
+rm -f .bf/nodes/code-review/run_1/eval-short.md
 # Only eval-long.md remains
-OUT=$($HARNESS synthesize .harness --node code-review 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node code-review 2>/dev/null)
 assert_not_contains "no thin warning" "$OUT" "eval is thin"
 
 echo ""
 echo "--- 1.3: Eval with 0 file:line refs but findings → warning ---"
-cat > .harness/nodes/code-review/run_1/eval-norefs.md <<'EVALEOF'
+cat > .bf/nodes/code-review/run_1/eval-norefs.md <<'EVALEOF'
 # Review Without References
 
 ## Findings
@@ -225,7 +225,7 @@ Backup strategy is documented.
 VERDICT: PASS FINDINGS[2]
 EVALEOF
 
-OUT=$($HARNESS synthesize .harness --node code-review 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node code-review 2>/dev/null)
 assert_contains "no file:line warning" "$OUT" "0 file:line references"
 
 print_results

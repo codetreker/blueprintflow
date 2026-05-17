@@ -78,7 +78,7 @@ setup_last_unit() {
 - F1.2: review — review
 PLAN
   $HARNESS init-loop --skip-scope --plan "$dir/plan.md" --dir "$dir" >/dev/null 2>/dev/null
-  patch_state "$dir" "tick=1" "next_unit='F1.2'" "status='in_progress'" "_written_by='opc-harness'"
+  patch_state "$dir" "tick=1" "next_unit='F1.2'" "status='in_progress'" "_written_by='bf-harness'"
   # Create eval artifacts for review unit
   mkdir -p "$dir/evals"
   printf '%s\n' '🔵 All good — code is clean' > "$dir/evals/eval-fe.md"
@@ -136,7 +136,7 @@ cat > .e13/plan.md << 'PLAN'
 - F1.4: review — final review
 PLAN
 $HARNESS init-loop --skip-scope --plan .e13/plan.md --dir .e13 >/dev/null 2>/dev/null
-patch_state .e13 "tick=1" "next_unit='F1.2'" "status='in_progress'" "_written_by='opc-harness'"
+patch_state .e13 "tick=1" "next_unit='F1.2'" "status='in_progress'" "_written_by='bf-harness'"
 mkdir -p .e13/evals
 printf '%s\n' '🔵 All good' > .e13/evals/eval-fe.md
 printf '%s\n' '🔵 LGTM' > .e13/evals/eval-be.md

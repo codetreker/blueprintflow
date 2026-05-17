@@ -41,7 +41,7 @@ cp -R "$REPO_ROOT/test/fixtures/run2-ext/ok-ext" "$EXT_DIR/"
 FLOW_FILE="$TMP/preflight-test.json"
 cat > "$FLOW_FILE" <<'EOF'
 {
-  "opc_compat": ">=0.0",
+  "bf_compat": ">=0.0",
   "nodes": ["build", "code-review", "gate"],
   "edges": {
     "build":       { "PASS": "code-review" },
@@ -59,7 +59,7 @@ EOF
 
 # ── Set up harness dir ──────────────────────────────────────────
 HARNESS="$TMP/harness"
-OPC_CFG_DIR="$HARNESS/.opc"
+OPC_CFG_DIR="$HARNESS/.bf"
 mkdir -p "$OPC_CFG_DIR"
 cat > "$OPC_CFG_DIR/config.json" <<EOF
 {
@@ -71,7 +71,7 @@ cat > "$HARNESS/acceptance-criteria.md" <<'EOF'
 - OUT-1: preflight hook fires and writes artifacts
 EOF
 
-HARNESS_BIN="node $REPO_ROOT/bin/opc-harness.mjs"
+HARNESS_BIN="node $REPO_ROOT/runtime/bf-harness.mjs"
 
 echo "═══ Preflight Hook Tests ═══"
 
@@ -100,7 +100,7 @@ mkdir -p "$BUILD_RUN"
 
 # ── 2. node-preflight fires and writes artifacts ────────────────
 echo "§2 Fire node-preflight"
-PREFLIGHT_OUT=$(OPC_BREAKER_STATE=disabled $HARNESS_BIN node-preflight --node build --dir "$HARNESS" --flow-file "$FLOW_FILE" 2>/dev/null)
+PREFLIGHT_OUT=$(BF_BREAKER_STATE=disabled $HARNESS_BIN node-preflight --node build --dir "$HARNESS" --flow-file "$FLOW_FILE" 2>/dev/null)
 
 if echo "$PREFLIGHT_OUT" | grep -q '"ok":true'; then
   ok "node-preflight returned ok"
@@ -188,7 +188,7 @@ echo "§4 No-op on non-matching node"
 NOOP_FLOW="$TMP/noop-flow.json"
 cat > "$NOOP_FLOW" <<'EOF'
 {
-  "opc_compat": ">=0.0",
+  "bf_compat": ">=0.0",
   "nodes": ["build", "code-review", "gate"],
   "edges": {
     "build":       { "PASS": "code-review" },
@@ -204,7 +204,7 @@ cat > "$NOOP_FLOW" <<'EOF'
 }
 EOF
 NOOP_HARNESS="$TMP/noop-harness"
-NOOP_CFG="$NOOP_HARNESS/.opc"
+NOOP_CFG="$NOOP_HARNESS/.bf"
 mkdir -p "$NOOP_CFG"
 cat > "$NOOP_CFG/config.json" <<EOF
 {
@@ -224,7 +224,7 @@ cat > "$NOOP_HARNESS/flow-state.json" <<EOF
   "reentryCount": {}
 }
 EOF
-NOOP_OUT=$(OPC_BREAKER_STATE=disabled $HARNESS_BIN node-preflight --node code-review --dir "$NOOP_HARNESS" --flow-file "$NOOP_FLOW" 2>/dev/null)
+NOOP_OUT=$(BF_BREAKER_STATE=disabled $HARNESS_BIN node-preflight --node code-review --dir "$NOOP_HARNESS" --flow-file "$NOOP_FLOW" 2>/dev/null)
 if echo "$NOOP_OUT" | grep -q '"preflightResults":0'; then
   ok "no preflight on code-review node (no matching capability)"
 else
@@ -240,7 +240,7 @@ export const meta = { provides: ["design-preflight@1"] };
 export function promptAppend() { return "## no-preflight ext"; }
 NEOF
 
-SKIP_OUT=$(OPC_BREAKER_STATE=disabled $HARNESS_BIN node-preflight --node build --dir "$HARNESS" --flow-file "$FLOW_FILE" 2>/dev/null)
+SKIP_OUT=$(BF_BREAKER_STATE=disabled $HARNESS_BIN node-preflight --node build --dir "$HARNESS" --flow-file "$FLOW_FILE" 2>/dev/null)
 if echo "$SKIP_OUT" | grep -q '"ok":true'; then
   ok "node-preflight still succeeds with ext that has no preflight hook"
 else
@@ -258,7 +258,7 @@ export function preflight() {
 LCEOF
 # Clear old artifacts
 rm -f "$HARNESS/design-mode.json"
-LOW_OUT=$(OPC_BREAKER_STATE=disabled $HARNESS_BIN node-preflight --node build --dir "$HARNESS" --flow-file "$FLOW_FILE" 2>/dev/null)
+LOW_OUT=$(BF_BREAKER_STATE=disabled $HARNESS_BIN node-preflight --node build --dir "$HARNESS" --flow-file "$FLOW_FILE" 2>/dev/null)
 if [ -f "$HARNESS/design-mode.json" ]; then
   LOW_MODE=$(cat "$HARNESS/design-mode.json")
   if echo "$LOW_MODE" | grep -q '"mode": "auto"'; then
@@ -284,7 +284,7 @@ export function preflight() {
 }
 UOEOF
 rm -f "$HARNESS/design-mode.json"
-UO_OUT=$(OPC_BREAKER_STATE=disabled $HARNESS_BIN node-preflight --node build --dir "$HARNESS" --flow-file "$FLOW_FILE" 2>/dev/null)
+UO_OUT=$(BF_BREAKER_STATE=disabled $HARNESS_BIN node-preflight --node build --dir "$HARNESS" --flow-file "$FLOW_FILE" 2>/dev/null)
 if [ -f "$HARNESS/design-mode.json" ]; then
   UO_MODE=$(cat "$HARNESS/design-mode.json")
   if echo "$UO_MODE" | grep -q '"mode": "explicit"'; then
@@ -310,7 +310,7 @@ export function preflight() {
 }
 OFFEOF
 rm -f "$HARNESS/design-mode.json"
-OFF_OUT=$(OPC_BREAKER_STATE=disabled $HARNESS_BIN node-preflight --node build --dir "$HARNESS" --flow-file "$FLOW_FILE" 2>/dev/null)
+OFF_OUT=$(BF_BREAKER_STATE=disabled $HARNESS_BIN node-preflight --node build --dir "$HARNESS" --flow-file "$FLOW_FILE" 2>/dev/null)
 if [ -f "$HARNESS/design-mode.json" ]; then
   OFF_MODE=$(cat "$HARNESS/design-mode.json")
   if echo "$OFF_MODE" | grep -q '"mode": "off"'; then

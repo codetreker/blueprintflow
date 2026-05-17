@@ -4,7 +4,7 @@ set -euo pipefail
 # Test: Fix 1 (recon gate) + Fix 3 (evidence timestamp + test runner error)
 
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-HARNESS="node $SCRIPT_DIR/bin/opc-harness.mjs"
+HARNESS="node $SCRIPT_DIR/runtime/bf-harness.mjs"
 PASS=0; FAIL=0
 
 check() {
@@ -101,7 +101,7 @@ setup_loop_state() {
   "plan_file": "$dir/plan.md",
   "units_total": 2,
   "unit_ids": ["F1.1", "F1.2"],
-  "_written_by": "opc-harness/1",
+  "_written_by": "bf-harness/1",
   "_plan_hash": "abc123",
   "_last_modified": "$ts",
   "_git_head": "deadbeef",

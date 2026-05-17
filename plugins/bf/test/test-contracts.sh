@@ -11,7 +11,7 @@ echo ""
 
 # ── Test 1: init output has required fields ──
 echo "1. init output contract: flow, created, dir"
-OUT=$($HARNESS init --flow build-verify --entry build --dir .harness 2>/dev/null)
+OUT=$($HARNESS init --flow build-verify --entry build --dir .bf 2>/dev/null)
 VALID=$(echo "$OUT" | python3 -c "
 import sys,json
 d = json.load(sys.stdin)
@@ -49,12 +49,12 @@ fi
 
 # ── Test 3: transition output contract ──
 echo "3. transition output contract: allowed field"
-mkdir -p .harness/nodes/build
-cat > .harness/nodes/build/handshake.json <<'EOF'
+mkdir -p .bf/nodes/build
+cat > .bf/nodes/build/handshake.json <<'EOF'
 {"nodeId":"build","nodeType":"build","runId":"run_1","status":"completed","verdict":"PASS","summary":"ok","timestamp":"2026-01-01T00:01:00.000Z","artifacts":[{"type":"code","path":"x"}]}
 EOF
-touch .harness/nodes/build/x
-TRANS=$($HARNESS transition --from build --to code-review --verdict PASS --flow build-verify --dir .harness 2>/dev/null)
+touch .bf/nodes/build/x
+TRANS=$($HARNESS transition --from build --to code-review --verdict PASS --flow build-verify --dir .bf 2>/dev/null)
 VALID3=$(echo "$TRANS" | python3 -c "
 import sys,json
 d = json.load(sys.stdin)
@@ -72,8 +72,8 @@ fi
 
 # ── Test 4: synthesize output contract ──
 echo "4. synthesize output contract: roles, totals, verdict, reason"
-mkdir -p .harness/nodes/code-review/run_1
-cat > .harness/nodes/code-review/run_1/eval-backend.md <<'EOF'
+mkdir -p .bf/nodes/code-review/run_1
+cat > .bf/nodes/code-review/run_1/eval-backend.md <<'EOF'
 # Backend Review
 
 ## Summary
@@ -91,7 +91,7 @@ EOF
 mkdir -p "$TMPDIR/src"
 printf '%s\n' {1..10} > "$TMPDIR/src/main.ts"
 
-SYNTH=$($HARNESS synthesize .harness --node code-review --run 1 --base "$TMPDIR" --no-strict 2>/dev/null || true)
+SYNTH=$($HARNESS synthesize .bf --node code-review --run 1 --base "$TMPDIR" --no-strict 2>/dev/null || true)
 VALID4=$(echo "$SYNTH" | python3 -c "
 import sys,json
 d = json.load(sys.stdin)
@@ -148,7 +148,7 @@ fi
 
 # ── Test 6: viz output (non-empty) ──
 echo "6. viz output is non-empty"
-VIZ=$($HARNESS viz --flow build-verify --dir .harness 2>/dev/null || true)
+VIZ=$($HARNESS viz --flow build-verify --dir .bf 2>/dev/null || true)
 if [ -n "$VIZ" ]; then
   echo "  ✅ viz produces output"
   PASS=$((PASS + 1))

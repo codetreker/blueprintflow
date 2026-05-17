@@ -62,20 +62,20 @@ assert_exit_nonzero() {
 }
 
 # ═══════════════════════════════════════════════════════════════
-echo "=== GAP-1: opc-harness help + unknown command ==="
+echo "=== GAP-1: bf-harness help + unknown command ==="
 # ═══════════════════════════════════════════════════════════════
 
 echo "--- 1.1: No-args shows help ---"
 OUT=$(node "$(cd "$(dirname "$0")/.." 2>/dev/null || echo "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)")" 2>&1 || true)
 # Use the HARNESS variable properly
 OUT=$($HARNESS 2>&1 || true)
-assert_contains "help output" "$OUT" "opc-harness"
+assert_contains "help output" "$OUT" "bf-harness"
 assert_contains "flow commands" "$OUT" "Flow commands"
 
 echo ""
 echo "--- 1.2: Unknown command shows help ---"
 OUT=$($HARNESS nonexistent-cmd 2>&1 || true)
-assert_contains "unknown cmd help" "$OUT" "opc-harness"
+assert_contains "unknown cmd help" "$OUT" "bf-harness"
 
 # ═══════════════════════════════════════════════════════════════
 echo ""
@@ -140,11 +140,11 @@ assert_exit_nonzero "synth --wave empty" $HARNESS synthesize /tmp --wave
 
 echo ""
 echo "--- 3.12: goto missing nodeId exits nonzero ---"
-assert_exit_nonzero "goto no-node" $HARNESS goto --dir .harness
+assert_exit_nonzero "goto no-node" $HARNESS goto --dir .bf
 
 echo ""
 echo "--- 3.13: complete-tick missing unit exits nonzero ---"
-assert_exit_nonzero "ctick no-unit" $HARNESS complete-tick --dir .harness
+assert_exit_nonzero "ctick no-unit" $HARNESS complete-tick --dir .bf
 
 # ═══════════════════════════════════════════════════════════════
 echo ""
@@ -161,7 +161,7 @@ json.dump(d, open('.h-fin1/flow-state.json', 'w'), indent=2)
 "
 OUT=$($HARNESS finalize --dir .h-fin1 2>/dev/null)
 assert_field_eq "finalize tamper" "$OUT" "finalized" "false"
-assert_contains "finalize tamper msg" "$OUT" "not written by opc-harness"
+assert_contains "finalize tamper msg" "$OUT" "not written by bf-harness"
 
 echo ""
 echo "--- 4.2: finalize with unknown template ---"

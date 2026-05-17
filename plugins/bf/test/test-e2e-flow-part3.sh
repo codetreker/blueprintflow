@@ -147,14 +147,14 @@ EVALEOF
 echo "=== E2E TEST 6: escape hatches ==="
 # ═══════════════════════════════════════════════════════════════
 
-rm -rf .harness
-$HARNESS init --flow build-verify --entry build --dir .harness 2>/dev/null
-SKIP=$($HARNESS skip --dir .harness --flow build-verify 2>/dev/null)
+rm -rf .bf
+$HARNESS init --flow build-verify --entry build --dir .bf 2>/dev/null
+SKIP=$($HARNESS skip --dir .bf --flow build-verify 2>/dev/null)
 assert_contains "6.1: skip succeeds" "$SKIP" "skip\|PASS\|advanced"
-STATE=$(cat .harness/flow-state.json)
+STATE=$(cat .bf/flow-state.json)
 CUR=$(jq_field "$STATE" "currentNode")
 assert_not_contains "6.2: moved past build" "$CUR" "build"
-STOP=$($HARNESS stop --dir .harness 2>/dev/null)
+STOP=$($HARNESS stop --dir .bf 2>/dev/null)
 assert_contains "6.3: stop succeeds" "$STOP" "stop\|terminated"
 
 echo ""
@@ -163,12 +163,12 @@ echo ""
 echo "=== E2E TEST 7: viz output ==="
 # ═══════════════════════════════════════════════════════════════
 
-rm -rf .harness
-$HARNESS init --flow review --entry review --dir .harness 2>/dev/null
-VIZ=$($HARNESS viz --flow review --dir .harness 2>/dev/null)
+rm -rf .bf
+$HARNESS init --flow review --entry review --dir .bf 2>/dev/null
+VIZ=$($HARNESS viz --flow review --dir .bf 2>/dev/null)
 assert_contains "7.1: viz shows review node" "$VIZ" "review"
 assert_contains "7.2: viz shows gate node" "$VIZ" "gate"
-VIZ_JSON=$($HARNESS viz --flow review --dir .harness --json 2>/dev/null)
+VIZ_JSON=$($HARNESS viz --flow review --dir .bf --json 2>/dev/null)
 assert_contains "7.3: json viz has nodes" "$VIZ_JSON" "nodes"
 
 echo ""
@@ -177,25 +177,25 @@ echo ""
 echo "=== E2E TEST 8: cycle limit enforcement ==="
 # ═══════════════════════════════════════════════════════════════
 
-rm -rf .harness
-$HARNESS init --flow review --entry review --dir .harness 2>/dev/null
+rm -rf .bf
+$HARNESS init --flow review --entry review --dir .bf 2>/dev/null
 for round in 1 2 3; do
-  write_warning_eval .harness review "role${round}"
-  write_good_eval .harness review "backup${round}"
-  write_handshake .harness review "Round $round" "ITERATE"
-  $HARNESS transition --from review --to gate --verdict PASS --flow review --dir .harness 2>/dev/null
-  write_handshake .harness gate "Gate iterates round $round" "ITERATE" gate
-  TRANS=$($HARNESS transition --from gate --to review --verdict ITERATE --flow review --dir .harness 2>/dev/null || echo '{"allowed":false}')
+  write_warning_eval .bf review "role${round}"
+  write_good_eval .bf review "backup${round}"
+  write_handshake .bf review "Round $round" "ITERATE"
+  $HARNESS transition --from review --to gate --verdict PASS --flow review --dir .bf 2>/dev/null
+  write_handshake .bf gate "Gate iterates round $round" "ITERATE" gate
+  TRANS=$($HARNESS transition --from gate --to review --verdict ITERATE --flow review --dir .bf 2>/dev/null || echo '{"allowed":false}')
   if [ "$round" -lt 3 ]; then
     assert_field_eq "8.${round}: loop $round allowed" "$TRANS" "allowed" 'true'
   fi
 done
-write_warning_eval .harness review "role4"
-write_good_eval .harness review "backup4"
-write_handshake .harness review "Round 4" "ITERATE"
-TRANS_4=$($HARNESS transition --from review --to gate --verdict PASS --flow review --dir .harness 2>/dev/null || echo '{"allowed":false}')
-write_handshake .harness gate "Gate round 4" "ITERATE" gate
-TRANS_LOOP=$($HARNESS transition --from gate --to review --verdict ITERATE --flow review --dir .harness 2>/dev/null || echo '{"allowed":false,"reason":"cycle limit"}')
+write_warning_eval .bf review "role4"
+write_good_eval .bf review "backup4"
+write_handshake .bf review "Round 4" "ITERATE"
+TRANS_4=$($HARNESS transition --from review --to gate --verdict PASS --flow review --dir .bf 2>/dev/null || echo '{"allowed":false}')
+write_handshake .bf gate "Gate round 4" "ITERATE" gate
+TRANS_LOOP=$($HARNESS transition --from gate --to review --verdict ITERATE --flow review --dir .bf 2>/dev/null || echo '{"allowed":false,"reason":"cycle limit"}')
 assert_contains "8.4: cycle limit reached" "$TRANS_LOOP" "allowed\|limit\|max\|blocked"
 
 echo ""
@@ -204,17 +204,17 @@ echo ""
 echo "=== E2E TEST 9: validate-chain integrity ==="
 # ═══════════════════════════════════════════════════════════════
 
-rm -rf .harness
-$HARNESS init --flow review --entry review --dir .harness 2>/dev/null
-write_good_eval .harness review analyst
-write_good_eval .harness review architect
-write_handshake .harness review "Clean review" "PASS"
-$HARNESS transition --from review --to gate --verdict PASS --flow review --dir .harness 2>/dev/null
-write_handshake .harness gate "Gate passes" "PASS" gate
-CHAIN=$($HARNESS validate-chain --dir .harness 2>/dev/null)
+rm -rf .bf
+$HARNESS init --flow review --entry review --dir .bf 2>/dev/null
+write_good_eval .bf review analyst
+write_good_eval .bf review architect
+write_handshake .bf review "Clean review" "PASS"
+$HARNESS transition --from review --to gate --verdict PASS --flow review --dir .bf 2>/dev/null
+write_handshake .bf gate "Gate passes" "PASS" gate
+CHAIN=$($HARNESS validate-chain --dir .bf 2>/dev/null)
 assert_contains "9.1: valid chain" "$CHAIN" "valid\|ok\|pass"
-echo "{broken" > .harness/nodes/review/handshake.json
-CHAIN=$($HARNESS validate-chain --dir .harness 2>&1 || true)
+echo "{broken" > .bf/nodes/review/handshake.json
+CHAIN=$($HARNESS validate-chain --dir .bf 2>&1 || true)
 assert_contains "9.2: corrupted chain detected" "$CHAIN" "invalid\|error\|fail\|corrupt\|parse"
 
 echo ""

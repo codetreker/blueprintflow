@@ -22,7 +22,7 @@ cat > "$HOME/.claude/flows/idea-factory.json" << 'FIXTURE'
   "limits": {"maxLoopsPerEdge": 3, "maxTotalSteps": 15, "maxNodeReentry": 5},
   "nodeTypes": {"discover": "discussion", "validate": "review", "build": "build", "gate": "gate", "synthesize": "discussion", "pitch": "discussion"},
   "softEvidence": true,
-  "opc_compat": ">=0.5",
+  "bf_compat": ">=0.5",
   "contextSchema": {
     "discover": {
       "required": ["topic"],
@@ -44,7 +44,7 @@ cat > "$HOME/.claude/flows/test-ctx-flow.json" << 'CTX'
       "rules": {"count": "positive-integer", "topic": "non-empty-string"}
     }
   },
-  "opc_compat": ">=0.5"
+  "bf_compat": ">=0.5"
 }
 CTX
 
@@ -150,7 +150,7 @@ cat > "$HOME/.claude/flows/future-ver.json" << 'FL'
   "nodes": ["a", "b"],
   "edges": {"a": {"PASS": "b"}, "b": {"PASS": null}},
   "limits": {"maxTotalSteps": 10, "maxLoopsPerEdge": 3, "maxNodeReentry": 5},
-  "opc_compat": ">=99.99"
+  "bf_compat": ">=99.99"
 }
 FL
 OUT=$($HARNESS init --flow future-ver --dir .h-futver 2>&1 || true)
@@ -220,7 +220,7 @@ python3 -c "
 import json
 d = json.load(open('.h-unknown/loop-state.json'))
 d['next_unit'] = 'nonexistent'
-d['_written_by'] = 'opc-harness'
+d['_written_by'] = 'bf-harness'
 d['_last_modified'] = '2026-01-01T00:00:00Z'
 json.dump(d, open('.h-unknown/loop-state.json', 'w'), indent=2)
 "

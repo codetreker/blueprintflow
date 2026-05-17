@@ -22,7 +22,7 @@ cat > "$HOME/.claude/flows/idea-factory.json" << 'FIXTURE'
   "limits": {"maxLoopsPerEdge": 3, "maxTotalSteps": 15, "maxNodeReentry": 5},
   "nodeTypes": {"discover": "discussion", "validate": "review", "build": "build", "gate": "gate", "synthesize": "discussion", "pitch": "discussion"},
   "softEvidence": true,
-  "opc_compat": ">=0.5",
+  "bf_compat": ">=0.5",
   "contextSchema": {
     "discover": {
       "required": ["topic"],
@@ -229,7 +229,7 @@ cat > "$HOME/.claude/flows/test-ctx-flow.json" << 'CTX'
       "rules": {"count": "positive-integer", "topic": "non-empty-string"}
     }
   },
-  "opc_compat": ">=0.5"
+  "bf_compat": ">=0.5"
 }
 CTX
 $HARNESS init --flow test-ctx-flow --dir .h-ctx2 >/dev/null 2>/dev/null

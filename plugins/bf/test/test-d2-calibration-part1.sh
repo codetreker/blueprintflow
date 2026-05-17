@@ -84,9 +84,9 @@ assert_gate_not_triggered() {
 
 # Helper: set up harness dir with a review node
 setup_review_node() {
-  rm -rf .harness
-  mkdir -p .harness/nodes/code-review/run_1
-  cat > .harness/flow-state.json << 'EOF'
+  rm -rf .bf
+  mkdir -p .bf/nodes/code-review/run_1
+  cat > .bf/flow-state.json << 'EOF'
 {"currentNode":"code-review","history":[{"node":"code-review","run":1}],"edgeCounts":{},"stepCount":1}
 EOF
 }
@@ -98,7 +98,7 @@ echo "--- Profile 1: Perfect eval (all layers clean) ---"
 # ═══════════════════════════════════════════════════════════════
 
 setup_review_node
-cat > .harness/nodes/code-review/run_1/eval-senior.md << 'EVALEOF'
+cat > .bf/nodes/code-review/run_1/eval-senior.md << 'EVALEOF'
 # Comprehensive Code Review
 
 ## Architecture Analysis
@@ -138,7 +138,7 @@ cat > .harness/nodes/code-review/run_1/eval-senior.md << 'EVALEOF'
 4 findings (1 warning, 3 suggestions). Auth rate limiting and SQL injection are the priority items.
 EVALEOF
 
-OUT=$($HARNESS synthesize .harness --node code-review)
+OUT=$($HARNESS synthesize .bf --node code-review)
 assert_gate_not_triggered "clean eval: no gate trigger" "$OUT"
 assert_field_eq "clean eval: verdict ITERATE (has warning)" "$OUT" "verdict" '"ITERATE"'
 
@@ -146,7 +146,7 @@ assert_field_eq "clean eval: verdict ITERATE (has warning)" "$OUT" "verdict" '"I
 echo ""
 echo "--- Profile 2: Thin eval only (1 layer) ---"
 setup_review_node
-cat > .harness/nodes/code-review/run_1/eval-lazy.md << 'EVALEOF'
+cat > .bf/nodes/code-review/run_1/eval-lazy.md << 'EVALEOF'
 # Review
 
 🔵 src/main.ts:10 — Looks good
@@ -155,14 +155,14 @@ Reasoning: It's fine.
 Fix: Nothing needed.
 EVALEOF
 
-OUT=$($HARNESS synthesize .harness --node code-review)
+OUT=$($HARNESS synthesize .bf --node code-review)
 assert_gate_not_triggered "thin-only: below threshold (1 layer)" "$OUT"
 
 # ───────────────────────────────────────────────────────────────
 echo ""
 echo "--- Profile 3: Thin + noCodeRefs (2 layers) ---"
 setup_review_node
-cat > .harness/nodes/code-review/run_1/eval-weak.md << 'EVALEOF'
+cat > .bf/nodes/code-review/run_1/eval-weak.md << 'EVALEOF'
 # Review
 
 🔵 Something wrong with the code
@@ -172,7 +172,7 @@ Reasoning: Various issues found.
 Fix: Fix them.
 EVALEOF
 
-OUT=$($HARNESS synthesize .harness --node code-review)
+OUT=$($HARNESS synthesize .bf --node code-review)
 assert_gate_not_triggered "2 layers: below threshold" "$OUT"
 
 # ───────────────────────────────────────────────────────────────
@@ -189,16 +189,16 @@ setup_review_node
   for i in $(seq 1 48); do
     echo "This is filler line $i to make the eval long enough."
   done
-} > .harness/nodes/code-review/run_1/eval-padded.md
+} > .bf/nodes/code-review/run_1/eval-padded.md
 
-OUT=$($HARNESS synthesize .harness --node code-review)
+OUT=$($HARNESS synthesize .bf --node code-review)
 assert_gate_triggered "3 layers: enforce trigger" "$OUT" "enforce"
 assert_field_eq "3 layers: verdict FAIL (enforce default)" "$OUT" "verdict" '"FAIL"'
 
 # ───────────────────────────────────────────────────────────────
 echo ""
 echo "--- Profile 5: Same as 4 with --no-strict → shadow mode ---"
-OUT=$($HARNESS synthesize .harness --node code-review --no-strict)
+OUT=$($HARNESS synthesize .bf --node code-review --no-strict)
 assert_gate_triggered "3 layers no-strict: shadow" "$OUT" "shadow"
 assert_field_eq "3 layers no-strict: verdict ITERATE (shadow)" "$OUT" "verdict" '"ITERATE"'
 
@@ -214,9 +214,9 @@ setup_review_node
   for i in $(seq 1 50); do
     echo "The code needs improvement in various areas."
   done
-} > .harness/nodes/code-review/run_1/eval-copypaste.md
+} > .bf/nodes/code-review/run_1/eval-copypaste.md
 
-OUT=$($HARNESS synthesize .harness --node code-review)
+OUT=$($HARNESS synthesize .bf --node code-review)
 assert_gate_triggered "copypaste: triggers enforce" "$OUT" "enforce"
 
 # ───────────────────────────────────────────────────────────────
@@ -225,7 +225,7 @@ echo "--- Profile 7: Fabricated file refs (invalidRefCount × 2 weight) ---"
 setup_review_node
 mkdir -p /tmp/opc-d2-cal-base/src
 echo "real content" > /tmp/opc-d2-cal-base/src/real.ts
-cat > .harness/nodes/code-review/run_1/eval-fabricated.md << 'EVALEOF'
+cat > .bf/nodes/code-review/run_1/eval-fabricated.md << 'EVALEOF'
 # Code Review
 
 ## Security
@@ -259,7 +259,7 @@ Database query optimization should be prioritized.
 End of review.
 EVALEOF
 
-OUT=$($HARNESS synthesize .harness --node code-review --base /tmp/opc-d2-cal-base)
+OUT=$($HARNESS synthesize .bf --node code-review --base /tmp/opc-d2-cal-base)
 # 3 fabricated refs → invalidRefCount = 3 → +2 weight = contribution of 2
 # Plus possibly other layers
 assert_gate_triggered "fabricated refs: triggers enforce" "$OUT" "enforce"
@@ -285,9 +285,9 @@ setup_review_node
   for i in $(seq 1 30); do
     echo "Additional analysis line $i covers various aspects of the codebase quality and structure."
   done
-} > .harness/nodes/code-review/run_1/eval-noreasoning.md
+} > .bf/nodes/code-review/run_1/eval-noreasoning.md
 
-OUT=$($HARNESS synthesize .harness --node code-review)
+OUT=$($HARNESS synthesize .bf --node code-review)
 # missingReasoningTripped + missingFixTripped + possibly others
 assert_contains "missing reasoning: triggers some layers" "$OUT" "evalQualityGate\|missingReasoning\|thinEval"
 

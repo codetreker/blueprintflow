@@ -29,9 +29,9 @@ assert_not_contains() {
 }
 
 setup_review_node() {
-  rm -rf .harness
-  $HARNESS init --flow review --entry review --dir .harness 2>/dev/null
-  mkdir -p .harness/nodes/code-review/run_1
+  rm -rf .bf
+  $HARNESS init --flow review --entry review --dir .bf 2>/dev/null
+  mkdir -p .bf/nodes/code-review/run_1
 }
 
 # ═══════════════════════════════════════════════════════════════
@@ -64,9 +64,9 @@ setup_review_node
   echo "## Summary"
   echo "VERDICT: ITERATE FINDINGS[3]"
   for i in $(seq 1 20); do echo "Detailed analysis line $i covering auth and db patterns."; done
-} > .harness/nodes/code-review/run_1/eval-security.md
+} > .bf/nodes/code-review/run_1/eval-security.md
 
-OUT=$($HARNESS synthesize .harness --node code-review 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node code-review 2>/dev/null)
 # aspirationalClaims: false in role JSON is fine; check that no aspirational WARNING fired
 assert_not_contains "1.1: prose long-term not aspirational warning" "$OUT" "aspirational.*claims"
 
@@ -95,9 +95,9 @@ setup_review_node
   echo "## Summary"
   echo "VERDICT: ITERATE FINDINGS[3]"
   for i in $(seq 1 25); do echo "Review line $i with unique detailed content."; done
-} > .harness/nodes/code-review/run_1/eval-lazy.md
+} > .bf/nodes/code-review/run_1/eval-lazy.md
 
-OUT=$($HARNESS synthesize .harness --node code-review 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node code-review 2>/dev/null)
 assert_contains "2.1: finding-line aspirational fires" "$OUT" "aspirational"
 
 # ═══════════════════════════════════════════════════════════════
@@ -136,9 +136,9 @@ setup_review_node
   echo "## Summary"
   echo "VERDICT: ITERATE FINDINGS[2]"
   for i in $(seq 1 30); do echo "Detailed review content line $i about auth patterns."; done
-} > .harness/nodes/code-review/run_1/eval-scope.md
+} > .bf/nodes/code-review/run_1/eval-scope.md
 
-OUT=$($HARNESS synthesize .harness --node code-review --base "$BASE_DIR" 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node code-review --base "$BASE_DIR" 2>/dev/null)
 # Eval mentions 2/4 diff files (auth/index.ts + auth/handler.ts) = 50% > 30% → should NOT trigger warning
 assert_not_contains "3.1: 50% coverage = no scope warning" "$OUT" "cover change scope"
 
@@ -157,9 +157,9 @@ setup_review_node
   echo "🔴 bad — thing"
   echo "VERDICT: ITERATE FINDINGS[1]"
   for i in $(seq 1 12); do echo "Filler $i."; done
-} > .harness/nodes/code-review/run_1/eval-test.md
+} > .bf/nodes/code-review/run_1/eval-test.md
 
-OUT=$($HARNESS synthesize .harness --node code-review 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node code-review 2>/dev/null)
 assert_contains "4.1: synthesize runs (hints exhaustive check passed)" "$OUT" "verdict"
 assert_contains "4.2: guidance has hints array" "$OUT" "hints"
 
@@ -181,9 +181,9 @@ setup_review_node
   echo "→ Fix it."
   echo "VERDICT: ITERATE FINDINGS[1]"
   for i in $(seq 1 30); do echo "Review line $i."; done
-} > .harness/nodes/code-review/run_1/eval-nogit.md
+} > .bf/nodes/code-review/run_1/eval-nogit.md
 
-OUT=$($HARNESS synthesize .harness --node code-review --base "$NOGIT_DIR" 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node code-review --base "$NOGIT_DIR" 2>/dev/null)
 # Should not crash, changeScopeCoverage just skips
 assert_contains "5.1: synthesize succeeds on non-git base" "$OUT" "verdict"
 

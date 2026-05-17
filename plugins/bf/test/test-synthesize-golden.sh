@@ -10,7 +10,7 @@ echo "================================================"
 echo ""
 
 # ── Setup: create session with known eval files ──
-SESSION_DIR="$TMPDIR/.harness"
+SESSION_DIR="$TMPDIR/.bf"
 mkdir -p "$SESSION_DIR/nodes/code-review/run_1"
 
 cat > "$SESSION_DIR/flow-state.json" <<'EOF'

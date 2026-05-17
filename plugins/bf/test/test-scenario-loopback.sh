@@ -9,38 +9,38 @@ echo "Test: Scenario — Gate FAIL Loopback"
 echo "================================================"
 echo ""
 
-$HARNESS init --flow build-verify --entry build --dir .harness 2>/dev/null
+$HARNESS init --flow build-verify --entry build --dir .bf 2>/dev/null
 
 # Advance to gate
-mkdir -p .harness/nodes/build
-cat > .harness/nodes/build/handshake.json <<'EOF'
+mkdir -p .bf/nodes/build
+cat > .bf/nodes/build/handshake.json <<'EOF'
 {"nodeId":"build","nodeType":"build","runId":"run_1","status":"completed","verdict":"PASS","summary":"ok","timestamp":"2026-01-01T00:01:00.000Z","artifacts":[{"type":"code","path":"x"}]}
 EOF
-touch .harness/nodes/build/x
-$HARNESS transition --from build --to code-review --verdict PASS --flow build-verify --dir .harness 2>/dev/null >/dev/null
+touch .bf/nodes/build/x
+$HARNESS transition --from build --to code-review --verdict PASS --flow build-verify --dir .bf 2>/dev/null >/dev/null
 
-mkdir -p .harness/nodes/code-review
-cat > .harness/nodes/code-review/handshake.json <<'EOF'
+mkdir -p .bf/nodes/code-review
+cat > .bf/nodes/code-review/handshake.json <<'EOF'
 {"nodeId":"code-review","nodeType":"review","runId":"run_1","status":"completed","verdict":"PASS","summary":"ok","timestamp":"2026-01-01T00:02:00.000Z","artifacts":[{"type":"eval","path":"eval-a.md"},{"type":"eval","path":"eval-b.md"}]}
 EOF
-echo "# Eval A" > .harness/nodes/code-review/eval-a.md
-echo "# Eval B" > .harness/nodes/code-review/eval-b.md
-$HARNESS transition --from code-review --to test-design --verdict PASS --flow build-verify --dir .harness 2>/dev/null >/dev/null
+echo "# Eval A" > .bf/nodes/code-review/eval-a.md
+echo "# Eval B" > .bf/nodes/code-review/eval-b.md
+$HARNESS transition --from code-review --to test-design --verdict PASS --flow build-verify --dir .bf 2>/dev/null >/dev/null
 
-mkdir -p .harness/nodes/test-design
-cat > .harness/nodes/test-design/handshake.json <<'EOF'
+mkdir -p .bf/nodes/test-design
+cat > .bf/nodes/test-design/handshake.json <<'EOF'
 {"nodeId":"test-design","nodeType":"review","runId":"run_1","status":"completed","verdict":"PASS","summary":"ok","timestamp":"2026-01-01T00:03:00.000Z","artifacts":[{"type":"eval","path":"eval-a.md"},{"type":"eval","path":"eval-b.md"}]}
 EOF
-echo "# Eval A" > .harness/nodes/test-design/eval-a.md
-echo "# Eval B" > .harness/nodes/test-design/eval-b.md
-$HARNESS transition --from test-design --to test-execute --verdict PASS --flow build-verify --dir .harness 2>/dev/null >/dev/null
+echo "# Eval A" > .bf/nodes/test-design/eval-a.md
+echo "# Eval B" > .bf/nodes/test-design/eval-b.md
+$HARNESS transition --from test-design --to test-execute --verdict PASS --flow build-verify --dir .bf 2>/dev/null >/dev/null
 
-mkdir -p .harness/nodes/test-execute
-cat > .harness/nodes/test-execute/handshake.json <<'EOF'
+mkdir -p .bf/nodes/test-execute
+cat > .bf/nodes/test-execute/handshake.json <<'EOF'
 {"nodeId":"test-execute","nodeType":"execute","runId":"run_1","status":"completed","verdict":"PASS","summary":"ok","timestamp":"2026-01-01T00:04:00.000Z","artifacts":[{"type":"test-result","path":"o"}]}
 EOF
-touch .harness/nodes/test-execute/o
-$HARNESS transition --from test-execute --to gate --verdict PASS --flow build-verify --dir .harness 2>/dev/null >/dev/null
+touch .bf/nodes/test-execute/o
+$HARNESS transition --from test-execute --to gate --verdict PASS --flow build-verify --dir .bf 2>/dev/null >/dev/null
 
 # ── Test 1: gate FAIL → routes back to build ──
 echo "1. gate FAIL → next=build (loopback)"
@@ -68,13 +68,13 @@ fi
 
 # ── Test 3: transition with FAIL loopback succeeds ──
 echo "3. transition gate → build (FAIL loopback) allowed"
-mkdir -p .harness/nodes/gate
-cat > .harness/nodes/gate/handshake.json <<'EOF'
+mkdir -p .bf/nodes/gate
+cat > .bf/nodes/gate/handshake.json <<'EOF'
 {"nodeId":"gate","nodeType":"gate","runId":"run_1","status":"completed","verdict":"FAIL","summary":"critical findings","timestamp":"2026-01-01T00:00:00.000Z","artifacts":[]}
 EOF
 # Need backlog.md for FAIL/ITERATE transitions
-echo "- Fix null reference" > .harness/backlog.md
-TRANS=$($HARNESS transition --from gate --to build --verdict FAIL --flow build-verify --dir .harness 2>/dev/null)
+echo "- Fix null reference" > .bf/backlog.md
+TRANS=$($HARNESS transition --from gate --to build --verdict FAIL --flow build-verify --dir .bf 2>/dev/null)
 ALLOWED=$(echo "$TRANS" | python3 -c "import sys,json; print(json.load(sys.stdin)['allowed'])")
 if [ "$ALLOWED" = "True" ]; then
   echo "  ✅ loopback transition allowed"
@@ -86,7 +86,7 @@ fi
 
 # ── Test 4: currentNode is build after loopback ──
 echo "4. currentNode = build after loopback"
-NODE=$(python3 -c "import json; print(json.load(open('.harness/flow-state.json'))['currentNode'])")
+NODE=$(python3 -c "import json; print(json.load(open('.bf/flow-state.json'))['currentNode'])")
 if [ "$NODE" = "build" ]; then
   echo "  ✅ currentNode=build"
   PASS=$((PASS + 1))
@@ -97,7 +97,7 @@ fi
 
 # ── Test 5: totalSteps incremented ──
 echo "5. totalSteps incremented through transitions"
-STEPS=$(python3 -c "import json; print(json.load(open('.harness/flow-state.json'))['totalSteps'])")
+STEPS=$(python3 -c "import json; print(json.load(open('.bf/flow-state.json'))['totalSteps'])")
 if [ "$STEPS" -gt 4 ]; then
   echo "  ✅ totalSteps=$STEPS (>4)"
   PASS=$((PASS + 1))

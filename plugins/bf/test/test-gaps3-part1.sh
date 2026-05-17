@@ -75,7 +75,7 @@ cat > "$HOME/.claude/flows/test-obj-rule.json" << 'EOF'
   "edges": {"a": {"PASS": "b"}, "b": {"PASS": null}},
   "limits": {"maxLoopsPerEdge": 3, "maxTotalSteps": 10, "maxNodeReentry": 5},
   "nodeTypes": {"a": "build", "b": "gate"},
-  "opc_compat": ">=0.5",
+  "bf_compat": ">=0.5",
   "contextSchema": {
     "a": {
       "required": [],
@@ -106,7 +106,7 @@ cat > "$HOME/.claude/flows/test-int-rule.json" << 'EOF'
   "edges": {"a": {"PASS": "b"}, "b": {"PASS": null}},
   "limits": {"maxLoopsPerEdge": 3, "maxTotalSteps": 10, "maxNodeReentry": 5},
   "nodeTypes": {"a": "build", "b": "gate"},
-  "opc_compat": ">=0.5",
+  "bf_compat": ">=0.5",
   "contextSchema": {
     "a": {
       "required": [],

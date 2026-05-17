@@ -78,7 +78,7 @@ setup_last_unit() {
 - F1.2: review — review
 PLAN
   $HARNESS init-loop --skip-scope --plan "$dir/plan.md" --dir "$dir" >/dev/null 2>/dev/null
-  patch_state "$dir" "tick=1" "next_unit='F1.2'" "status='in_progress'" "_written_by='opc-harness'"
+  patch_state "$dir" "tick=1" "next_unit='F1.2'" "status='in_progress'" "_written_by='bf-harness'"
   # Create eval artifacts for review unit
   mkdir -p "$dir/evals"
   printf '%s\n' '🔵 All good — code is clean' > "$dir/evals/eval-fe.md"
@@ -143,7 +143,7 @@ cat > .e4/plan.md << 'PLAN'
 - F1.2: review — review
 PLAN
 $HARNESS init-loop --skip-scope --plan .e4/plan.md --dir .e4 >/dev/null 2>/dev/null
-patch_state .e4 "tick=2" "next_unit=None" "status='idle'" "_written_by='opc-harness'"
+patch_state .e4 "tick=2" "next_unit=None" "status='idle'" "_written_by='bf-harness'"
 cat > .e4/backlog.md << 'BL'
 # Backlog
 - [ ] 🔴 Critical bug in auth
@@ -183,7 +183,7 @@ cat > .e5/plan.md << 'PLAN'
 - F1.2: review — review
 PLAN
 $HARNESS init-loop --skip-scope --plan .e5/plan.md --dir .e5 >/dev/null 2>/dev/null
-patch_state .e5 "tick=2" "next_unit=None" "status='idle'" "_written_by='opc-harness'" "_drain_completed=True"
+patch_state .e5 "tick=2" "next_unit=None" "status='idle'" "_written_by='bf-harness'" "_drain_completed=True"
 cat > .e5/backlog.md << 'BL'
 # Backlog
 - [ ] 🔴 Remaining item
@@ -200,7 +200,7 @@ cat > .e6/plan.md << 'PLAN'
 - F1.2: review — review
 PLAN
 $HARNESS init-loop --skip-scope --plan .e6/plan.md --dir .e6 >/dev/null 2>/dev/null
-patch_state .e6 "tick=2" "next_unit=None" "status='idle'" "_written_by='opc-harness'"
+patch_state .e6 "tick=2" "next_unit=None" "status='idle'" "_written_by='bf-harness'"
 OUT=$($HARNESS next-tick --dir .e6 2>/dev/null)
 assert_field_eq "no backlog = terminate" "$OUT" "terminate" "true"
 
@@ -213,7 +213,7 @@ cat > .e7/plan.md << 'PLAN'
 - F1.2: review — review
 PLAN
 $HARNESS init-loop --skip-scope --plan .e7/plan.md --dir .e7 >/dev/null 2>/dev/null
-patch_state .e7 "tick=2" "next_unit=None" "status='idle'" "_written_by='opc-harness'"
+patch_state .e7 "tick=2" "next_unit=None" "status='idle'" "_written_by='bf-harness'"
 cat > .e7/backlog.md << 'BL'
 # Backlog
 - [x] All done

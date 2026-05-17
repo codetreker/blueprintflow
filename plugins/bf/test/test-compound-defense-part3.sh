@@ -48,7 +48,7 @@ echo ""
 echo "=== TEST GROUP 4: Test plan compound defense ==="
 # ═══════════════════════════════════════════════════════════════
 
-mkdir -p .harness/nodes/test-design/run_1
+mkdir -p .bf/nodes/test-design/run_1
 
 # Need an eval for synthesize to parse
 {
@@ -91,10 +91,10 @@ mkdir -p .harness/nodes/test-design/run_1
   echo "Progressive test strategy aligns with CI stages."
   echo ""
   echo "VERDICT: PASS FINDINGS[1]"
-} > .harness/nodes/test-design/run_1/eval-tester.md
+} > .bf/nodes/test-design/run_1/eval-tester.md
 
 echo "--- 4.1: Test plan with shallow sections → warning ---"
-cat > .harness/nodes/test-design/run_1/test-plan.md <<'EOF'
+cat > .bf/nodes/test-design/run_1/test-plan.md <<'EOF'
 # Test Plan
 
 ## L1: Unit Tests
@@ -113,13 +113,13 @@ cat > .harness/nodes/test-design/run_1/test-plan.md <<'EOF'
 - Check typography
 EOF
 
-OUT=$($HARNESS synthesize .harness --node test-design 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node test-design 2>/dev/null)
 assert_contains "shallow sections detected" "$OUT" "shallow"
 assert_field_eq "verdict ITERATE (shallow)" "$OUT" "verdict" '"ITERATE"'
 
 echo ""
 echo "--- 4.2: Test plan with deep sections → no shallow warning ---"
-cat > .harness/nodes/test-design/run_1/test-plan.md <<'EOF'
+cat > .bf/nodes/test-design/run_1/test-plan.md <<'EOF'
 # Test Plan
 
 ## L1: Unit Tests
@@ -153,12 +153,12 @@ cat > .harness/nodes/test-design/run_1/test-plan.md <<'EOF'
 - Verify favicon and meta tags present
 EOF
 
-OUT=$($HARNESS synthesize .harness --node test-design 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node test-design 2>/dev/null)
 assert_not_contains "no shallow for deep sections" "$OUT" "shallow"
 
 echo ""
 echo "--- 4.3: Test plan with 0 actionable commands → warning ---"
-cat > .harness/nodes/test-design/run_1/test-plan.md <<'EOF'
+cat > .bf/nodes/test-design/run_1/test-plan.md <<'EOF'
 # Test Plan
 
 ## L1: Unit / Smoke
@@ -192,13 +192,13 @@ Test navigation states.
 Ensure favicon is present.
 EOF
 
-OUT=$($HARNESS synthesize .harness --node test-design 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node test-design 2>/dev/null)
 assert_contains "no actionable commands" "$OUT" "noActionableCommands"
 assert_field_eq "verdict ITERATE (no commands)" "$OUT" "verdict" '"ITERATE"'
 
 echo ""
 echo "--- 4.4: Test plan with actionable commands → no command warning ---"
-cat > .harness/nodes/test-design/run_1/test-plan.md <<'EOF'
+cat > .bf/nodes/test-design/run_1/test-plan.md <<'EOF'
 # Test Plan
 
 ## L1: Unit / Smoke
@@ -232,7 +232,7 @@ cat > .harness/nodes/test-design/run_1/test-plan.md <<'EOF'
 - Verify `curl -s http://localhost:3000 | grep favicon` returns match
 EOF
 
-OUT=$($HARNESS synthesize .harness --node test-design 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node test-design 2>/dev/null)
 assert_not_contains "no command warning for actionable plan" "$OUT" "noActionableCommands"
 
 

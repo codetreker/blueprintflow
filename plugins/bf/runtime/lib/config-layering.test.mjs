@@ -385,7 +385,7 @@ describe("U1.4r v2 — nested proto sanitization on single-layer passthrough", (
 
 describe("U1.4r — CLI --dir missing value", () => {
   test("`config resolve --dir` with no value exits non-zero", () => {
-    const harnessBin = join(process.cwd(), "bin", "bf-harness.mjs");
+    const harnessBin = join(process.cwd(), "runtime", "bf-harness.mjs");
     let threw = false;
     try {
       execFileSync("node", [harnessBin, "config", "resolve", "--dir"], {
@@ -412,7 +412,7 @@ describe("U1.4 — bf-harness config resolve CLI", () => {
   test("`config resolve --dir <p>` prints merged JSON with _source", () => {
     writeUserCfg(home, { devServerUrl: "http://u" });
     writeRepoCfg(repo, { extensions: ["a"] });
-    const harnessBin = join(process.cwd(), "bin", "bf-harness.mjs");
+    const harnessBin = join(process.cwd(), "runtime", "bf-harness.mjs");
     const stdout = execFileSync("node", [harnessBin, "config", "resolve", "--dir", repo], {
       env: { ...process.env, HOME: home, USERPROFILE: home },
       encoding: "utf8",
@@ -425,7 +425,7 @@ describe("U1.4 — bf-harness config resolve CLI", () => {
   });
 
   test("unknown subcommand exits non-zero", () => {
-    const harnessBin = join(process.cwd(), "bin", "bf-harness.mjs");
+    const harnessBin = join(process.cwd(), "runtime", "bf-harness.mjs");
     let threw = false;
     try {
       execFileSync("node", [harnessBin, "config", "bogus"], {

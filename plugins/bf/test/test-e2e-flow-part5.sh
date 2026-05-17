@@ -102,14 +102,14 @@ EVALEOF
 echo "=== E2E TEST 15: replay data export ==="
 # ═══════════════════════════════════════════════════════════════
 
-rm -rf .harness
-$HARNESS init --flow review --entry review --dir .harness 2>/dev/null
-write_good_eval .harness review analyst
-write_good_eval .harness review checker
-write_handshake .harness review "Review" "PASS"
-$HARNESS transition --from review --to gate --verdict PASS --flow review --dir .harness 2>/dev/null
-write_handshake .harness gate "Gate" "PASS" gate
-REPLAY=$($HARNESS replay --dir .harness 2>/dev/null || echo '{"error":"replay failed"}')
+rm -rf .bf
+$HARNESS init --flow review --entry review --dir .bf 2>/dev/null
+write_good_eval .bf review analyst
+write_good_eval .bf review checker
+write_handshake .bf review "Review" "PASS"
+$HARNESS transition --from review --to gate --verdict PASS --flow review --dir .bf 2>/dev/null
+write_handshake .bf gate "Gate" "PASS" gate
+REPLAY=$($HARNESS replay --dir .bf 2>/dev/null || echo '{"error":"replay failed"}')
 assert_contains "15.1: replay has flow state" "$REPLAY" "currentNode\|history\|flowState"
 assert_contains "15.2: replay has meta" "$REPLAY" '"meta"'
 
@@ -119,19 +119,19 @@ echo ""
 echo "=== E2E TEST 16: full-stack discussion node path ==="
 # ═══════════════════════════════════════════════════════════════
 
-rm -rf .harness
-$HARNESS init --flow full-stack --entry discuss --dir .harness 2>/dev/null
-write_handshake .harness discuss "Discussion round complete" "PASS" discussion
-$HARNESS transition --from discuss --to build --verdict PASS --flow full-stack --dir .harness 2>/dev/null
-write_handshake .harness build "Implementation done" "PASS" build
-$HARNESS transition --from build --to code-review --verdict PASS --flow full-stack --dir .harness 2>/dev/null
-write_good_eval .harness code-review frontend
-write_good_eval .harness code-review backend
-write_good_eval .harness code-review skeptic-owner
-write_handshake .harness code-review "Review done" "PASS"
-$HARNESS transition --from code-review --to test-design --verdict PASS --flow full-stack --dir .harness 2>/dev/null
-assert_contains "16.1: reached test-design" "$(cat .harness/flow-state.json)" '"test-design"'
-assert_contains "16.2: discuss in history" "$(cat .harness/flow-state.json)" '"discuss"'
+rm -rf .bf
+$HARNESS init --flow full-stack --entry discuss --dir .bf 2>/dev/null
+write_handshake .bf discuss "Discussion round complete" "PASS" discussion
+$HARNESS transition --from discuss --to build --verdict PASS --flow full-stack --dir .bf 2>/dev/null
+write_handshake .bf build "Implementation done" "PASS" build
+$HARNESS transition --from build --to code-review --verdict PASS --flow full-stack --dir .bf 2>/dev/null
+write_good_eval .bf code-review frontend
+write_good_eval .bf code-review backend
+write_good_eval .bf code-review skeptic-owner
+write_handshake .bf code-review "Review done" "PASS"
+$HARNESS transition --from code-review --to test-design --verdict PASS --flow full-stack --dir .bf 2>/dev/null
+assert_contains "16.1: reached test-design" "$(cat .bf/flow-state.json)" '"test-design"'
+assert_contains "16.2: discuss in history" "$(cat .bf/flow-state.json)" '"discuss"'
 
 echo ""
 
@@ -139,10 +139,10 @@ echo ""
 echo "=== E2E TEST 17: oscillation detection via diff ==="
 # ═══════════════════════════════════════════════════════════════
 
-rm -rf .harness
-$HARNESS init --flow review --entry review --dir .harness 2>/dev/null
-mkdir -p .harness/nodes/review/run_1
-cat > .harness/round1-eval.md << 'EVALEOF'
+rm -rf .bf
+$HARNESS init --flow review --entry review --dir .bf 2>/dev/null
+mkdir -p .bf/nodes/review/run_1
+cat > .bf/round1-eval.md << 'EVALEOF'
 # Review Round 1
 ## Security
 🟡 src/auth.ts:10 — Session fixation vulnerability
@@ -164,7 +164,7 @@ Reasoning: Core business logic has only 40% coverage.
 VERDICT: ITERATE FINDINGS[4]
 3 warnings, 1 suggestion.
 EVALEOF
-cat > .harness/round2-eval.md << 'EVALEOF'
+cat > .bf/round2-eval.md << 'EVALEOF'
 # Review Round 2
 ## Security
 🟡 src/auth.ts:10 — Session fixation vulnerability
@@ -182,7 +182,7 @@ Reasoning: Async errors still unhandled.
 VERDICT: ITERATE FINDINGS[3]
 3 recurring warnings.
 EVALEOF
-DIFF_OUT=$($HARNESS diff .harness/round1-eval.md .harness/round2-eval.md 2>/dev/null)
+DIFF_OUT=$($HARNESS diff .bf/round1-eval.md .bf/round2-eval.md 2>/dev/null)
 assert_contains "17.1: diff detects recurring" "$DIFF_OUT" '"recurring"'
 assert_contains "17.2: oscillation detected" "$DIFF_OUT" '"oscillation": true'
 assert_contains "17.3: resolved count" "$DIFF_OUT" '"resolved"'

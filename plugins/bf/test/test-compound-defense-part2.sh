@@ -4,7 +4,7 @@ set -e
 source "$(dirname "$0")/test-helpers.sh"
 setup_tmpdir
 
-mkdir -p .harness/nodes/code-review/run_1
+mkdir -p .bf/nodes/code-review/run_1
 
 jq_field() {
   echo "$1" | python3 -c "import sys,json; d=json.load(sys.stdin); v=d.get('$2'); print('__NULL__' if v is None else json.dumps(v))" 2>/dev/null
@@ -119,17 +119,17 @@ echo "--- 3.1: 1 finding in 70 lines → findingDensityLow warning ---"
   echo "Testing coverage provides good confidence."
   echo ""
   echo "VERDICT: PASS FINDINGS[1]"
-} > .harness/nodes/code-review/run_1/eval-lowdensity.md
-rm -f .harness/nodes/code-review/run_1/eval-multihead.md
+} > .bf/nodes/code-review/run_1/eval-lowdensity.md
+rm -f .bf/nodes/code-review/run_1/eval-multihead.md
 
-OUT=$($HARNESS synthesize .harness --node code-review 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node code-review 2>/dev/null)
 assert_contains "finding density warning" "$OUT" "finding density"
 assert_contains "bulk filler" "$OUT" "bulk filler"
 assert_field_eq "verdict ITERATE (low density)" "$OUT" "verdict" '"ITERATE"'
 
 echo ""
 echo "--- 3.2: Multiple findings in proportionate eval → no density warning ---"
-cat > .harness/nodes/code-review/run_1/eval-propfinding.md <<'EVALEOF'
+cat > .bf/nodes/code-review/run_1/eval-propfinding.md <<'EVALEOF'
 # Code Review
 
 ## Architecture
@@ -174,9 +174,9 @@ Performance meets current requirements.
 
 VERDICT: ITERATE FINDINGS[5]
 EVALEOF
-rm -f .harness/nodes/code-review/run_1/eval-lowdensity.md
+rm -f .bf/nodes/code-review/run_1/eval-lowdensity.md
 
-OUT=$($HARNESS synthesize .harness --node code-review 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node code-review 2>/dev/null)
 assert_not_contains "no density warning for proportionate eval" "$OUT" "finding density"
 
 

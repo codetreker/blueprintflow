@@ -1,7 +1,7 @@
 #!/bin/bash
 # test-bypass-chain.sh — validate-chain honors bypass
-# Ensures: a flow initialized under OPC_DISABLE_EXTENSIONS=1 does NOT fail
-# validate-chain even when ~/.opc/config.json declares requiredExtensions.
+# Ensures: a flow initialized under BF_DISABLE_EXTENSIONS=1 does NOT fail
+# validate-chain even when ~/.bf/config.json declares requiredExtensions.
 # This is the benchmark-reproducibility contract from U1.1.
 
 set -u
@@ -25,9 +25,9 @@ run_test() {
 TMP=$(mktemp -d)
 trap "rm -rf '$TMP'" EXIT
 
-# Seed a fake ~/.opc/config.json inside TMP (we'll override HOME for the test)
-mkdir -p "$TMP/fake-home/.opc"
-cat > "$TMP/fake-home/.opc/config.json" <<'EOF'
+# Seed a fake ~/.bf/config.json inside TMP (we'll override HOME for the test)
+mkdir -p "$TMP/fake-home/.bf"
+cat > "$TMP/fake-home/.bf/config.json" <<'EOF'
 { "requiredExtensions": ["non-existent-ext"] }
 EOF
 
@@ -37,9 +37,9 @@ rm -rf "$HARNESS"
 
 echo "=== TEST: validate-chain honors bypass ==="
 
-# 1) init under OPC_DISABLE_EXTENSIONS=1
-echo "--- 1.1: init under OPC_DISABLE_EXTENSIONS=1 records bypassMode in flow-state"
-HOME="$TMP/fake-home" OPC_DISABLE_EXTENSIONS=1 node bin/opc-harness.mjs init \
+# 1) init under BF_DISABLE_EXTENSIONS=1
+echo "--- 1.1: init under BF_DISABLE_EXTENSIONS=1 records bypassMode in flow-state"
+HOME="$TMP/fake-home" BF_DISABLE_EXTENSIONS=1 node runtime/bf-harness.mjs init \
   --flow review --entry review --dir "$HARNESS" >/dev/null 2>&1
 if [ -f "$HARNESS/flow-state.json" ]; then
   MODE=$(jq -r '.bypassMode.mode // "null"' "$HARNESS/flow-state.json")
@@ -74,7 +74,7 @@ fi
 
 # 3) validate-chain under bypass passes despite requiredExtensions config
 echo "--- 1.3: validate-chain under bypass waives requiredExtensions"
-OUT=$(HOME="$TMP/fake-home" OPC_DISABLE_EXTENSIONS=1 node bin/opc-harness.mjs validate-chain \
+OUT=$(HOME="$TMP/fake-home" BF_DISABLE_EXTENSIONS=1 node runtime/bf-harness.mjs validate-chain \
   --dir "$HARNESS" 2>/dev/null)
 VALID=$(echo "$OUT" | jq -r '.valid // false')
 if [ "$VALID" = "true" ]; then
@@ -104,9 +104,9 @@ fi
 #     is active: it should NOT appear without bypass.)
 echo "--- 1.4: without bypass, no waiver message emitted"
 rm -rf "$HARNESS"
-HOME="$TMP/fake-home" node bin/opc-harness.mjs init \
+HOME="$TMP/fake-home" node runtime/bf-harness.mjs init \
   --flow review --entry review --dir "$HARNESS" >/dev/null 2>&1
-OUT_NB=$(HOME="$TMP/fake-home" node bin/opc-harness.mjs validate-chain --dir "$HARNESS" 2>/tmp/nb-stderr.$$)
+OUT_NB=$(HOME="$TMP/fake-home" node runtime/bf-harness.mjs validate-chain --dir "$HARNESS" 2>/tmp/nb-stderr.$$)
 MSG=$(grep -c "waiving requiredExtensions" /tmp/nb-stderr.$$ || true)
 rm -f /tmp/nb-stderr.$$
 if [ "$MSG" = "0" ]; then

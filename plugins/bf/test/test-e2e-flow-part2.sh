@@ -147,15 +147,15 @@ EVALEOF
 echo "=== E2E TEST 3: review flow — FAIL path ==="
 # ═══════════════════════════════════════════════════════════════
 
-rm -rf .harness
-$HARNESS init --flow review --entry review --dir .harness 2>/dev/null
-write_critical_eval .harness review senior
-write_good_eval .harness review tester
-write_handshake .harness review "Review found critical" "FAIL"
-$HARNESS transition --from review --to gate --verdict PASS --flow review --dir .harness 2>/dev/null
-SYNTH=$($HARNESS synthesize .harness --node review)
+rm -rf .bf
+$HARNESS init --flow review --entry review --dir .bf 2>/dev/null
+write_critical_eval .bf review senior
+write_good_eval .bf review tester
+write_handshake .bf review "Review found critical" "FAIL"
+$HARNESS transition --from review --to gate --verdict PASS --flow review --dir .bf 2>/dev/null
+SYNTH=$($HARNESS synthesize .bf --node review)
 assert_field_eq "3.1: critical → FAIL" "$SYNTH" "verdict" '"FAIL"'
-write_handshake .harness gate "Gate fails" "FAIL" gate
+write_handshake .bf gate "Gate fails" "FAIL" gate
 ROUTE=$($HARNESS route --node gate --verdict FAIL --flow review)
 assert_field_eq "3.2: FAIL → back to review" "$ROUTE" "next" '"review"'
 
@@ -165,41 +165,41 @@ echo ""
 echo "=== E2E TEST 4: build-verify flow — full happy path ==="
 # ═══════════════════════════════════════════════════════════════
 
-rm -rf .harness
-$HARNESS init --flow build-verify --entry build --dir .harness 2>/dev/null
-STATE=$(cat .harness/flow-state.json)
+rm -rf .bf
+$HARNESS init --flow build-verify --entry build --dir .bf 2>/dev/null
+STATE=$(cat .bf/flow-state.json)
 assert_field_eq "4.1: starts at build" "$STATE" "currentNode" '"build"'
 
-write_handshake .harness build "Implementation complete" "PASS" build
+write_handshake .bf build "Implementation complete" "PASS" build
 ROUTE=$($HARNESS route --node build --verdict PASS --flow build-verify)
 NEXT=$(jq_field "$ROUTE" "next")
 assert_contains "4.2: build → code-review" "$NEXT" "code-review"
-$HARNESS transition --from build --to code-review --verdict PASS --flow build-verify --dir .harness 2>/dev/null
+$HARNESS transition --from build --to code-review --verdict PASS --flow build-verify --dir .bf 2>/dev/null
 
-write_good_eval .harness code-review frontend
-write_good_eval .harness code-review backend
-write_good_eval .harness code-review skeptic-owner
-write_handshake .harness code-review "Code review done" "PASS"
+write_good_eval .bf code-review frontend
+write_good_eval .bf code-review backend
+write_good_eval .bf code-review skeptic-owner
+write_handshake .bf code-review "Code review done" "PASS"
 ROUTE=$($HARNESS route --node code-review --verdict PASS --flow build-verify)
 NEXT=$(jq_field "$ROUTE" "next")
 assert_contains "4.3: code-review → test-design" "$NEXT" "test-design"
-$HARNESS transition --from code-review --to test-design --verdict PASS --flow build-verify --dir .harness 2>/dev/null
+$HARNESS transition --from code-review --to test-design --verdict PASS --flow build-verify --dir .bf 2>/dev/null
 
-write_handshake .harness test-design "Test cases designed" "PASS"
+write_handshake .bf test-design "Test cases designed" "PASS"
 ROUTE=$($HARNESS route --node test-design --verdict PASS --flow build-verify)
 NEXT=$(jq_field "$ROUTE" "next")
 assert_contains "4.4: test-design → test-execute" "$NEXT" "test-execute"
-$HARNESS transition --from test-design --to test-execute --verdict PASS --flow build-verify --dir .harness 2>/dev/null
+$HARNESS transition --from test-design --to test-execute --verdict PASS --flow build-verify --dir .bf 2>/dev/null
 
-write_handshake .harness test-execute "Tests pass" "PASS" execute
+write_handshake .bf test-execute "Tests pass" "PASS" execute
 ROUTE=$($HARNESS route --node test-execute --verdict PASS --flow build-verify)
 NEXT=$(jq_field "$ROUTE" "next")
 assert_contains "4.5: test-execute → gate" "$NEXT" "gate"
-$HARNESS transition --from test-execute --to gate --verdict PASS --flow build-verify --dir .harness 2>/dev/null
+$HARNESS transition --from test-execute --to gate --verdict PASS --flow build-verify --dir .bf 2>/dev/null
 
-SYNTH=$($HARNESS synthesize .harness --node code-review)
+SYNTH=$($HARNESS synthesize .bf --node code-review)
 assert_field_eq "4.6: gate verdict PASS" "$SYNTH" "verdict" '"PASS"'
-write_handshake .harness gate "All gates pass" "PASS" gate
+write_handshake .bf gate "All gates pass" "PASS" gate
 ROUTE=$($HARNESS route --node gate --verdict PASS --flow build-verify)
 assert_field_eq "4.7: terminal" "$ROUTE" "next" '__NULL__'
 
@@ -209,21 +209,21 @@ echo ""
 echo "=== E2E TEST 5: build-verify — gate FAIL loopback to build ==="
 # ═══════════════════════════════════════════════════════════════
 
-rm -rf .harness
-$HARNESS init --flow build-verify --entry build --dir .harness 2>/dev/null
-write_handshake .harness build "Built" "PASS" build
-$HARNESS transition --from build --to code-review --verdict PASS --flow build-verify --dir .harness 2>/dev/null
-write_critical_eval .harness code-review security
-write_good_eval .harness code-review frontend
-write_handshake .harness code-review "Found critical" "FAIL"
-$HARNESS transition --from code-review --to test-design --verdict PASS --flow build-verify --dir .harness 2>/dev/null
-write_handshake .harness test-design "Test design" "PASS"
-$HARNESS transition --from test-design --to test-execute --verdict PASS --flow build-verify --dir .harness 2>/dev/null
-write_handshake .harness test-execute "Tests" "PASS" execute
-$HARNESS transition --from test-execute --to gate --verdict PASS --flow build-verify --dir .harness 2>/dev/null
-SYNTH=$($HARNESS synthesize .harness --node code-review)
+rm -rf .bf
+$HARNESS init --flow build-verify --entry build --dir .bf 2>/dev/null
+write_handshake .bf build "Built" "PASS" build
+$HARNESS transition --from build --to code-review --verdict PASS --flow build-verify --dir .bf 2>/dev/null
+write_critical_eval .bf code-review security
+write_good_eval .bf code-review frontend
+write_handshake .bf code-review "Found critical" "FAIL"
+$HARNESS transition --from code-review --to test-design --verdict PASS --flow build-verify --dir .bf 2>/dev/null
+write_handshake .bf test-design "Test design" "PASS"
+$HARNESS transition --from test-design --to test-execute --verdict PASS --flow build-verify --dir .bf 2>/dev/null
+write_handshake .bf test-execute "Tests" "PASS" execute
+$HARNESS transition --from test-execute --to gate --verdict PASS --flow build-verify --dir .bf 2>/dev/null
+SYNTH=$($HARNESS synthesize .bf --node code-review)
 assert_field_eq "5.1: gate FAIL on critical" "$SYNTH" "verdict" '"FAIL"'
-write_handshake .harness gate "Gate fails" "FAIL" gate
+write_handshake .bf gate "Gate fails" "FAIL" gate
 ROUTE=$($HARNESS route --node gate --verdict FAIL --flow build-verify)
 NEXT=$(jq_field "$ROUTE" "next")
 assert_contains "5.2: FAIL → back to build" "$NEXT" "build"

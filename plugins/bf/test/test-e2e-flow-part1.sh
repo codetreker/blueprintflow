@@ -147,29 +147,29 @@ EVALEOF
 echo "=== E2E TEST 1: review flow — PASS path ==="
 # ═══════════════════════════════════════════════════════════════
 
-rm -rf .harness
-$HARNESS init --flow review --entry review --dir .harness 2>/dev/null
-assert_contains "1.1: flow-state exists" "$(cat .harness/flow-state.json)" "currentNode"
-STATE=$(cat .harness/flow-state.json)
+rm -rf .bf
+$HARNESS init --flow review --entry review --dir .bf 2>/dev/null
+assert_contains "1.1: flow-state exists" "$(cat .bf/flow-state.json)" "currentNode"
+STATE=$(cat .bf/flow-state.json)
 assert_field_eq "1.2: currentNode = review" "$STATE" "currentNode" '"review"'
-write_good_eval .harness review senior
-write_good_eval .harness review security
-write_good_eval .harness review skeptic-owner
-write_handshake .harness review "Code review complete" "PASS"
+write_good_eval .bf review senior
+write_good_eval .bf review security
+write_good_eval .bf review skeptic-owner
+write_handshake .bf review "Code review complete" "PASS"
 ROUTE=$($HARNESS route --node review --verdict PASS --flow review)
 assert_field_eq "1.3: route next = gate" "$ROUTE" "next" '"gate"'
-TRANS=$($HARNESS transition --from review --to gate --verdict PASS --flow review --dir .harness 2>/dev/null)
+TRANS=$($HARNESS transition --from review --to gate --verdict PASS --flow review --dir .bf 2>/dev/null)
 assert_field_eq "1.4: transition allowed" "$TRANS" "allowed" 'true'
-STATE=$(cat .harness/flow-state.json)
+STATE=$(cat .bf/flow-state.json)
 assert_field_eq "1.5: currentNode = gate" "$STATE" "currentNode" '"gate"'
-SYNTH=$($HARNESS synthesize .harness --node review)
+SYNTH=$($HARNESS synthesize .bf --node review)
 assert_field_eq "1.6: synthesize verdict PASS" "$SYNTH" "verdict" '"PASS"'
-write_handshake .harness gate "Gate passed" "PASS" gate
+write_handshake .bf gate "Gate passed" "PASS" gate
 ROUTE=$($HARNESS route --node gate --verdict PASS --flow review)
 assert_field_eq "1.7: gate PASS → terminal (next=null)" "$ROUTE" "next" '__NULL__'
-FIN=$($HARNESS finalize --dir .harness 2>/dev/null)
+FIN=$($HARNESS finalize --dir .bf 2>/dev/null)
 assert_contains "1.8: finalize succeeds" "$FIN" "finalized\|complete\|status"
-CHAIN=$($HARNESS validate-chain --dir .harness 2>/dev/null)
+CHAIN=$($HARNESS validate-chain --dir .bf 2>/dev/null)
 assert_contains "1.9: chain valid" "$CHAIN" "valid\|ok\|pass"
 
 echo ""
@@ -178,32 +178,32 @@ echo ""
 echo "=== E2E TEST 2: review flow — ITERATE loopback ==="
 # ═══════════════════════════════════════════════════════════════
 
-rm -rf .harness
-$HARNESS init --flow review --entry review --dir .harness 2>/dev/null
-write_warning_eval .harness review senior
-write_good_eval .harness review tester
-write_handshake .harness review "Review round 1" "ITERATE"
-$HARNESS transition --from review --to gate --verdict PASS --flow review --dir .harness 2>/dev/null
-SYNTH=$($HARNESS synthesize .harness --node review)
+rm -rf .bf
+$HARNESS init --flow review --entry review --dir .bf 2>/dev/null
+write_warning_eval .bf review senior
+write_good_eval .bf review tester
+write_handshake .bf review "Review round 1" "ITERATE"
+$HARNESS transition --from review --to gate --verdict PASS --flow review --dir .bf 2>/dev/null
+SYNTH=$($HARNESS synthesize .bf --node review)
 assert_field_eq "2.1: round 1 ITERATE" "$SYNTH" "verdict" '"ITERATE"'
-write_handshake .harness gate "Gate iterates" "ITERATE" gate
+write_handshake .bf gate "Gate iterates" "ITERATE" gate
 ROUTE=$($HARNESS route --node gate --verdict ITERATE --flow review)
 assert_field_eq "2.2: ITERATE → back to review" "$ROUTE" "next" '"review"'
-$HARNESS transition --from gate --to review --verdict ITERATE --flow review --dir .harness 2>/dev/null
-STATE=$(cat .harness/flow-state.json)
+$HARNESS transition --from gate --to review --verdict ITERATE --flow review --dir .bf 2>/dev/null
+STATE=$(cat .bf/flow-state.json)
 assert_field_eq "2.3: back at review" "$STATE" "currentNode" '"review"'
-mkdir -p .harness/nodes/review/run_2
-write_good_eval .harness review senior
-mv .harness/nodes/review/run_1/eval-senior.md .harness/nodes/review/run_2/eval-senior.md
-write_good_eval .harness review tester
-mv .harness/nodes/review/run_1/eval-tester.md .harness/nodes/review/run_2/eval-tester.md
-write_good_eval .harness review skeptic-owner
-mv .harness/nodes/review/run_1/eval-skeptic-owner.md .harness/nodes/review/run_2/eval-skeptic-owner.md
-write_handshake .harness review "Review round 2" "PASS"
-$HARNESS transition --from review --to gate --verdict PASS --flow review --dir .harness 2>/dev/null
-SYNTH=$($HARNESS synthesize .harness --node review --run 2)
+mkdir -p .bf/nodes/review/run_2
+write_good_eval .bf review senior
+mv .bf/nodes/review/run_1/eval-senior.md .bf/nodes/review/run_2/eval-senior.md
+write_good_eval .bf review tester
+mv .bf/nodes/review/run_1/eval-tester.md .bf/nodes/review/run_2/eval-tester.md
+write_good_eval .bf review skeptic-owner
+mv .bf/nodes/review/run_1/eval-skeptic-owner.md .bf/nodes/review/run_2/eval-skeptic-owner.md
+write_handshake .bf review "Review round 2" "PASS"
+$HARNESS transition --from review --to gate --verdict PASS --flow review --dir .bf 2>/dev/null
+SYNTH=$($HARNESS synthesize .bf --node review --run 2)
 assert_field_eq "2.4: round 2 PASS" "$SYNTH" "verdict" '"PASS"'
-write_handshake .harness gate "Gate passed round 2" "PASS"
+write_handshake .bf gate "Gate passed round 2" "PASS"
 ROUTE=$($HARNESS route --node gate --verdict PASS --flow review)
 assert_field_eq "2.5: terminal after round 2" "$ROUTE" "next" '__NULL__'
 

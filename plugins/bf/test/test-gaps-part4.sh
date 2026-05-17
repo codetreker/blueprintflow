@@ -218,7 +218,7 @@ cat > "$HOME/.claude/flows/bad-compat.json" << 'FL'
 {
   "nodes": ["a"], "edges": {"a": {"PASS": null}},
   "limits": {"maxTotalSteps": 10, "maxLoopsPerEdge": 3, "maxNodeReentry": 5},
-  "opc_compat": "~1.0"
+  "bf_compat": "~1.0"
 }
 FL
 OUT=$($HARNESS init --flow bad-compat --dir .h-badcomp 2>&1 || true)

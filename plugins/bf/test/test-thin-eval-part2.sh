@@ -61,9 +61,9 @@ assert_not_contains() {
 echo "=== TEST GROUP 2: Test plan layer coverage ==="
 # ═══════════════════════════════════════════════════════════════
 
-# Setup: recreate .harness structure needed by these tests
-mkdir -p .harness/nodes/code-review/run_1
-cat > .harness/nodes/code-review/run_1/eval-long.md <<'EVALEOF'
+# Setup: recreate .bf structure needed by these tests
+mkdir -p .bf/nodes/code-review/run_1
+cat > .bf/nodes/code-review/run_1/eval-long.md <<'EVALEOF'
 # Thorough Code Review
 
 ## Architecture
@@ -115,7 +115,7 @@ Line 51: Additional padding for test purposes.
 VERDICT: PASS FINDINGS[3]
 EVALEOF
 
-cat > .harness/nodes/code-review/run_1/eval-norefs.md <<'EVALEOF'
+cat > .bf/nodes/code-review/run_1/eval-norefs.md <<'EVALEOF'
 # Review Without References
 
 ## Findings
@@ -158,8 +158,8 @@ VERDICT: PASS FINDINGS[2]
 EVALEOF
 
 echo "--- 2.1: test-design node with complete test plan → no missing layers ---"
-mkdir -p .harness/nodes/test-design/run_1
-cat > .harness/nodes/test-design/run_1/eval-tester.md <<'EVALEOF'
+mkdir -p .bf/nodes/test-design/run_1
+cat > .bf/nodes/test-design/run_1/eval-tester.md <<'EVALEOF'
 # Test Design Review
 
 ## Findings
@@ -219,7 +219,7 @@ VERDICT: PASS FINDINGS[1]
 EVALEOF
 
 # Complete test plan covering all 5 layers
-cat > .harness/nodes/test-design/run_1/test-plan.md <<'EOF'
+cat > .bf/nodes/test-design/run_1/test-plan.md <<'EOF'
 # Test Plan
 
 ## L1: Unit / Smoke Tests
@@ -246,13 +246,13 @@ cat > .harness/nodes/test-design/run_1/test-plan.md <<'EOF'
 - Test navigation active states
 EOF
 
-OUT=$($HARNESS synthesize .harness --node test-design 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node test-design 2>/dev/null)
 assert_not_contains "no missing layers" "$OUT" "test plan missing layers"
 
 echo ""
 echo "--- 2.2: test-design node with incomplete test plan → warns about missing layers ---"
 # Overwrite with plan missing L4 and L5
-cat > .harness/nodes/test-design/run_1/test-plan.md <<'EOF'
+cat > .bf/nodes/test-design/run_1/test-plan.md <<'EOF'
 # Test Plan
 
 ## L1: Unit Tests
@@ -267,7 +267,7 @@ cat > .harness/nodes/test-design/run_1/test-plan.md <<'EOF'
 - Integration test with external services
 EOF
 
-OUT=$($HARNESS synthesize .harness --node test-design 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node test-design 2>/dev/null)
 assert_contains "missing L4" "$OUT" "L4"
 assert_contains "missing L5" "$OUT" "L5"
 assert_field_eq "verdict ITERATE (missing layers)" "$OUT" "verdict" '"ITERATE"'
@@ -275,7 +275,7 @@ assert_field_eq "verdict ITERATE (missing layers)" "$OUT" "verdict" '"ITERATE"'
 echo ""
 echo "--- 2.3: Non-test-design node → no layer check ---"
 # code-review node should not trigger test plan layer check
-OUT=$($HARNESS synthesize .harness --node code-review 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node code-review 2>/dev/null)
 assert_not_contains "no layer check for code-review" "$OUT" "test plan missing"
 
 print_results

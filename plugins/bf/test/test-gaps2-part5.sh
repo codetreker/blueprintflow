@@ -62,9 +62,9 @@ cd /tmp
 echo ""
 echo "── GAP2-32: synthesize wave file roleName fallback"
 D32=$(mktemp -d)
-mkdir -p "$D32/.harness"
+mkdir -p "$D32/.bf"
 # Create wave eval file with non-standard naming
-cat > "$D32/.harness/evaluation-wave-1-custom-reviewer.md" << 'EVAL'
+cat > "$D32/.bf/evaluation-wave-1-custom-reviewer.md" << 'EVAL'
 # Custom Review
 VERDICT: PASS FINDINGS[1]
 🔵 Suggestion — test.js:1 — minor

@@ -46,15 +46,15 @@ echo "=== CG-10: cmdSynthesize --wave (legacy) ==="
 # ═══════════════════════════════════════════════════════════════
 
 echo "--- CG-10.1: Synthesize from wave files ---"
-rm -rf .h-wave && mkdir -p .h-wave/.harness
-cat > .h-wave/.harness/evaluation-wave-1-security.md << 'EVAL'
+rm -rf .h-wave && mkdir -p .h-wave/.bf
+cat > .h-wave/.bf/evaluation-wave-1-security.md << 'EVAL'
 # Security
 VERDICT: FAIL FINDINGS[1]
 🔴 Critical XSS — template.js:15 — unescaped user input
 → Use DOMPurify
 Reasoning: allows script injection
 EVAL
-cat > .h-wave/.harness/evaluation-wave-1-perf.md << 'EVAL'
+cat > .h-wave/.bf/evaluation-wave-1-perf.md << 'EVAL'
 # Perf
 VERDICT: PASS FINDINGS[0]
 EVAL
@@ -64,7 +64,7 @@ assert_contains "critical count" "$OUT" "critical"
 
 echo ""
 echo "--- CG-10.2: Synthesize BLOCKED verdict ---"
-cat > .h-wave/.harness/evaluation-wave-2-security.md << 'EVAL'
+cat > .h-wave/.bf/evaluation-wave-2-security.md << 'EVAL'
 # Security
 VERDICT: BLOCKED
 EVAL

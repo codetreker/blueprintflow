@@ -48,20 +48,20 @@ mkdir -p "$HOME/.claude/flows"
 
 # ─────────────────────────────────────────────────────────────────
 echo ""
-echo "── 2.7: opc_compat version too high → skip flow"
+echo "── 2.7: bf_compat version too high → skip flow"
 # flow-templates.mjs L202-205: version constraint not met
 cat > "$HOME/.claude/flows/test-cs-compat-high.json" << 'EOF'
 {
   "nodes": ["a","b"],
   "edges": {"a": {"PASS": "b"}, "b": {"PASS": null}},
   "limits": {"maxLoopsPerEdge": 3, "maxTotalSteps": 10, "maxNodeReentry": 5},
-  "opc_compat": ">=99.99"
+  "bf_compat": ">=99.99"
 }
 EOF
 D=$(mktemp -d)
 cd "$D"
 OUT=$($HARNESS init --flow test-cs-compat-high --dir . 2>/dev/null || true)
-assert_contains "$OUT" "unknown flow template" "2.7a: opc_compat too high → flow rejected"
+assert_contains "$OUT" "unknown flow template" "2.7a: bf_compat too high → flow rejected"
 rm -rf "$D"
 cd /tmp
 
@@ -70,13 +70,13 @@ cat > "$HOME/.claude/flows/test-cs-compat-current.json" << 'EOF'
   "nodes": ["a","b"],
   "edges": {"a": {"PASS": "b"}, "b": {"PASS": null}},
   "limits": {"maxLoopsPerEdge": 3, "maxTotalSteps": 10, "maxNodeReentry": 5},
-  "opc_compat": ">=0.10"
+  "bf_compat": ">=0.10"
 }
 EOF
 D=$(mktemp -d)
 cd "$D"
 OUT=$($HARNESS init --flow test-cs-compat-current --dir . 2>/dev/null)
-assert_field_eq "$OUT" "['created']" "True" "2.7b: opc_compat >=0.10 accepted by current harness"
+assert_field_eq "$OUT" "['created']" "True" "2.7b: bf_compat >=0.10 accepted by current harness"
 rm -rf "$D"
 cd /tmp
 

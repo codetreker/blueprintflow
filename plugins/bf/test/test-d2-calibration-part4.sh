@@ -84,9 +84,9 @@ assert_gate_not_triggered() {
 
 # Helper: set up harness dir with a review node
 setup_review_node() {
-  rm -rf .harness
-  mkdir -p .harness/nodes/code-review/run_1
-  cat > .harness/flow-state.json << 'EOF'
+  rm -rf .bf
+  mkdir -p .bf/nodes/code-review/run_1
+  cat > .bf/flow-state.json << 'EOF'
 {"currentNode":"code-review","history":[{"node":"code-review","run":1}],"edgeCounts":{},"stepCount":1}
 EOF
 }
@@ -144,9 +144,9 @@ setup_review_node
   echo "6 suggestions, no warnings or critical issues."
   echo "Code is production-ready with minor polish opportunities."
   echo "All security and performance aspects are solid."
-} > .harness/nodes/code-review/run_1/eval-suggestions.md
+} > .bf/nodes/code-review/run_1/eval-suggestions.md
 
-cat > .harness/nodes/code-review/run_1/eval-skeptic-owner.md <<'SOEOF'
+cat > .bf/nodes/code-review/run_1/eval-skeptic-owner.md <<'SOEOF'
 # Skeptic-Owner Evaluation
 
 ## Mechanism Audit
@@ -163,7 +163,7 @@ Reasoning: Hard shutdown drops in-flight requests during deployment.
 2 suggestions. No critical or warning issues.
 SOEOF
 
-OUT=$($HARNESS synthesize .harness --node code-review)
+OUT=$($HARNESS synthesize .bf --node code-review)
 assert_field_eq "suggestions only: PASS" "$OUT" "verdict" '"PASS"'
 assert_gate_not_triggered "suggestions only: no gate" "$OUT"
 
@@ -171,7 +171,7 @@ assert_gate_not_triggered "suggestions only: no gate" "$OUT"
 echo ""
 echo "--- Profile 22: Warning finding → ITERATE (not PASS) ---"
 setup_review_node
-cat > .harness/nodes/code-review/run_1/eval-warning.md << 'EVALEOF'
+cat > .bf/nodes/code-review/run_1/eval-warning.md << 'EVALEOF'
 # Code Review
 
 ## Security
@@ -195,16 +195,16 @@ cat > .harness/nodes/code-review/run_1/eval-warning.md << 'EVALEOF'
 1 warning, 1 suggestion.
 EVALEOF
 
-OUT=$($HARNESS synthesize .harness --node code-review)
+OUT=$($HARNESS synthesize .bf --node code-review)
 assert_field_eq "warning: ITERATE" "$OUT" "verdict" '"ITERATE"'
 
 # ───────────────────────────────────────────────────────────────
 echo ""
 echo "--- Profile 23: Empty eval file ---"
 setup_review_node
-echo "" > .harness/nodes/code-review/run_1/eval-empty.md
+echo "" > .bf/nodes/code-review/run_1/eval-empty.md
 
-OUT=$($HARNESS synthesize .harness --node code-review)
+OUT=$($HARNESS synthesize .bf --node code-review)
 assert_contains "empty eval: synthesize handles it" "$OUT" "verdict"
 
 # ───────────────────────────────────────────────────────────────
@@ -261,9 +261,9 @@ setup_review_node
   echo "Dependency management is clean with no unnecessary packages."
   echo "CI pipeline covers all quality gates including lint, test, and build."
   echo "No action items required before merge."
-} > .harness/nodes/code-review/run_1/eval-lgtm.md
+} > .bf/nodes/code-review/run_1/eval-lgtm.md
 
-cat > .harness/nodes/code-review/run_1/eval-skeptic-owner.md <<'SOEOF'
+cat > .bf/nodes/code-review/run_1/eval-skeptic-owner.md <<'SOEOF'
 # Skeptic-Owner Evaluation
 
 ## Mechanism Audit
@@ -280,7 +280,7 @@ Reasoning: Hard shutdown drops in-flight requests during deployment.
 2 suggestions. No critical or warning issues.
 SOEOF
 
-OUT=$($HARNESS synthesize .harness --node code-review)
+OUT=$($HARNESS synthesize .bf --node code-review)
 assert_field_eq "LGTM: PASS" "$OUT" "verdict" '"PASS"'
 
 # ───────────────────────────────────────────────────────────────
@@ -311,9 +311,9 @@ setup_review_node
       4) echo "Checked integration boundaries between services — clean interface contracts, properly typed DTOs, no implicit coupling in module group $i of the backend layer." ;;
     esac
   done
-} > .harness/nodes/code-review/run_1/eval-boundary.md
+} > .bf/nodes/code-review/run_1/eval-boundary.md
 
-cat > .harness/nodes/code-review/run_1/eval-skeptic-owner.md <<'SOEOF'
+cat > .bf/nodes/code-review/run_1/eval-skeptic-owner.md <<'SOEOF'
 # Skeptic-Owner Evaluation
 
 ## Mechanism Audit
@@ -330,7 +330,7 @@ Reasoning: Hard shutdown drops in-flight requests during deployment.
 2 suggestions. No critical or warning issues.
 SOEOF
 
-OUT=$($HARNESS synthesize .harness --node code-review)
+OUT=$($HARNESS synthesize .bf --node code-review)
 # singleHeading(1 heading in 50+ lines) + noCodeRefs(no file:line refs) = 2 layers, threshold is 3
 assert_gate_not_triggered "boundary 2 layers: no trigger" "$OUT"
 

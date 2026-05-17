@@ -84,9 +84,9 @@ assert_gate_not_triggered() {
 
 # Helper: set up harness dir with a review node
 setup_review_node() {
-  rm -rf .harness
-  mkdir -p .harness/nodes/code-review/run_1
-  cat > .harness/flow-state.json << 'EOF'
+  rm -rf .bf
+  mkdir -p .bf/nodes/code-review/run_1
+  cat > .bf/flow-state.json << 'EOF'
 {"currentNode":"code-review","history":[{"node":"code-review","run":1}],"edgeCounts":{},"stepCount":1}
 EOF
 }
@@ -130,9 +130,9 @@ setup_review_node
   echo "Test coverage gaps are moderate risk."
   echo "Overall: solid codebase with specific security issues."
   echo "Review complete."
-} > .harness/nodes/code-review/run_1/eval-substance.md
+} > .bf/nodes/code-review/run_1/eval-substance.md
 
-OUT=$($HARNESS synthesize .harness --node code-review)
+OUT=$($HARNESS synthesize .bf --node code-review)
 # 45 lines but ALL findings have reasoning + fix + file refs → thinEval exempt
 # Should not trigger thinEval layer
 assert_not_contains "substance exempt: no thinEval warning" "$OUT" "eval is thin"
@@ -159,9 +159,9 @@ setup_review_node
   echo "VERDICT: ITERATE FINDINGS[3]"
   echo ""
   for i in $(seq 1 25); do echo "Review padding line $i with varied content."; done
-} > .harness/nodes/code-review/run_1/eval-nosubstance.md
+} > .bf/nodes/code-review/run_1/eval-nosubstance.md
 
-OUT=$($HARNESS synthesize .harness --node code-review)
+OUT=$($HARNESS synthesize .bf --node code-review)
 # Findings lack reasoning and fix → NOT exempt → thinEval fires
 assert_contains "no substance: thinEval warning fires" "$OUT" "eval is thin"
 
@@ -202,9 +202,9 @@ SRCEOF
   echo "Two findings, one relevant, one weak ref."
   echo ""
   for i in $(seq 1 30); do echo "Review line $i: detailed analysis of authentication patterns."; done
-} > .harness/nodes/code-review/run_1/eval-relevance.md
+} > .bf/nodes/code-review/run_1/eval-relevance.md
 
-OUT=$($HARNESS synthesize .harness --node code-review --base /tmp/opc-d2-cal-base 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node code-review --base /tmp/opc-d2-cal-base 2>/dev/null)
 # Finding 1 refs auth.ts:3 (hashPassword line) and mentions "hashPassword" → relevant
 # Finding 2 refs auth.ts:1 (import line) but talks about "database pooling" → weak ref
 assert_contains "28: weak ref detected" "$OUT" "possible mismatch"

@@ -64,14 +64,14 @@ echo "── 14.1: init-loop --skip-scope in non-git dir → _git_head is null"
 D=$(mktemp -d)
 cd "$D"
 rm -rf .git
-mkdir -p .harness
-cat > .harness/plan.md << 'EOF'
+mkdir -p .bf
+cat > .bf/plan.md << 'EOF'
 - u1.1: implement — build
 - u1.2: review — check
 EOF
-OUT=$($HARNESS init-loop --skip-scope --dir .harness 2>/dev/null)
+OUT=$($HARNESS init-loop --skip-scope --dir .bf 2>/dev/null)
 assert_field_eq "$OUT" "['initialized']" "True" "14.1a: init-loop --skip-scope works in non-git dir"
-STATE=$(cat .harness/loop-state.json)
+STATE=$(cat .bf/loop-state.json)
 GIT_HEAD=$(echo "$STATE" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('_git_head'))" 2>/dev/null || echo "__ERROR__")
 if [ "$GIT_HEAD" = "None" ]; then
   echo "  ✅ 14.1b: _git_head is null in non-git dir"; PASS=$((PASS+1))
@@ -115,8 +115,8 @@ assert_field_eq "$OUT" "['flows']" "[]" "16.1a: ls empty dir returns empty flows
 
 echo ""
 echo "── 16.2: ls with corrupt flow-state in one of the harness dirs"
-mkdir -p "$D/.harness"
-echo "NOT JSON" > "$D/.harness/flow-state.json"
+mkdir -p "$D/.bf"
+echo "NOT JSON" > "$D/.bf/flow-state.json"
 OUT=$($HARNESS ls --base "$D" 2>/dev/null)
 assert_field_eq "$OUT" "['flows']" "[]" "16.2a: ls skips corrupt flow-state.json"
 rm -rf "$D"

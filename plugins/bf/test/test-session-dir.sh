@@ -1,5 +1,5 @@
 #!/bin/bash
-# Tests for Solution C: session directory management (~/.opc/sessions/)
+# Tests for Solution C: session directory management (~/.bf/sessions/)
 set -e
 
 source "$(dirname "$0")/test-helpers.sh"
@@ -42,7 +42,7 @@ CREATED=$(jq_field "$OUT" "d.created")
 DIR_FIELD=$(jq_field "$OUT" "d.dir")
 
 assert_eq "1.1: created=true" "$CREATED" "true"
-assert_contains "1.2: dir under ~/.opc/sessions" "$DIR_FIELD" ".opc/sessions/"
+assert_contains "1.2: dir under ~/.bf/sessions" "$DIR_FIELD" ".bf/sessions/"
 
 # Verify flow-state.json exists in the session dir
 assert_eq "1.3: flow-state.json exists" "$(test -f "$DIR_FIELD/flow-state.json" && echo yes)" "yes"
@@ -81,12 +81,12 @@ assert_eq "2.4: latest updated to second session" "$LATEST2" "$(basename "$DIR2"
 echo ""
 echo "=== TEST 3: --dir flag still works (backward compat) ==="
 
-mkdir -p .harness
-OUT3=$($HARNESS init --flow review --entry review --dir .harness 2>/dev/null)
+mkdir -p .bf
+OUT3=$($HARNESS init --flow review --entry review --dir .bf 2>/dev/null)
 DIR3=$(jq_field "$OUT3" "d.dir")
 
-assert_contains "3.1: explicit dir used" "$DIR3" ".harness"
-assert_eq "3.2: flow-state in explicit dir" "$(test -f .harness/flow-state.json && echo yes)" "yes"
+assert_contains "3.1: explicit dir used" "$DIR3" ".bf"
+assert_eq "3.2: flow-state in explicit dir" "$(test -f .bf/flow-state.json && echo yes)" "yes"
 
 # ═══════════════════════════════════════════════════════════════
 echo ""

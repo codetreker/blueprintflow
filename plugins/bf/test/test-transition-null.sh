@@ -4,7 +4,7 @@ set -euo pipefail
 # Test: transition handles --to null (terminal transitions)
 
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-HARNESS="node $SCRIPT_DIR/bin/opc-harness.mjs"
+HARNESS="node $SCRIPT_DIR/runtime/bf-harness.mjs"
 PASS=0; FAIL=0
 
 check() {
@@ -34,11 +34,11 @@ echo "=== TEST GROUP 1: --to null delegates to finalize ==="
 
 D1="$TMPD/t1"
 mkdir -p "$D1" && cd "$D1"
-$HARNESS init --flow review --entry review --dir .harness > /dev/null 2>&1
-write_review_hs ".harness" "review"
-$HARNESS transition --from review --to gate --verdict PASS --flow review --dir .harness > /dev/null 2>&1
+$HARNESS init --flow review --entry review --dir .bf > /dev/null 2>&1
+write_review_hs ".bf" "review"
+$HARNESS transition --from review --to gate --verdict PASS --flow review --dir .bf > /dev/null 2>&1
 
-RESULT=$(cd "$D1" && $HARNESS transition --from gate --to null --verdict PASS --flow review --dir .harness 2>&1)
+RESULT=$(cd "$D1" && $HARNESS transition --from gate --to null --verdict PASS --flow review --dir .bf 2>&1)
 check "terminal transition returns finalized" 'echo "$RESULT" | grep -q "finalized"'
 
 echo ""
@@ -46,9 +46,9 @@ echo "=== TEST GROUP 2: --to null with invalid edge fails ==="
 
 D2="$TMPD/t2"
 mkdir -p "$D2" && cd "$D2"
-$HARNESS init --flow review --entry review --dir .harness > /dev/null 2>&1
+$HARNESS init --flow review --entry review --dir .bf > /dev/null 2>&1
 
-RESULT2=$(cd "$D2" && $HARNESS transition --from review --to null --verdict PASS --flow review --dir .harness 2>&1)
+RESULT2=$(cd "$D2" && $HARNESS transition --from review --to null --verdict PASS --flow review --dir .bf 2>&1)
 check "non-terminal node rejects --to null" 'echo "$RESULT2" | grep -q "no terminal edge"'
 
 echo ""

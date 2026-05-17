@@ -9,12 +9,12 @@ echo "Test: Negative — Synthesize Error Paths"
 echo "================================================"
 echo ""
 
-$HARNESS init --flow build-verify --entry build --dir .harness 2>/dev/null >/dev/null
+$HARNESS init --flow build-verify --entry build --dir .bf 2>/dev/null >/dev/null
 
 # ── Test 1: synthesize with empty eval dir ──
 echo "1. synthesize with no eval files → empty output or error"
-mkdir -p .harness/nodes/code-review/run_1
-SYNTH=$($HARNESS synthesize .harness --node code-review --run 1 --base "$TMPDIR" --no-strict 2>/dev/null || true)
+mkdir -p .bf/nodes/code-review/run_1
+SYNTH=$($HARNESS synthesize .bf --node code-review --run 1 --base "$TMPDIR" --no-strict 2>/dev/null || true)
 if [ -z "$SYNTH" ]; then
   echo "  ✅ empty eval dir → no output (graceful)"
   PASS=$((PASS + 1))
@@ -31,7 +31,7 @@ fi
 
 # ── Test 2: eval file without VERDICT line ──
 echo "2. eval without VERDICT → graceful handling"
-cat > .harness/nodes/code-review/run_1/eval-missing-verdict.md <<'EOF'
+cat > .bf/nodes/code-review/run_1/eval-missing-verdict.md <<'EOF'
 # Missing Verdict Eval
 
 ## Summary
@@ -42,7 +42,7 @@ Nothing.
 EOF
 mkdir -p "$TMPDIR/src"
 echo "x" > "$TMPDIR/src/main.ts"
-SYNTH2=$($HARNESS synthesize .harness --node code-review --run 1 --base "$TMPDIR" --no-strict 2>/dev/null || true)
+SYNTH2=$($HARNESS synthesize .bf --node code-review --run 1 --base "$TMPDIR" --no-strict 2>/dev/null || true)
 if [ -z "$SYNTH2" ]; then
   echo "  ✅ missing VERDICT → no output (graceful)"
   PASS=$((PASS + 1))
@@ -59,7 +59,7 @@ fi
 
 # ── Test 3: thin eval (<50 lines) → warning in totals ──
 echo "3. thin eval (<50 lines) → warning in totals"
-cat > .harness/nodes/code-review/run_1/eval-thin.md <<'EOF'
+cat > .bf/nodes/code-review/run_1/eval-thin.md <<'EOF'
 # Thin Eval
 
 ## Summary
@@ -74,7 +74,7 @@ Short.
 ## Verdict
 PASS
 EOF
-SYNTH3=$($HARNESS synthesize .harness --node code-review --run 1 --base "$TMPDIR" --no-strict 2>/dev/null || true)
+SYNTH3=$($HARNESS synthesize .bf --node code-review --run 1 --base "$TMPDIR" --no-strict 2>/dev/null || true)
 if [ -z "$SYNTH3" ]; then
   echo "  ❌ no output from synthesize"
   FAIL=$((FAIL + 1))
@@ -91,7 +91,7 @@ fi
 
 # ── Test 4: synthesize with nonexistent node ──
 echo "4. synthesize nonexistent node → error or empty"
-SYNTH4=$($HARNESS synthesize .harness --node nonexistent --run 1 --base "$TMPDIR" --no-strict 2>/dev/null || true)
+SYNTH4=$($HARNESS synthesize .bf --node nonexistent --run 1 --base "$TMPDIR" --no-strict 2>/dev/null || true)
 if [ -z "$SYNTH4" ]; then
   echo "  ✅ nonexistent node → no output (acceptable)"
   PASS=$((PASS + 1))

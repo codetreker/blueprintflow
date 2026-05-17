@@ -49,8 +49,8 @@ echo "=== TEST GROUP 5: Compound stacking — multiple triggers ==="
 # ═══════════════════════════════════════════════════════════════
 
 echo "--- 5.1: Eval that triggers ALL compound defenses → multiple warnings ---"
-mkdir -p .harness/nodes/code-review/run_1
-rm -f .harness/nodes/code-review/run_1/eval-*.md
+mkdir -p .bf/nodes/code-review/run_1
+rm -f .bf/nodes/code-review/run_1/eval-*.md
 {
   echo "# Only Heading"
   echo ""
@@ -62,9 +62,9 @@ rm -f .harness/nodes/code-review/run_1/eval-*.md
   done
   echo ""
   echo "VERDICT: PASS FINDINGS[1]"
-} > .harness/nodes/code-review/run_1/eval-garbage.md
+} > .bf/nodes/code-review/run_1/eval-garbage.md
 
-OUT=$($HARNESS synthesize .harness --node code-review 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node code-review 2>/dev/null)
 # Should trigger: lowUniqueContent + singleHeading + noCodeRefs + findingDensityLow
 assert_contains "triggers low unique content" "$OUT" "low unique content"
 assert_contains "triggers single heading" "$OUT" "heading"
@@ -84,7 +84,7 @@ fi
 
 echo ""
 echo "--- 5.2: Clean eval triggers NONE of the compound defenses ---"
-cat > .harness/nodes/code-review/run_1/eval-clean.md <<'EVALEOF'
+cat > .bf/nodes/code-review/run_1/eval-clean.md <<'EVALEOF'
 # Thorough Code Review
 
 ## Architecture Analysis
@@ -135,9 +135,9 @@ before the next release to prevent user session drops.
 
 VERDICT: ITERATE FINDINGS[4]
 EVALEOF
-rm -f .harness/nodes/code-review/run_1/eval-garbage.md
+rm -f .bf/nodes/code-review/run_1/eval-garbage.md
 
-OUT=$($HARNESS synthesize .harness --node code-review 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node code-review 2>/dev/null)
 assert_not_contains "no low unique content" "$OUT" "low unique content"
 assert_not_contains "no single heading" "$OUT" "heading.*multiple sections"
 assert_not_contains "no finding density" "$OUT" "finding density"
@@ -149,9 +149,9 @@ echo "=== TEST GROUP 6: Missing reasoning / fix detection ==="
 # ═══════════════════════════════════════════════════════════════
 
 echo "--- 6.1: Findings without reasoning → warning ---"
-mkdir -p .harness/nodes/code-review/run_1
-rm -f .harness/nodes/code-review/run_1/eval-*.md
-cat > .harness/nodes/code-review/run_1/eval-noreason.md <<'EVALEOF'
+mkdir -p .bf/nodes/code-review/run_1
+rm -f .bf/nodes/code-review/run_1/eval-*.md
+cat > .bf/nodes/code-review/run_1/eval-noreason.md <<'EVALEOF'
 # Code Review
 
 ## Architecture
@@ -192,12 +192,12 @@ Code follows existing patterns consistently.
 VERDICT: ITERATE FINDINGS[3]
 EVALEOF
 
-OUT=$($HARNESS synthesize .harness --node code-review 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node code-review 2>/dev/null)
 assert_contains "missing reasoning detected" "$OUT" "findings lack reasoning"
 
 echo ""
 echo "--- 6.2: Findings WITH reasoning → no warning ---"
-cat > .harness/nodes/code-review/run_1/eval-reasoned.md <<'EVALEOF'
+cat > .bf/nodes/code-review/run_1/eval-reasoned.md <<'EVALEOF'
 # Code Review
 
 ## Architecture
@@ -241,9 +241,9 @@ Code follows existing patterns consistently.
 
 VERDICT: ITERATE FINDINGS[3]
 EVALEOF
-rm -f .harness/nodes/code-review/run_1/eval-noreason.md
+rm -f .bf/nodes/code-review/run_1/eval-noreason.md
 
-OUT=$($HARNESS synthesize .harness --node code-review 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node code-review 2>/dev/null)
 assert_not_contains "no reasoning warning for complete eval" "$OUT" "findings lack reasoning"
 
 

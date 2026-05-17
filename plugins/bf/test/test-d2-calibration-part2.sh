@@ -84,9 +84,9 @@ assert_gate_not_triggered() {
 
 # Helper: set up harness dir with a review node
 setup_review_node() {
-  rm -rf .harness
-  mkdir -p .harness/nodes/code-review/run_1
-  cat > .harness/flow-state.json << 'EOF'
+  rm -rf .bf
+  mkdir -p .bf/nodes/code-review/run_1
+  cat > .bf/flow-state.json << 'EOF'
 {"currentNode":"code-review","history":[{"node":"code-review","run":1}],"edgeCounts":{},"stepCount":1}
 EOF
 }
@@ -124,9 +124,9 @@ setup_review_node
   for i in $(seq 1 25); do
     echo "Additional review commentary l$i."
   done
-} > .harness/nodes/code-review/run_1/eval-monotone.md
+} > .bf/nodes/code-review/run_1/eval-monotone.md
 
-OUT=$($HARNESS synthesize .harness --node code-review)
+OUT=$($HARNESS synthesize .bf --node code-review)
 # May or may not trigger gate depending on how many layers fire
 # Just verify it runs without error
 assert_contains "monotone: synthesize succeeds" "$OUT" "verdict"
@@ -154,9 +154,9 @@ setup_review_node
   echo ""
   echo "## Summary"
   echo "Overall the code is excellent."
-} > .harness/nodes/code-review/run_1/eval-density.md
+} > .bf/nodes/code-review/run_1/eval-density.md
 
-OUT=$($HARNESS synthesize .harness --node code-review)
+OUT=$($HARNESS synthesize .bf --node code-review)
 assert_contains "low density: synthesize succeeds" "$OUT" "verdict"
 
 # ───────────────────────────────────────────────────────────────
@@ -169,12 +169,12 @@ setup_review_node
   for i in $(seq 1 50); do
     echo "Something wrong"
   done
-} > .harness/nodes/code-review/run_1/eval-worstcase.md
+} > .bf/nodes/code-review/run_1/eval-worstcase.md
 
-OUT=$($HARNESS synthesize .harness --node code-review)
+OUT=$($HARNESS synthesize .bf --node code-review)
 assert_gate_triggered "all layers: triggers enforce" "$OUT" "enforce"
 
-OUT=$($HARNESS synthesize .harness --node code-review --no-strict)
+OUT=$($HARNESS synthesize .bf --node code-review --no-strict)
 assert_gate_triggered "all layers no-strict: shadow" "$OUT" "shadow"
 assert_field_eq "all layers no-strict: ITERATE" "$OUT" "verdict" '"ITERATE"'
 
@@ -183,7 +183,7 @@ echo ""
 echo "--- Profile 12: Multiple roles, one bad one good ---"
 setup_review_node
 # Good eval
-cat > .harness/nodes/code-review/run_1/eval-good.md << 'EVALEOF'
+cat > .bf/nodes/code-review/run_1/eval-good.md << 'EVALEOF'
 # Thorough Review
 
 ## Architecture
@@ -222,9 +222,9 @@ EVALEOF
   for i in $(seq 1 50); do
     echo "Everything seems fine overall."
   done
-} > .harness/nodes/code-review/run_1/eval-bad.md
+} > .bf/nodes/code-review/run_1/eval-bad.md
 
-OUT=$($HARNESS synthesize .harness --node code-review)
+OUT=$($HARNESS synthesize .bf --node code-review)
 assert_gate_triggered "mixed roles: enforce (bad role triggers)" "$OUT" "enforce"
 assert_field_eq "mixed roles: verdict FAIL" "$OUT" "verdict" '"FAIL"'
 
@@ -236,14 +236,14 @@ setup_review_node
   echo "# Review"
   echo "🔵 Issue"
   for i in $(seq 1 50); do echo "Filler content."; done
-} > .harness/nodes/code-review/run_1/eval-role1.md
+} > .bf/nodes/code-review/run_1/eval-role1.md
 {
   echo "# Review"
   echo "🔵 Problem"
   for i in $(seq 1 50); do echo "Filler content."; done
-} > .harness/nodes/code-review/run_1/eval-role2.md
+} > .bf/nodes/code-review/run_1/eval-role2.md
 
-OUT=$($HARNESS synthesize .harness --node code-review --strict)
+OUT=$($HARNESS synthesize .bf --node code-review --strict)
 assert_gate_triggered "both bad strict: enforce" "$OUT" "enforce"
 assert_field_eq "both bad strict: FAIL" "$OUT" "verdict" '"FAIL"'
 
@@ -251,7 +251,7 @@ assert_field_eq "both bad strict: FAIL" "$OUT" "verdict" '"FAIL"'
 echo ""
 echo "--- Profile 14: Critical finding overrides D2 gate ---"
 setup_review_node
-cat > .harness/nodes/code-review/run_1/eval-critical.md << 'EVALEOF'
+cat > .bf/nodes/code-review/run_1/eval-critical.md << 'EVALEOF'
 # Review
 
 ## Security
@@ -267,7 +267,7 @@ cat > .harness/nodes/code-review/run_1/eval-critical.md << 'EVALEOF'
 1 critical finding.
 EVALEOF
 
-OUT=$($HARNESS synthesize .harness --node code-review)
+OUT=$($HARNESS synthesize .bf --node code-review)
 assert_field_eq "critical overrides: FAIL" "$OUT" "verdict" '"FAIL"'
 assert_contains "critical overrides: reason mentions critical" "$OUT" "critical"
 
@@ -275,7 +275,7 @@ assert_contains "critical overrides: reason mentions critical" "$OUT" "critical"
 echo ""
 echo "--- Profile 15: BLOCKED overrides everything ---"
 setup_review_node
-cat > .harness/nodes/code-review/run_1/eval-blocked.md << 'EVALEOF'
+cat > .bf/nodes/code-review/run_1/eval-blocked.md << 'EVALEOF'
 # Review
 
 VERDICT: BLOCKED — Cannot review, database is down
@@ -285,7 +285,7 @@ VERDICT: BLOCKED — Cannot review, database is down
 Blocked due to infrastructure.
 EVALEOF
 
-OUT=$($HARNESS synthesize .harness --node code-review)
+OUT=$($HARNESS synthesize .bf --node code-review)
 assert_field_eq "blocked overrides: BLOCKED" "$OUT" "verdict" '"BLOCKED"'
 
 # ───────────────────────────────────────────────────────────────

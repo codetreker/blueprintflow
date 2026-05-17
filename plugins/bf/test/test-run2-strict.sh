@@ -1,7 +1,7 @@
 #!/bin/bash
 # test-run2-strict.sh — Run 2 strict-mode verification
 #
-# Asserts OPC_STRICT_EXTENSIONS=1 makes any extension hook failure propagate to:
+# Asserts BF_STRICT_EXTENSIONS=1 makes any extension hook failure propagate to:
 #   (a) non-zero process exit code on the CLI invocation that triggered the failure
 #   (b) clear stderr line naming the extension and the strict mode that caused
 #       the propagation (e.g. "[opc] STRICT: throw-ext failed verdict.append — exiting non-zero")
@@ -9,12 +9,12 @@
 # CONTRACT (Run 1 OUT-3, restated):
 #   Default mode: hook failures trip the per-extension breaker, isolate the
 #                 broken extension, and the CLI command returns 0.
-#   Strict mode (OPC_STRICT_EXTENSIONS=1): same isolation/breaker behavior, BUT
+#   Strict mode (BF_STRICT_EXTENSIONS=1): same isolation/breaker behavior, BUT
 #                 the CLI command returns NON-ZERO and stderr names the failure.
 #                 This is for CI use where any extension regression should fail
 #                 the build, not silently degrade.
 #
-# THIS TEST PASSES on core ≥ U2.7a, where OPC_STRICT_EXTENSIONS=1 is enforced
+# THIS TEST PASSES on core ≥ U2.7a, where BF_STRICT_EXTENSIONS=1 is enforced
 # in cmdPromptContext / cmdExtensionVerdict / cmdExtensionArtifact via
 # enforceStrictMode(registry) called AFTER writeFailureReport runs (so isolation
 # is preserved — siblings still complete, eval-extensions.md still written —
@@ -60,7 +60,7 @@ cp -R "$REPO_ROOT/test/fixtures/run2-ext/slow-ext"  "$EXT_DIR/"
 FLOW_FILE="$TMP/run2-strict.json"
 cat > "$FLOW_FILE" <<'EOF'
 {
-  "opc_compat": ">=0.0",
+  "bf_compat": ">=0.0",
   "name": "run2-strict",
   "nodes": ["review", "gate"],
   "edges": {
@@ -77,19 +77,19 @@ mkdir -p "$TMP/fake-home"
 HARNESS_NAME="harness"
 mkdir -p "$TMP/$HARNESS_NAME"
 
-export OPC_HOOK_TIMEOUT_MS=500
-export OPC_HOOK_FAILURE_THRESHOLD=1
+export BF_HOOK_TIMEOUT_MS=500
+export BF_HOOK_FAILURE_THRESHOLD=1
 export HOME="$TMP/fake-home"
-export OPC_EXTENSIONS_DIR="$EXT_DIR"
+export BF_EXTENSIONS_DIR="$EXT_DIR"
 # U5.8r: cleaner than `rm -f .extension-state.json` between scenarios —
 # disable persistence entirely for this suite since each test phase
 # expects a fresh breaker state.
-export OPC_BREAKER_STATE=disabled
+export BF_BREAKER_STATE=disabled
 
 cd "$TMP" || exit 1
-OPC="node $REPO_ROOT/bin/opc-harness.mjs"
+OPC="node $REPO_ROOT/runtime/bf-harness.mjs"
 
-echo "=== TEST: Run 2 STRICT mode (OPC_STRICT_EXTENSIONS=1) ==="
+echo "=== TEST: Run 2 STRICT mode (BF_STRICT_EXTENSIONS=1) ==="
 
 # ── 1. Init harness (no strict — needed for state) ─────────────────
 $OPC init --flow-file "$FLOW_FILE" --entry review --dir "$HARNESS_NAME" \
@@ -108,7 +108,7 @@ echo '{}' > "$HARNESS_NAME/nodes/review/run_1/handshake.json"
 # Sanity: confirm the baseline contract (default mode = exit 0 even with broken ext)
 echo "--- 2.1: BASELINE — default mode: throw-ext failure → exit 0 ---"
 
-unset OPC_STRICT_EXTENSIONS
+unset BF_STRICT_EXTENSIONS
 $OPC extension-verdict --node review \
   --flow-file "$FLOW_FILE" --dir "$HARNESS_NAME" \
   >"$TMP/default.out" 2>"$TMP/default.err"
@@ -129,15 +129,15 @@ else
 fi
 
 # ── 3. Strict mode: same throw-ext failure → non-zero exit ─────────
-echo "--- 3.1: STRICT — OPC_STRICT_EXTENSIONS=1: throw-ext failure → exit ≠ 0 ---"
+echo "--- 3.1: STRICT — BF_STRICT_EXTENSIONS=1: throw-ext failure → exit ≠ 0 ---"
 
 # Reset run dir state so verdict re-runs from clean slate
 rm -rf "$HARNESS_NAME/nodes/review/run_1"
 mkdir -p "$HARNESS_NAME/nodes/review/run_1"
 echo '{}' > "$HARNESS_NAME/nodes/review/run_1/handshake.json"
-# OPC_BREAKER_STATE=disabled (set at suite top) isolates phases from each other.
+# BF_BREAKER_STATE=disabled (set at suite top) isolates phases from each other.
 
-OPC_STRICT_EXTENSIONS=1 \
+BF_STRICT_EXTENSIONS=1 \
   $OPC extension-verdict --node review \
   --flow-file "$FLOW_FILE" --dir "$HARNESS_NAME" \
   >"$TMP/strict.out" 2>"$TMP/strict.err"
@@ -186,7 +186,7 @@ rm -rf "$HARNESS_NAME/nodes/review/run_1"
 mkdir -p "$HARNESS_NAME/nodes/review/run_1"
 echo '{}' > "$HARNESS_NAME/nodes/review/run_1/handshake.json"
 
-OPC_STRICT_EXTENSIONS=1 \
+BF_STRICT_EXTENSIONS=1 \
   $OPC extension-verdict --node review \
   --flow-file "$FLOW_FILE" --dir "$HARNESS_NAME" \
   --extensions ok-ext \
@@ -201,14 +201,14 @@ else
 fi
 
 # ── 6. STRICT mode covers prompt-context too (G5) ──────────────────
-# slow-ext promptAppend hangs > OPC_HOOK_TIMEOUT_MS=500 → timeout failure
+# slow-ext promptAppend hangs > BF_HOOK_TIMEOUT_MS=500 → timeout failure
 # logged in registry.failures → strict mode should exit 2.
 echo "--- 6.1: STRICT — prompt-context with slow-ext timeout → exit 2 ---"
 rm -rf "$HARNESS_NAME/nodes/review/run_1"
 mkdir -p "$HARNESS_NAME/nodes/review/run_1"
 echo '{}' > "$HARNESS_NAME/nodes/review/run_1/handshake.json"
 
-OPC_STRICT_EXTENSIONS=1 \
+BF_STRICT_EXTENSIONS=1 \
   $OPC prompt-context --node review --role evaluator \
   --flow-file "$FLOW_FILE" --dir "$HARNESS_NAME" \
   >"$TMP/strict-prompt.out" 2>"$TMP/strict-prompt.err"
@@ -234,7 +234,7 @@ rm -rf "$HARNESS_NAME/nodes/review/run_1"
 mkdir -p "$HARNESS_NAME/nodes/review/run_1"
 echo '{}' > "$HARNESS_NAME/nodes/review/run_1/handshake.json"
 
-OPC_STRICT_EXTENSIONS=1 \
+BF_STRICT_EXTENSIONS=1 \
   $OPC extension-artifact --node review \
   --flow-file "$FLOW_FILE" --dir "$HARNESS_NAME" \
   >"$TMP/strict-artifact.out" 2>"$TMP/strict-artifact.err"

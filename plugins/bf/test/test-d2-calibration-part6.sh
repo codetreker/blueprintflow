@@ -84,9 +84,9 @@ assert_gate_not_triggered() {
 
 # Helper: set up harness dir with a review node
 setup_review_node() {
-  rm -rf .harness
-  mkdir -p .harness/nodes/code-review/run_1
-  cat > .harness/flow-state.json << 'EOF'
+  rm -rf .bf
+  mkdir -p .bf/nodes/code-review/run_1
+  cat > .bf/flow-state.json << 'EOF'
 {"currentNode":"code-review","history":[{"node":"code-review","run":1}],"edgeCounts":{},"stepCount":1}
 EOF
 }
@@ -119,9 +119,9 @@ setup_review_node
   echo ""
   echo "VERDICT: ITERATE FINDINGS[4]"
   for i in $(seq 1 30); do echo "Detailed security analysis line $i with unique content."; done
-} > .harness/nodes/code-review/run_1/eval-security.md
+} > .bf/nodes/code-review/run_1/eval-security.md
 
-OUT=$($HARNESS synthesize .harness --node code-review 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node code-review 2>/dev/null)
 assert_contains "29.1: aspirational claims detected" "$OUT" "aspirational"
 # aspirationalClaims layer fires (4 aspirational lines ≥ 3 threshold)
 
@@ -138,9 +138,9 @@ setup_review_node
   echo ""
   echo "VERDICT: ITERATE FINDINGS[1]"
   for i in $(seq 1 12); do echo "Filler line $i."; done
-} > .harness/nodes/code-review/run_1/eval-lazy.md
+} > .bf/nodes/code-review/run_1/eval-lazy.md
 
-OUT=$($HARNESS synthesize .harness --node code-review 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node code-review 2>/dev/null)
 assert_contains "30.1: evaluatorGuidance present" "$OUT" "evaluatorGuidance"
 assert_contains "30.2: triggeredLayers in guidance" "$OUT" "triggeredLayers"
 assert_contains "30.3: hints in guidance" "$OUT" "hints"
@@ -185,9 +185,9 @@ setup_review_node
   echo "VERDICT: ITERATE FINDINGS[4]"
   echo ""
   for i in $(seq 1 15); do echo "Detailed review analysis paragraph $i covering various aspects of the code."; done
-} > .harness/nodes/code-review/run_1/eval-thorough.md
+} > .bf/nodes/code-review/run_1/eval-thorough.md
 
-OUT=$($HARNESS synthesize .harness --node code-review 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node code-review 2>/dev/null)
 assert_not_contains "31: no guidance when D2 not triggered" "$OUT" "evaluatorGuidance"
 
 

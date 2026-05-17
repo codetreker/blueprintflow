@@ -41,7 +41,7 @@ cp -R "$REPO_ROOT/test/fixtures/run2-ext/throw-ext" "$EXT_DIR/"
 FLOW_FILE="$TMP/run2-bypass.json"
 cat > "$FLOW_FILE" <<'EOF'
 {
-  "opc_compat": ">=0.0",
+  "bf_compat": ">=0.0",
   "name": "run2-bypass",
   "nodes": ["review", "gate"],
   "edges": {
@@ -56,24 +56,24 @@ EOF
 
 mkdir -p "$TMP/fake-home"
 
-export OPC_HOOK_TIMEOUT_MS=500
-export OPC_HOOK_FAILURE_THRESHOLD=1
+export BF_HOOK_TIMEOUT_MS=500
+export BF_HOOK_FAILURE_THRESHOLD=1
 
 cd "$TMP" || exit 1
-OPC="node $REPO_ROOT/bin/opc-harness.mjs"
+OPC="node $REPO_ROOT/runtime/bf-harness.mjs"
 
 echo "=== TEST: Run 2 bypass-chain (methods 5-8) ==="
 
 # ─────────────────────────────────────────────────────────────────
 # Method 5: priority — env > flag (env wins even when --extensions also given)
 # ─────────────────────────────────────────────────────────────────
-echo "--- 5.1: priority — OPC_DISABLE_EXTENSIONS=1 wins over --extensions ok-ext ---"
+echo "--- 5.1: priority — BF_DISABLE_EXTENSIONS=1 wins over --extensions ok-ext ---"
 H5="harness-priority"
 mkdir -p "$H5"
 
 HOME="$TMP/fake-home" \
-OPC_EXTENSIONS_DIR="$EXT_DIR" \
-OPC_DISABLE_EXTENSIONS=1 \
+BF_EXTENSIONS_DIR="$EXT_DIR" \
+BF_DISABLE_EXTENSIONS=1 \
   $OPC init --flow-file "$FLOW_FILE" --entry review --dir "$H5" --extensions ok-ext \
   >"$TMP/prio-init.out" 2>"$TMP/prio-init.err" || true
 
@@ -91,7 +91,7 @@ else
 fi
 
 # Cleanup the env var so a 2nd run inside this shell wouldn't inherit it
-unset OPC_DISABLE_EXTENSIONS
+unset BF_DISABLE_EXTENSIONS
 
 # ─────────────────────────────────────────────────────────────────
 # Method 6: --no-extensions priority over --extensions (flag-vs-flag)
@@ -101,7 +101,7 @@ H6="harness-flagprio"
 mkdir -p "$H6"
 
 HOME="$TMP/fake-home" \
-OPC_EXTENSIONS_DIR="$EXT_DIR" \
+BF_EXTENSIONS_DIR="$EXT_DIR" \
   $OPC init --flow-file "$FLOW_FILE" --entry review --dir "$H6" \
   --no-extensions --extensions ok-ext \
   >"$TMP/flagprio-init.out" 2>"$TMP/flagprio-init.err" || true
@@ -124,7 +124,7 @@ H7="harness-unknown"
 mkdir -p "$H7"
 
 HOME="$TMP/fake-home" \
-OPC_EXTENSIONS_DIR="$EXT_DIR" \
+BF_EXTENSIONS_DIR="$EXT_DIR" \
   $OPC init --flow-file "$FLOW_FILE" --entry review --dir "$H7" \
   --extensions does-not-exist \
   >"$TMP/unknown-init.out" 2>"$TMP/unknown-init.err" || true
@@ -144,13 +144,13 @@ fi
 # ─────────────────────────────────────────────────────────────────
 # Method 8: env + --no-extensions co-presence — both align, env wins source (G7)
 # ─────────────────────────────────────────────────────────────────
-echo "--- 8.1: OPC_DISABLE_EXTENSIONS=1 + --no-extensions — env wins source attribution ---"
+echo "--- 8.1: BF_DISABLE_EXTENSIONS=1 + --no-extensions — env wins source attribution ---"
 H8="harness-coexist"
 mkdir -p "$H8"
 
 HOME="$TMP/fake-home" \
-OPC_EXTENSIONS_DIR="$EXT_DIR" \
-OPC_DISABLE_EXTENSIONS=1 \
+BF_EXTENSIONS_DIR="$EXT_DIR" \
+BF_DISABLE_EXTENSIONS=1 \
   $OPC init --flow-file "$FLOW_FILE" --entry review --dir "$H8" --no-extensions \
   >"$TMP/coexist-init.out" 2>"$TMP/coexist-init.err" || true
 
@@ -164,7 +164,7 @@ if [ -f "$H8/.ext-registry.json" ]; then
     fail "coexist: applied.length=$APPLIED_LEN mode=$BMODE source=$BSRC (expected 0, disable-all, env)"
   fi
 fi
-unset OPC_DISABLE_EXTENSIONS
+unset BF_DISABLE_EXTENSIONS
 
 # ─── Summary ──────────────────────────────────────────────────────
 echo ""

@@ -1,5 +1,5 @@
 #!/bin/bash
-# End-to-end tests for opc-harness flow commands — Part 4 (Groups 10-11)
+# End-to-end tests for bf-harness flow commands — Part 4 (Groups 10-11)
 set -e
 
 source "$(dirname "$0")/test-helpers.sh"

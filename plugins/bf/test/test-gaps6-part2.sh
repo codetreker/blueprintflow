@@ -65,18 +65,18 @@ echo ""
 echo "── 9.1: complete-tick review with minimal eval (few short lines)"
 D=$(mktemp -d)
 cd "$D"
-mkdir -p .harness
-cat > .harness/plan.md << 'EOF'
+mkdir -p .bf
+cat > .bf/plan.md << 'EOF'
 - u1.1: implement — build
 - u1.2: review — check
 EOF
-$HARNESS init-loop --skip-scope --dir .harness > /dev/null 2>&1
-$HARNESS next-tick --dir .harness > /dev/null 2>&1
+$HARNESS init-loop --skip-scope --dir .bf > /dev/null 2>&1
+$HARNESS next-tick --dir .bf > /dev/null 2>&1
 # Create tiny eval with only very short lines (< 10 chars each)
 echo "ok
 ok
 ok" > tiny-eval.md
-OUT=$($HARNESS complete-tick --dir .harness --unit u1.1 --status completed --artifacts "$(pwd)/tiny-eval.md" 2>/dev/null)
+OUT=$($HARNESS complete-tick --dir .bf --unit u1.1 --status completed --artifacts "$(pwd)/tiny-eval.md" 2>/dev/null)
 assert_field_eq "$OUT" "['completed']" "True" "9.1a: complete-tick with tiny eval succeeds"
 cd "$ORIG_DIR"
 rm -rf "$D"
@@ -124,7 +124,7 @@ cat > flow-state.json << 'EOF'
 EOF
 OUT=$($HARNESS transition --from build --to code-review --verdict PASS --flow build-verify --dir . 2>/dev/null)
 assert_field_eq "$OUT" "['allowed']" "False" "11.1a: manual state detected as tampered"
-assert_contains "$OUT" "not written by opc-harness" "11.1b: error mentions direct edit"
+assert_contains "$OUT" "not written by bf-harness" "11.1b: error mentions direct edit"
 cd "$ORIG_DIR"
 rm -rf "$D"
 

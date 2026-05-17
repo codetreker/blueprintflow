@@ -65,7 +65,7 @@ d['_tick_history'] = [
     {'unit': 'F1.1', 'tick': 2, 'status': 'failed'},
     {'unit': 'F1.1', 'tick': 3, 'status': 'failed'}
 ]
-d['_written_by'] = 'opc-harness'
+d['_written_by'] = 'bf-harness'
 d['_last_modified'] = '2026-01-01T00:00:00Z'
 json.dump(d, open('.h-stall/loop-state.json', 'w'), indent=2)
 "
@@ -97,7 +97,7 @@ d['_tick_history'] = [
     {'unit': 'F1.1', 'tick': 5, 'status': 'failed'},
     {'unit': 'F1.2', 'tick': 6, 'status': 'failed'}
 ]
-d['_written_by'] = 'opc-harness'
+d['_written_by'] = 'bf-harness'
 d['_last_modified'] = '2026-01-01T00:00:00Z'
 json.dump(d, open('.h-osc/loop-state.json', 'w'), indent=2)
 "
@@ -125,7 +125,7 @@ d = json.load(open('.h-wall/loop-state.json'))
 d['next_unit'] = 'F1.1'
 d['_started_at'] = '2020-01-01T00:00:00Z'
 d['_max_duration_hours'] = 24
-d['_written_by'] = 'opc-harness'
+d['_written_by'] = 'bf-harness'
 d['_last_modified'] = '2026-01-01T00:00:00Z'
 json.dump(d, open('.h-wall/loop-state.json', 'w'), indent=2)
 "
@@ -160,7 +160,7 @@ d['completed_ticks'] = [
 ]
 head = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
 d['_git_head'] = head
-d['_written_by'] = 'opc-harness'
+d['_written_by'] = 'bf-harness'
 d['_last_modified'] = '2026-01-01T00:00:00Z'
 json.dump(d, open('.h-fix/loop-state.json', 'w'), indent=2)
 "
@@ -182,14 +182,14 @@ echo "=== CG-9: cmdReport ==="
 # ═══════════════════════════════════════════════════════════════
 
 echo "--- CG-9.1: Report from role eval files ---"
-rm -rf .h-report && mkdir -p .h-report/.harness
-cat > .h-report/.harness/evaluation-wave-1-security.md << 'EVAL'
+rm -rf .h-report && mkdir -p .h-report/.bf
+cat > .h-report/.bf/evaluation-wave-1-security.md << 'EVAL'
 # Security Review
 VERDICT: PASS FINDINGS[1]
 🔵 Minor concern — utils.js:5 — add input validation
 Reasoning: user input passes through unchecked
 EVAL
-cat > .h-report/.harness/evaluation-wave-1-perf.md << 'EVAL'
+cat > .h-report/.bf/evaluation-wave-1-perf.md << 'EVAL'
 # Performance Review
 VERDICT: PASS FINDINGS[0]
 EVAL
@@ -201,8 +201,8 @@ assert_contains "security role" "$OUT" "security"
 
 echo ""
 echo "--- CG-9.2: Report from single eval files ---"
-rm -rf .h-report2 && mkdir -p .h-report2/.harness
-cat > .h-report2/.harness/evaluation-wave-1.md << 'EVAL'
+rm -rf .h-report2 && mkdir -p .h-report2/.bf
+cat > .h-report2/.bf/evaluation-wave-1.md << 'EVAL'
 # Review
 VERDICT: PASS FINDINGS[1]
 🟡 Warning — api.js:10 — rate limiting needed

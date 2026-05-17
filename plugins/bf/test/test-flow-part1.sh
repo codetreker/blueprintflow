@@ -1,5 +1,5 @@
 #!/bin/bash
-# End-to-end tests for opc-harness flow commands — Part 1 (Groups 1-3)
+# End-to-end tests for bf-harness flow commands — Part 1 (Groups 1-3)
 set -e
 
 source "$(dirname "$0")/test-helpers.sh"
@@ -22,7 +22,7 @@ cat > "$HOME/.claude/flows/idea-factory.json" << 'FIXTURE'
   "limits": {"maxLoopsPerEdge": 3, "maxTotalSteps": 15, "maxNodeReentry": 5},
   "nodeTypes": {"discover": "discussion", "validate": "review", "build": "build", "gate": "gate", "synthesize": "discussion", "pitch": "discussion"},
   "softEvidence": true,
-  "opc_compat": ">=0.5",
+  "bf_compat": ">=0.5",
   "contextSchema": {
     "discover": {
       "required": ["topic"],
@@ -176,7 +176,7 @@ echo ""
 echo "--- 2.8: State has write nonce and sig ---"
 NONCE=$(python3 -c "import json; d=json.load(open('.h-init/flow-state.json')); print(d.get('_write_nonce','MISSING'))")
 SIG=$(python3 -c "import json; d=json.load(open('.h-init/flow-state.json')); print(d.get('_written_by','MISSING'))")
-if [ "$SIG" = "opc-harness" ] && [ ${#NONCE} -eq 16 ]; then
+if [ "$SIG" = "bf-harness" ] && [ ${#NONCE} -eq 16 ]; then
   echo "  ✅ state has sig + nonce"
   PASS=$((PASS + 1))
 else

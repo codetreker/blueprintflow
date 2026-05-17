@@ -134,7 +134,7 @@ cd /tmp
 # flow-templates.mjs:101
 # ─────────────────────────────────────────────────────────────────
 echo ""
-echo "── DEF-1: external flow without opc_compat loads"
+echo "── DEF-1: external flow without bf_compat loads"
 D=$(mktemp -d)
 mkdir -p "$HOME/.claude/flows"
 cat > "$HOME/.claude/flows/test-no-compat.json" << 'EOF'
@@ -146,9 +146,9 @@ cat > "$HOME/.claude/flows/test-no-compat.json" << 'EOF'
 }
 EOF
 cd "$D"
-# Flow without opc_compat → satisfiesVersion(null, ...) → true → loads
+# Flow without bf_compat → satisfiesVersion(null, ...) → true → loads
 OUT=$($HARNESS init --flow test-no-compat --dir . 2>/dev/null)
-assert_field_eq "$OUT" "['created']" "True" "flow without opc_compat loads (null range)"
+assert_field_eq "$OUT" "['created']" "True" "flow without bf_compat loads (null range)"
 rm -rf "$D"
 cd /tmp
 
@@ -210,7 +210,7 @@ cat > "$HOME/.claude/flows/test-orphan-gate.json" << 'EOF'
   "edges": {"gate-x": {"PASS": "end", "FAIL": "end"}, "end": {"PASS": null}},
   "limits": {"maxLoopsPerEdge": 3, "maxTotalSteps": 10, "maxNodeReentry": 5},
   "nodeTypes": {"gate-x": "gate", "end": "build"},
-  "opc_compat": ">=0.5"
+  "bf_compat": ">=0.5"
 }
 EOF
 cd "$D"

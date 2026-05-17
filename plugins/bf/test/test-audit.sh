@@ -77,20 +77,20 @@ PASS
 EOF
 
 echo ""
-echo "Test: opc-harness audit"
+echo "Test: bf-harness audit"
 echo "================================================"
 echo ""
 
 # ── We need to trick audit into scanning our fake dir ──
 # audit uses getSessionsBaseDir(projectDir) which does SHA256(git-root).
 # Instead, we'll symlink so the hash matches.
-# Actually, audit.mjs scans getSessionsBaseDir which resolves to ~/.opc/sessions/{hash}.
+# Actually, audit.mjs scans getSessionsBaseDir which resolves to ~/.bf/sessions/{hash}.
 # We can't easily override that, so let's test by passing --base and creating
 # a git repo whose hash matches our dir structure.
 
 # Simpler approach: patch HOME so getSessionsBaseDir resolves to our fake dir.
 export HOME="$TMPDIR/fake-home"
-mkdir -p "$HOME/.opc/sessions"
+mkdir -p "$HOME/.bf/sessions"
 # Create a project dir with git init, get its hash
 PROJ="$TMPDIR/fake-project"
 mkdir -p "$PROJ"
@@ -104,9 +104,9 @@ echo "x" > x.txt && git add . && git commit -q -m "init"
 REAL_HASH=$(python3 -c "import os,hashlib; print(hashlib.sha256(os.path.realpath('$(git rev-parse --show-toplevel)').encode()).hexdigest()[:12])")
 
 # Create sessions under that hash
-mkdir -p "$HOME/.opc/sessions/$REAL_HASH"
-cp -r "$S1" "$HOME/.opc/sessions/$REAL_HASH/session-good"
-cp -r "$S2" "$HOME/.opc/sessions/$REAL_HASH/session-bad"
+mkdir -p "$HOME/.bf/sessions/$REAL_HASH"
+cp -r "$S1" "$HOME/.bf/sessions/$REAL_HASH/session-good"
+cp -r "$S2" "$HOME/.bf/sessions/$REAL_HASH/session-bad"
 
 # ── Test 1: audit --format json produces valid output ──
 echo "1. audit --format json → valid JSON with expected structure"

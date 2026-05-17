@@ -4,7 +4,7 @@ set -euo pipefail
 # Test: checkpoint (tick-N-summary.md) + resume prompt
 
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-HARNESS="node $SCRIPT_DIR/bin/opc-harness.mjs"
+HARNESS="node $SCRIPT_DIR/runtime/bf-harness.mjs"
 PASS=0; FAIL=0
 
 check() {
@@ -35,7 +35,7 @@ setup_loop() {
   "next_unit": "$next_unit",
   "status": "in_progress",
   "plan_file": "$absdir/plan.md",
-  "_written_by": "opc-harness",
+  "_written_by": "bf-harness",
   "_write_nonce": "test123",
   "_last_modified": "2026-01-01T00:00:00.000Z",
   "_tick_history": [],

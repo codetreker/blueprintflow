@@ -84,9 +84,9 @@ assert_gate_not_triggered() {
 
 # Helper: set up harness dir with a review node
 setup_review_node() {
-  rm -rf .harness
-  mkdir -p .harness/nodes/code-review/run_1
-  cat > .harness/flow-state.json << 'EOF'
+  rm -rf .bf
+  mkdir -p .bf/nodes/code-review/run_1
+  cat > .bf/flow-state.json << 'EOF'
 {"currentNode":"code-review","history":[{"node":"code-review","run":1}],"edgeCounts":{},"stepCount":1}
 EOF
 }
@@ -139,9 +139,9 @@ setup_review_node
   for i in $(seq 1 15); do
     echo "Additional analysis point $i covering various code quality aspects."
   done
-} > .harness/nodes/code-review/run_1/eval-clean50.md
+} > .bf/nodes/code-review/run_1/eval-clean50.md
 
-cat > .harness/nodes/code-review/run_1/eval-skeptic-owner.md <<'SOEOF'
+cat > .bf/nodes/code-review/run_1/eval-skeptic-owner.md <<'SOEOF'
 # Skeptic-Owner Evaluation
 
 ## Mechanism Audit
@@ -158,7 +158,7 @@ Reasoning: Hard shutdown drops in-flight requests during deployment.
 2 suggestions. No critical or warning issues.
 SOEOF
 
-OUT=$($HARNESS synthesize .harness --node code-review --iteration 1)
+OUT=$($HARNESS synthesize .bf --node code-review --iteration 1)
 assert_field_eq "iteration 1: PASS (no thin, no warnings)" "$OUT" "verdict" '"PASS"'
 
 # ───────────────────────────────────────────────────────────────
@@ -170,8 +170,8 @@ setup_review_node
   echo "# Review"
   echo "🔵 Issue"
   for i in $(seq 1 15); do echo "Short line $i."; done
-} > .harness/nodes/code-review/run_1/eval-thin17.md
-OUT=$($HARNESS synthesize .harness --node code-review --iteration 2)
+} > .bf/nodes/code-review/run_1/eval-thin17.md
+OUT=$($HARNESS synthesize .bf --node code-review --iteration 2)
 # thinEvalWarnings should exist for this thin eval
 assert_contains "iteration 2: check for thin warnings or escalation" "$OUT" "FAIL\|thinEval"
 
@@ -179,7 +179,7 @@ assert_contains "iteration 2: check for thin warnings or escalation" "$OUT" "FAI
 echo ""
 echo "--- Profile 18: D3 iteration 3 + thin eval = FAIL ---"
 # Reuse same thin eval from 17
-OUT=$($HARNESS synthesize .harness --node code-review --iteration 3)
+OUT=$($HARNESS synthesize .bf --node code-review --iteration 3)
 assert_contains "iteration 3: escalation" "$OUT" "FAIL\|thinEval"
 
 # ───────────────────────────────────────────────────────────────
@@ -236,9 +236,9 @@ setup_review_node
   echo "6 suggestions. All low severity hardening items. Code is production-ready."
   echo "Architecture is clean with proper separation of concerns."
   echo "No security vulnerabilities detected beyond hardening opportunities."
-} > .harness/nodes/code-review/run_1/eval-clean.md
+} > .bf/nodes/code-review/run_1/eval-clean.md
 
-cat > .harness/nodes/code-review/run_1/eval-skeptic-owner.md <<'SOEOF'
+cat > .bf/nodes/code-review/run_1/eval-skeptic-owner.md <<'SOEOF'
 # Skeptic-Owner Evaluation
 
 ## Mechanism Audit
@@ -255,7 +255,7 @@ Reasoning: Hard shutdown drops in-flight requests during deployment.
 2 suggestions. No critical or warning issues.
 SOEOF
 
-OUT=$($HARNESS synthesize .harness --node code-review --iteration 2)
+OUT=$($HARNESS synthesize .bf --node code-review --iteration 2)
 assert_field_eq "clean + iteration 2: PASS" "$OUT" "verdict" '"PASS"'
 assert_gate_not_triggered "clean + iteration 2: no gate" "$OUT"
 
@@ -263,7 +263,7 @@ assert_gate_not_triggered "clean + iteration 2: no gate" "$OUT"
 echo ""
 echo "--- Profile 20: D1 --base warning ---"
 setup_review_node
-cat > .harness/nodes/code-review/run_1/eval-refs.md << 'EVALEOF'
+cat > .bf/nodes/code-review/run_1/eval-refs.md << 'EVALEOF'
 # Review
 
 ## Finding
@@ -279,7 +279,7 @@ cat > .harness/nodes/code-review/run_1/eval-refs.md << 'EVALEOF'
 1 finding with file ref.
 EVALEOF
 
-STDERR=$($HARNESS synthesize .harness --node code-review 2>&1 >/dev/null || true)
+STDERR=$($HARNESS synthesize .bf --node code-review 2>&1 >/dev/null || true)
 assert_contains "D1 warning: stderr mentions --base" "$STDERR" "base\|file.*ref\|validation"
 
 # ───────────────────────────────────────────────────────────────

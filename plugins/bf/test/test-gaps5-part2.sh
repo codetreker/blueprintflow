@@ -48,8 +48,8 @@ echo "── 7.1: eval with no verdict header (auto-derive from findings)"
 # eval-report.mjs expects evaluation-wave-N-role.md or evaluation-wave-N.md
 # NOTE: severity emojis must NOT be in ### headings — parser skips headings (L48)
 D=$(mktemp -d)
-mkdir -p "$D/.harness"
-cat > "$D/.harness/evaluation-wave-1.md" << 'EOF'
+mkdir -p "$D/.bf"
+cat > "$D/.bf/evaluation-wave-1.md" << 'EOF'
 # Review (no verdict line)
 
 🔴 critical — Major bug found
@@ -158,12 +158,12 @@ echo ""
 echo "── 10.1: detectTestScript with missing package.json"
 D=$(mktemp -d)
 cd "$D"
-mkdir -p .harness
-cat > .harness/plan.md << 'EOF'
+mkdir -p .bf
+cat > .bf/plan.md << 'EOF'
 - u1.1: implement — build something
 - u1.2: review — review it
 EOF
-OUT=$($HARNESS init-loop --skip-scope --dir .harness 2>/dev/null)
+OUT=$($HARNESS init-loop --skip-scope --dir .bf 2>/dev/null)
 assert_field_eq "$OUT" "['initialized']" "True" "10.1a: init-loop --skip-scope works without package.json"
 
 echo ""
@@ -171,12 +171,12 @@ echo "── 10.2: detectTestScript with corrupt package.json"
 D2=$(mktemp -d)
 cd "$D2"
 echo "NOT VALID JSON {{{" > package.json
-mkdir -p .harness
-cat > .harness/plan.md << 'EOF'
+mkdir -p .bf
+cat > .bf/plan.md << 'EOF'
 - u1.1: implement — build something
 - u1.2: review — review it
 EOF
-OUT=$($HARNESS init-loop --skip-scope --dir .harness 2>/dev/null)
+OUT=$($HARNESS init-loop --skip-scope --dir .bf 2>/dev/null)
 assert_field_eq "$OUT" "['initialized']" "True" "10.2a: init-loop --skip-scope works with corrupt package.json"
 
 echo ""
@@ -186,14 +186,14 @@ cd "$D3"
 mkdir -p .husky
 echo "#!/bin/sh" > .husky/pre-commit
 chmod +x .husky/pre-commit
-mkdir -p .harness
-cat > .harness/plan.md << 'EOF'
+mkdir -p .bf
+cat > .bf/plan.md << 'EOF'
 - u1.1: implement — test hook detection
 - u1.2: review — verify
 EOF
-OUT=$($HARNESS init-loop --skip-scope --dir .harness 2>/dev/null)
+OUT=$($HARNESS init-loop --skip-scope --dir .bf 2>/dev/null)
 assert_field_eq "$OUT" "['initialized']" "True" "10.3a: init-loop --skip-scope succeeds with pre-commit hook"
-STATE=$(cat .harness/loop-state.json)
+STATE=$(cat .bf/loop-state.json)
 HOOKS=$(echo "$STATE" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('_external_validators',{}).get('pre_commit_hooks', False))" 2>/dev/null || echo "__ERROR__")
 if [ "$HOOKS" = "True" ]; then
   echo "  ✅ 10.3b: pre_commit_hooks detected as true"; PASS=$((PASS+1))
@@ -220,14 +220,14 @@ rm -rf "$TESTDIR_11"
 
 # ═══════════════════════════════════════════════════════════════════
 echo ""
-echo "=== PART 12: 🔵 LOW — opc-harness.mjs CLI entry dispatch ==="
+echo "=== PART 12: 🔵 LOW — bf-harness.mjs CLI entry dispatch ==="
 # ═══════════════════════════════════════════════════════════════════
 
 echo ""
 echo "── 12.1: report via CLI entry point"
 D=$(mktemp -d)
-mkdir -p "$D/.harness"
-cat > "$D/.harness/evaluation-wave-1.md" << 'EOF'
+mkdir -p "$D/.bf"
+cat > "$D/.bf/evaluation-wave-1.md" << 'EOF'
 # Test Review
 
 ### 🔵 suggestion — Test item

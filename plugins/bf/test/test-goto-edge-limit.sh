@@ -4,7 +4,7 @@ set -euo pipefail
 # Test: goto maxLoopsPerEdge enforcement
 
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-HARNESS="node $SCRIPT_DIR/bin/opc-harness.mjs"
+HARNESS="node $SCRIPT_DIR/runtime/bf-harness.mjs"
 PASS=0; FAIL=0
 
 check() {
@@ -36,7 +36,7 @@ setup_flow() {
   "totalSteps": 0,
   "history": [{"nodeId": "build", "runId": "run_1", "timestamp": "2026-01-01T00:00:00Z"}],
   "edgeCounts": {},
-  "_written_by": "opc-harness",
+  "_written_by": "bf-harness",
   "_last_modified": "2026-01-01T00:00:00Z"
 }
 EOF

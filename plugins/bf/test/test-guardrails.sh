@@ -92,30 +92,30 @@ setup_at_gate_test() {
   local evalfn="$1"  # write_good_eval or write_warning_eval or write_critical_eval
   DIR=$(mktemp -d)
   cd "$DIR"
-  $HARNESS init --flow full-stack --entry discuss --dir .harness 2>/dev/null
+  $HARNESS init --flow full-stack --entry discuss --dir .bf 2>/dev/null
   # discuss → build
-  write_handshake .harness discuss "Discuss done" "PASS" discussion
-  $HARNESS transition --from discuss --to build --verdict PASS --flow full-stack --dir .harness 2>/dev/null
+  write_handshake .bf discuss "Discuss done" "PASS" discussion
+  $HARNESS transition --from discuss --to build --verdict PASS --flow full-stack --dir .bf 2>/dev/null
   # build → code-review
-  write_handshake .harness build "Build done" "PASS" build
-  $HARNESS transition --from build --to code-review --verdict PASS --flow full-stack --dir .harness 2>/dev/null
+  write_handshake .bf build "Build done" "PASS" build
+  $HARNESS transition --from build --to code-review --verdict PASS --flow full-stack --dir .bf 2>/dev/null
   # code-review → test-design (need evals)
-  write_good_eval .harness code-review senior
-  write_good_eval .harness code-review tester
-  write_handshake .harness code-review "Review done" "PASS"
-  $HARNESS transition --from code-review --to test-design --verdict PASS --flow full-stack --dir .harness 2>/dev/null
+  write_good_eval .bf code-review senior
+  write_good_eval .bf code-review tester
+  write_handshake .bf code-review "Review done" "PASS"
+  $HARNESS transition --from code-review --to test-design --verdict PASS --flow full-stack --dir .bf 2>/dev/null
   # test-design → test-execute
-  write_good_eval .harness test-design senior
-  write_good_eval .harness test-design tester
-  write_handshake .harness test-design "Test design done" "PASS"
-  $HARNESS transition --from test-design --to test-execute --verdict PASS --flow full-stack --dir .harness 2>/dev/null
+  write_good_eval .bf test-design senior
+  write_good_eval .bf test-design tester
+  write_handshake .bf test-design "Test design done" "PASS"
+  $HARNESS transition --from test-design --to test-execute --verdict PASS --flow full-stack --dir .bf 2>/dev/null
   # test-execute → gate-test (need evidence)
-  mkdir -p .harness/nodes/test-execute/run_1
-  echo "test output" > .harness/nodes/test-execute/run_1/test-results.json
-  cat > .harness/nodes/test-execute/handshake.json << EOF
+  mkdir -p .bf/nodes/test-execute/run_1
+  echo "test output" > .bf/nodes/test-execute/run_1/test-results.json
+  cat > .bf/nodes/test-execute/handshake.json << EOF
 {"nodeId":"test-execute","nodeType":"execute","runId":"run_1","status":"completed","verdict":"PASS","summary":"Tests pass","timestamp":"$(date -u +%Y-%m-%dT%H:%M:%SZ)","artifacts":[{"type":"test-result","path":"run_1/test-results.json"}]}
 EOF
-  $HARNESS transition --from test-execute --to gate-test --verdict PASS --flow full-stack --dir .harness 2>/dev/null
+  $HARNESS transition --from test-execute --to gate-test --verdict PASS --flow full-stack --dir .bf 2>/dev/null
   # Now at gate-test. Write upstream review evals to test-design for synthesize
   # (synthesize looks at the latest non-gate node)
   # But actually the upstream for gate-test is test-execute (execute), not review.
@@ -132,7 +132,7 @@ cd "$DIR"
 # Simplest: create a custom flow file for testing.
 cat > /tmp/opc-test-guardrail-flow.json << 'FLOWEOF'
 {
-  "opc_compat": ">=0.5",
+  "bf_compat": ">=0.5",
   "nodes": ["review", "gate", "done"],
   "edges": {
     "review": {"PASS": "gate"},
@@ -144,13 +144,13 @@ cat > /tmp/opc-test-guardrail-flow.json << 'FLOWEOF'
   "softEvidence": true
 }
 FLOWEOF
-$HARNESS init --flow-file /tmp/opc-test-guardrail-flow.json --entry review --dir .harness 2>/dev/null
-write_good_eval .harness review engineer
-write_good_eval .harness review skeptic-owner
-write_handshake .harness review "Review done" "PASS"
-$HARNESS transition --from review --to gate --verdict PASS --flow-file /tmp/opc-test-guardrail-flow.json --dir .harness 2>/dev/null
+$HARNESS init --flow-file /tmp/opc-test-guardrail-flow.json --entry review --dir .bf 2>/dev/null
+write_good_eval .bf review engineer
+write_good_eval .bf review skeptic-owner
+write_handshake .bf review "Review done" "PASS"
+$HARNESS transition --from review --to gate --verdict PASS --flow-file /tmp/opc-test-guardrail-flow.json --dir .bf 2>/dev/null
 # Now at gate, upstream PASS evals → pass should work
-OUT=$($HARNESS pass --dir .harness 2>/dev/null)
+OUT=$($HARNESS pass --dir .bf 2>/dev/null)
 if echo "$OUT" | grep -q '"allowed":true\|"allowed": true'; then
   echo "  ✅ pass allowed with PASS upstream"; PASS=$((PASS+1))
 else
@@ -161,12 +161,12 @@ fi
 echo "--- 1.2: pass refused when upstream verdict is ITERATE ---"
 DIR=$(mktemp -d)
 cd "$DIR"
-$HARNESS init --flow-file /tmp/opc-test-guardrail-flow.json --entry review --dir .harness 2>/dev/null
-write_warning_eval .harness review engineer
-write_good_eval .harness review skeptic-owner
-write_handshake .harness review "Review with warnings" "PASS"
-$HARNESS transition --from review --to gate --verdict PASS --flow-file /tmp/opc-test-guardrail-flow.json --dir .harness 2>/dev/null
-OUT=$($HARNESS pass --dir .harness 2>/dev/null)
+$HARNESS init --flow-file /tmp/opc-test-guardrail-flow.json --entry review --dir .bf 2>/dev/null
+write_warning_eval .bf review engineer
+write_good_eval .bf review skeptic-owner
+write_handshake .bf review "Review with warnings" "PASS"
+$HARNESS transition --from review --to gate --verdict PASS --flow-file /tmp/opc-test-guardrail-flow.json --dir .bf 2>/dev/null
+OUT=$($HARNESS pass --dir .bf 2>/dev/null)
 if echo "$OUT" | grep -q "Cannot force-pass"; then
   echo "  ✅ pass refused with ITERATE upstream"; PASS=$((PASS+1))
 else
@@ -177,12 +177,12 @@ fi
 echo "--- 1.3: pass refused when upstream verdict is FAIL ---"
 DIR=$(mktemp -d)
 cd "$DIR"
-$HARNESS init --flow-file /tmp/opc-test-guardrail-flow.json --entry review --dir .harness 2>/dev/null
-write_critical_eval .harness review engineer
-write_critical_eval .harness review skeptic-owner
-write_handshake .harness review "Review with critical" "PASS"
-$HARNESS transition --from review --to gate --verdict PASS --flow-file /tmp/opc-test-guardrail-flow.json --dir .harness 2>/dev/null
-OUT=$($HARNESS pass --dir .harness 2>/dev/null)
+$HARNESS init --flow-file /tmp/opc-test-guardrail-flow.json --entry review --dir .bf 2>/dev/null
+write_critical_eval .bf review engineer
+write_critical_eval .bf review skeptic-owner
+write_handshake .bf review "Review with critical" "PASS"
+$HARNESS transition --from review --to gate --verdict PASS --flow-file /tmp/opc-test-guardrail-flow.json --dir .bf 2>/dev/null
+OUT=$($HARNESS pass --dir .bf 2>/dev/null)
 if echo "$OUT" | grep -q "Cannot force-pass"; then
   echo "  ✅ pass refused with FAIL upstream"; PASS=$((PASS+1))
 else
@@ -193,12 +193,12 @@ fi
 echo "--- 1.4: skip works when pass would be blocked ---"
 DIR=$(mktemp -d)
 cd "$DIR"
-$HARNESS init --flow-file /tmp/opc-test-guardrail-flow.json --entry review --dir .harness 2>/dev/null
-write_warning_eval .harness review engineer
-write_good_eval .harness review skeptic-owner
-write_handshake .harness review "Review with warnings" "PASS"
-$HARNESS transition --from review --to gate --verdict PASS --flow-file /tmp/opc-test-guardrail-flow.json --dir .harness 2>/dev/null
-OUT=$($HARNESS skip --dir .harness 2>/dev/null)
+$HARNESS init --flow-file /tmp/opc-test-guardrail-flow.json --entry review --dir .bf 2>/dev/null
+write_warning_eval .bf review engineer
+write_good_eval .bf review skeptic-owner
+write_handshake .bf review "Review with warnings" "PASS"
+$HARNESS transition --from review --to gate --verdict PASS --flow-file /tmp/opc-test-guardrail-flow.json --dir .bf 2>/dev/null
+OUT=$($HARNESS skip --dir .bf 2>/dev/null)
 if echo "$OUT" | grep -q '"skipped"\|"next"'; then
   echo "  ✅ skip works when pass is blocked"; PASS=$((PASS+1))
 else
@@ -215,11 +215,11 @@ echo "=== OUT-2: mandatory role enforcement ==="
 echo "--- 2.1: transition allowed with mandatory roles present ---"
 DIR=$(mktemp -d)
 cd "$DIR"
-$HARNESS init --flow review --entry review --dir .harness 2>/dev/null
-write_good_eval .harness review engineer
-write_good_eval .harness review skeptic-owner
-write_handshake .harness review "Review done" "PASS"
-TRANS=$($HARNESS transition --from review --to gate --verdict PASS --flow review --dir .harness 2>/dev/null)
+$HARNESS init --flow review --entry review --dir .bf 2>/dev/null
+write_good_eval .bf review engineer
+write_good_eval .bf review skeptic-owner
+write_handshake .bf review "Review done" "PASS"
+TRANS=$($HARNESS transition --from review --to gate --verdict PASS --flow review --dir .bf 2>/dev/null)
 if echo "$TRANS" | grep -q '"allowed":true\|"allowed": true'; then
   echo "  ✅ transition allowed with mandatory roles"; PASS=$((PASS+1))
 else
@@ -230,11 +230,11 @@ fi
 echo "--- 2.2: transition refused missing mandatory role ---"
 DIR=$(mktemp -d)
 cd "$DIR"
-$HARNESS init --flow review --entry review --dir .harness 2>/dev/null
-write_good_eval .harness review engineer
-write_good_eval .harness review frontend
-write_handshake .harness review "Review done" "PASS"
-TRANS=$($HARNESS transition --from review --to gate --verdict PASS --flow review --dir .harness 2>/dev/null)
+$HARNESS init --flow review --entry review --dir .bf 2>/dev/null
+write_good_eval .bf review engineer
+write_good_eval .bf review frontend
+write_handshake .bf review "Review done" "PASS"
+TRANS=$($HARNESS transition --from review --to gate --verdict PASS --flow review --dir .bf 2>/dev/null)
 if echo "$TRANS" | grep -q "Missing mandatory role"; then
   echo "  ✅ transition refused for missing mandatory role"; PASS=$((PASS+1))
 else
@@ -245,11 +245,11 @@ fi
 echo "--- 2.3: transition allowed with all-unknown roles (no enforcement) ---"
 DIR=$(mktemp -d)
 cd "$DIR"
-$HARNESS init --flow review --entry review --dir .harness 2>/dev/null
-write_good_eval .harness review xsenior
-write_good_eval .harness review xtester
-write_handshake .harness review "Review done" "PASS"
-TRANS=$($HARNESS transition --from review --to gate --verdict PASS --flow review --dir .harness 2>/dev/null)
+$HARNESS init --flow review --entry review --dir .bf 2>/dev/null
+write_good_eval .bf review xsenior
+write_good_eval .bf review xtester
+write_handshake .bf review "Review done" "PASS"
+TRANS=$($HARNESS transition --from review --to gate --verdict PASS --flow review --dir .bf 2>/dev/null)
 if echo "$TRANS" | grep -q '"allowed":true\|"allowed": true'; then
   echo "  ✅ transition allowed with all-unknown roles (enforcement skipped)"; PASS=$((PASS+1))
 else
@@ -260,11 +260,11 @@ fi
 echo "--- 2.3b: transition refused with mix of known/unknown roles missing mandatory ---"
 DIR=$(mktemp -d)
 cd "$DIR"
-$HARNESS init --flow review --entry review --dir .harness 2>/dev/null
-write_good_eval .harness review engineer
-write_good_eval .harness review custom-role
-write_handshake .harness review "Review done" "PASS"
-TRANS=$($HARNESS transition --from review --to gate --verdict PASS --flow review --dir .harness 2>/dev/null)
+$HARNESS init --flow review --entry review --dir .bf 2>/dev/null
+write_good_eval .bf review engineer
+write_good_eval .bf review custom-role
+write_handshake .bf review "Review done" "PASS"
+TRANS=$($HARNESS transition --from review --to gate --verdict PASS --flow review --dir .bf 2>/dev/null)
 if echo "$TRANS" | grep -q "Missing mandatory role"; then
   echo "  ✅ transition refused — mandatory check active with known+unknown mix"; PASS=$((PASS+1))
 else
@@ -275,11 +275,11 @@ fi
 echo "--- 2.4: error includes missingRoles array ---"
 DIR=$(mktemp -d)
 cd "$DIR"
-$HARNESS init --flow review --entry review --dir .harness 2>/dev/null
-write_good_eval .harness review engineer
-write_good_eval .harness review frontend
-write_handshake .harness review "Review done" "PASS"
-TRANS=$($HARNESS transition --from review --to gate --verdict PASS --flow review --dir .harness 2>/dev/null)
+$HARNESS init --flow review --entry review --dir .bf 2>/dev/null
+write_good_eval .bf review engineer
+write_good_eval .bf review frontend
+write_handshake .bf review "Review done" "PASS"
+TRANS=$($HARNESS transition --from review --to gate --verdict PASS --flow review --dir .bf 2>/dev/null)
 if echo "$TRANS" | grep -q '"missingRoles"'; then
   echo "  ✅ missingRoles field present"; PASS=$((PASS+1))
 else
@@ -293,13 +293,13 @@ echo "=== OUT-2b: review node must have eval artifacts ==="
 echo "--- 2.5: transition refused when review node has no eval artifacts ---"
 DIR=$(mktemp -d)
 cd "$DIR"
-$HARNESS init --flow review --entry review --dir .harness 2>/dev/null
+$HARNESS init --flow review --entry review --dir .bf 2>/dev/null
 # Write handshake with no eval artifacts
-mkdir -p .harness/nodes/review
-cat > .harness/nodes/review/handshake.json << EOF
+mkdir -p .bf/nodes/review
+cat > .bf/nodes/review/handshake.json << EOF
 {"nodeId":"review","nodeType":"review","runId":"run_1","status":"completed","verdict":"PASS","summary":"No evals","timestamp":"$(date -u +%Y-%m-%dT%H:%M:%SZ)","artifacts":[{"type":"code","path":"src/foo.ts"}]}
 EOF
-TRANS=$($HARNESS transition --from review --to gate --verdict PASS --flow review --dir .harness 2>/dev/null)
+TRANS=$($HARNESS transition --from review --to gate --verdict PASS --flow review --dir .bf 2>/dev/null)
 if echo "$TRANS" | grep -q "no eval-type artifacts\|eval artifacts"; then
   echo "  ✅ transition refused when review has no eval artifacts"; PASS=$((PASS+1))
 else
@@ -320,12 +320,12 @@ ROLES_DIR="$REPO_DIR/roles"
 TMP_ROLE="$ROLES_DIR/_test-crlf-role.md"
 printf -- "---\r\ntags: [review]\r\nmandatory: true\r\n---\r\n\r\n# Test CRLF Role\r\n" > "$TMP_ROLE"
 
-$HARNESS init --flow review --entry review --dir .harness 2>/dev/null
-write_good_eval .harness review engineer
-write_good_eval .harness review skeptic-owner
+$HARNESS init --flow review --entry review --dir .bf 2>/dev/null
+write_good_eval .bf review engineer
+write_good_eval .bf review skeptic-owner
 # Missing _test-crlf-role → should refuse
-write_handshake .harness review "Review done" "PASS"
-TRANS=$($HARNESS transition --from review --to gate --verdict PASS --flow review --dir .harness 2>/dev/null)
+write_handshake .bf review "Review done" "PASS"
+TRANS=$($HARNESS transition --from review --to gate --verdict PASS --flow review --dir .bf 2>/dev/null)
 rm -f "$TMP_ROLE"
 if echo "$TRANS" | grep -q "Missing mandatory role.*_test-crlf-role\|_test-crlf-role"; then
   echo "  ✅ CRLF front matter correctly parsed as mandatory"; PASS=$((PASS+1))
@@ -341,11 +341,11 @@ TMP_ROLE="$ROLES_DIR/_test-bad-fm.md"
 printf "%s" "---
 this is not yaml at all {{{{
 " > "$TMP_ROLE"
-$HARNESS init --flow review --entry review --dir .harness 2>/dev/null
-write_good_eval .harness review engineer
-write_good_eval .harness review skeptic-owner
-write_handshake .harness review "Review done" "PASS"
-TRANS=$($HARNESS transition --from review --to gate --verdict PASS --flow review --dir .harness 2>/dev/null)
+$HARNESS init --flow review --entry review --dir .bf 2>/dev/null
+write_good_eval .bf review engineer
+write_good_eval .bf review skeptic-owner
+write_handshake .bf review "Review done" "PASS"
+TRANS=$($HARNESS transition --from review --to gate --verdict PASS --flow review --dir .bf 2>/dev/null)
 rm -f "$TMP_ROLE"
 # Should not crash — either allowed or refused for legitimate reasons, not an unhandled error
 if [ -n "$TRANS" ]; then

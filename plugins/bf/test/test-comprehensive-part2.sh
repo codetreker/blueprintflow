@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-OPC_BIN="$(dirname "$(dirname "$(realpath "$0")")")/bin/opc-harness.mjs"
+OPC_BIN="$(dirname "$(dirname "$(realpath "$0")")")/runtime/bf-harness.mjs"
 
 source "$(dirname "$0")/test-helpers.sh"
 setup_tmpdir
@@ -65,36 +65,36 @@ echo "━━━ U5: Escape Hatches ━━━"
 
 T5="$TESTBASE/u5"
 mkdir -p "$T5" && cd "$T5"
-opc init --flow build-verify --entry build --dir .harness 2>/dev/null
+opc init --flow build-verify --entry build --dir .bf 2>/dev/null
 
 # goto
-R=$(opc goto test-execute --dir .harness)
+R=$(opc goto test-execute --dir .bf)
 check_json "goto jumps to target" "d['goto']=='test-execute'" "$R"
 
 # goto non-existent
-R=$(opc goto nonexistent --dir .harness)
+R=$(opc goto nonexistent --dir .bf)
 check_json "goto non-existent fails" "'not a node' in d.get('error','')" "$R"
 
 # goto maxLoopsPerEdge (self-loop build→build hits edge limit=3 before nodeReentry=5)
 # After prior goto test-execute, first goto build = test-execute→build, then build→build starts
-for i in 1 2 3 4; do opc goto build --dir .harness > /dev/null 2>&1; done
-R=$(opc goto build --dir .harness)
+for i in 1 2 3 4; do opc goto build --dir .bf > /dev/null 2>&1; done
+R=$(opc goto build --dir .bf)
 check_json "maxLoopsPerEdge enforced" "'maxLoopsPerEdge' in d.get('error','')" "$R"
 
 # stop
 T5S="$TESTBASE/u5-stop"
 mkdir -p "$T5S" && cd "$T5S"
-opc init --flow review --entry review --dir .harness 2>/dev/null
-R=$(opc stop --dir .harness)
+opc init --flow review --entry review --dir .bf 2>/dev/null
+R=$(opc stop --dir .bf)
 check_json "stop preserves state" "d['stopped']==True" "$R"
-check "state has stopped status" python3 -c "import json; assert json.load(open('.harness/flow-state.json'))['status']=='stopped'"
+check "state has stopped status" python3 -c "import json; assert json.load(open('.bf/flow-state.json'))['status']=='stopped'"
 
 # pass on non-terminal gate
 T5P="$TESTBASE/u5-pass"
 mkdir -p "$T5P" && cd "$T5P"
-opc init --flow full-stack --entry discuss --dir .harness 2>/dev/null
-opc goto gate-test --dir .harness > /dev/null 2>&1
-R=$(opc pass --dir .harness 2>/dev/null)
+opc init --flow full-stack --entry discuss --dir .bf 2>/dev/null
+opc goto gate-test --dir .bf > /dev/null 2>&1
+R=$(opc pass --dir .bf 2>/dev/null)
 check_json "pass advances gate" "d.get('next')=='acceptance'" "$R"
 
 # ─────────────────────────────────────────────────────────────────
@@ -131,17 +131,17 @@ echo "━━━ U7: Context Recovery ━━━"
 
 T7="$TESTBASE/u7"
 mkdir -p "$T7" && cd "$T7"
-opc init --flow build-verify --entry build --dir .harness 2>/dev/null
-write_build_hs ".harness" "build"
-opc transition --from build --to code-review --verdict PASS --flow build-verify --dir .harness 2>/dev/null > /dev/null
+opc init --flow build-verify --entry build --dir .bf 2>/dev/null
+write_build_hs ".bf" "build"
+opc transition --from build --to code-review --verdict PASS --flow build-verify --dir .bf 2>/dev/null > /dev/null
 
-R=$(opc validate-chain --dir .harness)
+R=$(opc validate-chain --dir .bf)
 check_json "validate-chain mid-flow" "d['valid']==True" "$R"
 
 # Resume
-write_review_hs ".harness" "code-review"
+write_review_hs ".bf" "code-review"
 sleep 1
-R=$(opc transition --from code-review --to test-design --verdict PASS --flow build-verify --dir .harness 2>/dev/null)
+R=$(opc transition --from code-review --to test-design --verdict PASS --flow build-verify --dir .bf 2>/dev/null)
 check_json "resume from saved state" "d['allowed']==True" "$R"
 
 # ─────────────────────────────────────────────────────────────────
@@ -154,17 +154,17 @@ cat > ~/.claude/flows/_opc_test_schema.json << 'EOF'
 EOF
 T8="$TESTBASE/u8"
 mkdir -p "$T8" && cd "$T8"
-opc init --flow _opc_test_schema --entry build --dir .harness 2>/dev/null
+opc init --flow _opc_test_schema --entry build --dir .bf 2>/dev/null
 
-R=$(opc validate-context --flow _opc_test_schema --node build --dir .harness)
+R=$(opc validate-context --flow _opc_test_schema --node build --dir .bf)
 check_json "missing flow-context.json" "d['valid']==False" "$R"
 
-echo '{"task":"implement auth"}' > .harness/flow-context.json
-R=$(opc validate-context --flow _opc_test_schema --node build --dir .harness)
+echo '{"task":"implement auth"}' > .bf/flow-context.json
+R=$(opc validate-context --flow _opc_test_schema --node build --dir .bf)
 check_json "valid context passes" "d['valid']==True" "$R"
 
-echo '{"task":""}' > .harness/flow-context.json
-R=$(opc validate-context --flow _opc_test_schema --node build --dir .harness)
+echo '{"task":""}' > .bf/flow-context.json
+R=$(opc validate-context --flow _opc_test_schema --node build --dir .bf)
 check_json "empty string fails non-empty-string" "d['valid']==False" "$R"
 
 rm -f ~/.claude/flows/_opc_test_schema.json
@@ -184,26 +184,26 @@ cat > plan.md << 'EOF'
   - eval: check quality
 EOF
 
-R=$(opc init-loop --skip-scope --plan plan.md --dir .harness)
+R=$(opc init-loop --skip-scope --plan plan.md --dir .bf)
 check_json "init-loop --skip-scope parses plan" "d['initialized']==True and d['total_units']==2" "$R"
 
-R=$(opc next-tick --dir .harness)
+R=$(opc next-tick --dir .bf)
 check_json "next-tick returns first unit" "d['next_unit']=='T1.1'" "$R"
 
 echo "evidence" > ev.txt
 git commit --allow-empty -m "build" -q
-R=$(opc complete-tick --unit T1.1 --artifacts ev.txt --description "Built" --dir .harness)
+R=$(opc complete-tick --unit T1.1 --artifacts ev.txt --description "Built" --dir .bf)
 check_json "complete-tick advances" "d['next_unit']=='T1.2'" "$R"
 
-R=$(opc next-tick --dir .harness)
+R=$(opc next-tick --dir .bf)
 check_json "next-tick returns second unit" "d['next_unit']=='T1.2'" "$R"
 
 printf '# R1\n🔵 ok\n→ fix\nReasoning: fine\nVERDICT: PASS FINDINGS[1]\n' > e1.md
 printf '# R2\n🔵 good\n→ fix\nReasoning: ok\nVERDICT: PASS FINDINGS[1]\n' > e2.md
-R=$(opc complete-tick --unit T1.2 --artifacts e1.md,e2.md --description "Reviewed" --dir .harness)
+R=$(opc complete-tick --unit T1.2 --artifacts e1.md,e2.md --description "Reviewed" --dir .bf)
 check_json "pipeline terminates" "d['terminate']==True" "$R"
 
-R=$(opc next-tick --dir .harness)
+R=$(opc next-tick --dir .bf)
 check_json "next-tick confirms completion" "d['terminate']==True" "$R"
 
 # ─────────────────────────────────────────────────────────────────
@@ -213,16 +213,16 @@ echo "━━━ U10: Multi-Template Flows ━━━"
 # build-verify complete
 T10="$TESTBASE/u10"
 mkdir -p "$T10" && cd "$T10"
-opc init --flow build-verify --entry build --dir .harness 2>/dev/null
-write_build_hs ".harness" "build"
-sleep 1; opc transition --from build --to code-review --verdict PASS --flow build-verify --dir .harness 2>/dev/null > /dev/null
-write_review_hs ".harness" "code-review"
-sleep 1; opc transition --from code-review --to test-design --verdict PASS --flow build-verify --dir .harness 2>/dev/null > /dev/null
-write_review_hs ".harness" "test-design"
-sleep 1; opc transition --from test-design --to test-execute --verdict PASS --flow build-verify --dir .harness 2>/dev/null > /dev/null
-write_exec_hs ".harness" "test-execute"
-sleep 1; opc transition --from test-execute --to gate --verdict PASS --flow build-verify --dir .harness 2>/dev/null > /dev/null
-R=$(opc finalize --dir .harness)
+opc init --flow build-verify --entry build --dir .bf 2>/dev/null
+write_build_hs ".bf" "build"
+sleep 1; opc transition --from build --to code-review --verdict PASS --flow build-verify --dir .bf 2>/dev/null > /dev/null
+write_review_hs ".bf" "code-review"
+sleep 1; opc transition --from code-review --to test-design --verdict PASS --flow build-verify --dir .bf 2>/dev/null > /dev/null
+write_review_hs ".bf" "test-design"
+sleep 1; opc transition --from test-design --to test-execute --verdict PASS --flow build-verify --dir .bf 2>/dev/null > /dev/null
+write_exec_hs ".bf" "test-execute"
+sleep 1; opc transition --from test-execute --to gate --verdict PASS --flow build-verify --dir .bf 2>/dev/null > /dev/null
+R=$(opc finalize --dir .bf)
 check_json "build-verify complete" "d['finalized']==True" "$R"
 
 # legacy-linear routing

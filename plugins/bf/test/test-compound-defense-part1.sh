@@ -47,7 +47,7 @@ assert_not_contains() {
 echo "=== TEST GROUP 1: Low unique content detection ==="
 # ═══════════════════════════════════════════════════════════════
 
-mkdir -p .harness/nodes/code-review/run_1
+mkdir -p .bf/nodes/code-review/run_1
 
 echo "--- 1.1: Copy-paste padded eval → lowUniqueContent warning ---"
 # 60 lines but >40% are duplicated "padding" lines
@@ -66,16 +66,16 @@ echo "--- 1.1: Copy-paste padded eval → lowUniqueContent warning ---"
   done
   echo ""
   echo "VERDICT: PASS FINDINGS[1]"
-} > .harness/nodes/code-review/run_1/eval-padder.md
+} > .bf/nodes/code-review/run_1/eval-padder.md
 
-OUT=$($HARNESS synthesize .harness --node code-review 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node code-review 2>/dev/null)
 assert_contains "low unique content warning" "$OUT" "low unique content"
 assert_contains "copy-paste padding" "$OUT" "copy-paste padding"
 assert_field_eq "verdict ITERATE" "$OUT" "verdict" '"ITERATE"'
 
 echo ""
 echo "--- 1.2: Genuine eval with unique lines → no lowUniqueContent ---"
-cat > .harness/nodes/code-review/run_1/eval-genuine.md <<'EVALEOF'
+cat > .bf/nodes/code-review/run_1/eval-genuine.md <<'EVALEOF'
 # Thorough Code Review
 
 ## Architecture
@@ -125,8 +125,8 @@ The implementation follows existing patterns well.
 VERDICT: PASS FINDINGS[3]
 EVALEOF
 
-rm -f .harness/nodes/code-review/run_1/eval-padder.md
-OUT=$($HARNESS synthesize .harness --node code-review 2>/dev/null)
+rm -f .bf/nodes/code-review/run_1/eval-padder.md
+OUT=$($HARNESS synthesize .bf --node code-review 2>/dev/null)
 assert_not_contains "no copy-paste warning" "$OUT" "low unique content"
 
 # ═══════════════════════════════════════════════════════════════
@@ -175,17 +175,17 @@ echo "--- 2.1: Eval with only 1 heading in 40+ lines → singleHeading warning -
   echo "Subresource integrity is not used for CDN assets."
   echo ""
   echo "VERDICT: PASS FINDINGS[1]"
-} > .harness/nodes/code-review/run_1/eval-monohead.md
-rm -f .harness/nodes/code-review/run_1/eval-genuine.md
+} > .bf/nodes/code-review/run_1/eval-monohead.md
+rm -f .bf/nodes/code-review/run_1/eval-genuine.md
 
-OUT=$($HARNESS synthesize .harness --node code-review 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node code-review 2>/dev/null)
 assert_contains "single heading warning" "$OUT" "heading"
 assert_contains "multiple sections" "$OUT" "multiple sections"
 assert_field_eq "verdict ITERATE (single heading)" "$OUT" "verdict" '"ITERATE"'
 
 echo ""
 echo "--- 2.2: Eval with 3+ headings → no singleHeading warning ---"
-cat > .harness/nodes/code-review/run_1/eval-multihead.md <<'EVALEOF'
+cat > .bf/nodes/code-review/run_1/eval-multihead.md <<'EVALEOF'
 # Code Review
 
 ## Architecture
@@ -219,9 +219,9 @@ Build pipeline is deterministic and cached.
 
 VERDICT: PASS FINDINGS[1]
 EVALEOF
-rm -f .harness/nodes/code-review/run_1/eval-monohead.md
+rm -f .bf/nodes/code-review/run_1/eval-monohead.md
 
-OUT=$($HARNESS synthesize .harness --node code-review 2>/dev/null)
+OUT=$($HARNESS synthesize .bf --node code-review 2>/dev/null)
 assert_not_contains "no heading warning for multi-section eval" "$OUT" "heading.*multiple sections"
 
 

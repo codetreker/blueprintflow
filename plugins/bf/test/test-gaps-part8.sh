@@ -111,7 +111,7 @@ import json
 d = json.load(open('.h-hd/loop-state.json'))
 d['tick'] = 1
 d['next_unit'] = 'F1.2'
-d['_written_by'] = 'opc-harness'
+d['_written_by'] = 'bf-harness'
 json.dump(d, open('.h-hd/loop-state.json', 'w'), indent=2)
 "
 # Two files with identical heading but different content

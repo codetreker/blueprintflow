@@ -41,7 +41,7 @@ cp -R "$REPO_ROOT/test/fixtures/run2-ext/throw-ext" "$EXT_DIR/"
 FLOW_FILE="$TMP/run2-bypass.json"
 cat > "$FLOW_FILE" <<'EOF'
 {
-  "opc_compat": ">=0.0",
+  "bf_compat": ">=0.0",
   "name": "run2-bypass",
   "nodes": ["review", "gate"],
   "edges": {
@@ -58,24 +58,24 @@ HARNESS_NAME="harness"
 mkdir -p "$TMP/$HARNESS_NAME"
 mkdir -p "$TMP/fake-home"
 
-export OPC_HOOK_TIMEOUT_MS=500
-export OPC_HOOK_FAILURE_THRESHOLD=1
+export BF_HOOK_TIMEOUT_MS=500
+export BF_HOOK_FAILURE_THRESHOLD=1
 
 cd "$TMP" || exit 1
-OPC="node $REPO_ROOT/bin/opc-harness.mjs"
+OPC="node $REPO_ROOT/runtime/bf-harness.mjs"
 
 echo "=== TEST: Run 2 bypass-chain (methods 1-4) ==="
 
 # ─────────────────────────────────────────────────────────────────
-# Method 1: OPC_DISABLE_EXTENSIONS=1 env
+# Method 1: BF_DISABLE_EXTENSIONS=1 env
 # ─────────────────────────────────────────────────────────────────
-echo "--- 1.1: OPC_DISABLE_EXTENSIONS=1 — 0 extensions loaded ---"
+echo "--- 1.1: BF_DISABLE_EXTENSIONS=1 — 0 extensions loaded ---"
 H1="harness-env"
 mkdir -p "$H1"
 
 HOME="$TMP/fake-home" \
-OPC_EXTENSIONS_DIR="$EXT_DIR" \
-OPC_DISABLE_EXTENSIONS=1 \
+BF_EXTENSIONS_DIR="$EXT_DIR" \
+BF_DISABLE_EXTENSIONS=1 \
   $OPC init --flow-file "$FLOW_FILE" --entry review --dir "$H1" \
   >"$TMP/env-init.out" 2>"$TMP/env-init.err" || true
 
@@ -92,10 +92,10 @@ else
 fi
 
 # bypass message on stderr (source=env)
-if grep -q "OPC_DISABLE_EXTENSIONS" "$TMP/env-init.err"; then
-  ok "env: stderr names OPC_DISABLE_EXTENSIONS as bypass source"
+if grep -q "BF_DISABLE_EXTENSIONS" "$TMP/env-init.err"; then
+  ok "env: stderr names BF_DISABLE_EXTENSIONS as bypass source"
 else
-  fail "env: stderr missing OPC_DISABLE_EXTENSIONS bypass message"
+  fail "env: stderr missing BF_DISABLE_EXTENSIONS bypass message"
 fi
 
 # flow-state.bypassMode persisted
@@ -117,10 +117,10 @@ H2="harness-flag"
 mkdir -p "$H2"
 
 # Explicitly UNSET env to prove flag works alone
-unset OPC_DISABLE_EXTENSIONS
+unset BF_DISABLE_EXTENSIONS
 
 HOME="$TMP/fake-home" \
-OPC_EXTENSIONS_DIR="$EXT_DIR" \
+BF_EXTENSIONS_DIR="$EXT_DIR" \
   $OPC init --flow-file "$FLOW_FILE" --entry review --dir "$H2" --no-extensions \
   >"$TMP/flag-init.out" 2>"$TMP/flag-init.err" || true
 
@@ -137,7 +137,7 @@ else
   fail "flag: .ext-registry.json not created"
 fi
 
-# stderr should name --no-extensions, NOT OPC_DISABLE_EXTENSIONS
+# stderr should name --no-extensions, NOT BF_DISABLE_EXTENSIONS
 if grep -q -- "--no-extensions" "$TMP/flag-init.err"; then
   ok "flag: stderr names --no-extensions as bypass source"
 else
@@ -152,7 +152,7 @@ H3="harness-whitelist"
 mkdir -p "$H3"
 
 HOME="$TMP/fake-home" \
-OPC_EXTENSIONS_DIR="$EXT_DIR" \
+BF_EXTENSIONS_DIR="$EXT_DIR" \
   $OPC init --flow-file "$FLOW_FILE" --entry review --dir "$H3" --extensions ok-ext \
   >"$TMP/wl-init.out" 2>"$TMP/wl-init.err" || true
 
@@ -196,7 +196,7 @@ mkdir -p "$H3/nodes/review/run_1"
 echo '{}' > "$H3/nodes/review/run_1/handshake.json"
 
 HOME="$TMP/fake-home" \
-OPC_EXTENSIONS_DIR="$EXT_DIR" \
+BF_EXTENSIONS_DIR="$EXT_DIR" \
   $OPC prompt-context --node review --role evaluator \
   --flow-file "$FLOW_FILE" --dir "$H3" --extensions ok-ext \
   >"$TMP/wl-prompt.out" 2>"$TMP/wl-prompt.err" || true

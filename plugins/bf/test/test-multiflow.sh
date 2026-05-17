@@ -71,11 +71,11 @@ assert_file_not_exists() {
 echo "=== TEST GROUP 1: ls finds flows in various locations ==="
 # ═══════════════════════════════════════════════════════════════
 
-echo "--- 1.1: ls finds flow in .harness/ ---"
-rm -rf .harness .harness-*
-$HARNESS init --flow build-verify --dir .harness >/dev/null 2>/dev/null
+echo "--- 1.1: ls finds flow in .bf/ ---"
+rm -rf .bf .harness-*
+$HARNESS init --flow build-verify --dir .bf >/dev/null 2>/dev/null
 OUT=$($HARNESS ls --base .)
-assert_contains "finds .harness" "$OUT" ".harness"
+assert_contains "finds .bf" "$OUT" ".bf"
 assert_contains "has flows array" "$OUT" "flows"
 
 echo ""
@@ -85,11 +85,11 @@ OUT=$($HARNESS ls --base .)
 assert_contains "finds .harness-feature" "$OUT" ".harness-feature"
 
 echo ""
-echo "--- 1.3: ls finds flow in .harness/sub/ (named harness) ---"
-mkdir -p .harness/my-feature
-$HARNESS init --flow review --dir .harness/my-feature >/dev/null 2>/dev/null
+echo "--- 1.3: ls finds flow in .bf/sub/ (named harness) ---"
+mkdir -p .bf/my-feature
+$HARNESS init --flow review --dir .bf/my-feature >/dev/null 2>/dev/null
 OUT=$($HARNESS ls --base .)
-assert_contains "finds .harness/my-feature" "$OUT" "my-feature"
+assert_contains "finds .bf/my-feature" "$OUT" "my-feature"
 
 echo ""
 echo "--- 1.4: ls includes entryNode and lastModified ---"
@@ -98,16 +98,16 @@ assert_contains "has entryNode" "$OUT" "entryNode"
 assert_contains "has lastModified" "$OUT" "lastModified"
 
 echo ""
-echo "--- 1.5: ls --recursive finds flows in subdir/.harness/ ---"
+echo "--- 1.5: ls --recursive finds flows in subdir/.bf/ ---"
 mkdir -p api
-$HARNESS init --flow build-verify --dir api/.harness >/dev/null 2>/dev/null
+$HARNESS init --flow build-verify --dir api/.bf >/dev/null 2>/dev/null
 OUT=$($HARNESS ls --base . --recursive)
-assert_contains "recursive finds api/.harness" "$OUT" "api/.harness"
+assert_contains "recursive finds api/.bf" "$OUT" "api/.bf"
 
 echo ""
 echo "--- 1.6: ls without --recursive does NOT find subdir flows ---"
 OUT=$($HARNESS ls --base .)
-assert_not_contains "non-recursive skips api subdir" "$OUT" "\"api/.harness\""
+assert_not_contains "non-recursive skips api subdir" "$OUT" "\"api/.bf\""
 
 # ═══════════════════════════════════════════════════════════════
 echo ""
@@ -115,14 +115,14 @@ echo "=== TEST GROUP 2: Named harness init + viz ==="
 # ═══════════════════════════════════════════════════════════════
 
 echo "--- 2.1: Init in named harness subdir ---"
-rm -rf .harness/auth-flow
-OUT=$($HARNESS init --flow build-verify --dir .harness/auth-flow 2>/dev/null)
+rm -rf .bf/auth-flow
+OUT=$($HARNESS init --flow build-verify --dir .bf/auth-flow 2>/dev/null)
 assert_field_eq "created in subdir" "$OUT" "created" "true"
-assert_file_exists "flow-state.json in named dir" ".harness/auth-flow/flow-state.json"
+assert_file_exists "flow-state.json in named dir" ".bf/auth-flow/flow-state.json"
 
 echo ""
 echo "--- 2.2: Viz works with named harness dir ---"
-OUT=$($HARNESS viz --flow build-verify --dir .harness/auth-flow)
+OUT=$($HARNESS viz --flow build-verify --dir .bf/auth-flow)
 assert_contains "viz has build node" "$OUT" "build"
 assert_contains "viz has gate node" "$OUT" "gate"
 

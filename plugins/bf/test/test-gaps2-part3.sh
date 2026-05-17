@@ -48,8 +48,8 @@ assert_exit_zero() {
 echo ""
 echo "── GAP2-17: report with single eval fallback"
 D17=$(mktemp -d)
-mkdir -p "$D17/.harness"
-cat > "$D17/.harness/evaluation-wave-1.md" << 'EVAL'
+mkdir -p "$D17/.bf"
+cat > "$D17/.bf/evaluation-wave-1.md" << 'EVAL'
 # Evaluation
 VERDICT: PASS FINDINGS[1]
 🔵 Minor — foo.js:1 — add comments

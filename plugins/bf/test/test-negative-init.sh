@@ -11,7 +11,7 @@ echo ""
 
 # ── Test 1: invalid flow template ──
 echo "1. init with invalid --flow → error JSON"
-OUT=$($HARNESS init --flow nonexistent --entry build --dir .harness 2>/dev/null || true)
+OUT=$($HARNESS init --flow nonexistent --entry build --dir .bf 2>/dev/null || true)
 if echo "$OUT" | python3 -c "import sys,json; d=json.load(sys.stdin); assert d.get('error') or 'error' in str(d).lower(); print('ok')" 2>/dev/null | grep -q ok; then
   echo "  ✅ invalid flow rejected with error"
   PASS=$((PASS + 1))
@@ -22,7 +22,7 @@ fi
 
 # ── Test 2: missing --flow flag ──
 echo "2. init without --flow → non-zero exit or error"
-OUT2=$($HARNESS init --entry build --dir .harness 2>&1 || true)
+OUT2=$($HARNESS init --entry build --dir .bf 2>&1 || true)
 if [ -n "$OUT2" ]; then
   echo "  ✅ missing --flow produces output (error or usage)"
   PASS=$((PASS + 1))

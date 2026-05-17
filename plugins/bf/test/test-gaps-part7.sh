@@ -84,7 +84,7 @@ python3 -c "
 import json
 d = json.load(open('.h-la2/loop-state.json'))
 d['status'] = 'pipeline_complete'
-d['_written_by'] = 'opc-harness'
+d['_written_by'] = 'bf-harness'
 json.dump(d, open('.h-la2/loop-state.json', 'w'), indent=2)
 "
 OUT=$($HARNESS next-tick --dir .h-la2 2>/dev/null)
@@ -110,7 +110,7 @@ d['_tick_history'] = [
     {'unit': 'F1.1', 'tick': 1, 'status': 'failed'},
     {'unit': 'F1.1', 'tick': 2, 'status': 'failed'}
 ]
-d['_written_by'] = 'opc-harness'
+d['_written_by'] = 'bf-harness'
 json.dump(d, open('.h-la3/loop-state.json', 'w'), indent=2)
 "
 OUT=$($HARNESS next-tick --dir .h-la3 2>/dev/null)
@@ -138,7 +138,7 @@ d['_tick_history'] = [
     {'unit': 'F1.1', 'tick': 3, 'status': 'failed'},
     {'unit': 'F1.2', 'tick': 4, 'status': 'failed'}
 ]
-d['_written_by'] = 'opc-harness'
+d['_written_by'] = 'bf-harness'
 json.dump(d, open('.h-la4/loop-state.json', 'w'), indent=2)
 "
 OUT=$($HARNESS next-tick --dir .h-la4 2>/dev/null)
@@ -160,7 +160,7 @@ d = json.load(open('.h-la5/loop-state.json'))
 d['tick'] = 2
 d['next_unit'] = None
 d['status'] = 'idle'
-d['_written_by'] = 'opc-harness'
+d['_written_by'] = 'bf-harness'
 json.dump(d, open('.h-la5/loop-state.json', 'w'), indent=2)
 "
 # Create backlog with open items — drain gate should block termination
@@ -193,7 +193,7 @@ import json
 d = json.load(open('.h-la6/loop-state.json'))
 d['next_unit'] = 'F1.1'
 d['status'] = 'idle'
-d['_written_by'] = 'opc-harness'
+d['_written_by'] = 'bf-harness'
 # Point to non-existent plan
 d['plan_file'] = '.h-la6/deleted-plan.md'
 json.dump(d, open('.h-la6/loop-state.json', 'w'), indent=2)
@@ -228,8 +228,8 @@ echo "=== GAP-15: Report + validate-context edge cases ==="
 # ═══════════════════════════════════════════════════════════════
 
 echo "--- 15.1: Report finding status filtering ---"
-rm -rf .h-rp1 && mkdir -p .h-rp1/.harness
-cat > .h-rp1/.harness/evaluation-wave-1-engineer.md << 'EVAL'
+rm -rf .h-rp1 && mkdir -p .h-rp1/.bf
+cat > .h-rp1/.bf/evaluation-wave-1-engineer.md << 'EVAL'
 # Engineer Review
 VERDICT: PASS FINDINGS[2]
 🔴 Critical — auth.js:1 — XSS vulnerability
@@ -259,7 +259,7 @@ cat > "$HOME/.claude/flows/bad-rule.json" << 'FL'
   "limits": {"maxTotalSteps": 10, "maxLoopsPerEdge": 3, "maxNodeReentry": 5},
   "nodeTypes": {"s1": "build", "s2": "gate"},
   "contextSchema": {"s1": {"required": ["x"], "rules": {"x": "unknown-rule-type"}}},
-  "opc_compat": ">=0.5"
+  "bf_compat": ">=0.5"
 }
 FL
 # Flow should fail to load due to contextSchema validation — init returns unknown template

@@ -4,7 +4,7 @@ set -euo pipefail
 # Test: session resolution — git-root hashing, legacy fallback, error messages
 
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-HARNESS="node $SCRIPT_DIR/bin/opc-harness.mjs"
+HARNESS="node $SCRIPT_DIR/runtime/bf-harness.mjs"
 PASS=0; FAIL=0
 
 check() {
@@ -27,12 +27,12 @@ mkdir -p "$TMPD/repo/src/deep"
 (cd "$TMPD/repo" && git init -q && git commit --allow-empty -m "init" -q)
 
 HASH_ROOT=$(cd "$TMPD/repo" && node -e "
-  import { getProjectHash } from '$SCRIPT_DIR/bin/lib/util.mjs';
+  import { getProjectHash } from '$SCRIPT_DIR/runtime/lib/util.mjs';
   console.log(getProjectHash());
 " 2>&1)
 
 HASH_SUBDIR=$(cd "$TMPD/repo/src/deep" && node -e "
-  import { getProjectHash } from '$SCRIPT_DIR/bin/lib/util.mjs';
+  import { getProjectHash } from '$SCRIPT_DIR/runtime/lib/util.mjs';
   console.log(getProjectHash());
 " 2>&1)
 
@@ -44,12 +44,12 @@ echo "=== TEST GROUP 2: non-git dir uses normalized cwd ==="
 mkdir -p "$TMPD/nongit/sub"
 
 HASH_NG=$(cd "$TMPD/nongit" && node -e "
-  import { getProjectHash } from '$SCRIPT_DIR/bin/lib/util.mjs';
+  import { getProjectHash } from '$SCRIPT_DIR/runtime/lib/util.mjs';
   console.log(getProjectHash());
 " 2>&1)
 
 HASH_NG_SUB=$(cd "$TMPD/nongit/sub" && node -e "
-  import { getProjectHash } from '$SCRIPT_DIR/bin/lib/util.mjs';
+  import { getProjectHash } from '$SCRIPT_DIR/runtime/lib/util.mjs';
   console.log(getProjectHash());
 " 2>&1)
 
@@ -61,7 +61,7 @@ echo "=== TEST GROUP 3: symlink to git repo gets same hash ==="
 ln -s "$TMPD/repo" "$TMPD/repo-link"
 
 HASH_LINK=$(cd "$TMPD/repo-link" && node -e "
-  import { getProjectHash } from '$SCRIPT_DIR/bin/lib/util.mjs';
+  import { getProjectHash } from '$SCRIPT_DIR/runtime/lib/util.mjs';
   console.log(getProjectHash());
 " 2>&1)
 
@@ -79,11 +79,11 @@ echo ""
 echo "=== TEST GROUP 5: explicit --dir works from any cwd ==="
 
 D5="$TMPD/repo5"
-mkdir -p "$D5/.harness/nodes/review"
-echo '{"version":"1.0","flowTemplate":"review","currentNode":"review","entryNode":"review","totalSteps":0}' > "$D5/.harness/flow-state.json"
+mkdir -p "$D5/.bf/nodes/review"
+echo '{"version":"1.0","flowTemplate":"review","currentNode":"review","entryNode":"review","totalSteps":0}' > "$D5/.bf/flow-state.json"
 
 # Run viz from /tmp with explicit --dir pointing to D5
-VIZ_OUT=$(cd /tmp && $HARNESS viz --flow review --dir "$D5/.harness" 2>&1)
+VIZ_OUT=$(cd /tmp && $HARNESS viz --flow review --dir "$D5/.bf" 2>&1)
 check "viz with explicit --dir from /tmp works" 'echo "$VIZ_OUT" | grep -q "review\|gate"'
 
 echo ""
@@ -97,13 +97,13 @@ LEGACY_HASH=$(cd "$TMPD/repo" && node --input-type=module -e "
 
 # If legacy hash differs from git-root hash, create a legacy session
 if [ "$LEGACY_HASH" != "$HASH_ROOT" ]; then
-  LEGACY_BASE="$HOME/.opc/sessions/$LEGACY_HASH"
+  LEGACY_BASE="$HOME/.bf/sessions/$LEGACY_HASH"
   mkdir -p "$LEGACY_BASE/legacy-sess"
   echo '{"version":"1.0","flowTemplate":"review","currentNode":"review"}' > "$LEGACY_BASE/legacy-sess/flow-state.json"
   ln -sf "legacy-sess" "$LEGACY_BASE/latest"
 
   FOUND=$(cd "$TMPD/repo" && node --input-type=module -e "
-    import { getLatestSessionDir } from '$SCRIPT_DIR/bin/lib/util.mjs';
+    import { getLatestSessionDir } from '$SCRIPT_DIR/runtime/lib/util.mjs';
     const r = getLatestSessionDir();
     console.log(r ? 'found' : 'null');
   " 2>&1)

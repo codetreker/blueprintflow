@@ -117,10 +117,10 @@ EVALEOF
 echo "=== E2E TEST 10: goto escape hatch ==="
 # ═══════════════════════════════════════════════════════════════
 
-rm -rf .harness
-$HARNESS init --flow build-verify --entry build --dir .harness 2>/dev/null
-GOTO=$($HARNESS goto test-execute --dir .harness 2>/dev/null || echo '{"error":"goto failed"}')
-STATE=$(cat .harness/flow-state.json)
+rm -rf .bf
+$HARNESS init --flow build-verify --entry build --dir .bf 2>/dev/null
+GOTO=$($HARNESS goto test-execute --dir .bf 2>/dev/null || echo '{"error":"goto failed"}')
+STATE=$(cat .bf/flow-state.json)
 CUR=$(jq_field "$STATE" "currentNode")
 assert_contains "10.1: goto moved to target" "$CUR" "test-execute"
 
@@ -130,13 +130,13 @@ echo ""
 echo "=== E2E TEST 11: pass escape on gate ==="
 # ═══════════════════════════════════════════════════════════════
 
-rm -rf .harness
-$HARNESS init --flow review --entry review --dir .harness 2>/dev/null
-write_critical_eval .harness review critic
-write_good_eval .harness review optimist
-write_handshake .harness review "Mixed review" "FAIL"
-$HARNESS transition --from review --to gate --verdict PASS --flow review --dir .harness 2>/dev/null
-PASS_OUT=$($HARNESS pass --dir .harness 2>/dev/null || echo '{"error":"pass failed"}')
+rm -rf .bf
+$HARNESS init --flow review --entry review --dir .bf 2>/dev/null
+write_critical_eval .bf review critic
+write_good_eval .bf review optimist
+write_handshake .bf review "Mixed review" "FAIL"
+$HARNESS transition --from review --to gate --verdict PASS --flow review --dir .bf 2>/dev/null
+PASS_OUT=$($HARNESS pass --dir .bf 2>/dev/null || echo '{"error":"pass failed"}')
 assert_contains "11.1: force pass succeeds" "$PASS_OUT" "pass\|forced\|PASS"
 
 echo ""
@@ -145,20 +145,20 @@ echo ""
 echo "=== E2E TEST 12: D2 compound gate in flow context ==="
 # ═══════════════════════════════════════════════════════════════
 
-rm -rf .harness
-$HARNESS init --flow review --entry review --dir .harness 2>/dev/null
-mkdir -p .harness/nodes/review/run_1
+rm -rf .bf
+$HARNESS init --flow review --entry review --dir .bf 2>/dev/null
+mkdir -p .bf/nodes/review/run_1
 {
   echo "# Only Heading"
   echo "🔵 Something wrong"
   for i in $(seq 1 50); do
     echo "Everything seems fine overall."
   done
-} > .harness/nodes/review/run_1/eval-lazy.md
-write_good_eval .harness review diligent
-write_handshake .harness review "Review done" "ITERATE"
-$HARNESS transition --from review --to gate --verdict PASS --flow review --dir .harness 2>/dev/null
-SYNTH=$($HARNESS synthesize .harness --node review)
+} > .bf/nodes/review/run_1/eval-lazy.md
+write_good_eval .bf review diligent
+write_handshake .bf review "Review done" "ITERATE"
+$HARNESS transition --from review --to gate --verdict PASS --flow review --dir .bf 2>/dev/null
+SYNTH=$($HARNESS synthesize .bf --node review)
 assert_contains "12.1: D2 gate fires in flow" "$SYNTH" "evalQualityGate"
 assert_contains "12.2: enforce mode (default)" "$SYNTH" "enforce"
 assert_field_eq "12.3: enforce changes verdict to FAIL" "$SYNTH" "verdict" '"FAIL"'
@@ -169,22 +169,22 @@ echo ""
 echo "=== E2E TEST 13: ls command lists active flows ==="
 # ═══════════════════════════════════════════════════════════════
 
-rm -rf .harness .harness-*
-$HARNESS init --flow review --entry review --dir .harness 2>/dev/null
+rm -rf .bf .harness-*
+$HARNESS init --flow review --entry review --dir .bf 2>/dev/null
 LS=$($HARNESS ls 2>/dev/null || echo "[]")
-assert_contains "13.1: ls finds .harness" "$LS" "harness\|review\|active"
+assert_contains "13.1: ls finds .bf" "$LS" "harness\|review\|active"
 
 echo ""
 
 # ═══════════════════════════════════════════════════════════════
-echo "=== E2E TEST 14: clean command removes .harness dirs ==="
+echo "=== E2E TEST 14: clean command removes .bf dirs ==="
 # ═══════════════════════════════════════════════════════════════
 
-rm -rf .harness .harness-*
-mkdir -p .harness .harness-ext .harness-old
-echo '{}' > .harness/flow-state.json
+rm -rf .bf .harness-*
+mkdir -p .harness-bf .harness-ext .harness-old
+echo '{}' > .harness-bf/flow-state.json
 $HARNESS clean 2>/dev/null
-if [ ! -d .harness ] && [ ! -d .harness-ext ] && [ ! -d .harness-old ]; then
+if [ ! -d .harness-bf ] && [ ! -d .harness-ext ] && [ ! -d .harness-old ]; then
   echo "  ✅ clean removes all .harness dirs"
   PASS=$((PASS + 1))
 else

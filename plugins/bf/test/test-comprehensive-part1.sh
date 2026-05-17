@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-OPC_BIN="$(dirname "$(dirname "$(realpath "$0")")")/bin/opc-harness.mjs"
+OPC_BIN="$(dirname "$(dirname "$(realpath "$0")")")/runtime/bf-harness.mjs"
 
 source "$(dirname "$0")/test-helpers.sh"
 setup_tmpdir
@@ -66,39 +66,39 @@ echo "━━━ U1: FAIL/ITERATE Loopback ━━━"
 T="$TESTBASE/u1"
 mkdir -p "$T" && cd "$T"
 
-opc init --flow review --entry review --dir .harness 2>/dev/null
+opc init --flow review --entry review --dir .bf 2>/dev/null
 
 # Cycle 1-3: review → gate (PASS) then gate → review (FAIL)
 for i in 1 2 3; do
-  write_review_hs ".harness" "review" "FAIL"
+  write_review_hs ".bf" "review" "FAIL"
   sleep 1
-  opc transition --from review --to gate --verdict PASS --flow review --dir .harness 2>/dev/null > /dev/null
+  opc transition --from review --to gate --verdict PASS --flow review --dir .bf 2>/dev/null > /dev/null
   sleep 1
-  opc transition --from gate --to review --verdict FAIL --flow review --dir .harness 2>/dev/null > /dev/null
+  opc transition --from gate --to review --verdict FAIL --flow review --dir .bf 2>/dev/null > /dev/null
 done
 
 # 4th cycle should be blocked
-write_review_hs ".harness" "review" "FAIL"
+write_review_hs ".bf" "review" "FAIL"
 sleep 1
-R=$(opc transition --from review --to gate --verdict PASS --flow review --dir .harness 2>/dev/null)
+R=$(opc transition --from review --to gate --verdict PASS --flow review --dir .bf 2>/dev/null)
 check_json "maxLoopsPerEdge blocks 4th cycle" "d['allowed']==False" "$R"
 
 # Synthesize FAIL verdict
 T1F="$TESTBASE/u1-fail"
 mkdir -p "$T1F" && cd "$T1F"
-opc init --flow review --entry review --dir .harness 2>/dev/null
-mkdir -p .harness/nodes/review/run_1
-printf '# Review\n🔴 file.py:10 — Bug\n→ Fix\nReasoning: Broken\nVERDICT: FAIL FINDINGS[1]\n' > .harness/nodes/review/run_1/eval-q.md
-R=$(opc synthesize .harness --node review)
+opc init --flow review --entry review --dir .bf 2>/dev/null
+mkdir -p .bf/nodes/review/run_1
+printf '# Review\n🔴 file.py:10 — Bug\n→ Fix\nReasoning: Broken\nVERDICT: FAIL FINDINGS[1]\n' > .bf/nodes/review/run_1/eval-q.md
+R=$(opc synthesize .bf --node review)
 check_json "synthesize 🔴 → FAIL" "d['verdict']=='FAIL'" "$R"
 
 # Synthesize ITERATE verdict
 T1I="$TESTBASE/u1-iter"
 mkdir -p "$T1I" && cd "$T1I"
-opc init --flow review --entry review --dir .harness 2>/dev/null
-mkdir -p .harness/nodes/review/run_1
-printf '# Review\n🟡 file.py:10 — Warning\n→ Fix\nReasoning: Should fix\nVERDICT: ITERATE FINDINGS[1]\n' > .harness/nodes/review/run_1/eval-q.md
-R=$(opc synthesize .harness --node review)
+opc init --flow review --entry review --dir .bf 2>/dev/null
+mkdir -p .bf/nodes/review/run_1
+printf '# Review\n🟡 file.py:10 — Warning\n→ Fix\nReasoning: Should fix\nVERDICT: ITERATE FINDINGS[1]\n' > .bf/nodes/review/run_1/eval-q.md
+R=$(opc synthesize .bf --node review)
 check_json "synthesize 🟡 → ITERATE" "d['verdict']=='ITERATE'" "$R"
 
 # ─────────────────────────────────────────────────────────────────
@@ -134,12 +134,12 @@ echo "━━━ U3: Finalize Terminal Gate ━━━"
 
 T3="$TESTBASE/u3"
 mkdir -p "$T3" && cd "$T3"
-opc init --flow review --entry review --dir .harness 2>/dev/null
-write_review_hs ".harness" "review"
-opc transition --from review --to gate --verdict PASS --flow review --dir .harness 2>/dev/null > /dev/null
-R=$(opc finalize --dir .harness)
+opc init --flow review --entry review --dir .bf 2>/dev/null
+write_review_hs ".bf" "review"
+opc transition --from review --to gate --verdict PASS --flow review --dir .bf 2>/dev/null > /dev/null
+R=$(opc finalize --dir .bf)
 check_json "finalize auto-creates gate handshake" "d['finalized']==True" "$R"
-check "gate handshake.json exists" test -f .harness/nodes/gate/handshake.json
+check "gate handshake.json exists" test -f .bf/nodes/gate/handshake.json
 
 # ─────────────────────────────────────────────────────────────────
 echo ""
@@ -151,7 +151,7 @@ cat > ~/.claude/flows/_opc_test_ext.json << 'EOF'
 EOF
 T4="$TESTBASE/u4"
 mkdir -p "$T4" && cd "$T4"
-R=$(opc init --flow _opc_test_ext --entry a --dir .harness 2>/dev/null)
+R=$(opc init --flow _opc_test_ext --entry a --dir .bf 2>/dev/null)
 check_json "external flow loads" "d['created']==True" "$R"
 R=$(opc route --node gate --verdict FAIL --flow _opc_test_ext)
 check_json "external flow routing works" "d['next']=='a'" "$R"

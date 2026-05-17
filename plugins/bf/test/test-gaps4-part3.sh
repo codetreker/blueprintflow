@@ -231,7 +231,7 @@ D=$(mktemp -d)
 cd "$D"
 mkdir -p nodes
 cat > flow-state.json << 'EOF'
-{"version":"1.0","flowTemplate":"nonexistent-flow","currentNode":"a","entryNode":"a","totalSteps":0,"history":[],"edgeCounts":{},"_written_by":"opc-harness","_last_modified":"2024-01-01T00:00:00Z","_write_nonce":"abc123"}
+{"version":"1.0","flowTemplate":"nonexistent-flow","currentNode":"a","entryNode":"a","totalSteps":0,"history":[],"edgeCounts":{},"_written_by":"bf-harness","_last_modified":"2024-01-01T00:00:00Z","_write_nonce":"abc123"}
 EOF
 OUT=$($HARNESS finalize --dir . 2>/dev/null || true)
 assert_field_eq "$OUT" "['finalized']" "False" "6.2a: finalize with unknown flow"

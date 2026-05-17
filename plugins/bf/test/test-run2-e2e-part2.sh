@@ -41,7 +41,7 @@ cp -R "$REPO_ROOT/test/fixtures/run2-ext/throw-ext" "$EXT_DIR/"
 FLOW_FILE="$TMP/run2-review.json"
 cat > "$FLOW_FILE" <<'EOF'
 {
-  "opc_compat": ">=0.0",
+  "bf_compat": ">=0.0",
   "name": "run2-review",
   "nodes": ["review", "gate"],
   "edges": {
@@ -96,7 +96,7 @@ cat > "$HARNESS/acceptance-criteria.md" <<'EOF'
 ## Quality Constraints
 
 - Test is hermetic: uses $TMP, no touch to ~/.opc or global state.
-- Deterministic: OPC_HOOK_TIMEOUT_MS pinned so slow-ext trips on every run.
+- Deterministic: BF_HOOK_TIMEOUT_MS pinned so slow-ext trips on every run.
 
 ## Quality Baseline (functional)
 
@@ -105,14 +105,14 @@ cat > "$HARNESS/acceptance-criteria.md" <<'EOF'
 EOF
 
 # ── Pin timeout + breaker threshold for determinism ──────────────
-export OPC_HOOK_TIMEOUT_MS=500
-export OPC_HOOK_FAILURE_THRESHOLD=1
-export OPC_EXTENSIONS_DIR="$EXT_DIR"
+export BF_HOOK_TIMEOUT_MS=500
+export BF_HOOK_FAILURE_THRESHOLD=1
+export BF_EXTENSIONS_DIR="$EXT_DIR"
 export HOME="$TMP/fake-home"
 mkdir -p "$HOME"
 
 cd "$TMP" || exit 1
-OPC="node $REPO_ROOT/bin/opc-harness.mjs"
+OPC="node $REPO_ROOT/runtime/bf-harness.mjs"
 
 echo "=== TEST: Run 2 E2E — sections 4-6 (artifact, failures, isolation) ==="
 

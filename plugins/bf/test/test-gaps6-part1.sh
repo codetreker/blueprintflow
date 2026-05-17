@@ -228,24 +228,24 @@ echo ""
 echo "── 7.1: complete-tick with _tick_history tampered to non-array"
 D=$(mktemp -d)
 cd "$D"
-mkdir -p .harness
-cat > .harness/plan.md << 'EOF'
+mkdir -p .bf
+cat > .bf/plan.md << 'EOF'
 - u1.1: implement — build something
 - u1.2: review — review it
 EOF
-$HARNESS init-loop --skip-scope --dir .harness > /dev/null 2>&1
-$HARNESS next-tick --dir .harness > /dev/null 2>&1
+$HARNESS init-loop --skip-scope --dir .bf > /dev/null 2>&1
+$HARNESS next-tick --dir .bf > /dev/null 2>&1
 # Tamper: set _tick_history to a string instead of array
 python3 -c "
 import json
-with open('.harness/loop-state.json') as f:
+with open('.bf/loop-state.json') as f:
     s = json.load(f)
 s['_tick_history'] = 'not an array'
-with open('.harness/loop-state.json', 'w') as f:
+with open('.bf/loop-state.json', 'w') as f:
     json.dump(s, f, indent=2)
 "
 echo '{"pass": true}' > artifact.json
-OUT=$($HARNESS complete-tick --dir .harness --unit u1.1 --status completed --artifacts "$(pwd)/artifact.json" 2>/dev/null)
+OUT=$($HARNESS complete-tick --dir .bf --unit u1.1 --status completed --artifacts "$(pwd)/artifact.json" 2>/dev/null)
 assert_field_eq "$OUT" "['completed']" "True" "7.1a: complete-tick succeeds with tampered _tick_history"
 cd "$ORIG_DIR"
 rm -rf "$D"

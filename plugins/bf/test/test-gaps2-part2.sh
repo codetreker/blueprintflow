@@ -60,7 +60,7 @@ cat > "$HOME/.claude/flows/test-no-types.json" << 'EOF'
   "nodes": ["build", "gate-check"],
   "edges": {"build": {"PASS": "gate-check"}, "gate-check": {"PASS": null, "FAIL": "build"}},
   "limits": {"maxLoopsPerEdge": 3, "maxTotalSteps": 10, "maxNodeReentry": 5},
-  "opc_compat": ">=0.5"
+  "bf_compat": ">=0.5"
 }
 EOF
 cd "$D8"
@@ -188,7 +188,7 @@ cat > "$HOME/.claude/flows/test-no-pass-edge.json" << 'EOF'
   "edges": {"a": {"FAIL": "b"}, "b": {"PASS": null}},
   "limits": {"maxLoopsPerEdge": 3, "maxTotalSteps": 10, "maxNodeReentry": 5},
   "nodeTypes": {"a": "build", "b": "gate"},
-  "opc_compat": ">=0.5"
+  "bf_compat": ">=0.5"
 }
 EOF
 cd "$D12"
@@ -211,7 +211,7 @@ cat > "$HOME/.claude/flows/test-gate-no-pass.json" << 'EOF'
   "edges": {"gate-only": {"FAIL": "fallback"}, "fallback": {"PASS": null}},
   "limits": {"maxLoopsPerEdge": 3, "maxTotalSteps": 10, "maxNodeReentry": 5},
   "nodeTypes": {"gate-only": "gate", "fallback": "build"},
-  "opc_compat": ">=0.5"
+  "bf_compat": ">=0.5"
 }
 EOF
 cd "$D13"
@@ -227,8 +227,8 @@ cd /tmp
 echo ""
 echo "── GAP2-14: ls with corrupt flow-state in candidate dir"
 D14=$(mktemp -d)
-mkdir -p "$D14/.harness"
-echo "NOT JSON" > "$D14/.harness/flow-state.json"
+mkdir -p "$D14/.bf"
+echo "NOT JSON" > "$D14/.bf/flow-state.json"
 mkdir -p "$D14/.harness-extra"
 echo "ALSO BAD" > "$D14/.harness-extra/flow-state.json"
 OUT=$($HARNESS ls --base "$D14" 2>/dev/null)

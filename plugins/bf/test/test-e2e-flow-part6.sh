@@ -38,7 +38,7 @@ assert_contains() {
 echo "=== E2E TEST 18: stub extension hook in flow ==="
 # ═══════════════════════════════════════════════════════════════
 
-rm -rf .harness
+rm -rf .bf
 STUB_EXT_DIR="$TMPDIR/opc-stub-ext"
 rm -rf "$STUB_EXT_DIR"
 mkdir -p "$STUB_EXT_DIR/stub-test"
@@ -72,8 +72,8 @@ LINT_OUT=$($HARNESS extension-test --ext "$STUB_EXT_DIR/stub-test" --lint-strict
 assert_contains "18.3: lint passes" "$LINT_OUT" "EXIT:0"
 
 # 18.4: Init loads extension into flow-state
-$HARNESS init --flow review --entry review --dir .harness 2>/dev/null
-assert_contains "18.4: flow-state exists" "$(cat .harness/flow-state.json 2>/dev/null || echo '{}')" "flowTemplate"
+$HARNESS init --flow review --entry review --dir .bf 2>/dev/null
+assert_contains "18.4: flow-state exists" "$(cat .bf/flow-state.json 2>/dev/null || echo '{}')" "flowTemplate"
 
 echo ""
 

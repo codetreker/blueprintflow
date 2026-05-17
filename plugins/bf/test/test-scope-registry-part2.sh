@@ -71,13 +71,13 @@ CRITERIA
 echo "=== Task Scope Registry Tests (Part 2) ==="
 echo ""
 
-mkdir -p .harness
-write_acceptance .harness
+mkdir -p .bf
+write_acceptance .bf
 
 # ─── 9. scope matching via keyword overlap ───
 echo "--- Test 9: scope matching via keyword overlap ---"
-rm -rf .harness/loop-state.json
-cat > .harness/plan.md <<'EOF'
+rm -rf .bf/loop-state.json
+cat > .bf/plan.md <<'EOF'
 ## Task Scope
 - SCOPE-1: Build user authentication backend
 - SCOPE-2: Write comprehensive unit tests
@@ -86,32 +86,32 @@ cat > .harness/plan.md <<'EOF'
 - F1.1: implement — Implement user auth backend with JWT tokens
 - F1.2: review — Review implementation
 EOF
-OUT=$($HARNESS init-loop --dir .harness 2>/dev/null || true)
-echo "test evidence" > .harness/evidence3.txt
-echo "5 tests passed" >> .harness/evidence3.txt
+OUT=$($HARNESS init-loop --dir .bf 2>/dev/null || true)
+echo "test evidence" > .bf/evidence3.txt
+echo "5 tests passed" >> .bf/evidence3.txt
 echo "change3" >> dummy.txt && git add -A && git commit -q -m "implement jwt"
-OUT=$($HARNESS complete-tick --unit F1.1 --artifacts .harness/evidence3.txt --description "Implemented user auth backend with JWT" --dir .harness 2>/dev/null || true)
+OUT=$($HARNESS complete-tick --unit F1.1 --artifacts .bf/evidence3.txt --description "Implemented user auth backend with JWT" --dir .bf 2>/dev/null || true)
 assert_field_eq "keyword overlap match succeeds" "$OUT" "completed" "true"
 
 # ─── 10. scope matching via explicit SCOPE-N reference ───
 echo "--- Test 10: scope matching via explicit SCOPE-N reference ---"
-cat > .harness/eval-a.md <<'EOF'
+cat > .bf/eval-a.md <<'EOF'
 ## Evaluation
 🔵 Code covers SCOPE-2 requirements
 LGTM
 EOF
-cat > .harness/eval-b.md <<'EOF'
+cat > .bf/eval-b.md <<'EOF'
 ## Evaluation
 🔵 Tests comprehensive
 LGTM
 EOF
-OUT=$($HARNESS complete-tick --unit F1.2 --artifacts .harness/eval-a.md,.harness/eval-b.md --description "Review covers SCOPE-2 unit tests" --dir .harness 2>/dev/null || true)
+OUT=$($HARNESS complete-tick --unit F1.2 --artifacts .bf/eval-a.md,.bf/eval-b.md --description "Review covers SCOPE-2 unit tests" --dir .bf 2>/dev/null || true)
 assert_field_eq "explicit SCOPE-N ref matches" "$OUT" "completed" "true"
 
 # ─── 11. next-tick: uncovered_scope in termination output ───
 echo "--- Test 11: next-tick surfaces uncovered_scope ---"
-rm -rf .harness/loop-state.json
-cat > .harness/plan.md <<'EOF'
+rm -rf .bf/loop-state.json
+cat > .bf/plan.md <<'EOF'
 ## Task Scope
 - SCOPE-1: Build API
 - SCOPE-2: Browser E2E tests
@@ -121,31 +121,31 @@ cat > .harness/plan.md <<'EOF'
 - F1.1: implement — Build API endpoint
 - F1.2: review — Review API
 EOF
-OUT=$($HARNESS init-loop --dir .harness 2>/dev/null || true)
-echo "api evidence" > .harness/evidence4.txt
-echo "3 tests passed" >> .harness/evidence4.txt
+OUT=$($HARNESS init-loop --dir .bf 2>/dev/null || true)
+echo "api evidence" > .bf/evidence4.txt
+echo "3 tests passed" >> .bf/evidence4.txt
 echo "change4" >> dummy.txt && git add -A && git commit -q -m "api endpoint"
-$HARNESS complete-tick --unit F1.1 --artifacts .harness/evidence4.txt --description "Built API endpoint" --dir .harness --skip-scope-check 2>/dev/null || true
-cat > .harness/eval-c.md <<'EOF'
+$HARNESS complete-tick --unit F1.1 --artifacts .bf/evidence4.txt --description "Built API endpoint" --dir .bf --skip-scope-check 2>/dev/null || true
+cat > .bf/eval-c.md <<'EOF'
 ## Evaluation
 🔵 API looks good
 LGTM
 EOF
-cat > .harness/eval-d.md <<'EOF'
+cat > .bf/eval-d.md <<'EOF'
 ## Evaluation
 🔵 OK
 LGTM
 EOF
-$HARNESS complete-tick --unit F1.2 --artifacts .harness/eval-c.md,.harness/eval-d.md --description "Reviewed API" --dir .harness --skip-scope-check 2>/dev/null || true
-OUT=$($HARNESS next-tick --dir .harness 2>/dev/null || true)
+$HARNESS complete-tick --unit F1.2 --artifacts .bf/eval-c.md,.bf/eval-d.md --description "Reviewed API" --dir .bf --skip-scope-check 2>/dev/null || true
+OUT=$($HARNESS next-tick --dir .bf 2>/dev/null || true)
 assert_contains "next-tick mentions uncovered_scope" "$OUT" "uncovered_scope"
 assert_contains "mentions SCOPE-2" "$OUT" "SCOPE-2"
 assert_contains "mentions SCOPE-3" "$OUT" "SCOPE-3"
 
 # ─── 12. parseTaskScope: handles multi-line scope items ───
 echo "--- Test 12: parseTaskScope handles various formats ---"
-rm -rf .harness/loop-state.json
-cat > .harness/plan.md <<'EOF'
+rm -rf .bf/loop-state.json
+cat > .bf/plan.md <<'EOF'
 ## Task Scope
 - SCOPE-1: Build the backend API with REST endpoints
 - SCOPE-2: Create frontend React components for dashboard
@@ -155,9 +155,9 @@ cat > .harness/plan.md <<'EOF'
 - F1.1: implement — Build REST API backend
 - F1.2: review — Review backend
 EOF
-OUT=$($HARNESS init-loop --dir .harness 2>/dev/null || true)
+OUT=$($HARNESS init-loop --dir .bf 2>/dev/null || true)
 assert_field_eq "3 scope items parsed" "$OUT" "initialized" "true"
-SCOPE_COUNT=$(python3 -c "import json; d=json.load(open('.harness/loop-state.json')); print(len(d.get('_task_scope', [])))")
+SCOPE_COUNT=$(python3 -c "import json; d=json.load(open('.bf/loop-state.json')); print(len(d.get('_task_scope', [])))")
 if [ "$SCOPE_COUNT" = "3" ]; then
   echo "  ✅ 3 scope items in state"
   PASS=$((PASS + 1))
@@ -168,29 +168,29 @@ fi
 
 # ─── 13. complete-tick: partial coverage (1 of 3) → error ───
 echo "--- Test 13: partial coverage blocks termination ---"
-echo "api evidence" > .harness/evidence5.txt
-echo "2 tests passed" >> .harness/evidence5.txt
+echo "api evidence" > .bf/evidence5.txt
+echo "2 tests passed" >> .bf/evidence5.txt
 echo "change5" >> dummy.txt && git add -A && git commit -q -m "rest api"
-$HARNESS complete-tick --unit F1.1 --artifacts .harness/evidence5.txt --description "Built REST API backend" --dir .harness --skip-scope-check 2>/dev/null || true
-cat > .harness/eval-e.md <<'EOF'
+$HARNESS complete-tick --unit F1.1 --artifacts .bf/evidence5.txt --description "Built REST API backend" --dir .bf --skip-scope-check 2>/dev/null || true
+cat > .bf/eval-e.md <<'EOF'
 ## Evaluation
 🔵 Backend is solid
 LGTM
 EOF
-cat > .harness/eval-f.md <<'EOF'
+cat > .bf/eval-f.md <<'EOF'
 ## Evaluation
 🔵 Clean code
 LGTM
 EOF
-OUT=$($HARNESS complete-tick --unit F1.2 --artifacts .harness/eval-e.md,.harness/eval-f.md --description "Reviewed backend" --dir .harness 2>/dev/null || true)
+OUT=$($HARNESS complete-tick --unit F1.2 --artifacts .bf/eval-e.md,.bf/eval-f.md --description "Reviewed backend" --dir .bf 2>/dev/null || true)
 assert_field_eq "partial coverage blocks" "$OUT" "completed" "false"
 assert_contains "lists uncovered SCOPE-2" "$OUT" "SCOPE-2"
 assert_contains "lists uncovered SCOPE-3" "$OUT" "SCOPE-3"
 
 # ─── 14. scope items with no match at all → all uncovered ───
 echo "--- Test 14: completely unrelated plan → all scope uncovered ---"
-rm -rf .harness/loop-state.json
-cat > .harness/plan.md <<'EOF'
+rm -rf .bf/loop-state.json
+cat > .bf/plan.md <<'EOF'
 ## Task Scope
 - SCOPE-1: Implement dark mode theme
 - SCOPE-2: Add accessibility audit
@@ -199,30 +199,30 @@ cat > .harness/plan.md <<'EOF'
 - F1.1: implement — Fix typo in README
 - F1.2: review — Review typo fix
 EOF
-OUT=$($HARNESS init-loop --dir .harness 2>/dev/null || true)
-echo "typo evidence" > .harness/evidence6.txt
-echo "0 tests passed" >> .harness/evidence6.txt
+OUT=$($HARNESS init-loop --dir .bf 2>/dev/null || true)
+echo "typo evidence" > .bf/evidence6.txt
+echo "0 tests passed" >> .bf/evidence6.txt
 echo "change6" >> dummy.txt && git add -A && git commit -q -m "fix typo"
-$HARNESS complete-tick --unit F1.1 --artifacts .harness/evidence6.txt --description "Fixed typo in README" --dir .harness --skip-scope-check 2>/dev/null || true
-cat > .harness/eval-g.md <<'EOF'
+$HARNESS complete-tick --unit F1.1 --artifacts .bf/evidence6.txt --description "Fixed typo in README" --dir .bf --skip-scope-check 2>/dev/null || true
+cat > .bf/eval-g.md <<'EOF'
 ## Evaluation
 🔵 Typo fixed
 LGTM
 EOF
-cat > .harness/eval-h.md <<'EOF'
+cat > .bf/eval-h.md <<'EOF'
 ## Evaluation
 🔵 OK
 LGTM
 EOF
-OUT=$($HARNESS complete-tick --unit F1.2 --artifacts .harness/eval-g.md,.harness/eval-h.md --description "Reviewed typo fix" --dir .harness 2>/dev/null || true)
+OUT=$($HARNESS complete-tick --unit F1.2 --artifacts .bf/eval-g.md,.bf/eval-h.md --description "Reviewed typo fix" --dir .bf 2>/dev/null || true)
 assert_field_eq "completely unrelated blocks" "$OUT" "completed" "false"
 assert_contains "SCOPE-1 uncovered" "$OUT" "SCOPE-1"
 assert_contains "SCOPE-2 uncovered" "$OUT" "SCOPE-2"
 
 # ─── 15. loop-protocol.md Task Scope format respected ───
 echo "--- Test 15: mixed SCOPE numbering works ---"
-rm -rf .harness/loop-state.json
-cat > .harness/plan.md <<'EOF'
+rm -rf .bf/loop-state.json
+cat > .bf/plan.md <<'EOF'
 ## Task Scope
 - SCOPE-1: Primary deliverable
 - SCOPE-5: Secondary deliverable
@@ -232,8 +232,8 @@ cat > .harness/plan.md <<'EOF'
 - F1.1: implement — Deliver primary and secondary and tertiary
 - F1.2: review — Final review
 EOF
-OUT=$($HARNESS init-loop --dir .harness 2>/dev/null || true)
-SCOPE_COUNT=$(python3 -c "import json; d=json.load(open('.harness/loop-state.json')); print(len(d.get('_task_scope', [])))")
+OUT=$($HARNESS init-loop --dir .bf 2>/dev/null || true)
+SCOPE_COUNT=$(python3 -c "import json; d=json.load(open('.bf/loop-state.json')); print(len(d.get('_task_scope', [])))")
 if [ "$SCOPE_COUNT" = "3" ]; then
   echo "  ✅ non-sequential SCOPE numbering works"
   PASS=$((PASS + 1))

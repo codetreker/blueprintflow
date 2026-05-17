@@ -4,7 +4,7 @@ set -euo pipefail
 # Test: crash recovery (in_progress timeout) + VALID_LOOP_STATUSES export
 
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-HARNESS="node $SCRIPT_DIR/bin/opc-harness.mjs"
+HARNESS="node $SCRIPT_DIR/runtime/bf-harness.mjs"
 PASS=0; FAIL=0
 
 check() {
@@ -38,7 +38,7 @@ setup_loop() {
   "next_unit": "$next_unit",
   "status": "$status",
   "plan_file": "$absdir/plan.md",
-  "_written_by": "opc-harness",
+  "_written_by": "bf-harness",
   "_write_nonce": "test123",
   "_last_modified": "2026-01-01T00:00:00.000Z",
   $since_field
@@ -97,16 +97,16 @@ TEN_MIN_AGO_3=$(node -e "console.log(new Date(Date.now() - 10*60000).toISOString
 setup_loop "crash3" "A.2" 1 "in_progress" "$TEN_MIN_AGO_3"
 
 # Timeout clamped to 0.1h (6 min floor); 10 min > 6 min → triggers recovery
-RESULT3=$(OPC_TICK_TIMEOUT_HOURS=0.001 H next-tick --dir crash3)
+RESULT3=$(BF_TICK_TIMEOUT_HOURS=0.001 H next-tick --dir crash3)
 check "custom timeout triggers recovery" 'echo "$RESULT3" | grep -q "in_progress_timeout"'
 
 echo ""
 echo "=== TEST GROUP 4: VALID_LOOP_STATUSES export ==="
 
-VSIZE=$(node --input-type=module -e "import { VALID_LOOP_STATUSES } from '$SCRIPT_DIR/bin/lib/util.mjs'; console.log(VALID_LOOP_STATUSES.size)" 2>&1)
+VSIZE=$(node --input-type=module -e "import { VALID_LOOP_STATUSES } from '$SCRIPT_DIR/runtime/lib/util.mjs'; console.log(VALID_LOOP_STATUSES.size)" 2>&1)
 check "VALID_LOOP_STATUSES has 5 entries" '[ "$VSIZE" = "5" ]'
 
-TSIZE=$(node --input-type=module -e "import { TERMINAL_LOOP_STATUSES } from '$SCRIPT_DIR/bin/lib/util.mjs'; console.log(TERMINAL_LOOP_STATUSES.size)" 2>&1)
+TSIZE=$(node --input-type=module -e "import { TERMINAL_LOOP_STATUSES } from '$SCRIPT_DIR/runtime/lib/util.mjs'; console.log(TERMINAL_LOOP_STATUSES.size)" 2>&1)
 check "TERMINAL_LOOP_STATUSES has 3 entries" '[ "$TSIZE" = "3" ]'
 
 echo ""
@@ -130,7 +130,7 @@ delete s._write_nonce;
 writeFileSync('$TMPD/tamper1/loop-state.json', JSON.stringify(s, null, 2));
 "
 RESULT6=$(H next-tick --dir tamper1)
-check "tamper warning emitted" 'echo "$RESULT6" | grep -q "not written by opc-harness"'
+check "tamper warning emitted" 'echo "$RESULT6" | grep -q "not written by bf-harness"'
 
 echo ""
 echo "=== TEST GROUP 7: Timeout floor clamps tiny values ==="
@@ -153,7 +153,7 @@ const s = JSON.parse(readFileSync('$TMPD/floor1/loop-state.json','utf8'));
 s._in_progress_since = '$THREE_MIN_AGO';
 writeFileSync('$TMPD/floor1/loop-state.json', JSON.stringify(s, null, 2));
 "
-RESULT7=$(OPC_TICK_TIMEOUT_HOURS=0.00001 H next-tick --dir floor1)
+RESULT7=$(BF_TICK_TIMEOUT_HOURS=0.00001 H next-tick --dir floor1)
 check "tiny timeout clamped — no false stall" 'echo "$RESULT7" | grep -q "another tick is in progress"'
 
 echo ""

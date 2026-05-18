@@ -59,6 +59,8 @@ bf show auth-v1
 bf tree
 ```
 
+**Coming from the v6 plugin?** See [MIGRATION.md](./MIGRATION.md).
+
 ## Usage tour (v0.2-alpha)
 
 `bf` is verb-first. The 18 verbs group by purpose:

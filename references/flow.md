@@ -1,7 +1,20 @@
 # Flow
 
+> Contract version: **v0.3** (Stage 6 — gate auto-synthesis clarified
+> per Stage 5 demo finding #3).
+
 > How a Work Object is advanced. A directed graph of typed nodes connected
 > by verdict-keyed edges.
+
+> **Gate-type nodes auto-synthesize.** Per `pipeline/gate-protocol.md`,
+> a node with `nodeType: "gate"` computes its verdict mechanically from
+> upstream non-gate node handshakes — no role dispatch, no agent
+> invocation. Orchestrators (including the SKILL.md dispatch loop) MUST
+> NOT request agents for gate nodes. The dispatcher (`node-runner.mjs`)
+> emits a synthetic `eval-gate.md` and proceeds to seal; the
+> `transition` verb still enforces verdict math against upstream
+> handshakes, so a gate over a failing upstream still blocks. (Stage 6
+> finding #3 lift.)
 
 ## Concept
 

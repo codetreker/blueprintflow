@@ -1,5 +1,8 @@
 # Gate
 
+> Contract version: **v0.3** (Stage 6 — no behavioral change; version
+> bumped for consistency. See `flow.md` for gate auto-synthesis.)
+
 > Mechanical decision point. Computes PASS / ITERATE / FAIL / BLOCKED from
 > upstream node findings. No LLM judgement.
 

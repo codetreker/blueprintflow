@@ -20,6 +20,33 @@ function extractSections(text) {
   return sections;
 }
 
+// BF Pack section aliases (Stage 6 finding #2). BF Pack protocols produce
+// `Objective` / `Boundary` / `Acceptance criteria`; OPC produced
+// `Outcomes` / `Verification` / `Quality Constraints` / `Out of Scope`.
+// runLint accepts either; OPC names take precedence when both exist.
+function getSection(sections, ...names) {
+  for (const n of names) {
+    if (sections[n] !== undefined) return sections[n];
+  }
+  return undefined;
+}
+
+// Extract `- [ ]` / `- [x]` checklist items from a BF-style Acceptance
+// criteria section and synthesize OUT-N records so the rest of the lint
+// pipeline (verification-mapped, no-vague, no-impossible, uniqueness)
+// works uniformly.
+function extractChecklistAsOutcomes(sectionsBody) {
+  const items = [];
+  const re = /^-\s+\[[ xX]\]\s+(.+)$/gm;
+  let m;
+  let n = 1;
+  while ((m = re.exec(sectionsBody)) !== null) {
+    items.push({ id: `OUT-${n}`, text: `OUT-${n}: ${m[1]}`, num: n });
+    n++;
+  }
+  return items;
+}
+
 // ── Extract OUT-N bullets ──────────────────────────────────────
 function extractOutcomes(sectionsBody) {
   const outcomes = [];
@@ -68,14 +95,22 @@ export function runLint(text, tier) {
 
   // ── Structural checks (7) ──────────────────────────────────
 
+  // BF Pack shape detection — when `Acceptance criteria` exists but
+  // `Outcomes` doesn't, we're linting a BF Pack wo.md (Stage 6 finding #2).
+  // OPC-only sections (Quality Constraints / Out of Scope / Verification)
+  // become optional; outcomes are derived from the checklist.
+  const isBfShape = sections["Acceptance criteria"] !== undefined && sections["Outcomes"] === undefined;
+
   // 1. outcomes-exist
   checksRun++;
-  const outcomesSection = sections["Outcomes"];
+  const outcomesSection = getSection(sections, "Outcomes", "Acceptance criteria");
   if (outcomesSection === undefined) {
     fail("outcomes-exist", "No outcomes section or no OUT-N bullets found");
   }
 
-  const outcomes = outcomesSection ? extractOutcomes(outcomesSection) : [];
+  const outcomes = outcomesSection
+    ? (isBfShape ? extractChecklistAsOutcomes(outcomesSection) : extractOutcomes(outcomesSection))
+    : [];
 
   // 2. outcomes-count
   checksRun++;
@@ -85,14 +120,14 @@ export function runLint(text, tier) {
 
   // 3. verification-exists
   checksRun++;
-  const verificationSection = sections["Verification"];
-  if (verificationSection === undefined) {
+  const verificationSection = getSection(sections, "Verification");
+  if (verificationSection === undefined && !isBfShape) {
     fail("verification-exists", "No verification section");
   }
 
   // 4. verification-mapped
   checksRun++;
-  if (verificationSection && outcomes.length > 0) {
+  if (verificationSection && outcomes.length > 0 && !isBfShape) {
     for (const out of outcomes) {
       if (!verificationSection.includes(out.id)) {
         fail("verification-mapped", `${out.id} has no verification method`);
@@ -102,14 +137,14 @@ export function runLint(text, tier) {
 
   // 5. quality-section
   checksRun++;
-  if (sections["Quality Constraints"] === undefined) {
+  if (sections["Quality Constraints"] === undefined && !isBfShape) {
     fail("quality-section", "No quality constraints section");
   }
 
   // 6. scope-section
   checksRun++;
-  if (sections["Out of Scope"] === undefined) {
-    fail("scope-section", "No out-of-scope section");
+  if (sections["Out of Scope"] === undefined && sections["Boundary"] === undefined) {
+    fail("scope-section", "No out-of-scope / Boundary section");
   }
 
   // 7. tier-section

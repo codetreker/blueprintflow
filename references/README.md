@@ -1,5 +1,8 @@
 # BF Core Contracts
 
+> **Contract version: v0.3** (lifted from Stage 5 demo findings; see
+> `../../docs/specs/2026-05-18-stage-6-core-v0.3.md` for the change log).
+
 This directory holds the five canonical BF Core contracts. Read in order:
 
 1. [work-object.md](./work-object.md) — the primary citizen (what)

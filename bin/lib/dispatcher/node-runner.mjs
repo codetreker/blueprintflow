@@ -47,6 +47,13 @@ export async function runNode({ packPath, flowFile, runDir, nodeId, transitionTo
   if (process.env.BF_RESUME_NODE === nodeId) {
     // Artifacts assumed already written by the orchestrator; skip both
     // stub-emit and agents-needed branches and fall through to seal.
+  } else if (nodeType === "gate") {
+    // Stage 6 finding #3: gate-type nodes synthesize verdict from upstream
+    // evals mechanically (per pipeline/gate-protocol.md). Skip the
+    // agents-needed round-trip and emit a synthetic PASS eval — the
+    // transition step still enforces verdict math against upstream
+    // handshakes, so a gate over a failing upstream will still block.
+    await writeFile(path.join(runPath, "eval-gate.md"), stubEvalFor("gate", nodeId));
   } else if (process.env.BF_ORCHESTRATOR === "skill") {
     return {
       status: "agents-needed",

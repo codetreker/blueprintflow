@@ -1,5 +1,8 @@
 # Work Object
 
+> Contract version: **v0.3** (Stage 6 — clarifies acceptance-checklist
+> semantics per Stage 5 demo finding #4).
+
 > The primary citizen of BF. A bounded piece of uncertain or incomplete work
 > that BF advances through states.
 
@@ -151,6 +154,14 @@ Implement the email/password login form on `/login`, with session cookie persist
 
 ## Open questions
 
+- **Acceptance-criteria checklist semantics** (Stage 6 v0.3
+  clarification): the `## Acceptance criteria` checklist (`- [ ]`
+  items) in `wo.md` is **NOT** toggled to `- [x]` during state
+  transitions. The `current_state` field IS the acceptance signal —
+  a WO is accepted iff `current_state == done`. The checklist is the
+  static record of what `done` was defined to mean during shaping,
+  and remains useful as a human-readable contract after the fact.
+  Lifted from Stage 5 demo finding #4.
 - **Pack-defined state extensions**: how do Packs add intermediate states without breaking Core flow-routing? (Working answer: Core defines the canonical state set; Packs may add states that map to canonical ones, but must declare the mapping in `pack.json`.)
 - **Resume vs new-run when `runtime.active_run` is non-null and the process restarts**: prompt the user, or auto-resume? (Working answer: auto-resume if no stale-detection signal; prompt otherwise.)
 - **`depends_on` resolution**: cross-tree references (`other-wo-id`) or siblings only? (Working answer: siblings-only in v1; cross-tree deferred.)

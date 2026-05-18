@@ -1,5 +1,8 @@
 # Pack
 
+> Contract version: **v0.3** (Stage 6 — leaf-task routing note added
+> per Stage 5 demo finding #5).
+
 > Domain-specific instantiation of BF Core. Manifest binding schemas + flows
 > + roles + protocols + routing into one installable unit.
 
@@ -133,6 +136,14 @@ A product-engineering Pack manifest:
 
 ## Open questions
 
+- **Leaf-schema routing convention** (Stage 6 v0.3 clarification): when
+  a Pack's schema has no further breakdown (e.g. `task` in
+  `product-engineering` — milestones break down into tasks, tasks do
+  not break down further), the Pack SHOULD route `<schema>,shaped`
+  directly to a close-leaf flow rather than introducing a no-op
+  breakdown step. The product-engineering Pack carries
+  `"task,shaped": "close-leaf-task"` for this reason. Lifted from
+  Stage 5 demo finding #5.
 - **Cross-Pack workflows** (e.g. research Pack hands off to
   product-engineering Pack): deferred to v2.
 - **Pack dependencies** (one Pack importing another's schemas or roles):

@@ -8,8 +8,8 @@ export BF_WO_HOME="$WO_HOME"
 node bin/bf.mjs create "regression task" --pack product-engineering --schema task >/dev/null
 ID=$(ls "$WO_HOME")  # the one we just created
 node bin/bf.mjs show "$ID" 2>/dev/null | grep -q 'current_state' || { echo "FAIL: show after create"; exit 1; }
-node bin/bf.mjs execute "$ID" >/dev/null 2>&1 || true   # may stop at routing gap; that's OK for regression
-node bin/bf.mjs tree 2>/dev/null | grep -q "$ID" || { echo "FAIL: tree after execute"; exit 1; }
+node bin/bf.mjs execute "$ID" >/dev/null 2>&1 || true   # may finalize to done with stub agents
+node bin/bf.mjs tree --all 2>/dev/null | grep -q "$ID" || { echo "FAIL: tree after execute"; exit 1; }
 node bin/bf.mjs discard "$ID" --force >/dev/null
 [ -d "$WO_HOME/$ID" ] && { echo "FAIL: discard"; exit 1; }
 echo "PASS: create→show→execute→tree→discard regression"

@@ -1,5 +1,8 @@
 # WO Home
 
+> Contract version: **v0.3** (Stage 6 — no behavioral change; version
+> bumped for consistency.)
+
 > The semi-persistent local directory holding a Work Object's complete state
 > while in progress. Replaces the earlier "Ledger" concept; deleted when the
 > WO is discarded.

@@ -16,6 +16,7 @@
   "protocols_dir": "./protocols",
   "routing": {
     "task,new":          "brainstorm-task",
+    "task,shaped":       "close-leaf-task",
     "milestone,shaped":  "breakdown-milestone-to-task",
     "milestone,broken_down": "loop-milestone",
     "task,doing":        "close-leaf-task"

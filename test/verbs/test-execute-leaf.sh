@@ -16,17 +16,14 @@ pack: product-engineering
 # exec smoke test
 EOF
 
-OUT=$(BF_WO_HOME="$WO_HOME" node bin/bf.mjs execute "$ID" 2>&1)
-grep -q 'current_state: shaped' "$WO_HOME/$ID/wo.md" || { echo "FAIL: brainstorm did not advance to shaped"; echo "$OUT"; cat "$WO_HOME/$ID/wo.md"; exit 1; }
-
-# v0.2 routing gap: shaped → doing transition is manual until Stage 5.
-sed -i 's/current_state: shaped/current_state: doing/' "$WO_HOME/$ID/wo.md"
-
+# With Stage 6.1 routing (task,shaped → close-leaf-task), execute drives
+# the WO new → shaped → doing → done in a single invocation under stub agents.
 OUT=$(BF_WO_HOME="$WO_HOME" node bin/bf.mjs execute "$ID" 2>&1)
 grep -q 'current_state: done' "$WO_HOME/$ID/wo.md" || {
-  echo "FAIL: close-leaf-task did not advance to done"
+  echo "FAIL: execute did not drive new → done"
   echo "$OUT"
+  cat "$WO_HOME/$ID/wo.md"
   exit 1
 }
 
-echo "PASS: execute drove new → shaped → (manual) → doing → done"
+echo "PASS: execute drove new → shaped → doing → done (single call)"

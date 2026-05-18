@@ -1,6 +1,6 @@
 {
   "name": "@codetreker/bf",
-  "version": "0.2.0-alpha",
+  "version": "1.0.0-rc.1",
   "description": "Blueprintflow — general evidence-gated work loop framework. Bare Claude Code skill + standalone CLI harness.",
   "type": "module",
   "bin": {

@@ -3,8 +3,9 @@
 > General evidence-gated work loop framework. Moves Work Objects through states
 > via flow graphs, mechanical gates, and independent verification.
 
-**Status: alpha (v0.2.0-alpha).** Verb-first dispatcher + harness hardening
-landed in Stage 4. End-to-end demo with real agent dispatch is Stage 5.
+**Status: release candidate (v1.0.0-rc.1).** End-to-end demo passed
+with real Claude subagents driving a fresh task WO `new → done`. See
+`docs/specs/2026-05-18-stage-5-demo-trace.md`.
 
 BF is a [bare Claude Code skill](https://docs.anthropic.com/en/docs/claude-code/skills),
 distributed via npm. The package installs a harness binary and post-installs
@@ -61,7 +62,7 @@ bf tree
 
 **Coming from the v6 plugin?** See [MIGRATION.md](./MIGRATION.md).
 
-## Usage tour (v0.2-alpha)
+## Usage tour (v1.0.0-rc.1)
 
 `bf` is verb-first. The 18 verbs group by purpose:
 
@@ -80,25 +81,33 @@ bf create "shape login form acceptance" --pack product-engineering --schema task
 
 bf execute shape-login-form-acceptance
 # → walks brainstorm-task flow; ends at state 'shaped'
-
-# (Stage 4 v0.2 limitation: leaf tasks go from shaped → doing manually
-# until the Stage 5 demo lands the leaf-fast-path.)
-vim ~/.bf/wo/shape-login-form-acceptance/wo.md  # set current_state: doing
-
-bf execute shape-login-form-acceptance
-# → walks close-leaf-task flow; ends at state 'done'
+# → routing rule task,shaped → close-leaf-task then takes it doing → done
+# in the same call (under the SKILL.md orchestrator, real subagents
+# produce every artifact; under raw `node bin/bf.mjs`, stubs do).
 ```
 
-### Status (Stage 4 v0.2)
+### Status (v1.0.0-rc.1)
 
 - verb-first dispatch (all 18 verbs)
 - harness-level mechanics (init, seal, transition, finalize, viz with back-edges)
 - packs-relative flow loading (no global flow registry needed)
+- **SKILL.md orchestrator drives real subagent dispatch** (Stage 5.1)
+- **end-to-end demo passed** with real Claude subagents at every node —
+  see `docs/specs/2026-05-18-stage-5-demo-trace.md`
+- Core contracts at v0.3 (`references/*.md`) lifting Stage 5 demo
+  findings — see `docs/specs/2026-05-18-stage-6-core-v0.3.md`
+- gate-type nodes auto-synthesize verdict from upstream handshakes
+  (no role dispatch)
+- `criteria-lint` accepts BF Pack section names (Objective / Boundary /
+  Acceptance criteria) alongside the OPC originals
+- `task,shaped → close-leaf-task` routing closes the leaf-task gap;
+  `bf execute` drives leaf WOs `new → done` in one call
 - `npm pack --dry-run` clean
-- stub agent dispatch — every role's eval is auto-PASS; Stage 5 plumbs real Claude subagent calls
-- `loop` verb defers with a "child-WO dispatch — Stage 5" message
-- NL parse handles deterministic patterns only; LLM-driven transcription deferred
-- not yet `npm publish`-ed; first publish lands when Stage 5 demo succeeds end-to-end
+- `loop` verb still defers — child-WO dispatch is post-v1
+- NL transcription via the SKILL.md orchestrator; standalone CLI
+  requires verb-first invocation
+- first real `npm publish` after the spec author runs the demo on
+  their own machine and signs off
 
 ## Repository layout
 

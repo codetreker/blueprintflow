@@ -2,7 +2,7 @@ const KNOWN_VERBS = new Set([
   "execute", "create", "brainstorm", "breakdown", "loop", "close",
   "show", "tree", "list", "discard",
   "skip", "pass", "stop", "goto", "resume",
-  "pack", "flow", "help", "version",
+  "pack", "flow", "help", "version", "greeting",
 ]);
 
 function camel(kebab) {

@@ -75,6 +75,10 @@ const VERB_DOCS = {
     syntax: "bf version",
     summary: "Print the bf package version (from package.json) to stdout.",
   },
+  greeting: {
+    syntax: "bf greeting",
+    summary: "Print a hello message to stdout.",
+  },
 };
 
 export async function help({ args }) {

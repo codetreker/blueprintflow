@@ -955,8 +955,3 @@ git commit -m "docs(bf-core): add core/README.md + verify cross-links"
 - Stage 5: end-to-end demo — separate plan
 - Stage 6: remaining Pack migration + v6→v1 migration guide — separate plan
 - `bf` extension system, cron verbs, HTML report, replay viewer — all v2
-
-
-
-
-

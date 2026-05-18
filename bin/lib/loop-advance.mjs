@@ -555,4 +555,3 @@ function _buildResumePrompt(dir, state, unitDetails, unitType, contextHints, pla
 
   return parts.filter(l => l != null).join("\n");
 }
-

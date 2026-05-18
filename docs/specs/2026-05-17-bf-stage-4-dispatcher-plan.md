@@ -1459,7 +1459,7 @@ single-leaf task.
 - final current_state is 'done'
 EOF
 
-# Note: state transitions new → shaped (via brainstorm) → ??? 
+# Note: state transitions new → shaped (via brainstorm) → ???
 # brainstorm-task flow produces shaped; that's not yet "doing".
 # v0.2 special: routing has no task,shaped → null → execute exits with hint.
 # The test asserts that intermediate behavior is correct AND that re-running

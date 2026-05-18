@@ -71,6 +71,10 @@ const VERB_DOCS = {
     syntax: "bf help [<verb>]",
     summary: "Show the verb catalog or details for a single verb.",
   },
+  version: {
+    syntax: "bf version",
+    summary: "Print the bf package version (from package.json) to stdout.",
+  },
 };
 
 export async function help({ args }) {

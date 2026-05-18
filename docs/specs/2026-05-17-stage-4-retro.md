@@ -151,6 +151,8 @@ through implement / review / verify / gate with real agents at each
 node and lands at `done` with sealed artifacts under
 `runs/run-*/nodes/*/run_*/`.
 
+**Stage 5 demo outcome:** see `docs/specs/2026-05-18-stage-5-demo-trace.md`.
+
 ## Test result
 
 `bash test/run-all.sh` → **132 files passed, 0 files failed**.

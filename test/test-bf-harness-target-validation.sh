@@ -31,6 +31,29 @@ assert_eq "$RC" "2" "lint extra segments rejected"
 run_bfh lint
 assert_eq "$RC" "2" "missing target rejected"
 
+# Arity: list must not have woId
+run_bfh list "p/wo-x"
+assert_eq "$RC" "2" "list with woId rejected"
+assert_match "$STDERR" "list" "list arity error mentions list"
+
+# Arity: lint requires woId
+run_bfh lint "p"
+assert_eq "$RC" "2" "lint without woId rejected"
+assert_match "$STDERR" "lint requires" "lint arity error"
+
+# Arity: accept must not have taskId
+run_bfh accept "p/wo-x/task-1"
+assert_eq "$RC" "2" "accept with taskId rejected"
+assert_match "$STDERR" "task" "accept arity error mentions task"
+
+# Arity: discard must not have taskId
+run_bfh discard "p/wo-x/task-1"
+assert_eq "$RC" "2" "discard with taskId rejected"
+
+# Arity: next requires woId
+run_bfh next "p"
+assert_eq "$RC" "2" "next without woId rejected"
+
 rm -rf "$BASE"
 unset BF_HOME
 pass

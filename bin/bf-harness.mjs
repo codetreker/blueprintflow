@@ -41,6 +41,25 @@ function parseTarget(s) {
   return { projectSlug, woId: woId || null, taskId: taskId || null };
 }
 
+const ARITY = {
+  list:           { wo: "forbidden", task: "forbidden" },
+  lint:           { wo: "required",  task: "forbidden" },
+  accept:         { wo: "required",  task: "forbidden" },
+  next:           { wo: "required",  task: "forbidden" },
+  discard:        { wo: "required",  task: "forbidden" },
+  "start-review": { wo: "required",  task: "optional" },
+  verify:         { wo: "required",  task: "optional" },
+};
+
+function validateArity(subcmd, t) {
+  const rule = ARITY[subcmd];
+  if (!rule) return null;
+  if (rule.wo === "required" && !t.woId) return `${subcmd} requires <project-slug>/<bf-wo>`;
+  if (rule.wo === "forbidden" && t.woId) return `${subcmd} takes <project-slug> only (no bf-wo)`;
+  if (rule.task === "forbidden" && t.taskId) return `${subcmd} does not accept a task id`;
+  return null;
+}
+
 function resolveRepoRoot() {
   if (process.env.BF_REPO_ROOT) return process.env.BF_REPO_ROOT;
   return path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -55,6 +74,8 @@ async function main() {
   const repoRoot = resolveRepoRoot();
   const t = parseTarget(target);
   if (!t) fail(`invalid or missing target argument\n${USAGE}`, 2);
+  const arityErr = validateArity(subcmd, t);
+  if (arityErr) fail(`${arityErr}\n${USAGE}`, 2);
 
   if (subcmd === "verify") {
     const r = await cmdVerify({ baseHome, projectSlug: t.projectSlug, woId: t.woId, taskId: t.taskId, repoRoot });

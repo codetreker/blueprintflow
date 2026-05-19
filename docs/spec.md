@@ -26,13 +26,13 @@ State: Draft
   +- discussion.md
   +- runs/
   |    +- reviews/
-  |         +- round_{N}/  // review round N
-  |              +- result_{role}.md // {role} review result
+  |         +- round_{N}/                // review round N
+  |              +- result_{role}_{idx}.md  // {role} 的第 {idx} 个 subagent 的 review 结果
   +- <task-id>/
   |    +- runs/
   |    |    +- reviews/
   |    |    |    +- round_{N}/
-  |    |    |         +- result_{N}.md
+  |    |    |         +- result_{role}_{idx}.md
   |    |    +- ...
   |    +- spec.md
   |    +- more files
@@ -154,11 +154,11 @@ LLM 不能修改 bf.md / `<task>/spec.md` 的内容。harness 有以下窄授权
 其它任何 mutation 一律非法 —— 加行、删行、改字段、改 task list、改 boundary 等都不允许。
 
 ## Spec Review流程
-找到match的roles 开subagent revieww： 每个role可以开1-3个subagent。可以视任务的复杂程度增加或者减少subagent数，但是总数最多不超过10个subagent, `<round>`从0开始：
-  - 运行 `./bin/bf-harness.mjs start-review <bf-wo>`, 返回review output dir，本轮review的result必须放到这个目录里
-  - 创建 `runs` 目录，为每个role创建独立的目录 `review_<round>`
-  - 并行review，如果subagent数撞墙了，关闭一些stale的，实在不行就排队。
-  - 运行 `./bin/bf-harness.mjs verify <bf-wo>` 拿结果，通过会返回"SUCCESS", 其他情况会返回"FAIL"以及具体的错误信息和详细文件路径。
+找到match的roles 开subagent review： 每个role可以开1-3个subagent。可以视任务的复杂程度增加或者减少subagent数，但是总数最多不超过10个subagent, `<round>`从0开始：
+  - 运行 `./bin/bf-harness.mjs start-review <bf-wo>`, 返回 review 输出目录（`<bf-wo>/runs/reviews/round_N/`），本轮所有 review 结果文件必须放到这个目录里
+  - 该目录所有 subagent 共享，每个 subagent 写一份 `result_<role>_<idx>.md`；`<idx>` 从 1 开始递增（同一 role 多 subagent 时用 idx 区分）
+  - 并行 review，如果 subagent 数撞墙了，关闭一些 stale 的，实在不行就排队
+  - 运行 `./bin/bf-harness.mjs verify <bf-wo>` 拿结果，通过会返回"SUCCESS"，其他情况会返回"FAIL"以及具体的错误信息和详细文件路径
 
 ## Task Review流程
 
@@ -191,10 +191,10 @@ LLM 不能修改 bf.md / `<task>/spec.md` 的内容。harness 有以下窄授权
 - 模板：[`docs/template/task-spec.md`](./template/task-spec.md)
 - 关键约束：State 字段只能取 Draft、Ready、Tasking、Completed；Capability 字段只能填一个（执行能力）；Acceptance Criteria 每条带 `{id}|{capability}` marker（验收能力，跟执行能力区分开）。
 
-### review_{round_N}/result_{role}.md —— review 结果
+### review_{round_N}/result_{role}_{idx}.md —— review 结果
 
-- 位置：`<bf-wo>/runs/reviews/round_N/result_<role>.md`（bf-wo 级 review）或 `<bf-wo>/<task>/runs/reviews/round_N/result_<role>.md`（task 级 review）
-- 角色：单个 reviewer 在某一轮 review 的结果。
+- 位置：`<bf-wo>/runs/reviews/round_N/result_<role>_<idx>.md`（bf-wo 级 review）或 `<bf-wo>/<task>/runs/reviews/round_N/result_<role>_<idx>.md`（task 级 review）
+- 角色：单个 reviewer subagent 在某一轮 review 的结果。同 round 同 role 可以有多个 subagent 并行，用 `idx`（从 1 开始）区分。
 - 模板：[`docs/template/review-result.md`](./template/review-result.md)
 - 关键约束：Results 必须按 severity 分组（Blocker / High / Minor / Nit）；Accepted Criteria 引用的 id 必须是 bf.md 或 task spec.md 里实际存在的 AC id。
 
@@ -258,13 +258,13 @@ bf执行流程控制，运行目录是`~/.bf/<project-slug>/<bf-wo>`，支持一
 
   **Mode A：`verify <bf-wo>` 且 bf.md.State = `Draft`（Spec Review phase）**
   - 找到 `<bf-wo>/runs/reviews/round_N/` 里 N 最大的那一轮
-  - 遍历所有 `result_<role>.md`，解析 `## Results`
+  - 遍历所有 `result_<role>_<idx>.md`，解析 `## Results`
   - 任一份有 Blocker 或 High → FAIL；全部 clean → SUCCESS
   - **不 flip 任何 AC，不动 State** —— spec review 的产物只是"准 ready"，是否 Accept 由用户决定
 
   **Mode B：`verify <bf-wo>/<task>` 且 bf.md.State ∈ `{Accepted, Implementing}`（Task Verification phase）**
   - 找到 `<bf-wo>/<task>/runs/reviews/round_N/` 里 N 最大的那一轮
-  - 解析所有 `result_<role>.md` 的 `## Results` + `## Accepted Criteria`
+  - 解析所有 `result_<role>_<idx>.md` 的 `## Results` + `## Accepted Criteria`
   - 任一份有 Blocker 或 High → FAIL，**不动 state/checkbox**
   - 没有 Blocker / High 时，对每条 task AC：
     - 解 AC 的 `{capability}` → 反查 reviewer roles（排除 doer，IV 约束）

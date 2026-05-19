@@ -23,10 +23,22 @@ const USAGE = `Usage:
 function out(obj) { process.stdout.write(JSON.stringify(obj) + "\n"); }
 function fail(msg, code = 2) { process.stderr.write(msg + "\n"); process.exit(code); }
 
+function isSafeSegment(seg) {
+  if (!seg || seg === "." || seg === "..") return false;
+  if (/[/\\]/.test(seg)) return false;
+  if (seg.includes("\0")) return false;
+  return true;
+}
+
 function parseTarget(s) {
   if (!s) return null;
-  const [projectSlug, woId, taskId] = s.split("/");
-  return { projectSlug, woId, taskId: taskId || null };
+  const parts = s.split("/");
+  if (parts.length < 1 || parts.length > 3) return null;
+  const [projectSlug, woId, taskId] = parts;
+  if (!isSafeSegment(projectSlug)) return null;
+  if (woId !== undefined && !isSafeSegment(woId)) return null;
+  if (taskId !== undefined && !isSafeSegment(taskId)) return null;
+  return { projectSlug, woId: woId || null, taskId: taskId || null };
 }
 
 function resolveRepoRoot() {
@@ -42,7 +54,7 @@ async function main() {
   const baseHome = process.env.BF_HOME || path.join(os.homedir(), ".bf");
   const repoRoot = resolveRepoRoot();
   const t = parseTarget(target);
-  if (!t) fail(`missing target argument\n${USAGE}`, 2);
+  if (!t) fail(`invalid or missing target argument\n${USAGE}`, 2);
 
   if (subcmd === "verify") {
     const r = await cmdVerify({ baseHome, projectSlug: t.projectSlug, woId: t.woId, taskId: t.taskId, repoRoot });

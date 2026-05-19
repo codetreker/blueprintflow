@@ -1,3 +1,8 @@
+---
+name: bf
+description: "BF — Blueprintflow. Evidence-gated work loop for any software task. Turns a fuzzy request into a locked contract (bf.md + per-task spec.md), then drives execution through next → do → review → verify until every acceptance criterion is signed off by an independent reviewer subagent. Use when the user says \"/bf\", asks to brainstorm/plan/spec/execute a piece of work, or wants a multi-task feature decomposed and shipped under a strict audit trail. Doer subagent ≠ reviewer subagent (Independent Verification axis)."
+---
+
 # BF — Blueprintflow
 
 Evidence-gated work loop for LLM orchestrators. BF turns a fuzzy user request into a locked contract (`bf.md` + per-task `spec.md`), then drives execution through a `next → do → review → verify` loop until every Acceptance Criterion is signed off by a reviewer subagent.

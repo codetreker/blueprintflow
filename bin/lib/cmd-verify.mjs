@@ -34,9 +34,19 @@ export async function cmdVerify({ baseHome, projectSlug, woId, taskId = null, re
     return { ok: false, error: `no review round under ${scopeDir}/runs/reviews/; run start-review first` };
   }
   const roundPath = roundDir(scopeDir, round);
-  const parsedResults = listResultFiles(roundPath).map(f => ({
-    ...f, parsed: parseReviewResult(fs.readFileSync(f.file, "utf8")),
-  }));
+  const parsedResults = [];
+  const parseErrors = [];
+  for (const f of listResultFiles(roundPath)) {
+    try {
+      const text = fs.readFileSync(f.file, "utf8");
+      parsedResults.push({ ...f, parsed: parseReviewResult(text) });
+    } catch (e) {
+      parseErrors.push({ file: f.file, message: String(e?.message || e) });
+    }
+  }
+  if (parseErrors.length > 0) {
+    return { ok: false, error: "malformed review result(s)", details: parseErrors };
+  }
 
   const ctx = { bundle, scopeDir, round, roundPath, parsedResults, taskId };
   let r;

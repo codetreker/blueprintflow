@@ -45,7 +45,7 @@ Goal: loop until `bf-harness verify <bf-wo>` returns Mode C SUCCESS.
 
 Outer loop (per task):
 
-1. `bf-harness next <bf-wo>` → returns one or more ready tasks with `capability_required`, `candidate_roles`, spec path, and pack id. The harness flips the returned task(s) to `Tasking` and (on the first call) flips `bf.md` to `Implementing`.
+1. `bf-harness next <bf-wo>` → returns one ready task with `capability_required`, `candidate_roles`, spec path, and pack id. The harness flips the returned task to `Tasking` and (on the first call) flips `bf.md` to `Implementing`. If no task is ready (deps unmet) it returns `ok: false`; wait or `verify` first.
 2. Pick one `candidate_role` and spawn a **doer** subagent of that role. Doer reads the pack's `Execute Guidance` and the task spec, makes the changes, and produces evidence (commits, test output, screenshots).
 3. `bf-harness start-review <bf-wo>/<task>` → returns the task-level round dir.
 4. For each AC's review capability, spawn one or more **reviewer** subagents — **different subagent instances than the doer** (IV). Each writes `result_<role>_<idx>.md` into the round dir.

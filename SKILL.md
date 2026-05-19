@@ -1,6 +1,6 @@
 ---
 name: bf
-description: "BF — Blueprintflow. Evidence-gated work loop for any software task. Turns a fuzzy request into a locked contract (bf.md + per-task spec.md), then drives execution through next → do → review → verify until every acceptance criterion is signed off by an independent reviewer subagent. Use when the user says \"/bf\", asks to brainstorm/plan/spec/execute a piece of work, or wants a multi-task feature decomposed and shipped under a strict audit trail. Doer subagent ≠ reviewer subagent (Independent Verification axis)."
+description: "Use when the user types /bf, asks to brainstorm a software change, decompose a feature into tasks, draft a spec, or ship work behind an explicit review-and-verify gate. Trigger symptoms: a multi-task feature needs structured planning, the user wants every acceptance criterion signed off by an independent reviewer, the user wants an audit trail of decisions and trade-offs, or strict separation between the agent doing the work and the agent reviewing it is required. Applies to any software task — new feature, bugfix, refactor, library/CLI/API."
 ---
 
 # BF — Blueprintflow

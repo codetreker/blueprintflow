@@ -91,7 +91,7 @@ Draft  ────►  Accepted  ────►  Implementing  ────►
 | `Draft` | brainstorm + breakdown 写完；可能在做 review 轮次（review 进度在 `runs/reviews/round_N/`，state 不变） |
 | `Accepted` | 用户跑了 `bf-harness accept`，contract 锁定 |
 | `Implementing` | 至少有一个 task 进入 Tasking；`next` 第一次返回任务时 harness 自动转 |
-| `Completed` | 所有 task 都 → Completed 且 AC 全打 `[x]`，`verify` 自动转 |
+| `Completed` | 所有 task 都 → Completed，且对 bf.md AC 跑了一轮 bf-level review，`verify` Mode C 全部 sign-off |
 
 #### task spec.md
 
@@ -115,7 +115,7 @@ Draft  ────►  Ready  ────►  Tasking  ────►  Comple
 |---|---|---|
 | bf.md `Draft` → `Accepted` | 用户 `bf-harness accept <bf-wo>` | harness |
 | bf.md `Accepted` → `Implementing` | 第一次 `next` 返回任务 | harness 自动 |
-| bf.md `Implementing` → `Completed` | 所有 task → Completed 且所有 AC 已 `[x]` | harness 自动（在 `verify` 里检测） |
+| bf.md `Implementing` → `Completed` | 所有 task → Completed 之后跑 bf-level review → `verify <bf-wo>` Mode C SUCCESS | harness（Mode C 触发） |
 | task `Draft` → `Ready` | bf.md → Accepted 时级联 | harness 自动 |
 | task `Ready` → `Tasking` | `next` claim | harness |
 | task `Tasking` → `Completed` | `verify` SUCCESS | harness |
@@ -296,9 +296,71 @@ bf执行流程控制，运行目录是`~/.bf/<project-slug>/<bf-wo>`，支持一
   - `excluded_roles` — 该 task 关联 AC 里出现的 reviewer roles；LLM 选 doer 时必须排除这些（Independent Verification 轴）
   - 完成这个任务的pack id
 
-* `verify <bf-wo|task>`: 验证task的acceptance criteria是否已经满足
-  - 找到runs目录里的的最新一轮revieww
-  - 遍历所有的
+* `verify <bf-wo>` 或 `verify <bf-wo>/<task>`: 验证 review 结果
+
+  按 scope + bf.md.State 分派到三种 mode：
+
+  **Mode A：`verify <bf-wo>` 且 bf.md.State = `Draft`（Spec Review phase）**
+  - 找到 `<bf-wo>/runs/reviews/round_N/` 里 N 最大的那一轮
+  - 遍历所有 `result_<role>.md`，解析 `## Results`
+  - 任一份有 Blocker 或 High → FAIL；全部 clean → SUCCESS
+  - **不 flip 任何 AC，不动 State** —— spec review 的产物只是"准 ready"，是否 Accept 由用户决定
+
+  **Mode B：`verify <bf-wo>/<task>` 且 bf.md.State ∈ `{Accepted, Implementing}`（Task Verification phase）**
+  - 找到 `<bf-wo>/<task>/runs/reviews/round_N/` 里 N 最大的那一轮
+  - 解析所有 `result_<role>.md` 的 `## Results` + `## Accepted Criteria`
+  - 任一份有 Blocker 或 High → FAIL，**不动 state/checkbox**
+  - 没有 Blocker / High 时，对每条 task AC：
+    - 解 AC 的 `{capability}` → 反查 reviewer roles（排除 doer，IV 约束）
+    - 若所有 required reviewer 的 `## Accepted Criteria` 都列出该 AC.id → 该 AC signed（AND 语义）
+    - flip `[ ]` → `[x]`，同步 task spec.md `Updated:`
+  - 任一 AC 未被全部签到 → FAIL，列出哪些 AC 缺哪些 reviewer
+  - task 所有 AC 都 `[x]` → task spec.md `State: Tasking → Completed`
+
+  **Mode C：`verify <bf-wo>` 且 bf.md.State = `Implementing` 且所有 task `Completed`（bf-wo Final Acceptance phase）**
+  - 跟 Mode B 同样流程，但 scope 是 bf.md 的 AC（不是任意 task 的 AC）
+  - 找到 `<bf-wo>/runs/reviews/round_N/` 里 N 最大的那一轮 —— 这一轮应该是 task 全部完成**之后**重新跑的 bf-level review（不是当年的 spec review；通过 round_N 递增区分）
+  - block + sign-off 逻辑同 Mode B
+  - 通过后 flip bf.md 里所有 AC 为 `[x]`，bf.md `State: Implementing → Completed`，同步 `Updated:`
+  - **bf-wo 级别 review 的 IV 约束**：暂不强制（final acceptance 是 integrative 检查，做整体集成的 reviewer 跟做某条单 task 的 doer 在职责上天然不重叠；如未来发现需要严格化再加）
+
+  **其它 scope/state 组合** → 返回 `phase mismatch: cannot verify <scope> when bf.md.State = <X>`
+
+  **输出**：
+  - 写一份 `verify-result.md` 到对应 round 目录（`<bf-wo>/runs/reviews/round_N/verify-result.md` 或 `<bf-wo>/<task>/runs/reviews/round_N/verify-result.md`）
+  - stdout 只回一行：`SUCCESS <绝对文件路径>` 或 `FAIL <绝对文件路径>`
+  - subagent 可以直接被指派去读这个文件，不需要把内容塞进 context
+
+  **verify-result.md 格式（结构化 markdown）**：
+  ```markdown
+  ---
+  Result: SUCCESS|FAIL
+  Mode: A|B|C
+  Scope: <bf-wo> 或 <bf-wo>/<task>
+  Round: <N>
+  Timestamp: <yyyy-mm-dd hh:MM>
+  ---
+
+  ## Issues
+  // FAIL 时填，按 severity 分组；每条带 file:line + 描述
+
+  ### Blocker
+  ### High
+
+  ## AC Sign-off
+  // Mode B / C 才有；列出每条 AC 的状态
+  - AC-1: signed (by tester, security)
+  - AC-2: missing (need: security; got: tester only)
+  - AC-3: blocked (Blocker raised; not yet evaluated)
+
+  ## Flipped
+  // Mode B / C；本次新翻 [x] 的 AC id 列表
+
+  ## State Changes
+  // 本次触发的 state 转换
+  - task-3: Tasking → Completed
+  - bf.md: Implementing → Completed
+  ```
 
 ## Packs
 packs放在仓库的根目录，是bf核心的扩展方式.

@@ -23,7 +23,7 @@ State: Draft
 ```text
 <bf-wo>/
   +- bf.md
-  +- bf-truth.md
+  +- discussion.md
   +- runs/
   |    +- reviews/
   |         +- round_{N}/  // review round N
@@ -44,7 +44,7 @@ State: Draft
 1. `/bf brainstorming` -- 也可以这样： "/bf 我们讨论一个方案", 从模糊idea变成一个实际可落地的方案。
   - 运行`./bin/bf.mjs list-packs` 获得当前安装的所有bf pack（这个就是将来对不通的场景扩展的地方）
   - 根据输入选择最合适的bf模版
-  - 开始根据模版讨论，边讨论边生成bf-truth.md，这样可以随时crash恢复，在后续的所有任务中有需要都可以翻阅这个文件
+  - 开始根据模版讨论，边讨论边生成 discussion.md（直接写到 `~/.bf/projects/<project-slug>/<bf-wo>/`，crash-safe），这样可以随时恢复，在后续的所有任务中有需要都可以翻阅这个文件
 
 2. 写spec -- 可以是LLM Agent觉得已经足够清晰了就可以开始写spec；也可以用户说"/bf 开始写spec吧" 或者直接说 "写spec吧"，但是如果还有需要澄清的，LLM需要问用户并且给出建议，如果用户接受就开始写。
   - 运行 `./bin/bf.mjs roles` 拿到所有的roles以及他们具有的capabilities，
@@ -62,7 +62,7 @@ State: Draft
   - 运行 `./bin/bf-harness.mjs verify <bf-wo>/<task>`，有问题解决，直到返回 SUCCESS
 
 bf的workflow我倾向于每次都是动态生成
-* /bf brainstorming ===> 生成到 /tmp/bf/<bf-taskname>
+* /bf brainstorming ===> 直接生成到 `~/.bf/projects/<project-slug>/<bf-wo>/`（不走 /tmp 中转，保证 crash-safe + session 重启可恢复）
 
 ## 核心约束
 
@@ -122,6 +122,27 @@ Draft  ────►  Ready  ────►  Tasking  ────►  Comple
 
 cancel / abandon 不引入新状态：直接 `bf-harness discard <bf-wo>` 删整个 bf-wo 目录。
 
+### discussion.md vs bf.md
+
+两个文件不同角色：
+
+| 文件 | 角色 | 锁定 |
+|---|---|---|
+| `bf.md` | **Contract** —— 结构化承诺；被 lint / accept / 状态机驱动 | Accept 后由 LLM 锁定，harness 窄通道 mutation |
+| `discussion.md` | **Rationale archive** —— brainstorm/spec 阶段第一手讨论；trade-off / 被否方案 / 决策依据 | 从不锁，LLM 全程 appendable |
+
+**派生关系**：bf.md 派生自 discussion.md。LLM 在 spec 阶段从 discussion.md 提炼出结构化的 bf.md。原则上两者不应矛盾。
+
+**执行阶段如何使用 discussion.md**：
+- 执行时遇到 bf.md / spec.md 表述模糊或不足以拍板的细节 → **回 discussion.md 找答案**
+- discussion.md 也没答案 → LLM 可以 append 新的澄清条目；如果澄清涉及超出已锁 contract 的范围，停下来跟用户讨论
+
+**冲突如何处理**：
+- 如果发现 bf.md 跟 discussion.md 实质冲突（不只是 bf.md 没说清，而是说反了）：
+  - 这是个**信号 —— lock 时漂了**，bf.md 当时没准确反映 discussion
+  - **不能机械裁决"哪边赢"**；harness 不允许偷偷改 bf.md，LLM 也不该自动假定 discussion.md 是错的
+  - 正确动作：**停下来跟用户讨论**。用户决定要么 abandon 该 bf-wo 重做，要么明确接受 bf.md 的当前承诺继续
+
 ### Accept 后允许的 Mutation 全集
 
 LLM 不能修改 bf.md / `<task>/spec.md` 的内容。harness 有以下窄授权（白名单）：
@@ -147,7 +168,7 @@ LLM 不能修改 bf.md / `<task>/spec.md` 的内容。harness 有以下窄授权
 
 ## 文件格式
 
-### bf-truth.md - blueprint的source of truth
+### discussion.md - 讨论档 / rationale 记录
 ```markdown
 ---
 Pack: <bf-pack-id>
@@ -158,9 +179,17 @@ Updated: <yyyy-mm-dd hh:MM>
 // * 讨论后决定的设计方案
 // * 重要的决定
 // * Trade offs
+// * 被否决的方案 + 理由
 // * 讨论过程
 //
-// 这里记录的是第一手的原始资料，如果后续任务有任何疑惑或者不清楚的，可以来这里寻找答案
+// 这里记录的是第一手的原始资料：
+// * brainstorm / spec 阶段是它的主要写入期
+// * Accept 之后**仍然 appendable**：执行中如果 bf.md / spec.md 没说清楚的地方，
+//   LLM 可以回到 discussion.md 找答案；如果没答案，可以再 append 澄清说明
+// * 任何时候不锁；LLM 自由 append
+//
+// 跟 bf.md 的关系：bf.md 是 contract（被 lint / accept / 锁定），它派生自 discussion.md。
+// 详见 "核心约束 → discussion.md vs bf.md" 一节。
 ```
 
 ### bf.md -- blueprint 核心文件

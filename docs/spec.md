@@ -168,120 +168,47 @@ LLM 不能修改 bf.md / `<task>/spec.md` 的内容。harness 有以下窄授权
 
 ## 文件格式
 
-### discussion.md - 讨论档 / rationale 记录
-```markdown
----
-Pack: <bf-pack-id>
-Creation: <yyyy-mm-dd hh:MM>
-Updated: <yyyy-mm-dd hh:MM>
----
-// context在compact或session重启后会丢失信息，这个文件里记录了这个任务的详细信息，包括但不限于：
-// * 讨论后决定的设计方案
-// * 重要的决定
-// * Trade offs
-// * 被否决的方案 + 理由
-// * 讨论过程
-//
-// 这里记录的是第一手的原始资料：
-// * brainstorm / spec 阶段是它的主要写入期
-// * Accept 之后**仍然 appendable**：执行中如果 bf.md / spec.md 没说清楚的地方，
-//   LLM 可以回到 discussion.md 找答案；如果没答案，可以再 append 澄清说明
-// * 任何时候不锁；LLM 自由 append
-//
-// 跟 bf.md 的关系：bf.md 是 contract（被 lint / accept / 锁定），它派生自 discussion.md。
-// 详见 "核心约束 → discussion.md vs bf.md" 一节。
-```
+具体的 frontmatter 字段、section 结构、注释规范都放在 docs/template/ 目录下，可以直接复制使用。这一节只列每个文件的角色和约束。
 
-### bf.md -- blueprint 核心文件
-```markdown
----
-Id: <可读的任务id>
-Desc: <一句话任务描述>
-Pack: <bf-pack-id>
-State: Draft|Accepted|Implementing|Completed
-Creation: <yyyy-mm-dd hh:MM>
-Updated: <yyyy-mm-dd hh:MM>
----
+### bf.md —— blueprint 契约
 
-# Goal
-// 这里写本次的目标是什么，尽量简短
+- 位置：`~/.bf/projects/<project-slug>/<bf-wo>/bf.md`
+- 角色：本次工作的结构化契约。Accept 后由 LLM 锁定，之后只有 bf-harness 可以在窄通道里改 checkbox、State、Updated。
+- 模板：[`docs/template/bf.md`](./template/bf.md)
+- 关键约束：State 字段只能取 Draft、Accepted、Implementing、Completed；Acceptance Criteria 每条必须带 `{id}|{capability}` marker，capability 必须能在某个 role 文件里找到。
 
-## Requirement
-// 这个任务的要求有哪些，明确必须达成的目标
+### discussion.md —— 讨论档
 
-## Acceptance Criteria
-// 任务的验收标准，必须是 bullet list，`[ ]` - 未完成； `[x]` - 已完成, 这个标记由 bf-harness.mjs verify来更新，LLM不能改。
-// `{capability}` = 验收这条 AC 需要的能力。harness 反查所有 roles/*.md 里声明此 capability 的 role，
-// 在 review 阶段全部派为 reviewer。LLM 不能在 contract 里硬编码 role 名字。
-- [ ] {id1}|{capability}: criteria 1
-- [ ] {id2}|{capability}: criteria 2
+- 位置：`~/.bf/projects/<project-slug>/<bf-wo>/discussion.md`
+- 角色：brainstorm 和 spec 阶段的第一手讨论记录，包括决策、被否方案、trade-off。Accept 之后仍然可以 append；从不锁。
+- 模板：[`docs/template/discussion.md`](./template/discussion.md)
+- 跟 bf.md 的关系：bf.md 派生自 discussion.md；详见前面"核心约束 → discussion.md vs bf.md"一节。
 
-## Boundary
-// Non Goals，本次任务的边界，明确不做的，防止breakdown的时候跑偏。
+### `<task-id>/spec.md` —— 任务契约
 
-## Task List
-// 任务列表，按执行先后顺序列, 以及依赖关系
-- task-id-1
-- task-id-2
-- task-id-3: task-id-1,task-id-2  // depends on task 1&2
-- ...
-```
+- 位置：`~/.bf/projects/<project-slug>/<bf-wo>/<task-id>/spec.md`
+- 角色：每个 task 的契约。Accept 后由 LLM 锁定，bf-harness 同样有窄通道做 checkbox、State、Updated。
+- 模板：[`docs/template/task-spec.md`](./template/task-spec.md)
+- 关键约束：State 字段只能取 Draft、Ready、Tasking、Completed；Capability 字段只能填一个（执行能力）；Acceptance Criteria 每条带 `{id}|{capability}` marker（验收能力，跟执行能力区分开）。
 
-### `<task-id>/spec.md` - 这是唯一在bf core层面上定义的task文件，如何执行这个task由执行者来决定
-```markdown
----
-State: Draft|Ready|Tasking|Completed
-Capability: <capatility>
-Pack: <bf-pack-id>
-Desc：<任务的一句话描述>
-Creation: <yyyy-mm-dd hh:MM>
-Updated: <yyyy-mm-dd hh:MM>
----
-// 这个task的spec文件，需要确保任务明确，有边界，有验收标准
+### review_{round_N}/result_{role}.md —— review 结果
 
-# Task
-// 详细task描述
+- 位置：`<bf-wo>/runs/reviews/round_N/result_<role>.md`（bf-wo 级 review）或 `<bf-wo>/<task>/runs/reviews/round_N/result_<role>.md`（task 级 review）
+- 角色：单个 reviewer 在某一轮 review 的结果。
+- 模板：[`docs/template/review-result.md`](./template/review-result.md)
+- 关键约束：Results 必须按 severity 分组（Blocker / High / Minor / Nit）；Accepted Criteria 引用的 id 必须是 bf.md 或 task spec.md 里实际存在的 AC id。
 
-## Requirements
-- Requirement 1
-- Requirement 2
-- ...
+### roles/<role>.md —— 角色定义
 
-## Acceptance Criteria
-// 唯一id + 验收标准
-- {id1}: criteria 1
-- {id2}: criteria 1
+- 位置：repo 根的 `roles/<role>.md`（Core role）或 `packs/<pack-id>/roles/<role>.md`（pack 私有 role）
+- 角色：定义一个 role 的身份和它提供的 capability 清单。
+- 模板：[`docs/template/role.md`](./template/role.md)
 
-## Boundary
-// Non Goals，本次任务的边界，明确不做的，防止执行的时候跑偏。
+### pack.md —— pack 描述
 
-```
-
-### review_{round N}/result_{role}.md
-Review 的结果文件, 格式必须满足如下要求：
-```markdown
-# Desc
-// 本次review的范围
-
-## Results
-
-### Blocker
-// Blocker issues
-
-### High
-// High risk issues
-
-### Minor
-// Minor issues
-
-### Nit
-// Suggestions
-
-## Accepted Criteria
-- {id1}: ...
-- {id2}: ...
-
-```
+- 位置：`packs/<pack-id>/pack.md`
+- 角色：描述一个 pack 是什么、什么时候用、各阶段的指导。
+- 模板：[`docs/template/pack.md`](./template/pack.md)
 
 ## Binary files
 
@@ -392,27 +319,49 @@ bf执行流程控制，运行目录是`~/.bf/<project-slug>/<bf-wo>`，支持一
   ```
 
 ## Packs
-packs放在仓库的根目录，是bf核心的扩展方式.
-目录格式：
+
+Packs 放在仓库根目录的 `packs/` 下，是 bf core 的扩展方式。每个 pack 描述一个领域或场景的工作流模式，比如 engineering、research、incident response、content production 等。
+
+### 目录结构
+
 ```
-packs
-  +- <engineering>
-  |     +- pack.md
-  |     +- ...
-  +- <research>
-  +- <designer>
+packs/
+  +- engineering/
+  |    +- pack.md           # 必需。pack 描述 + 三阶段指导。
+  |    +- roles/            # 可选。pack 私有的 role。
+  |        +- designer.md
+  +- research/
   +- ...
 ```
 
-### Files
+### pack.md 的结构
 
-pack.md -- 这个pack的描述文件，LLM agent读取这个文件来理解这个pack的功能, 执行流程
-```markdown
----
-Id: <pack id> // 跟目录名一致
-Desc: "..."  // Pack Desc, 跟Skill的描述类似，主要主要用来告诉LLM什么时候用这个pack
----
+每个 pack 必须有一份 `pack.md`，模板和写作规范见 [`docs/template/pack.md`](./template/pack.md)。
 
-// Pack主体
+pack.md 包含 5 个 section，其中 `When to Use` 是必填，其它 4 个推荐填写但不强制：
 
-```
+1. **When to Use**（必填）—— 一到三句话，说清楚什么样的工作适合用这个 pack。LLM 在 brainstorm 阶段拿到用户输入后，靠这一节判断选哪个 pack。
+2. **Domain Vocabulary** —— 此领域的关键术语和概念。帮 LLM 用对话语风格。
+3. **Brainstorm Guidance** —— brainstorm 阶段问什么样的问题，blueprint 该是什么形状。
+4. **Breakdown Guidance** —— 此领域里"一个 task"是什么形状，典型粒度、依赖模式。
+5. **Execute Guidance** —— 做一个 task 时的通用指导，常见 pattern 和反 pattern。
+
+### Pack 私有 role
+
+每个 pack 可以在自己目录下放 `roles/`，role 文件跟 Core role 用同一份模板（[`docs/template/role.md`](./template/role.md)）。
+
+合并规则：
+- `bf list-roles` 输出会合并 Core roles 和当前 bf-wo 选定 pack 的 roles。
+- 同名 role 时 pack 优先级高于 Core，pack 覆盖 Core 的同名 role。
+- 此 pack 的 brainstorm、spec、execute 阶段都可以引用这些 role。
+
+### 跟 bf-wo 的耦合
+
+v1 强制约束：一个 bf-wo 只对应一个 pack（写在 bf.md frontmatter 的 Pack 字段）。跨 pack 的工作必须拆成多个 bf-wo。这个约束未来可能放宽，但 v1 不支持。
+
+### list-packs 的容错策略
+
+`bf list-packs` 读取 `packs/` 目录时，对每个 pack 做基本结构检查（pack.md 是否存在、frontmatter 是否完整、Id 是否跟目录名一致）。发现结构问题的 pack 会被跳过并在 stderr 输出 warning，但不会让 list-packs 失败。
+
+理由：pack 作者的开发流程在 BF 之外，BF 只关心 pack 在运行时能不能被使用。pack 写不规范，用户从 warning 看到信息自己处理；BF 不接管 pack 开发工具链。
+

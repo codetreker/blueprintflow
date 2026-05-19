@@ -1,2 +1,6 @@
 .worktrees/
 docs/superpowers/
+node_modules/
+*.log
+.DS_Store
+.bf-test-tmp/

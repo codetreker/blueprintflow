@@ -1,0 +1,16 @@
+{
+  "name": "blueprintflow",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "bf": "./bin/bf.mjs",
+    "bf-harness": "./bin/bf-harness.mjs"
+  },
+  "scripts": {
+    "test": "bash test/run-all.sh"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

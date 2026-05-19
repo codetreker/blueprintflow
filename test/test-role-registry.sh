@@ -19,10 +19,10 @@ STDOUT=$(node --input-type=module -e "
     process.stdout.write(JSON.stringify(out));
   });
 ")
-assert_json_field "$STDOUT" .ids '["engineer","tester"]'
+assert_json_field "$STDOUT" .ids '["engineer","qa-engineer","tester"]'
 assert_json_field "$STDOUT" .engineerSource "pack"
 assert_json_field "$STDOUT" .engineerCaps '["implementation","design"]'
-assert_json_field "$STDOUT" .verificationRoles '["tester"]'
+assert_json_field "$STDOUT" .verificationRoles '["qa-engineer","tester"]'
 assert_json_field "$STDOUT" .designRoles '["engineer"]'
 
 # 没有 packRolesDir 也 ok
@@ -32,7 +32,7 @@ STDOUT=$(node --input-type=module -e "
     process.stdout.write(JSON.stringify({ ids: [...r.roles.keys()].sort() }));
   });
 ")
-assert_json_field "$STDOUT" .ids '["engineer","tester"]'
+assert_json_field "$STDOUT" .ids '["engineer","qa-engineer","tester"]'
 
 # 不存在的目录 → 空
 STDOUT=$(node --input-type=module -e "

@@ -68,13 +68,15 @@ bf的workflow我倾向于每次都是动态生成
 
 ### Independent Verification
 
-对每个 task，**doer role ∉ reviewer roles**。具体含义：
+每个 task 在执行 → 评审过程里，**实现这个 task 的 subagent 不能被复用为 review 这个 task 的 subagent**。这是 BF 的核心轴 —— 做的人不验证。
 
-* `next` 返回任务时声明 `capability_required`；LLM 从提供此 capability 的 candidate_roles 里挑一个做 doer
-* `start-review` 阶段，harness 把 task 关联 AC 的 capability 反查出 reviewer roles，**排除掉刚才被选为 doer 的 role**
-* 一条 AC 的 reviewer 至少 1 个；当排除 doer 之后无 reviewer 候选时，lint 报错（需要扩 role 集合或重设 AC capability）
+这是 subagent 层面的约束，不是 role 层面：同一个 role（比如 engineer）可以同时贡献 doer 和 reviewer，只要不是同一个 subagent 实例。harness 看不到 subagent 身份（review 文件名只到 role 级），所以这条约束**由编排 LLM 在 spawn subagent 时保证**，不由 harness 强制。
 
-这是 BF 的核心轴 —— 做的人不验证。
+harness 在这条约束里的职责只是给信息：
+
+* `next` 返回任务时声明 `capability_required` 和 `candidate_roles`，让 LLM 知道哪些 role 能做 doer
+* `start-review` / `verify` 按 AC 的 capability 反查 reviewer roles
+* 一条 AC 至少要有一个 role 提供它的 reviewer capability（lint 检查），否则永远没人能 review
 
 ### State Machine
 
@@ -231,7 +233,6 @@ bf执行流程控制，运行目录是`~/.bf/<project-slug>/<bf-wo>`，支持一
   - bf.md里task list中的taskid是否存在
   - task之间的依赖关系是否有问题
   - **capability registry 检查**：bf.md AC 里出现的每个 `{capability}`，必须能在某个 `roles/*.md` 的 `Capabilities` 列里找到声明（隐式注册），否则报错；防 typo
-  - **independent verification 可行性检查**：对每个 task，若 doer 选择被 AC 的 reviewer roles 完全覆盖，导致没有可选 doer，报错
   - State=Draft
 
   结果：
@@ -249,7 +250,6 @@ bf执行流程控制，运行目录是`~/.bf/<project-slug>/<bf-wo>`，支持一
   - 任务描述
   - `capability_required` — 完成这个任务需要的 capability（task spec.md 的 `Capability` 字段）
   - `candidate_roles` — 提供此 capability 的所有 role（harness 扫 roles/*.md 反查），LLM 从中挑选最合适的当 doer
-  - `excluded_roles` — 该 task 关联 AC 里出现的 reviewer roles；LLM 选 doer 时必须排除这些（Independent Verification 轴）
   - 完成这个任务的pack id
 
 * `verify <bf-wo>` 或 `verify <bf-wo>/<task>`: 验证 review 结果
@@ -267,10 +267,11 @@ bf执行流程控制，运行目录是`~/.bf/<project-slug>/<bf-wo>`，支持一
   - 解析所有 `result_<role>_<idx>.md` 的 `## Results` + `## Accepted Criteria`
   - 任一份有 Blocker 或 High → FAIL，**不动 state/checkbox**
   - 没有 Blocker / High 时，对每条 task AC：
-    - 解 AC 的 `{capability}` → 反查 reviewer roles（排除 doer，IV 约束）
-    - 若所有 required reviewer 的 `## Accepted Criteria` 都列出该 AC.id → 该 AC signed（AND 语义）
+    - 看这条 AC 标的 capability，去 roles 目录里找出所有声明了这个 capability 的 role
+    - 这些 role 里至少有一个 role 的 review 文件（`result_<role>_<idx>.md`）在 `## Accepted Criteria` 段列出了这条 AC 的 id → 这条 AC 算 signed
+    - 当一个 capability 由多个 role 提供时，由编排 LLM 在 start-review 阶段挑一个最相关的 role 去开 reviewer subagent；harness 不要求全部 provider 都签到，只要有人签到就算过
     - flip `[ ]` → `[x]`，同步 task spec.md `Updated:`
-  - 任一 AC 未被全部签到 → FAIL，列出哪些 AC 缺哪些 reviewer
+  - 任一 AC 没人签到 → FAIL，列出哪些 AC 缺哪个 capability 的签到
   - task 所有 AC 都 `[x]` → task spec.md `State: Tasking → Completed`
 
   **Mode C：`verify <bf-wo>` 且 bf.md.State = `Implementing` 且所有 task `Completed`（bf-wo Final Acceptance phase）**

@@ -61,7 +61,7 @@ Release-facing version bumps must update both `plugins/blueprintflow/.claude-plu
 
 ## BF v1 Core — Dev vs Runtime Boundary
 
-The BF v1 core (entrypoint `SKILL.md`, `bin/bf*.mjs`, `roles/`, `packs/`, `templates/`) is a **runtime** artifact set: it is what an LLM orchestrator reads and executes when running a BF workflow. Material under `docs/` is **development-time** documentation — the spec, design rationale, and implementation plans for the BF system itself.
+The BF v1 core (entrypoint `SKILL.md`, `bin/bf*.mjs`, `roles/`, `packs/`, `templates/`, `references/`) is a **runtime** artifact set: it is what an LLM orchestrator reads and executes when running a BF workflow. Material under `docs/` is **development-time** documentation — the spec, design rationale, and implementation plans for the BF system itself.
 
 Runtime artifacts must never reference any file under `docs/`. `SKILL.md`, roles, packs, and templates are self-sufficient; an orchestrator running BF should never need to open `docs/spec.md` or anything else under `docs/` to do its job. The reverse direction is allowed: `docs/spec.md` may reference `templates/` (the runtime templates the spec defines) via a relative path. The forbidden direction is runtime → `docs/`.
 

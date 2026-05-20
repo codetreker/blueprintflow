@@ -72,13 +72,13 @@ For each task the engineer subagent picks up:
 
 ## Phase Roles
 
-This pack maps BF's phases to specific Core roles. The orchestrating LLM picks subagents accordingly.
+This pack maps BF's phases to specific Core roles. **Capabilities are skills, not activities** — a phase is the activity (planning, executing, reviewing), and the right role for that phase is the one whose *skills* (capabilities) fit the work. For engineering, the planning phase needs system-architecture skill, so the architect runs it.
 
-| Phase | Role(s) | Capability used |
+| Phase | Role(s) | Capability the phase needs |
 |---|---|---|
-| Brainstorm | architect | system-design |
-| Spec / breakdown (write bf.md + task specs) | architect | planning, task-breakdown, ac-authoring |
-| Spec review (Mode A) | architect, tester | design-review, ac-review |
+| Brainstorm | architect | system-architecture |
+| Spec / breakdown (write bf.md + task specs) | architect | system-architecture |
+| Spec review (Mode A) | architect, tester | design-review, verification |
 | Execute (per task; doer) | engineer | implementation (or task-specific Capability frontmatter) |
 | Task review (Mode B; reviewer) | tester | verification (or AC's capability marker) |
 | Final review (Mode C) | architect, tester | design-review, verification |

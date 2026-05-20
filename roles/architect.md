@@ -2,10 +2,7 @@
 Id: architect
 Desc: High-level designer who sets system boundaries, picks tradeoffs, and decomposes work into reviewable tasks.
 Capabilities:
-  - planning
-  - task-breakdown
-  - ac-authoring
-  - system-design
+  - system-architecture
   - design-review
 ---
 

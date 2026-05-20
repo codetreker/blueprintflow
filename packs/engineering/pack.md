@@ -23,7 +23,7 @@ Not for: pure research write-ups, content production, incident response runbooks
 
 ## Brainstorm Guidance
 
-Before any breakdown, drive the discussion to nail down:
+The architect facilitates this phase. Before any breakdown, drive the discussion to nail down:
 
 - **Target users / callers**: who calls this code, in what environment?
 - **In scope vs. out of scope**: what is explicitly NOT being built this round? (This becomes `Boundary` in bf.md.)
@@ -40,7 +40,7 @@ Anti-patterns to avoid:
 
 ## Breakdown Guidance
 
-A good engineering task:
+The architect decomposes the accepted Goal/Boundary into a task DAG. A good engineering task:
 
 - Is roughly 1 PR in size — small enough that one engineer subagent can finish it and produce evidence in a single session.
 - Has a single primary `Capability` in its frontmatter (`implementation`, `refactoring`, `debugging`, etc.).
@@ -69,3 +69,18 @@ For each task the engineer subagent picks up:
 5. Never bypass the mutation whitelist: locked `bf.md` and `spec.md` bodies are off-limits. Only the harness flips checkboxes, State, and Updated.
 6. When the spec is ambiguous and `discussion.md` does not answer it, append a clarifying entry to `discussion.md` and stop to ask the user — do not invent contract.
 7. When done, hand off to a reviewer subagent (a different subagent instance — IV constraint). The reviewer reads the diff + test output and writes `result_<role>_<idx>.md`.
+
+## Phase Roles
+
+This pack maps BF's phases to specific Core roles. The orchestrating LLM picks subagents accordingly.
+
+| Phase | Role(s) | Capability used |
+|---|---|---|
+| Brainstorm | architect | system-design |
+| Spec / breakdown (write bf.md + task specs) | architect | planning, task-breakdown, ac-authoring |
+| Spec review (Mode A) | architect, tester | design-review, ac-review |
+| Execute (per task; doer) | engineer | implementation (or task-specific Capability frontmatter) |
+| Task review (Mode B; reviewer) | tester | verification (or AC's capability marker) |
+| Final review (Mode C) | architect, tester | design-review, verification |
+
+Independent Verification still applies: the *subagent instance* doing a task cannot be the subagent reviewing it (different instances of the same role are OK).

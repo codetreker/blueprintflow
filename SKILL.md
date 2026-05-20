@@ -94,5 +94,5 @@ bf-harness discard <bf-wo>                 # delete the whole bf-wo
 
 - `docs/spec.md` — full contract: state machine, mutation whitelist, verify modes, pack semantics. The source of truth.
 - `docs/template/bf.md`, `docs/template/task-spec.md`, `docs/template/discussion.md`, `docs/template/review-result.md`, `docs/template/role.md`, `docs/template/pack.md` — frozen file shapes. Copy these when authoring; do not improvise.
-- `roles/` — Core roles (`planner`, `engineer`, `tester`). Packs may add private roles under `packs/<id>/roles/`.
+- `roles/` — Core roles (`architect`, `engineer`, `tester`, …) — concrete skill identities reused across packs. Each pack's `pack.md` declares which role plays which phase (planning role for an engineering pack is `architect`; another pack might map planning to a different role). Packs may add private roles under `packs/<id>/roles/`.
 - `packs/` — installed packs. Each has a `pack.md` with `When to Use` + the three phase guidances.

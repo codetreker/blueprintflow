@@ -13,7 +13,7 @@ STDOUT=$(node --input-type=module -e "
       ids: [...r.roles.keys()].sort(),
       engineerCaps: r.roles.get('engineer').capabilities,
       engineerSource: r.roles.get('engineer').source,
-      verificationRoles: r.byCapability.get('verification').map(x=>x.id),
+      qaRoles: r.byCapability.get('quality-assurance').map(x=>x.id),
       designRoles: r.byCapability.get('design').map(x=>x.id),
     };
     process.stdout.write(JSON.stringify(out));
@@ -21,8 +21,8 @@ STDOUT=$(node --input-type=module -e "
 ")
 assert_json_field "$STDOUT" .ids '["engineer","qa-engineer","tester"]'
 assert_json_field "$STDOUT" .engineerSource "pack"
-assert_json_field "$STDOUT" .engineerCaps '["implementation","design"]'
-assert_json_field "$STDOUT" .verificationRoles '["qa-engineer","tester"]'
+assert_json_field "$STDOUT" .engineerCaps '["software-implementation","design"]'
+assert_json_field "$STDOUT" .qaRoles '["qa-engineer","tester"]'
 assert_json_field "$STDOUT" .designRoles '["engineer"]'
 
 # 没有 packRolesDir 也 ok

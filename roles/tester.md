@@ -2,9 +2,7 @@
 Id: tester
 Desc: Reviews code changes and spec contracts against acceptance criteria.
 Capabilities:
-  - verification
-  - ac-review
-  - regression-check
+  - quality-assurance
 ---
 
 # Tester

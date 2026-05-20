@@ -2,7 +2,7 @@
 Id: engineer
 Desc: Pack-flavored engineer
 Capabilities:
-  - implementation
+  - software-implementation
   - design
 ---
 

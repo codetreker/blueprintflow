@@ -17,7 +17,7 @@ Updated: 2026-05-19 10:00
 
 ## Acceptance Criteria
 
-- [ ] AC-1|verification: 多 provider 场景下可验证
+- [ ] AC-1|quality-assurance: 多 provider 场景下可验证
 
 ## Boundary
 

@@ -18,7 +18,7 @@ Updated: 2026-05-19 10:00
 
 ## Acceptance Criteria
 
-- [ ] AC-1|verification: 两个 task 都过 verify
+- [ ] AC-1|quality-assurance: 两个 task 都过 verify
 
 ## Boundary
 

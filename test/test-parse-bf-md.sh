@@ -23,7 +23,7 @@ Updated: 2026-05-19 10:00
 
 ## Acceptance Criteria
 
-- [ ] AC-1|verification: 登录流程端到端可用
+- [ ] AC-1|quality-assurance: 登录流程端到端可用
 - [ ] AC-2|security-review: 密码字段不在日志里
 
 ## Boundary

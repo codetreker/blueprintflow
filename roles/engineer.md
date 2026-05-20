@@ -2,9 +2,7 @@
 Id: engineer
 Desc: Implements a task spec by writing or changing code, then producing evidence.
 Capabilities:
-  - implementation
-  - refactoring
-  - debugging
+  - software-implementation
 ---
 
 # Engineer
@@ -23,6 +21,6 @@ The engineer is the doer of code-changing tasks. The engineer reads one `<task>/
 
 ## When to Include
 
-- Execute phase: primary doer for any task whose Capability is `implementation`, `refactoring`, or `debugging`.
+- Execute phase: primary doer for any task whose Capability is `software-implementation`. Refactoring and debugging are activities of that skill, not separate capabilities.
 - Spec phase, sparingly: when the architect needs a feasibility sanity check before locking an AC.
 - Review phase: can be spawned as a reviewer subagent (Independent Verification — must be a different subagent instance than the doer for the same task).

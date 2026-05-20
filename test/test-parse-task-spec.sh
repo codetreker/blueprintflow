@@ -5,7 +5,7 @@ source "$(dirname "$0")/test-helpers.sh"
 INPUT=$(cat <<'EOF'
 ---
 State: Draft
-Capability: implementation
+Capability: software-implementation
 Pack: engineering
 Desc: 实现登录 API
 Creation: 2026-05-19 10:00
@@ -23,7 +23,7 @@ Updated: 2026-05-19 10:00
 
 ## Acceptance Criteria
 
-- [ ] AC-1|verification: 正确凭证返回 200
+- [ ] AC-1|quality-assurance: 正确凭证返回 200
 - [ ] AC-2|security-review: 错误凭证不暴露用户存在性
 
 ## Boundary
@@ -39,9 +39,9 @@ STDOUT=$(node --input-type=module -e "
   });
 " -- "$INPUT")
 
-assert_json_field "$STDOUT" .frontmatter.Capability "implementation"
+assert_json_field "$STDOUT" .frontmatter.Capability "software-implementation"
 assert_json_field "$STDOUT" .frontmatter.State "Draft"
-assert_json_field "$STDOUT" .acceptanceCriteria.0.capability "verification"
+assert_json_field "$STDOUT" .acceptanceCriteria.0.capability "quality-assurance"
 assert_json_field "$STDOUT" .acceptanceCriteria.1.capability "security-review"
 
 # 缺 Capability

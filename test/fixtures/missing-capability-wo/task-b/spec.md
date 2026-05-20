@@ -1,6 +1,6 @@
 ---
 State: Draft
-Capability: implementation
+Capability: software-implementation
 Pack: engineering
 Desc: task B
 Creation: 2026-05-19 10:00
@@ -17,7 +17,7 @@ Updated: 2026-05-19 10:00
 
 ## Acceptance Criteria
 
-- [ ] AC-1|verification: B 的产出可验证
+- [ ] AC-1|quality-assurance: B 的产出可验证
 
 ## Boundary
 

@@ -7,7 +7,7 @@ INPUT=$(cat <<'EOF'
 Id: tester
 Desc: QA reviewer
 Capabilities:
-  - verification
+  - quality-assurance
   - test-design
 ---
 
@@ -23,7 +23,7 @@ STDOUT=$(node --input-type=module -e "
   });
 " -- "$INPUT")
 assert_json_field "$STDOUT" .id "tester"
-assert_json_field "$STDOUT" .capabilities '["verification","test-design"]'
+assert_json_field "$STDOUT" .capabilities '["quality-assurance","test-design"]'
 
 # 缺 Capabilities
 BAD=$(printf -- '---\nId: x\nDesc: y\n---\n')

@@ -12,9 +12,9 @@ run_one() {
 }
 
 # unchecked
-run_one '- [ ] AC-1|verification: 用户能成功登录'
+run_one '- [ ] AC-1|quality-assurance: 用户能成功登录'
 assert_json_field "$STDOUT" .id "AC-1"
-assert_json_field "$STDOUT" .capability "verification"
+assert_json_field "$STDOUT" .capability "quality-assurance"
 assert_json_field "$STDOUT" .checked false
 assert_json_field "$STDOUT" .text "用户能成功登录"
 

@@ -30,7 +30,7 @@ STDOUT=$(node --input-type=module -e "
 ")
 assert_json_field "$STDOUT" .roles.0.id "engineer"
 assert_json_field "$STDOUT" .roles.0.source "pack"
-assert_json_field "$STDOUT" .roles.0.capabilities '["implementation","design"]'
+assert_json_field "$STDOUT" .roles.0.capabilities '["software-implementation","design"]'
 
 # pack 不存在
 STDOUT=$(node --input-type=module -e "

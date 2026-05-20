@@ -43,7 +43,7 @@ Anti-patterns to avoid:
 The architect decomposes the accepted Goal/Boundary into a task DAG. A good engineering task:
 
 - Is roughly 1 PR in size — small enough that one engineer subagent can finish it and produce evidence in a single session.
-- Has a single primary `Capability` in its frontmatter (`implementation`, `refactoring`, `debugging`, etc.).
+- Has a single primary `Capability` in its frontmatter (`software-implementation`, etc.).
 - Has explicit `depends` edges in `bf.md`'s Task List — no implicit ordering.
 - Has AC that are observable from outside the task (a file exists, a command exits 0, a test passes, an endpoint returns X).
 - Names what it does not do in its own `Boundary`.
@@ -78,9 +78,9 @@ This pack maps BF's phases to specific Core roles. **Capabilities are skills, no
 |---|---|---|
 | Brainstorm | architect | system-architecture |
 | Spec / breakdown (write bf.md + task specs) | architect | system-architecture |
-| Spec review (Mode A) | architect, tester | design-review, verification |
-| Execute (per task; doer) | engineer | implementation (or task-specific Capability frontmatter) |
-| Task review (Mode B; reviewer) | tester | verification (or AC's capability marker) |
-| Final review (Mode C) | architect, tester | design-review, verification |
+| Spec review (Mode A) | architect, tester | design-review, quality-assurance |
+| Execute (per task; doer) | engineer | software-implementation (or task-specific Capability frontmatter) |
+| Task review (Mode B; reviewer) | tester | quality-assurance (or AC's capability marker) |
+| Final review (Mode C) | architect, tester | design-review, quality-assurance |
 
 Independent Verification still applies: the *subagent instance* doing a task cannot be the subagent reviewing it (different instances of the same role are OK).

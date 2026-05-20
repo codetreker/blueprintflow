@@ -2,7 +2,7 @@
 Id: tester
 Desc: QA reviewer
 Capabilities:
-  - verification
+  - quality-assurance
 ---
 
 # Tester

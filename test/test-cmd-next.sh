@@ -27,7 +27,7 @@ STDOUT=$(node --input-type=module -e "
 ")
 assert_json_field "$STDOUT" .ok true
 assert_json_field "$STDOUT" .task.taskId "task-a"
-assert_json_field "$STDOUT" .task.capability_required "implementation"
+assert_json_field "$STDOUT" .task.capability_required "software-implementation"
 assert_match "$STDOUT" "candidate_roles" "candidates present"
 grep -q "^State: Tasking" "$BASE/projects/p/wo-1/task-a/spec.md" || fail "task-a not Tasking"
 grep -q "^State: Implementing" "$BASE/projects/p/wo-1/bf.md" || fail "bf not Implementing"

@@ -7,7 +7,7 @@ description: "Use when the user types /bf, asks to brainstorm a software change,
 
 Evidence-gated work loop for LLM orchestrators. BF turns a fuzzy user request into a locked contract (`bf.md` + per-task `spec.md`), then drives execution through a `next → do → review → verify` loop until every Acceptance Criterion is signed off by a reviewer subagent.
 
-This document is the operator runbook for the orchestrating LLM (you). Read `docs/spec.md` for the full contract; read `docs/template/*.md` for the exact file shapes.
+This document is the operator runbook for the orchestrating LLM (you).
 
 ## Core idea
 
@@ -35,12 +35,12 @@ Goal: produce `discussion.md` capturing the user's intent, decisions, and trade-
 Goal: produce a locked `bf.md` + one `<task-id>/spec.md` per task, with every AC reviewed and accepted by the user.
 
 1. `bf list-roles --pack <id>` → get the available roles and the capabilities they provide.
-2. Author `bf.md` with `State: Draft`. Use `docs/template/bf.md`. Every AC must carry `{id}|{capability}` and the capability must be declared in some role's `Capabilities:` list.
-3. Author each `<task>/spec.md` with `State: Draft`. Use `docs/template/task-spec.md`. Each task spec has exactly one `Capability` in frontmatter (execution capability) and AC lines with their own `{capability}` markers (review capability).
+2. Author `bf.md` with `State: Draft`. Use `templates/bf.md`. Every AC must carry `{id}|{capability}` and the capability must be declared in some role's `Capabilities:` list.
+3. Author each `<task>/spec.md` with `State: Draft`. Use `templates/task-spec.md`. Each task spec has exactly one `Capability` in frontmatter (execution capability) and AC lines with their own `{capability}` markers (review capability).
 4. `bf-harness lint <bf-wo>` — fix every error and re-run until SUCCESS.
 5. Spec review loop (Mode A):
    1. `bf-harness start-review <bf-wo>` → returns the round directory `<bf-wo>/runs/reviews/round_N/`.
-   2. For each role returned by `bf list-roles --pack <id>` that provides a review capability used in the spec, spawn 1–3 reviewer subagents (cap total at 10). Each subagent writes `result_<role>_<idx>.md` into the round dir using `docs/template/review-result.md`.
+   2. For each role returned by `bf list-roles --pack <id>` that provides a review capability used in the spec, spawn 1–3 reviewer subagents (cap total at 10). Each subagent writes `result_<role>_<idx>.md` into the round dir using `templates/review-result.md`.
    3. `bf-harness verify <bf-wo>` (Mode A) → `SUCCESS <path>` or `FAIL <path>`. On FAIL, read the verify-result file, fix `bf.md` / `spec.md`, then start a new round.
 6. When verify returns SUCCESS and the user agrees with the plan, `bf-harness accept <bf-wo>`. `bf.md` → `Accepted`; all tasks cascade `Draft` → `Ready`. Contract is now locked.
 
@@ -92,7 +92,6 @@ bf-harness discard <bf-wo>                 # delete the whole bf-wo
 
 ## Pointers
 
-- `docs/spec.md` — full contract: state machine, mutation whitelist, verify modes, pack semantics. The source of truth.
-- `docs/template/bf.md`, `docs/template/task-spec.md`, `docs/template/discussion.md`, `docs/template/review-result.md`, `docs/template/role.md`, `docs/template/pack.md` — frozen file shapes. Copy these when authoring; do not improvise.
+- `templates/bf.md`, `templates/task-spec.md`, `templates/discussion.md`, `templates/review-result.md`, `templates/role.md`, `templates/pack.md` — frozen file shapes. Copy these when authoring; do not improvise.
 - `roles/` — Core roles (`architect`, `engineer`, `tester`, …) — concrete skill identities reused across packs. Each pack's `pack.md` declares which role plays which phase (planning role for an engineering pack is `architect`; another pack might map planning to a different role). Packs may add private roles under `packs/<id>/roles/`.
 - `packs/` — installed packs. Each has a `pack.md` with `When to Use` + the three phase guidances.

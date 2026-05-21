@@ -1,0 +1,29 @@
+# Phase 2 — Spec
+
+Goal: produce a locked `bf.md` + one `<task-id>/spec.md` per task, with every AC reviewed and accepted by the user.
+
+## Steps
+
+1. `bf list-roles --pack <id>` — get the available roles and the capabilities they provide.
+2. Author `bf.md` with `State: Draft` using `templates/bf.md`. Every AC must carry `{id}|{capability}`, and the capability must be declared in some role's `Capabilities:` list.
+3. Author each `<task>/spec.md` with `State: Draft` using `templates/task-spec.md`. Each task spec has exactly one `Capability` in frontmatter (execution capability) and AC lines with their own `{capability}` markers (review capability).
+4. `bf-harness lint <bf-wo>` — fix every error and re-run until SUCCESS.
+5. **Spec review loop (Mode A):**
+   1. `bf-harness start-review <bf-wo>` — returns the round directory `<bf-wo>/runs/reviews/round_N/`.
+   2. For each role returned by `bf list-roles --pack <id>` that provides a review capability used in the spec, spawn 1–3 reviewer subagents (cap total at 10). Each subagent writes `result_<role>_<idx>.md` into the round dir using `templates/review-result.md`.
+   3. `bf-harness verify <bf-wo>` (Mode A) — `SUCCESS <path>` or `FAIL <path>`. On FAIL, read the verify-result file, fix `bf.md` / `spec.md`, then start a new round.
+6. When verify returns SUCCESS and the user agrees with the plan, `bf-harness accept <bf-wo>`. `bf.md` → `Accepted`; all tasks cascade `Draft` → `Ready`. **Contract is now locked.**
+
+## Mutation whitelist after accept
+
+Once `accept` runs, the LLM no longer edits `State`, AC checkboxes, or `Updated` fields in `bf.md` / `spec.md`. Only the harness writes those. The LLM continues to write `discussion.md`, review results, and code.
+
+## Authoring rules
+
+- Every AC capability must be discoverable via `bf list-roles --pack <id>`. Lint will fail otherwise.
+- Each task spec's `Capability:` is the **execution** capability (what the doer needs). Each AC's `{capability}` is the **review** capability (what the reviewer needs). They can be the same or different.
+- Task dependencies are declared in the task spec frontmatter; lint catches cycles and unknown task ids.
+
+## Exit
+
+Phase 2 ends after `accept` returns success. Move to [phase-3-execute.md](phase-3-execute.md).

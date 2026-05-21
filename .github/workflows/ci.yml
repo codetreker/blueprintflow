@@ -33,6 +33,10 @@ jobs:
         if: github.event_name == 'pull_request'
         run: .github/scripts/validate-release-version.sh "origin/${{ github.base_ref }}"
 
+      - name: Validate @codetreker/bf version bump
+        if: github.event_name == 'pull_request'
+        run: .github/scripts/validate-bf-version.sh "origin/${{ github.base_ref }}"
+
       - name: Check whitespace
         run: |
           if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then

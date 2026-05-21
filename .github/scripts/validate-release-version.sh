@@ -61,7 +61,6 @@ is_release_path() {
     .claude-plugin/plugin.json) return 0 ;;
     .agents/plugins/marketplace.json) return 0 ;;
     .claude-plugin/marketplace.json) return 0 ;;
-    README.md) return 0 ;;
     *) return 1 ;;
   esac
 }

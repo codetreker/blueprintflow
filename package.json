@@ -31,6 +31,14 @@
     "skill"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codetreker/blueprintflow.git"
+  },
+  "homepage": "https://github.com/codetreker/blueprintflow#readme",
+  "bugs": {
+    "url": "https://github.com/codetreker/blueprintflow/issues"
+  },
   "engines": {
     "node": ">=20"
   },

@@ -1,0 +1,87 @@
+name: Publish @codetreker/bf
+
+# Manual publish workflow for `@codetreker/bf`.
+#
+# Trigger:
+#   - Manual `workflow_dispatch` only. No tag trigger by design — the tag is an
+#     *artifact* of a successful publish, not its cause. The version published
+#     is whatever lives in package.json on the current ref.
+#
+# Pre-flight assumption:
+#   - package.json version has been bumped via PR and merged. The version-bump
+#     CI check (validate-bf-version.sh) is the gate that ensures this.
+#
+# Required setup in this repo:
+#   - GitHub environment `NPM_TRUSTED_CONN` registered as a Trusted Publisher
+#     on npmjs.com for the @codetreker/bf package. Provides short-lived OIDC
+#     tokens — no long-lived NPM_TOKEN secret.
+#   - The job has `contents: write` so it can push the release tag back to the
+#     repo after publish succeeds.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    name: Publish @codetreker/bf
+    runs-on: ubuntu-latest
+    environment: NPM_TRUSTED_CONN
+    permissions:
+      contents: write   # push the bf-v<version> tag after a successful publish
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      - name: Run tests (pre-publish gate)
+        run: bash test/run-all.sh
+
+      - name: Read version from package.json
+        id: read
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [ -z "$VERSION" ]; then
+            echo "::error::Could not read version from package.json"
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Publishing version: $VERSION"
+
+      - name: Pre-flight — version + tag must be fresh
+        env:
+          VERSION: ${{ steps.read.outputs.version }}
+        run: |
+          TAG="bf-v$VERSION"
+          if npm view "@codetreker/bf@$VERSION" version 2>/dev/null; then
+            echo "::error::v$VERSION already published on npm. Bump package.json (e.g. via PR) and retry."
+            exit 1
+          fi
+          if git ls-remote --tags origin "refs/tags/$TAG" | grep -q "$TAG"; then
+            echo "::error::Tag $TAG already exists. Bump package.json (e.g. via PR) and retry."
+            exit 1
+          fi
+          echo "✓ v$VERSION + tag $TAG are both fresh; proceeding."
+
+      - name: Publish
+        run: npm publish --provenance --access public
+
+      - name: Tag the release
+        env:
+          VERSION: ${{ steps.read.outputs.version }}
+        run: |
+          TAG="bf-v$VERSION"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" -m "Release @codetreker/bf v$VERSION"
+          git push origin "$TAG"
+          echo "✓ Pushed tag $TAG"

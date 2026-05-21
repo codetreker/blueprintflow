@@ -38,5 +38,50 @@ assert_match "$STDOUT" "bogus" "id mismatch warning"
 assert_match "$STDOUT" "empty-pack" "missing pack.md warning"
 assert_match "$STDOUT" "/packs/engineering/roles" "rolesDir resolved"
 
-rm -rf "$TMP"
+# extension packs add new packs and override core packs of the same id
+EXT_DIR=$(make_temp_home)
+mkdir -p "$EXT_DIR/ext-packs/extra-pack" "$EXT_DIR/ext-packs/engineering"
+cat > "$EXT_DIR/ext-packs/extra-pack/pack.md" <<'EOF'
+---
+Id: extra-pack
+Desc: extension-only pack
+---
+
+## When to Use
+
+extension testing
+EOF
+cat > "$EXT_DIR/ext-packs/engineering/pack.md" <<'EOF'
+---
+Id: engineering
+Desc: extension override of core engineering pack
+---
+
+## When to Use
+
+override
+EOF
+
+STDOUT=$(node --input-type=module -e "
+  import('$REPO_ROOT/bin/lib/shared/pack-registry.mjs').then(m => {
+    const r = m.buildPackRegistry({
+      packsDir: '$TMP/packs',
+      extensionPacksDirs: ['$EXT_DIR/ext-packs'],
+    });
+    const eng = r.packs.get('engineering');
+    const extra = r.packs.get('extra-pack');
+    process.stdout.write(JSON.stringify({
+      ids: [...r.packs.keys()].sort(),
+      engineeringDesc: eng?.desc,
+      engineeringSource: eng?.source,
+      extraSource: extra?.source,
+    }));
+  });
+")
+assert_json_field "$STDOUT" .ids '["engineering","extra-pack"]'
+assert_json_field "$STDOUT" .engineeringSource "extension"
+assert_json_field "$STDOUT" .engineeringDesc "extension override of core engineering pack"
+assert_json_field "$STDOUT" .extraSource "extension"
+
+rm -rf "$TMP" "$EXT_DIR"
 pass

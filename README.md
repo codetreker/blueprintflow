@@ -10,11 +10,9 @@ This package ships the BF v1 core: the CLI (`bf`, `bf-harness`), the entry skill
 
 ```bash
 npm install -g @codetreker/bf
-# or as a project dev dep
-npm install --save-dev @codetreker/bf
 ```
 
-Requires Node.js ≥ 20.
+Requires Node.js ≥ 20. **Install globally** (`-g`) so the `bf` and `bf-harness` CLIs land on `$PATH` — that is the only supported install mode. Local installs (`--save-dev`) put the CLIs in `node_modules/.bin/` only and break shell invocations from subagent commands.
 
 `npm install` also runs a `postinstall` step that copies the skill files (`SKILL.md`, `roles/`, `packs/`, `templates/`, `references/`, `bin/`) into `~/.claude/skills/bf/` so Claude Code can discover the `/bf` skill. Re-run manually anytime with `bf install`.
 
@@ -24,10 +22,27 @@ npm (≥ v7) does **not** run lifecycle scripts on `npm uninstall`, so removing 
 
 ```bash
 bf uninstall                              # before npm uninstall, while the CLI is still on $PATH
-npm uninstall -g @codetreker/bf           # or --save-dev for project installs
+npm uninstall -g @codetreker/bf
 ```
 
-`bf uninstall` preserves any roles or packs you added yourself; only the files BF originally installed are removed.
+`bf uninstall` removes only files BF installed; anything you put under `extensions/` is preserved (see below).
+
+## Extending BF — `extensions/`
+
+BF looks for additional roles and packs in two `extensions/` directories. Drop `.md` files in either, and BF will pick them up automatically.
+
+| Location | When to use |
+|---|---|
+| `~/.claude/skills/bf/extensions/roles/<name>.md` | A custom role you want available across every project |
+| `~/.claude/skills/bf/extensions/packs/<id>/pack.md` | A custom pack available globally |
+| `<project-root>/.bf/extensions/roles/<name>.md` | A role only this project should see |
+| `<project-root>/.bf/extensions/packs/<id>/pack.md` | A pack only this project should see |
+
+**Precedence (highest wins):** project extension → global extension → pack-private role → Core role. So a project-local `engineer.md` overrides anything else with that id.
+
+`bf install` and `bf uninstall` never touch `extensions/`. Upgrades that rename or remove BF-shipped files won't accidentally delete anything you put there.
+
+`bf list-roles [--pack <id>]` and `bf list-packs` show extension entries alongside Core ones, with a `source: "extension"` field so you can tell where each came from.
 
 ## What you get
 

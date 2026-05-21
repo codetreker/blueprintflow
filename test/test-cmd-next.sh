@@ -21,7 +21,7 @@ setup_accepted
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/cmd-next.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdNext({
-      baseHome: '$BASE', woId: 'wo-1', repoRoot: '$REPO',
+      baseHome: '$BASE', woId: 'wo-1', installDir: '$REPO',
     })));
   });
 ")
@@ -36,7 +36,7 @@ grep -q "^State: Implementing" "$BASE/wo-1/bf.md" || fail "bf not Implementing"
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/cmd-next.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdNext({
-      baseHome: '$BASE', woId: 'wo-1', repoRoot: '$REPO',
+      baseHome: '$BASE', woId: 'wo-1', installDir: '$REPO',
     })));
   });
 ")
@@ -48,7 +48,7 @@ sed -i.bak 's/^State: Tasking/State: Completed/' "$BASE/wo-1/task-a/spec.md"
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/cmd-next.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdNext({
-      baseHome: '$BASE', woId: 'wo-1', repoRoot: '$REPO',
+      baseHome: '$BASE', woId: 'wo-1', installDir: '$REPO',
     })));
   });
 ")
@@ -64,7 +64,7 @@ sed -i.bak 's/^State: Accepted/State: Draft/' "$BASE/wo-1/bf.md"
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/cmd-next.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdNext({
-      baseHome: '$BASE', woId: 'wo-1', repoRoot: '$REPO',
+      baseHome: '$BASE', woId: 'wo-1', installDir: '$REPO',
     })));
   });
 ")
@@ -80,7 +80,7 @@ sed -i.bak 's/^State: Accepted/State: Implementing/' "$BASE/wo-1/bf.md"
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/cmd-next.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdNext({
-      baseHome: '$BASE', woId: 'wo-1', repoRoot: '$REPO',
+      baseHome: '$BASE', woId: 'wo-1', installDir: '$REPO',
     })));
   });
 ")

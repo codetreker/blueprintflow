@@ -18,7 +18,7 @@ run_validate() {
       import('$REPO_ROOT/bin/lib/harness/load-wo.mjs'),
       import('$REPO_ROOT/bin/lib/harness/validate-wo.mjs'),
     ]).then(async ([l, v]) => {
-      const bundle = await l.loadWo({ baseHome: '$BASE', woId: process.argv[1], repoRoot: '$REPO' });
+      const bundle = await l.loadWo({ baseHome: '$BASE', woId: process.argv[1], installDir: '$REPO' });
       process.stdout.write(JSON.stringify(v.validateWo(bundle)));
     });
   " "$1")

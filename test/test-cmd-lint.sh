@@ -20,7 +20,7 @@ cp -R "$FIXTURES/clean-wo" "$BASE/clean-wo"
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/cmd-lint.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdLint({
-      baseHome: '$BASE', woId: 'clean-wo', repoRoot: '$REPO',
+      baseHome: '$BASE', woId: 'clean-wo', installDir: '$REPO',
     })));
   });
 ")
@@ -33,7 +33,7 @@ cp -R "$FIXTURES/missing-capability-wo" "$BASE/wo-1"
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/cmd-lint.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdLint({
-      baseHome: '$BASE', woId: 'wo-1', repoRoot: '$REPO',
+      baseHome: '$BASE', woId: 'wo-1', installDir: '$REPO',
     })));
   });
 ")
@@ -49,7 +49,7 @@ sed -i.bak 's/^State: Draft/State: Accepted/' "$BASE/clean-wo/bf.md"
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/cmd-lint.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdLint({
-      baseHome: '$BASE', woId: 'clean-wo', repoRoot: '$REPO',
+      baseHome: '$BASE', woId: 'clean-wo', installDir: '$REPO',
     })));
   });
 ")
@@ -64,7 +64,7 @@ sed -i.bak 's/^Pack: engineering/Pack: nonexistent/' "$BASE/clean-wo/bf.md"
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/cmd-lint.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdLint({
-      baseHome: '$BASE', woId: 'clean-wo', repoRoot: '$REPO',
+      baseHome: '$BASE', woId: 'clean-wo', installDir: '$REPO',
     })));
   });
 ")

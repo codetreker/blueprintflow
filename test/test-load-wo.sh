@@ -17,7 +17,7 @@ cleanup() { rm -rf "$REPO" "$BASE"; }
 setup
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/load-wo.mjs').then(async (m) => {
-    const r = await m.loadWo({ baseHome: '$BASE', woId: 'clean-wo', repoRoot: '$REPO' });
+    const r = await m.loadWo({ baseHome: '$BASE', woId: 'clean-wo', installDir: '$REPO' });
     process.stdout.write(JSON.stringify({
       ok: r.ok,
       bfId: r.bf.frontmatter.Id,
@@ -40,7 +40,7 @@ setup
 rm "$BASE/clean-wo/task-b/spec.md"
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/load-wo.mjs').then(async (m) => {
-    const r = await m.loadWo({ baseHome: '$BASE', woId: 'clean-wo', repoRoot: '$REPO' });
+    const r = await m.loadWo({ baseHome: '$BASE', woId: 'clean-wo', installDir: '$REPO' });
     process.stdout.write(JSON.stringify(r.errors));
   });
 ")
@@ -52,7 +52,7 @@ setup
 echo "not a real bf.md" > "$BASE/clean-wo/bf.md"
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/load-wo.mjs').then(async (m) => {
-    const r = await m.loadWo({ baseHome: '$BASE', woId: 'clean-wo', repoRoot: '$REPO' });
+    const r = await m.loadWo({ baseHome: '$BASE', woId: 'clean-wo', installDir: '$REPO' });
     process.stdout.write(JSON.stringify({ ok: r.ok, errors: r.errors }));
   });
 ")

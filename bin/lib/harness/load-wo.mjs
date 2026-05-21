@@ -5,8 +5,9 @@ import { parseBfMd } from "./parse-bf-md.mjs";
 import { parseTaskSpec } from "./parse-task-spec.mjs";
 import { buildRoleRegistry } from "../shared/role-registry.mjs";
 import { buildPackRegistry } from "../shared/pack-registry.mjs";
+import { skillsDir } from "../shared/install-paths.mjs";
 
-export async function loadWo({ baseHome, woId, repoRoot }) {
+export async function loadWo({ baseHome, woId, installDir }) {
   const wo = woDir(baseHome, woId);
   const bfPath = path.join(wo, "bf.md");
   const errors = [];
@@ -25,11 +26,27 @@ export async function loadWo({ baseHome, woId, repoRoot }) {
       errors: [{ code: "PARSE_BF", message: e.message, ref: bfPath }],
     };
   }
-  const packReg = buildPackRegistry({ packsDir: path.join(repoRoot, "packs") });
+  // Extension dirs: global lives under the user-facing skills dir, NOT under installDir
+  // (which for `npm install -g` is the npm package dir). Project ext lives in
+  // <baseHome>/extensions/. Project wins on same id.
+  const globalExt = path.join(skillsDir(), "extensions");
+  const extensionPacksDirs = [
+    path.join(globalExt, "packs"),
+    path.join(baseHome, "extensions", "packs"),
+  ];
+  const extensionRolesDirs = [
+    path.join(globalExt, "roles"),
+    path.join(baseHome, "extensions", "roles"),
+  ];
+  const packReg = buildPackRegistry({
+    packsDir: path.join(installDir, "packs"),
+    extensionPacksDirs,
+  });
   const packRolesDir = packReg.packs.get(bf.frontmatter.Pack)?.rolesDir || null;
   const roleReg = buildRoleRegistry({
-    coreRolesDir: path.join(repoRoot, "roles"),
+    coreRolesDir: path.join(installDir, "roles"),
     packRolesDir,
+    extensionRolesDirs,
   });
   const tasks = bf.taskList.map((t) => {
     const specPath = path.join(wo, t.id, "spec.md");

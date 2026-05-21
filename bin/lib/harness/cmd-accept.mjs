@@ -28,8 +28,8 @@ function hasModeASuccess(woPath) {
   } catch { return false; }
 }
 
-export async function cmdAccept({ baseHome, woId, repoRoot, now = new Date() }) {
-  const bundle = await loadWo({ baseHome, woId, repoRoot });
+export async function cmdAccept({ baseHome, woId, installDir, now = new Date() }) {
+  const bundle = await loadWo({ baseHome, woId, installDir });
   if (!bundle.bf) return { ok: false, error: "load failed", details: bundle.errors };
   if (bundle.bf.frontmatter.State !== "Draft") {
     return { ok: false, error: `already accepted (State=${bundle.bf.frontmatter.State})` };

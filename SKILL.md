@@ -36,4 +36,5 @@ Re-check this every time you spawn a reviewer. It is the one rule the system can
 - `templates/` — frozen file shapes (`bf.md`, `task-spec.md`, `discussion.md`, `review-result.md`, `role.md`, `pack.md`). Copy these when authoring; do not improvise.
 - `roles/` — Core roles (`architect`, `engineer`, `tester`, …). Each pack's `pack.md` declares which role plays which phase. Packs may add private roles under `packs/<id>/roles/`.
 - `packs/` — installed packs. Each `pack.md` has `When to Use` + the three phase guidances.
+- `extensions/` (optional) — user-supplied roles and packs. Lives at `~/.claude/skills/bf/extensions/` (global) or `<project-root>/.bf/extensions/` (project). Project beats global beats core; same id wins by precedence.
 - Run `bf --help` and `bf-harness --help` for the authoritative command reference.

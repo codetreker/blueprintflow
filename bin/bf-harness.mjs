@@ -59,8 +59,8 @@ function validateArity(subcmd, t) {
   return null;
 }
 
-function resolveRepoRoot() {
-  if (process.env.BF_REPO_ROOT) return process.env.BF_REPO_ROOT;
+function resolveInstallDir() {
+  if (process.env.BF_INSTALL_DIR) return process.env.BF_INSTALL_DIR;
   return path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 }
 
@@ -74,14 +74,14 @@ async function main() {
   }
 
   const baseHome = process.env.BF_HOME || path.join(process.cwd(), ".bf");
-  const repoRoot = resolveRepoRoot();
+  const installDir = resolveInstallDir();
   const t = parseTarget(target);
   if (!t) fail(`invalid target argument\n${USAGE}`, 2);
   const arityErr = validateArity(subcmd, t);
   if (arityErr) fail(`${arityErr}\n${USAGE}`, 2);
 
   if (subcmd === "verify") {
-    const r = await cmdVerify({ baseHome, woId: t.woId, taskId: t.taskId, repoRoot });
+    const r = await cmdVerify({ baseHome, woId: t.woId, taskId: t.taskId, installDir });
     if (!r.ok) {
       process.stdout.write(`FAIL ${r.error}\n`);
       process.exit(2);
@@ -95,13 +95,13 @@ async function main() {
     case "list":
       r = await cmdList({ baseHome }); break;
     case "lint":
-      r = await cmdLint({ baseHome, woId: t.woId, repoRoot }); break;
+      r = await cmdLint({ baseHome, woId: t.woId, installDir }); break;
     case "start-review":
       r = await cmdStartReview({ baseHome, woId: t.woId, taskId: t.taskId }); break;
     case "accept":
-      r = await cmdAccept({ baseHome, woId: t.woId, repoRoot }); break;
+      r = await cmdAccept({ baseHome, woId: t.woId, installDir }); break;
     case "next":
-      r = await cmdNext({ baseHome, woId: t.woId, repoRoot }); break;
+      r = await cmdNext({ baseHome, woId: t.woId, installDir }); break;
     case "discard":
       r = await cmdDiscard({ baseHome, woId: t.woId }); break;
     default:

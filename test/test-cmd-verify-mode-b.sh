@@ -54,7 +54,7 @@ run_verify_b() {
   STDOUT=$(node --input-type=module -e "
     import('$REPO_ROOT/bin/lib/harness/cmd-verify.mjs').then(async (m) => {
       process.stdout.write(JSON.stringify(await m.cmdVerify({
-        baseHome: '$BASE', woId: 'wo-1', taskId: 'task-a', repoRoot: '$REPO',
+        baseHome: '$BASE', woId: 'wo-1', taskId: 'task-a', installDir: '$REPO',
       })));
     });
   ")

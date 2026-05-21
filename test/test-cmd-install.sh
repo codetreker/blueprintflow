@@ -35,8 +35,9 @@ assert_json_field "$STDOUT" .version "9.9.9"
 [ -f "$TARGET/packs/sample/pack.md" ] || fail "packs/sample/pack.md not copied"
 [ -f "$TARGET/templates/bf.md" ] || fail "templates/bf.md not copied"
 [ -f "$TARGET/references/phase-1.md" ] || fail "references/phase-1.md not copied"
-[ -f "$TARGET/bin/bf.mjs" ] || fail "bin/bf.mjs not copied"
-[ -f "$TARGET/package.json" ] || fail "package.json not copied"
+# bin/ and package.json are intentionally NOT copied; they live in the npm package dir.
+[ ! -e "$TARGET/bin" ] || fail "bin/ should not be copied (lives in npm package dir)"
+[ ! -e "$TARGET/package.json" ] || fail "package.json should not be copied (lives in npm package dir)"
 
 # --- Test 2: re-install overwrites with fresh content ---
 echo "# updated SKILL" > "$SRC/SKILL.md"
@@ -62,5 +63,32 @@ STDOUT=$(node --input-type=module -e "
 assert_json_field "$STDOUT" .mode "linked"
 [ -L "$HOME_DIR2/.claude/skills/bf" ] || fail "symlink unexpectedly replaced"
 
-rm -rf "$SRC" "$HOME_DIR" "$HOME_DIR2"
+# --- Test 4: install never touches extensions/ ---
+HOME_DIR3=$(make_temp_home)
+mkdir -p "$HOME_DIR3/.claude/skills/bf/extensions/roles"
+echo "# user-custom role" > "$HOME_DIR3/.claude/skills/bf/extensions/roles/my-role.md"
+node --input-type=module -e "
+  import('$REPO_ROOT/bin/lib/bf/cmd-install.mjs').then((m) =>
+    m.cmdInstall({ srcDir: '$SRC', home: '$HOME_DIR3', log: () => {} }));
+" >/dev/null
+[ -f "$HOME_DIR3/.claude/skills/bf/extensions/roles/my-role.md" ] || fail "install must not touch extensions/"
+[ -f "$HOME_DIR3/.claude/skills/bf/SKILL.md" ] || fail "install must still write SKILL.md"
+
+# --- Test 5: install removes orphans from previous version ---
+HOME_DIR4=$(make_temp_home)
+node --input-type=module -e "
+  import('$REPO_ROOT/bin/lib/bf/cmd-install.mjs').then((m) =>
+    m.cmdInstall({ srcDir: '$SRC', home: '$HOME_DIR4', log: () => {} }));
+" >/dev/null
+# Simulate an orphan: a role file present in the installed copy but not in the new srcDir
+echo "# old role removed in this version" > "$HOME_DIR4/.claude/skills/bf/roles/removed.md"
+[ -f "$HOME_DIR4/.claude/skills/bf/roles/removed.md" ] || fail "precondition: orphan should exist"
+node --input-type=module -e "
+  import('$REPO_ROOT/bin/lib/bf/cmd-install.mjs').then((m) =>
+    m.cmdInstall({ srcDir: '$SRC', home: '$HOME_DIR4', log: () => {} }));
+" >/dev/null
+[ ! -f "$HOME_DIR4/.claude/skills/bf/roles/removed.md" ] || fail "orphan role should be removed by nuke+replace"
+[ -f "$HOME_DIR4/.claude/skills/bf/roles/architect.md" ] || fail "current role should still be present"
+
+rm -rf "$SRC" "$HOME_DIR" "$HOME_DIR2" "$HOME_DIR3" "$HOME_DIR4"
 pass

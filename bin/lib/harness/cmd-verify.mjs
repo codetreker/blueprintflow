@@ -20,8 +20,8 @@ function decideMode({ taskId, bf, bundle }) {
   return null;
 }
 
-export async function cmdVerify({ baseHome, woId, taskId = null, repoRoot, now = new Date() }) {
-  const bundle = await loadWo({ baseHome, woId, repoRoot });
+export async function cmdVerify({ baseHome, woId, taskId = null, installDir, now = new Date() }) {
+  const bundle = await loadWo({ baseHome, woId, installDir });
   if (!bundle.bf) return { ok: false, error: "load failed", details: bundle.errors };
   const mode = decideMode({ taskId, bf: bundle.bf, bundle });
   if (!mode) {

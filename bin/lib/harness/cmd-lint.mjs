@@ -1,8 +1,8 @@
 import { loadWo } from "./load-wo.mjs";
 import { validateWo } from "./validate-wo.mjs";
 
-export async function cmdLint({ baseHome, woId, repoRoot }) {
-  const bundle = await loadWo({ baseHome, woId, repoRoot });
+export async function cmdLint({ baseHome, woId, installDir }) {
+  const bundle = await loadWo({ baseHome, woId, installDir });
   // bf.md 解析失败 → 直接返回（其它检查没意义）
   if (!bundle.bf) return { ok: false, errors: bundle.errors };
 

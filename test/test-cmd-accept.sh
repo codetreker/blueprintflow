@@ -34,7 +34,7 @@ seed_mode_a_success "$BASE/clean-wo"
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/cmd-accept.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdAccept({
-      baseHome: '$BASE', woId: 'clean-wo', repoRoot: '$REPO',
+      baseHome: '$BASE', woId: 'clean-wo', installDir: '$REPO',
       now: new Date(2026, 4, 19, 12, 34),
     })));
   });
@@ -51,7 +51,7 @@ setup
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/cmd-accept.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdAccept({
-      baseHome: '$BASE', woId: 'clean-wo', repoRoot: '$REPO',
+      baseHome: '$BASE', woId: 'clean-wo', installDir: '$REPO',
     })));
   });
 ")
@@ -65,7 +65,7 @@ sed -i.bak 's/^State: Draft/State: Accepted/' "$BASE/clean-wo/bf.md"
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/cmd-accept.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdAccept({
-      baseHome: '$BASE', woId: 'clean-wo', repoRoot: '$REPO',
+      baseHome: '$BASE', woId: 'clean-wo', installDir: '$REPO',
     })));
   });
 ")
@@ -79,7 +79,7 @@ sed -i.bak 's/^Pack: engineering/Pack: nope/' "$BASE/clean-wo/bf.md"
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/cmd-accept.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdAccept({
-      baseHome: '$BASE', woId: 'clean-wo', repoRoot: '$REPO',
+      baseHome: '$BASE', woId: 'clean-wo', installDir: '$REPO',
     })));
   });
 ")

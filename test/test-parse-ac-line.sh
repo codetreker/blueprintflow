@@ -4,7 +4,7 @@ source "$(dirname "$0")/test-helpers.sh"
 
 run_one() {
   STDOUT=$(node --input-type=module -e "
-    import('$REPO_ROOT/bin/lib/parse-ac-line.mjs').then(m => {
+    import('$REPO_ROOT/bin/lib/harness/parse-ac-line.mjs').then(m => {
       const r = m.parseAcLine(process.argv[1]);
       process.stdout.write(JSON.stringify(r));
     });

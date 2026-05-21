@@ -8,7 +8,7 @@ run_case() {
 
 # Case A
 run_case "
-  import('$REPO_ROOT/bin/lib/compute-ac-signoff.mjs').then(m => {
+  import('$REPO_ROOT/bin/lib/harness/compute-ac-signoff.mjs').then(m => {
     const roleReg = { byCapability: new Map([['backend-impl-review', [{id:'tester'}]]]) };
     const r = m.computeAcSignoff({
       acList: [{ id: 'AC-1', capability: 'backend-impl-review', checked: false }],
@@ -23,7 +23,7 @@ assert_json_field "$STDOUT" .flipped '["AC-1"]'
 
 # Case B
 run_case "
-  import('$REPO_ROOT/bin/lib/compute-ac-signoff.mjs').then(m => {
+  import('$REPO_ROOT/bin/lib/harness/compute-ac-signoff.mjs').then(m => {
     const roleReg = { byCapability: new Map([['backend-impl-review', [{id:'tester'},{id:'qa-engineer'}]]]) };
     const r = m.computeAcSignoff({
       acList: [{ id: 'AC-1', capability: 'backend-impl-review', checked: false }],
@@ -39,7 +39,7 @@ assert_json_field "$STDOUT" .missing '[]'
 
 # Case C
 run_case "
-  import('$REPO_ROOT/bin/lib/compute-ac-signoff.mjs').then(m => {
+  import('$REPO_ROOT/bin/lib/harness/compute-ac-signoff.mjs').then(m => {
     const roleReg = { byCapability: new Map([['backend-impl-review', [{id:'tester'},{id:'qa-engineer'}]]]) };
     const r = m.computeAcSignoff({
       acList: [{ id: 'AC-1', capability: 'backend-impl-review', checked: false }],
@@ -54,7 +54,7 @@ assert_match "$STDOUT" "no provider signed" "missing message"
 
 # Case D
 run_case "
-  import('$REPO_ROOT/bin/lib/compute-ac-signoff.mjs').then(m => {
+  import('$REPO_ROOT/bin/lib/harness/compute-ac-signoff.mjs').then(m => {
     const roleReg = { byCapability: new Map() };
     const r = m.computeAcSignoff({
       acList: [{ id: 'AC-1', capability: 'nobody-has-this', checked: false }],
@@ -68,7 +68,7 @@ assert_match "$STDOUT" "no role provides" "missing provider message"
 
 # Case E
 run_case "
-  import('$REPO_ROOT/bin/lib/compute-ac-signoff.mjs').then(m => {
+  import('$REPO_ROOT/bin/lib/harness/compute-ac-signoff.mjs').then(m => {
     const roleReg = { byCapability: new Map([['backend-impl-review', [{id:'tester'}]]]) };
     const r = m.computeAcSignoff({
       acList: [{ id: 'AC-1', capability: 'backend-impl-review', checked: true }],

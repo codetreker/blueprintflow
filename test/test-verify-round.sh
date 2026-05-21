@@ -8,7 +8,7 @@ touch "$TMP/scope/runs/reviews/round_1/result_tester_1.md"
 touch "$TMP/scope/runs/reviews/round_1/result_tester_2.md"
 
 STDOUT=$(node --input-type=module -e "
-  import('$REPO_ROOT/bin/lib/verify-round.mjs').then(m => {
+  import('$REPO_ROOT/bin/lib/harness/verify-round.mjs').then(m => {
     const r = m.findLatestRound('$TMP/scope');
     const round1 = '$TMP/scope/runs/reviews/round_1';
     const files = m.listResultFiles(round1);
@@ -26,7 +26,7 @@ assert_match "$STDOUT" "[qa#1] eek" "high labeled"
 
 # empty / nonexistent
 STDOUT=$(node --input-type=module -e "
-  import('$REPO_ROOT/bin/lib/verify-round.mjs').then(m => {
+  import('$REPO_ROOT/bin/lib/harness/verify-round.mjs').then(m => {
     process.stdout.write(JSON.stringify({
       round: m.findLatestRound('/nonexistent/path'),
       files: m.listResultFiles('/nonexistent/path').length,

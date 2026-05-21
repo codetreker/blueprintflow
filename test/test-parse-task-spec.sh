@@ -33,7 +33,7 @@ EOF
 )
 
 STDOUT=$(node --input-type=module -e "
-  import('$REPO_ROOT/bin/lib/parse-task-spec.mjs').then(m => {
+  import('$REPO_ROOT/bin/lib/harness/parse-task-spec.mjs').then(m => {
     const r = m.parseTaskSpec(process.argv[1]);
     process.stdout.write(JSON.stringify(r));
   });
@@ -47,7 +47,7 @@ assert_json_field "$STDOUT" .acceptanceCriteria.1.capability "security-review"
 # 缺 Capability
 BAD=$(printf -- '---\nState: Draft\nPack: x\nDesc: y\n---\n')
 OUT=$(node --input-type=module -e "
-  import('$REPO_ROOT/bin/lib/parse-task-spec.mjs').then(m => {
+  import('$REPO_ROOT/bin/lib/harness/parse-task-spec.mjs').then(m => {
     try { m.parseTaskSpec(process.argv[1]); process.stdout.write('ok'); }
     catch (e) { process.stdout.write('ERR:' + e.message); }
   });

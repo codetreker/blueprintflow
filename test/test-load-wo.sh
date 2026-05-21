@@ -8,16 +8,16 @@ setup() {
   cp -R "$FIXTURES/roles-core/." "$REPO/roles/"
   cp -R "$FIXTURES/packs-engineering" "$REPO/packs/engineering"
   BASE=$(make_temp_home)
-  mkdir -p "$BASE/projects/p"
-  cp -R "$FIXTURES/clean-wo" "$BASE/projects/p/clean-wo"
+  mkdir -p "$BASE"
+  cp -R "$FIXTURES/clean-wo" "$BASE/clean-wo"
 }
 cleanup() { rm -rf "$REPO" "$BASE"; }
 
 # Happy: 全解析
 setup
 STDOUT=$(node --input-type=module -e "
-  import('$REPO_ROOT/bin/lib/load-wo.mjs').then(async (m) => {
-    const r = await m.loadWo({ baseHome: '$BASE', projectSlug: 'p', woId: 'clean-wo', repoRoot: '$REPO' });
+  import('$REPO_ROOT/bin/lib/harness/load-wo.mjs').then(async (m) => {
+    const r = await m.loadWo({ baseHome: '$BASE', woId: 'clean-wo', repoRoot: '$REPO' });
     process.stdout.write(JSON.stringify({
       ok: r.ok,
       bfId: r.bf.frontmatter.Id,
@@ -37,10 +37,10 @@ cleanup
 
 # Task spec 缺失
 setup
-rm "$BASE/projects/p/clean-wo/task-b/spec.md"
+rm "$BASE/clean-wo/task-b/spec.md"
 STDOUT=$(node --input-type=module -e "
-  import('$REPO_ROOT/bin/lib/load-wo.mjs').then(async (m) => {
-    const r = await m.loadWo({ baseHome: '$BASE', projectSlug: 'p', woId: 'clean-wo', repoRoot: '$REPO' });
+  import('$REPO_ROOT/bin/lib/harness/load-wo.mjs').then(async (m) => {
+    const r = await m.loadWo({ baseHome: '$BASE', woId: 'clean-wo', repoRoot: '$REPO' });
     process.stdout.write(JSON.stringify(r.errors));
   });
 ")
@@ -49,10 +49,10 @@ cleanup
 
 # bf.md 坏掉
 setup
-echo "not a real bf.md" > "$BASE/projects/p/clean-wo/bf.md"
+echo "not a real bf.md" > "$BASE/clean-wo/bf.md"
 STDOUT=$(node --input-type=module -e "
-  import('$REPO_ROOT/bin/lib/load-wo.mjs').then(async (m) => {
-    const r = await m.loadWo({ baseHome: '$BASE', projectSlug: 'p', woId: 'clean-wo', repoRoot: '$REPO' });
+  import('$REPO_ROOT/bin/lib/harness/load-wo.mjs').then(async (m) => {
+    const r = await m.loadWo({ baseHome: '$BASE', woId: 'clean-wo', repoRoot: '$REPO' });
     process.stdout.write(JSON.stringify({ ok: r.ok, errors: r.errors }));
   });
 ")

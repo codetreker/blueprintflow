@@ -1,25 +1,24 @@
 #!/usr/bin/env node
-import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { cmdList } from "./lib/cmd-list.mjs";
-import { cmdLint } from "./lib/cmd-lint.mjs";
-import { cmdStartReview } from "./lib/cmd-start-review.mjs";
-import { cmdAccept } from "./lib/cmd-accept.mjs";
-import { cmdNext } from "./lib/cmd-next.mjs";
-import { cmdVerify } from "./lib/cmd-verify.mjs";
-import { cmdDiscard } from "./lib/cmd-discard.mjs";
+import { cmdList } from "./lib/harness/cmd-list.mjs";
+import { cmdLint } from "./lib/harness/cmd-lint.mjs";
+import { cmdStartReview } from "./lib/harness/cmd-start-review.mjs";
+import { cmdAccept } from "./lib/harness/cmd-accept.mjs";
+import { cmdNext } from "./lib/harness/cmd-next.mjs";
+import { cmdVerify } from "./lib/harness/cmd-verify.mjs";
+import { cmdDiscard } from "./lib/harness/cmd-discard.mjs";
 
 const USAGE = `Usage:
-  bf-harness [--project <slug>] list
-  bf-harness [--project <slug>] lint <bf-wo>
-  bf-harness [--project <slug>] start-review <bf-wo>[/<task>]
-  bf-harness [--project <slug>] accept <bf-wo>
-  bf-harness [--project <slug>] next <bf-wo>
-  bf-harness [--project <slug>] verify <bf-wo>[/<task>]
-  bf-harness [--project <slug>] discard <bf-wo>
+  bf-harness list
+  bf-harness lint <bf-wo>
+  bf-harness start-review <bf-wo>[/<task>]
+  bf-harness accept <bf-wo>
+  bf-harness next <bf-wo>
+  bf-harness verify <bf-wo>[/<task>]
+  bf-harness discard <bf-wo>
 
-Project slug defaults to current directory basename; override with --project or $BF_PROJECT.`;
+State directory: $BF_HOME (default: <cwd>/.bf).`;
 
 function out(obj) { process.stdout.write(JSON.stringify(obj) + "\n"); }
 function fail(msg, code = 2) { process.stderr.write(msg + "\n"); process.exit(code); }
@@ -29,26 +28,6 @@ function isSafeSegment(seg) {
   if (/[/\\]/.test(seg)) return false;
   if (seg.includes("\0")) return false;
   return true;
-}
-
-// Extract --project / -p <slug> from argv, returning { slug, rest }.
-// Returns slug=null if flag not present; throws-style returns { error } on malformed.
-function extractProjectFlag(argv) {
-  const rest = [];
-  let slug = null;
-  for (let i = 0; i < argv.length; i++) {
-    const a = argv[i];
-    if (a === "--project" || a === "-p") {
-      if (i + 1 >= argv.length) return { error: `${a} requires a value` };
-      slug = argv[i + 1];
-      i++;
-    } else if (a.startsWith("--project=")) {
-      slug = a.slice("--project=".length);
-    } else {
-      rest.push(a);
-    }
-  }
-  return { slug, rest };
 }
 
 function parseTarget(s) {
@@ -86,21 +65,15 @@ function resolveRepoRoot() {
 }
 
 async function main() {
-  const rawArgs = process.argv.slice(2);
-  const flagRes = extractProjectFlag(rawArgs);
-  if (flagRes.error) fail(`${flagRes.error}\n${USAGE}`, 2);
-  const { slug: flagSlug, rest } = flagRes;
-  const [subcmd, target] = rest;
+  const args = process.argv.slice(2);
+  const [subcmd, target] = args;
 
   if (!subcmd || subcmd === "--help" || subcmd === "-h") {
     process.stdout.write(USAGE + "\n");
     return;
   }
 
-  const projectSlug = flagSlug || process.env.BF_PROJECT || path.basename(process.cwd());
-  if (!isSafeSegment(projectSlug)) fail(`invalid project slug: '${projectSlug}'\n${USAGE}`, 2);
-
-  const baseHome = process.env.BF_HOME || path.join(os.homedir(), ".bf");
+  const baseHome = process.env.BF_HOME || path.join(process.cwd(), ".bf");
   const repoRoot = resolveRepoRoot();
   const t = parseTarget(target);
   if (!t) fail(`invalid target argument\n${USAGE}`, 2);
@@ -108,7 +81,7 @@ async function main() {
   if (arityErr) fail(`${arityErr}\n${USAGE}`, 2);
 
   if (subcmd === "verify") {
-    const r = await cmdVerify({ baseHome, projectSlug, woId: t.woId, taskId: t.taskId, repoRoot });
+    const r = await cmdVerify({ baseHome, woId: t.woId, taskId: t.taskId, repoRoot });
     if (!r.ok) {
       process.stdout.write(`FAIL ${r.error}\n`);
       process.exit(2);
@@ -120,17 +93,17 @@ async function main() {
   let r;
   switch (subcmd) {
     case "list":
-      r = await cmdList({ baseHome, projectSlug }); break;
+      r = await cmdList({ baseHome }); break;
     case "lint":
-      r = await cmdLint({ baseHome, projectSlug, woId: t.woId, repoRoot }); break;
+      r = await cmdLint({ baseHome, woId: t.woId, repoRoot }); break;
     case "start-review":
-      r = await cmdStartReview({ baseHome, projectSlug, woId: t.woId, taskId: t.taskId }); break;
+      r = await cmdStartReview({ baseHome, woId: t.woId, taskId: t.taskId }); break;
     case "accept":
-      r = await cmdAccept({ baseHome, projectSlug, woId: t.woId, repoRoot }); break;
+      r = await cmdAccept({ baseHome, woId: t.woId, repoRoot }); break;
     case "next":
-      r = await cmdNext({ baseHome, projectSlug, woId: t.woId, repoRoot }); break;
+      r = await cmdNext({ baseHome, woId: t.woId, repoRoot }); break;
     case "discard":
-      r = await cmdDiscard({ baseHome, projectSlug, woId: t.woId }); break;
+      r = await cmdDiscard({ baseHome, woId: t.woId }); break;
     default:
       fail(`unknown subcommand: ${subcmd}\n${USAGE}`, 2);
   }

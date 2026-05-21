@@ -4,7 +4,6 @@ source "$(dirname "$0")/test-helpers.sh"
 
 BASE=$(make_temp_home)
 export BF_HOME="$BASE"
-export BF_PROJECT="myproj"
 
 # Path traversal in woId
 run_bfh lint ".."
@@ -51,33 +50,15 @@ assert_eq "$RC" "2" "discard with taskId rejected"
 run_bfh next
 assert_eq "$RC" "2" "next without woId rejected"
 
-# --project flag overrides BF_PROJECT (still rejected by arity, but slug should be accepted)
-run_bfh --project other-proj list
-assert_match "$STDOUT" "\"ok\"" "list with --project flag emits JSON"
-assert_not_match "$STDERR" "Usage" "no usage error with valid --project"
-
-# --project flag with malformed slug should fail with usage
-run_bfh --project "../bad" list
-assert_eq "$RC" "2" "--project with traversal rejected"
-assert_match "$STDERR" "invalid project slug" "slug validation error"
-
-# Missing value after --project
-run_bfh --project
-assert_eq "$RC" "2" "--project without value rejected"
-assert_match "$STDERR" "requires a value" "flag missing value error"
-
-# Slug defaults to cwd basename when no BF_PROJECT / flag
-unset BF_PROJECT
-CWD_PARENT=$(mktemp -d -t bf-slug-XXXXXX)
-CWD_DIR="$CWD_PARENT/some-cwd-slug"
-mkdir -p "$CWD_DIR" "$BASE/projects/some-cwd-slug/wo-marker"
-STDOUT=$(cd "$CWD_DIR" && node "$BFH" list 2>/tmp/bfh-slug-err.$$); RC=$?
-STDERR=$(cat /tmp/bfh-slug-err.$$ 2>/dev/null || true); rm -f /tmp/bfh-slug-err.$$
-# cmdList walks BF_HOME/<slug>/; we planted wo-marker/ (no bf.md) → expect a warning mentioning wo-marker
-assert_match "$STDOUT" "wo-marker" "cwd basename used as projectSlug"
-assert_not_match "$STDERR" "Usage" "no usage error with cwd-derived slug"
-rm -rf "$CWD_PARENT"
-rm -rf "$CWD_PARENT"
-rm -rf "$BASE"
+# baseHome defaults to <cwd>/.bf when BF_HOME unset
 unset BF_HOME
+CWD_DIR=$(mktemp -d -t bf-cwd-XXXXXX)
+mkdir -p "$CWD_DIR/.bf/wo-marker"
+STDOUT=$(cd "$CWD_DIR" && node "$BFH" list 2>/tmp/bfh-cwd-err.$$); RC=$?
+STDERR=$(cat /tmp/bfh-cwd-err.$$ 2>/dev/null || true); rm -f /tmp/bfh-cwd-err.$$
+# cmdList walks baseHome/; we planted wo-marker/ (no bf.md) → expect a warning mentioning wo-marker
+assert_match "$STDOUT" "wo-marker" "default baseHome is <cwd>/.bf"
+assert_not_match "$STDERR" "Usage" "no usage error with default baseHome"
+rm -rf "$CWD_DIR"
+rm -rf "$BASE"
 pass

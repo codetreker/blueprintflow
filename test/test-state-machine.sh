@@ -3,7 +3,7 @@ set -u
 source "$(dirname "$0")/test-helpers.sh"
 
 STDOUT=$(node --input-type=module -e "
-  import('$REPO_ROOT/bin/lib/state-machine.mjs').then(m => {
+  import('$REPO_ROOT/bin/lib/harness/state-machine.mjs').then(m => {
     process.stdout.write(JSON.stringify({
       bfHappy:    m.canTransition('bf', 'Draft', 'Accepted'),
       bfSkip:     m.canTransition('bf', 'Draft', 'Implementing'),

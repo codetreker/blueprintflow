@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { buildRoleRegistry } from "./role-registry.mjs";
+import { buildRoleRegistry } from "../shared/role-registry.mjs";
 
 export async function cmdListRoles({ cwd, pack = null }) {
   const coreRolesDir = path.join(cwd, "roles");

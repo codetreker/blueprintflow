@@ -1,15 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
-import { projectHome } from "./wo-paths.mjs";
 import { parseBfMd } from "./parse-bf-md.mjs";
 
-export async function cmdList({ baseHome, projectSlug }) {
-  const home = projectHome(baseHome, projectSlug);
+export async function cmdList({ baseHome }) {
   const warnings = [];
-  if (!fs.existsSync(home)) return { ok: true, woList: [], warnings };
+  if (!fs.existsSync(baseHome)) return { ok: true, woList: [], warnings };
   const woList = [];
-  for (const name of fs.readdirSync(home).sort()) {
-    const woPath = path.join(home, name);
+  for (const name of fs.readdirSync(baseHome).sort()) {
+    const woPath = path.join(baseHome, name);
     if (!fs.statSync(woPath).isDirectory()) continue;
     const bfMd = path.join(woPath, "bf.md");
     if (!fs.existsSync(bfMd)) {

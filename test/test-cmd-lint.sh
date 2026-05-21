@@ -11,16 +11,16 @@ setup_repo() {
 
 setup_base() {
   BASE=$(make_temp_home)
-  mkdir -p "$BASE/projects/p"
+  mkdir -p "$BASE"
 }
 
 # Happy path
 setup_repo; setup_base
-cp -R "$FIXTURES/clean-wo" "$BASE/projects/p/clean-wo"
+cp -R "$FIXTURES/clean-wo" "$BASE/clean-wo"
 STDOUT=$(node --input-type=module -e "
-  import('$REPO_ROOT/bin/lib/cmd-lint.mjs').then(async (m) => {
+  import('$REPO_ROOT/bin/lib/harness/cmd-lint.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdLint({
-      baseHome: '$BASE', projectSlug: 'p', woId: 'clean-wo', repoRoot: '$REPO',
+      baseHome: '$BASE', woId: 'clean-wo', repoRoot: '$REPO',
     })));
   });
 ")
@@ -29,11 +29,11 @@ rm -rf "$REPO" "$BASE"
 
 # missing capability
 setup_repo; setup_base
-cp -R "$FIXTURES/missing-capability-wo" "$BASE/projects/p/wo-1"
+cp -R "$FIXTURES/missing-capability-wo" "$BASE/wo-1"
 STDOUT=$(node --input-type=module -e "
-  import('$REPO_ROOT/bin/lib/cmd-lint.mjs').then(async (m) => {
+  import('$REPO_ROOT/bin/lib/harness/cmd-lint.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdLint({
-      baseHome: '$BASE', projectSlug: 'p', woId: 'wo-1', repoRoot: '$REPO',
+      baseHome: '$BASE', woId: 'wo-1', repoRoot: '$REPO',
     })));
   });
 ")
@@ -44,12 +44,12 @@ rm -rf "$REPO" "$BASE"
 
 # State != Draft → BAD_STATE
 setup_repo; setup_base
-cp -R "$FIXTURES/clean-wo" "$BASE/projects/p/clean-wo"
-sed -i.bak 's/^State: Draft/State: Accepted/' "$BASE/projects/p/clean-wo/bf.md"
+cp -R "$FIXTURES/clean-wo" "$BASE/clean-wo"
+sed -i.bak 's/^State: Draft/State: Accepted/' "$BASE/clean-wo/bf.md"
 STDOUT=$(node --input-type=module -e "
-  import('$REPO_ROOT/bin/lib/cmd-lint.mjs').then(async (m) => {
+  import('$REPO_ROOT/bin/lib/harness/cmd-lint.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdLint({
-      baseHome: '$BASE', projectSlug: 'p', woId: 'clean-wo', repoRoot: '$REPO',
+      baseHome: '$BASE', woId: 'clean-wo', repoRoot: '$REPO',
     })));
   });
 ")
@@ -59,12 +59,12 @@ rm -rf "$REPO" "$BASE"
 
 # Pack 不存在
 setup_repo; setup_base
-cp -R "$FIXTURES/clean-wo" "$BASE/projects/p/clean-wo"
-sed -i.bak 's/^Pack: engineering/Pack: nonexistent/' "$BASE/projects/p/clean-wo/bf.md"
+cp -R "$FIXTURES/clean-wo" "$BASE/clean-wo"
+sed -i.bak 's/^Pack: engineering/Pack: nonexistent/' "$BASE/clean-wo/bf.md"
 STDOUT=$(node --input-type=module -e "
-  import('$REPO_ROOT/bin/lib/cmd-lint.mjs').then(async (m) => {
+  import('$REPO_ROOT/bin/lib/harness/cmd-lint.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdLint({
-      baseHome: '$BASE', projectSlug: 'p', woId: 'clean-wo', repoRoot: '$REPO',
+      baseHome: '$BASE', woId: 'clean-wo', repoRoot: '$REPO',
     })));
   });
 ")

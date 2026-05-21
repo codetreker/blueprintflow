@@ -24,7 +24,7 @@ EOF
 mkdir -p "$TMP/packs/empty-pack"
 
 STDOUT=$(node --input-type=module -e "
-  import('$REPO_ROOT/bin/lib/pack-registry.mjs').then(m => {
+  import('$REPO_ROOT/bin/lib/shared/pack-registry.mjs').then(m => {
     const r = m.buildPackRegistry({ packsDir: '$TMP/packs' });
     process.stdout.write(JSON.stringify({
       ids: [...r.packs.keys()].sort(),

@@ -7,17 +7,17 @@ mkdir -p "$REPO/roles" "$REPO/packs"
 cp -R "$FIXTURES/roles-core/." "$REPO/roles/"
 cp -R "$FIXTURES/packs-engineering" "$REPO/packs/engineering"
 BASE=$(make_temp_home)
-mkdir -p "$BASE/projects/p"
-cp -R "$FIXTURES/clean-wo" "$BASE/projects/p/wo-1"
+mkdir -p "$BASE"
+cp -R "$FIXTURES/clean-wo" "$BASE/wo-1"
 
 # Create a result "file" that is actually a directory → fs.readFileSync throws EISDIR.
-ROUND="$BASE/projects/p/wo-1/runs/reviews/round_1"
+ROUND="$BASE/wo-1/runs/reviews/round_1"
 mkdir -p "$ROUND/result_tester_1.md"
 
 STDOUT=$(node --input-type=module -e "
-  import('$REPO_ROOT/bin/lib/cmd-verify.mjs').then(async (m) => {
+  import('$REPO_ROOT/bin/lib/harness/cmd-verify.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdVerify({
-      baseHome: '$BASE', projectSlug: 'p', woId: 'wo-1', repoRoot: '$REPO',
+      baseHome: '$BASE', woId: 'wo-1', repoRoot: '$REPO',
     })));
   });
 ")

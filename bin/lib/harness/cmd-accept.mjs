@@ -2,7 +2,7 @@ import fs from "node:fs";
 import { roundDir, runsReviewsDir, verifyResultFile } from "./wo-paths.mjs";
 import { writeState } from "./write-state.mjs";
 import { writeUpdated, formatTimestamp } from "./write-updated.mjs";
-import { parseFrontmatter } from "./parse-frontmatter.mjs";
+import { parseFrontmatter } from "../shared/parse-frontmatter.mjs";
 import { loadWo } from "./load-wo.mjs";
 import { validateWo } from "./validate-wo.mjs";
 
@@ -28,8 +28,8 @@ function hasModeASuccess(woPath) {
   } catch { return false; }
 }
 
-export async function cmdAccept({ baseHome, projectSlug, woId, repoRoot, now = new Date() }) {
-  const bundle = await loadWo({ baseHome, projectSlug, woId, repoRoot });
+export async function cmdAccept({ baseHome, woId, repoRoot, now = new Date() }) {
+  const bundle = await loadWo({ baseHome, woId, repoRoot });
   if (!bundle.bf) return { ok: false, error: "load failed", details: bundle.errors };
   if (bundle.bf.frontmatter.State !== "Draft") {
     return { ok: false, error: `already accepted (State=${bundle.bf.frontmatter.State})` };

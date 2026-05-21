@@ -1,14 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
-import { projectHome, woDir } from "./wo-paths.mjs";
+import { woDir } from "./wo-paths.mjs";
 
-export async function cmdDiscard({ baseHome, projectSlug, woId }) {
+export async function cmdDiscard({ baseHome, woId }) {
   if (!woId || woId.includes("/") || woId.includes("..")) {
     return { ok: false, error: `invalid woId: ${woId}` };
   }
-  const home = projectHome(baseHome, projectSlug);
-  const target = woDir(baseHome, projectSlug, woId);
-  if (!target.startsWith(home + path.sep)) {
+  const target = woDir(baseHome, woId);
+  if (!target.startsWith(baseHome + path.sep)) {
     return { ok: false, error: "path escape detected" };
   }
   if (!fs.existsSync(target)) {

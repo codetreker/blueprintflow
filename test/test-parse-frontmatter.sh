@@ -5,7 +5,7 @@ source "$(dirname "$0")/test-helpers.sh"
 run_parser() {
   local input="$1"
   STDOUT=$(node --input-type=module -e "
-    import('$REPO_ROOT/bin/lib/parse-frontmatter.mjs').then(m => {
+    import('$REPO_ROOT/bin/lib/shared/parse-frontmatter.mjs').then(m => {
       try {
         const r = m.parseFrontmatter(process.argv[1]);
         process.stdout.write(JSON.stringify(r));

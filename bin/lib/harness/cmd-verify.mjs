@@ -20,15 +20,15 @@ function decideMode({ taskId, bf, bundle }) {
   return null;
 }
 
-export async function cmdVerify({ baseHome, projectSlug, woId, taskId = null, repoRoot, now = new Date() }) {
-  const bundle = await loadWo({ baseHome, projectSlug, woId, repoRoot });
+export async function cmdVerify({ baseHome, woId, taskId = null, repoRoot, now = new Date() }) {
+  const bundle = await loadWo({ baseHome, woId, repoRoot });
   if (!bundle.bf) return { ok: false, error: "load failed", details: bundle.errors };
   const mode = decideMode({ taskId, bf: bundle.bf, bundle });
   if (!mode) {
     const scope = taskId ? `${woId}/${taskId}` : woId;
     return { ok: false, error: `phase mismatch: cannot verify ${scope} when bf.md.State = ${bundle.bf.frontmatter.State}` };
   }
-  const scopeDir = taskId ? taskDir(baseHome, projectSlug, woId, taskId) : woDir(baseHome, projectSlug, woId);
+  const scopeDir = taskId ? taskDir(baseHome, woId, taskId) : woDir(baseHome, woId);
   const round = findLatestRound(scopeDir);
   if (round === 0) {
     return { ok: false, error: `no review round under ${scopeDir}/runs/reviews/; run start-review first` };

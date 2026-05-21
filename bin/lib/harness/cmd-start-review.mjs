@@ -1,10 +1,10 @@
 import fs from "node:fs";
 import { woDir, taskDir, runsReviewsDir, roundDir } from "./wo-paths.mjs";
 
-export async function cmdStartReview({ baseHome, projectSlug, woId, taskId = null }) {
+export async function cmdStartReview({ baseHome, woId, taskId = null }) {
   const scope = taskId
-    ? taskDir(baseHome, projectSlug, woId, taskId)
-    : woDir(baseHome, projectSlug, woId);
+    ? taskDir(baseHome, woId, taskId)
+    : woDir(baseHome, woId);
   if (!fs.existsSync(scope)) {
     return { ok: false, error: `scope not found: ${scope}` };
   }

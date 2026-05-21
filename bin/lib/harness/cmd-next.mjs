@@ -4,8 +4,8 @@ import { writeState } from "./write-state.mjs";
 import { writeUpdated, formatTimestamp } from "./write-updated.mjs";
 import { loadWo } from "./load-wo.mjs";
 
-export async function cmdNext({ baseHome, projectSlug, woId, repoRoot, now = new Date() }) {
-  const bundle = await loadWo({ baseHome, projectSlug, woId, repoRoot });
+export async function cmdNext({ baseHome, woId, repoRoot, now = new Date() }) {
+  const bundle = await loadWo({ baseHome, woId, repoRoot });
   if (!bundle.bf) return { ok: false, error: "load failed", details: bundle.errors };
   const bfState = bundle.bf.frontmatter.State;
   if (!["Accepted", "Implementing"].includes(bfState)) {
@@ -46,7 +46,7 @@ export async function cmdNext({ baseHome, projectSlug, woId, repoRoot, now = new
     ok: true,
     task: {
       taskId: chosen.id,
-      taskDir: taskDir(baseHome, projectSlug, woId, chosen.id),
+      taskDir: taskDir(baseHome, woId, chosen.id),
       specPath: chosen.specPath,
       desc: chosen.spec.frontmatter.Desc,
       capability_required: cap,

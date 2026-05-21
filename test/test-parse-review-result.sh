@@ -28,7 +28,7 @@ review task-build-api, round 1.
 EOF
 )
 STDOUT=$(node --input-type=module -e "
-  import('$REPO_ROOT/bin/lib/parse-review-result.mjs').then(m => {
+  import('$REPO_ROOT/bin/lib/harness/parse-review-result.mjs').then(m => {
     process.stdout.write(JSON.stringify(m.parseReviewResult(process.argv[1])));
   });
 " -- "$INPUT")
@@ -56,7 +56,7 @@ empty review
 EOF
 )
 OUT=$(node --input-type=module -e "
-  import('$REPO_ROOT/bin/lib/parse-review-result.mjs').then(m => {
+  import('$REPO_ROOT/bin/lib/harness/parse-review-result.mjs').then(m => {
     process.stdout.write(JSON.stringify(m.parseReviewResult(process.argv[1])));
   });
 " -- "$EMPTY")

@@ -39,7 +39,7 @@ EOF
 )
 
 STDOUT=$(node --input-type=module -e "
-  import('$REPO_ROOT/bin/lib/parse-bf-md.mjs').then(m => {
+  import('$REPO_ROOT/bin/lib/harness/parse-bf-md.mjs').then(m => {
     const r = m.parseBfMd(process.argv[1]);
     process.stdout.write(JSON.stringify(r));
   });
@@ -57,7 +57,7 @@ assert_json_field "$STDOUT" .requirements '["用户能用 email + password 登�
 # 缺 frontmatter 字段
 BAD=$(printf -- '---\nId: x\nDesc: y\nState: Draft\n---\n# Goal\n')
 STDERR=$(node --input-type=module -e "
-  import('$REPO_ROOT/bin/lib/parse-bf-md.mjs').then(m => {
+  import('$REPO_ROOT/bin/lib/harness/parse-bf-md.mjs').then(m => {
     try { m.parseBfMd(process.argv[1]); process.stdout.write('ok'); }
     catch (e) { process.stdout.write('ERR:' + e.message); }
   });

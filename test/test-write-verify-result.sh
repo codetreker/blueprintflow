@@ -6,7 +6,7 @@ TMP=$(make_temp_home)
 
 # SUCCESS Mode A: 不应有 Issues section
 node --input-type=module -e "
-  import('$REPO_ROOT/bin/lib/write-verify-result.mjs').then(m => {
+  import('$REPO_ROOT/bin/lib/harness/write-verify-result.mjs').then(m => {
     m.writeVerifyResultMd({
       filePath: '$TMP/a.md', mode: 'A', scope: 'wo-1', round: 1, status: 'SUCCESS',
       timestamp: '2026-05-19 12:34',
@@ -19,7 +19,7 @@ if grep -q "## Issues" "$TMP/a.md"; then fail "SUCCESS should NOT have Issues se
 
 # FAIL Mode A: 有 Issues, Blocker 段填了
 node --input-type=module -e "
-  import('$REPO_ROOT/bin/lib/write-verify-result.mjs').then(m => {
+  import('$REPO_ROOT/bin/lib/harness/write-verify-result.mjs').then(m => {
     m.writeVerifyResultMd({
       filePath: '$TMP/b.md', mode: 'A', scope: 'wo-1', round: 2, status: 'FAIL',
       timestamp: '2026-05-19 12:34',
@@ -32,7 +32,7 @@ grep -q "src.mjs:10 bad" "$TMP/b.md" || fail "blocker propagated"
 
 # Mode B SUCCESS with signOff + flipped + state change
 node --input-type=module -e "
-  import('$REPO_ROOT/bin/lib/write-verify-result.mjs').then(m => {
+  import('$REPO_ROOT/bin/lib/harness/write-verify-result.mjs').then(m => {
     m.writeVerifyResultMd({
       filePath: '$TMP/c.md', mode: 'B', scope: 'wo-1/task-a', round: 1, status: 'SUCCESS',
       timestamp: '2026-05-19 12:34',

@@ -18,7 +18,7 @@ Desc: 软件工程类工作
 EOF
 )
 STDOUT=$(node --input-type=module -e "
-  import('$REPO_ROOT/bin/lib/parse-pack.mjs').then(m => {
+  import('$REPO_ROOT/bin/lib/shared/parse-pack.mjs').then(m => {
     process.stdout.write(JSON.stringify(m.parsePack(process.argv[1])));
   });
 " -- "$INPUT")
@@ -38,7 +38,7 @@ oops
 EOF
 )
 OUT=$(node --input-type=module -e "
-  import('$REPO_ROOT/bin/lib/parse-pack.mjs').then(m => {
+  import('$REPO_ROOT/bin/lib/shared/parse-pack.mjs').then(m => {
     try { m.parsePack(process.argv[1]); process.stdout.write('ok'); }
     catch (e) { process.stdout.write('ERR:' + e.message); }
   });

@@ -1,15 +1,11 @@
 import path from "node:path";
 
-export function projectHome(baseHome, projectSlug) {
-  return path.join(baseHome, "projects", projectSlug);
+export function woDir(baseHome, woId) {
+  return path.join(baseHome, woId);
 }
 
-export function woDir(baseHome, projectSlug, woId) {
-  return path.join(projectHome(baseHome, projectSlug), woId);
-}
-
-export function taskDir(baseHome, projectSlug, woId, taskId) {
-  return path.join(woDir(baseHome, projectSlug, woId), taskId);
+export function taskDir(baseHome, woId, taskId) {
+  return path.join(woDir(baseHome, woId), taskId);
 }
 
 export function runsReviewsDir(scopeDir) {

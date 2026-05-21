@@ -3,11 +3,11 @@ import path from "node:path";
 import { woDir } from "./wo-paths.mjs";
 import { parseBfMd } from "./parse-bf-md.mjs";
 import { parseTaskSpec } from "./parse-task-spec.mjs";
-import { buildRoleRegistry } from "./role-registry.mjs";
-import { buildPackRegistry } from "./pack-registry.mjs";
+import { buildRoleRegistry } from "../shared/role-registry.mjs";
+import { buildPackRegistry } from "../shared/pack-registry.mjs";
 
-export async function loadWo({ baseHome, projectSlug, woId, repoRoot }) {
-  const wo = woDir(baseHome, projectSlug, woId);
+export async function loadWo({ baseHome, woId, repoRoot }) {
+  const wo = woDir(baseHome, woId);
   const bfPath = path.join(wo, "bf.md");
   const errors = [];
   let bf = null;

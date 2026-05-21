@@ -1,16 +1,40 @@
 {
-  "name": "blueprintflow",
+  "name": "@codetreker/bf",
   "version": "0.1.0",
+  "description": "BF — evidence-gated work loop CLI for LLM orchestrators (Blueprintflow v1)",
   "type": "module",
-  "private": true,
   "bin": {
     "bf": "./bin/bf.mjs",
     "bf-harness": "./bin/bf-harness.mjs"
   },
+  "files": [
+    "bin/",
+    "scripts/",
+    "SKILL.md",
+    "roles/",
+    "packs/",
+    "templates/",
+    "references/"
+  ],
   "scripts": {
-    "test": "bash test/run-all.sh"
+    "test": "bash test/run-all.sh",
+    "postinstall": "node scripts/postinstall.mjs"
   },
+  "keywords": [
+    "bf",
+    "blueprintflow",
+    "llm",
+    "agent",
+    "orchestrator",
+    "workflow",
+    "claude",
+    "skill"
+  ],
+  "license": "MIT",
   "engines": {
     "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

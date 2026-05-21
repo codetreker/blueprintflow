@@ -1,4 +1,4 @@
-import { parseFrontmatter } from "./parse-frontmatter.mjs";
+import { parseFrontmatter } from "../shared/parse-frontmatter.mjs";
 import { parseAcLine } from "./parse-ac-line.mjs";
 
 const REQUIRED_FM = ["State", "Capability", "Pack", "Desc"];

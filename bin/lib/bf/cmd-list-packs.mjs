@@ -1,5 +1,5 @@
 import path from "node:path";
-import { buildPackRegistry } from "./pack-registry.mjs";
+import { buildPackRegistry } from "../shared/pack-registry.mjs";
 
 export async function cmdListPacks({ cwd }) {
   const reg = buildPackRegistry({ packsDir: path.join(cwd, "packs") });

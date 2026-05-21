@@ -9,7 +9,7 @@ Goal: produce `discussion.md` capturing the user's intent, decisions, and trade-
 | Harness | `bf list-packs` — enumerate installed packs (JSON). |
 | LLM | Pick the pack whose `Desc` / `When to Use` matches the request. |
 | LLM | Drive an interactive discussion with the user, shaped by the chosen pack's `Brainstorm Guidance`. |
-| LLM | Append to `~/.bf/projects/<slug>/<bf-wo>/discussion.md` as the discussion happens. |
+| LLM | Append to `<project-root>/.bf/<bf-wo>/discussion.md` as the discussion happens. |
 
 `discussion.md` is never locked; you can append to it at any phase.
 

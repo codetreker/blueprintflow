@@ -1,13 +1,18 @@
 #!/usr/bin/env node
+// To add a subcommand: create `cmd-foo.mjs` (pure, returns `{ok, ...}`) and
+// export a matching `formatFoo` from the same file (pure, takes the cmd
+// result, returns the printable text). Wire it into the switch below.
+// Stream / exit-code routing belongs in this dispatcher — formatters return
+// strings only.
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { cmdList } from "./lib/harness/cmd-list.mjs";
-import { cmdLint } from "./lib/harness/cmd-lint.mjs";
-import { cmdStartReview } from "./lib/harness/cmd-start-review.mjs";
-import { cmdAccept } from "./lib/harness/cmd-accept.mjs";
-import { cmdNext } from "./lib/harness/cmd-next.mjs";
-import { cmdVerify } from "./lib/harness/cmd-verify.mjs";
-import { cmdDiscard } from "./lib/harness/cmd-discard.mjs";
+import { cmdList, formatList } from "./lib/harness/cmd-list.mjs";
+import { cmdLint, formatLint } from "./lib/harness/cmd-lint.mjs";
+import { cmdStartReview, formatStartReview } from "./lib/harness/cmd-start-review.mjs";
+import { cmdAccept, formatAccept } from "./lib/harness/cmd-accept.mjs";
+import { cmdNext, formatNext } from "./lib/harness/cmd-next.mjs";
+import { cmdVerify, formatVerifyResult, formatVerifySetupError } from "./lib/harness/cmd-verify.mjs";
+import { cmdDiscard, formatDiscard } from "./lib/harness/cmd-discard.mjs";
 
 const USAGE = `Usage:
   bf-harness list
@@ -20,7 +25,7 @@ const USAGE = `Usage:
 
 State directory: $BF_HOME (default: <cwd>/.bf).`;
 
-function out(obj) { process.stdout.write(JSON.stringify(obj) + "\n"); }
+function write(text) { process.stdout.write(text.endsWith("\n") ? text : text + "\n"); }
 function fail(msg, code = 2) { process.stderr.write(msg + "\n"); process.exit(code); }
 
 function isSafeSegment(seg) {
@@ -83,31 +88,37 @@ async function main() {
   if (subcmd === "verify") {
     const r = await cmdVerify({ baseHome, woId: t.woId, taskId: t.taskId, installDir });
     if (!r.ok) {
-      process.stdout.write(`FAIL ${r.error}\n`);
-      process.exit(2);
+      process.stderr.write(formatVerifySetupError(r));
+      process.exit(1);
     }
-    process.stdout.write(`${r.status} ${r.path}\n`);
+    process.stdout.write(formatVerifyResult(r));
     process.exit(r.status === "SUCCESS" ? 0 : 1);
   }
 
-  let r;
+  let r, text;
   switch (subcmd) {
     case "list":
-      r = await cmdList({ baseHome }); break;
+      r = await cmdList({ baseHome });
+      text = formatList(r); break;
     case "lint":
-      r = await cmdLint({ baseHome, woId: t.woId, installDir }); break;
+      r = await cmdLint({ baseHome, woId: t.woId, installDir });
+      text = formatLint(r); break;
     case "start-review":
-      r = await cmdStartReview({ baseHome, woId: t.woId, taskId: t.taskId }); break;
+      r = await cmdStartReview({ baseHome, woId: t.woId, taskId: t.taskId });
+      text = formatStartReview(r); break;
     case "accept":
-      r = await cmdAccept({ baseHome, woId: t.woId, installDir }); break;
+      r = await cmdAccept({ baseHome, woId: t.woId, installDir });
+      text = formatAccept(r); break;
     case "next":
-      r = await cmdNext({ baseHome, woId: t.woId, installDir }); break;
+      r = await cmdNext({ baseHome, woId: t.woId, installDir });
+      text = formatNext(r); break;
     case "discard":
-      r = await cmdDiscard({ baseHome, woId: t.woId }); break;
+      r = await cmdDiscard({ baseHome, woId: t.woId });
+      text = formatDiscard(r); break;
     default:
       fail(`unknown subcommand: ${subcmd}\n${USAGE}`, 2);
   }
-  out(r);
+  write(text);
   process.exit(r.ok ? 0 : 1);
 }
 

@@ -99,4 +99,45 @@ if [ -d "$BASE/wo-1/runs/reviews/round_1" ]; then
 fi
 cleanup
 
+# CLI-level: bf-harness verify SUCCESS path emits `SUCCESS <abs-path>` on
+# stdout line 1 with exit 0. Format-verify regression coverage — round 2
+# extracted the SUCCESS/FAIL prefix into the formatter; this assertion
+# catches a mutation that strips it.
+setup
+write_clean_review "$BASE/wo-1/runs/reviews/round_1" tester 1
+export BF_HOME="$BASE"
+export BF_INSTALL_DIR="$REPO"
+run_bfh verify "wo-1"
+assert_eq "$RC" "0" "verify SUCCESS exit 0"
+assert_eq "$STDERR" "" "verify SUCCESS stderr empty"
+FIRST_LINE=$(printf "%s\n" "$STDOUT" | head -1)
+case "$FIRST_LINE" in
+  "SUCCESS "*) ;;
+  *) fail "verify stdout line 1 does not start with 'SUCCESS ': got '$FIRST_LINE'" ;;
+esac
+case "$FIRST_LINE" in
+  *"/runs/reviews/round_1/verify-result.md") ;;
+  *) fail "verify stdout does not end with verify-result.md path: got '$FIRST_LINE'" ;;
+esac
+printf "%s\n" "$STDOUT" | grep -E ' +$' >/dev/null && fail "trailing whitespace in verify stdout"
+unset BF_HOME BF_INSTALL_DIR
+cleanup
+
+# CLI-level: bf-harness verify FAIL path emits `FAIL <abs-path>` on stdout
+# line 1 with exit 1.
+setup
+write_blocker_review "$BASE/wo-1/runs/reviews/round_1" tester 1
+export BF_HOME="$BASE"
+export BF_INSTALL_DIR="$REPO"
+run_bfh verify "wo-1"
+assert_eq "$RC" "1" "verify FAIL exit 1"
+assert_eq "$STDERR" "" "verify FAIL stderr empty"
+FIRST_LINE=$(printf "%s\n" "$STDOUT" | head -1)
+case "$FIRST_LINE" in
+  "FAIL "*) ;;
+  *) fail "verify stdout line 1 does not start with 'FAIL ': got '$FIRST_LINE'" ;;
+esac
+unset BF_HOME BF_INSTALL_DIR
+cleanup
+
 pass

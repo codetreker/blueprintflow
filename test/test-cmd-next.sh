@@ -88,4 +88,38 @@ assert_json_field "$STDOUT" .ok false
 assert_match "$STDOUT" "no eligible task" "all completed"
 cleanup
 
+# CLI-level OUT-3: bf-harness next prints one labeled line per field, exactly
+# one `^Task:`, `^Capability:`, `^Candidate roles:`, `^Pack:`, `^Spec:`,
+# `^Dir:`. No trailing whitespace.
+setup_accepted
+export BF_HOME="$BASE"
+export BF_INSTALL_DIR="$REPO"
+run_bfh next "wo-1"
+assert_eq "$RC" "0" "next wo-1 exit 0"
+for label in "Task:" "Capability:" "Candidate roles:" "Pack:" "Spec:" "Dir:"; do
+  count=$(printf "%s\n" "$STDOUT" | grep -c "^${label}")
+  assert_eq "$count" "1" "next stdout has exactly one '^${label}' line"
+done
+assert_match "$STDOUT" "Task: task-a" "Task line value"
+assert_match "$STDOUT" "Capability: software-implementation" "Capability line value"
+assert_match "$STDOUT" "Pack: engineering" "Pack line value"
+printf "%s\n" "$STDOUT" | grep -E ' +$' >/dev/null && fail "trailing whitespace in next stdout"
+unset BF_HOME BF_INSTALL_DIR
+cleanup
+
+# Empty candidate_roles: task Capability resolves to no providing role -> `(none)`.
+# cmd-next does not validate Capability against the role registry (validate-wo
+# does, but cmd-next only calls load-wo), so swapping task-a's Capability to a
+# value no role declares yields candidate_roles=[] and exercises the ternary
+# sentinel branch in format-next.mjs.
+setup_accepted
+sed -i.bak 's/^Capability: software-implementation/Capability: nonexistent-capability/' "$BASE/wo-1/task-a/spec.md"
+export BF_HOME="$BASE"
+export BF_INSTALL_DIR="$REPO"
+run_bfh next "wo-1"
+assert_eq "$RC" "0" "next wo-1 (empty roles) exit 0"
+assert_match "$STDOUT" "Candidate roles: (none)" "empty candidate_roles renders (none)"
+unset BF_HOME BF_INSTALL_DIR
+cleanup
+
 pass

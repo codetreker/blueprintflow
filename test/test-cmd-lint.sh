@@ -72,4 +72,29 @@ assert_json_field "$STDOUT" .ok false
 assert_match "$STDOUT" "PACK_NOT_FOUND" "pack check"
 rm -rf "$REPO" "$BASE"
 
+# OUT-4: CLI text output — `bf-harness lint` leads stdout with SUCCESS or FAIL.
+setup_repo; setup_base
+cp -R "$FIXTURES/clean-wo" "$BASE/clean-wo"
+export BF_HOME="$BASE"
+export BF_INSTALL_DIR="$REPO"
+run_bfh lint "clean-wo"
+assert_eq "$RC" "0" "lint clean-wo exit 0"
+FIRST_LINE=$(printf "%s\n" "$STDOUT" | head -1)
+assert_eq "$FIRST_LINE" "SUCCESS" "lint stdout line 1 is SUCCESS"
+printf "%s\n" "$STDOUT" | grep -E ' +$' >/dev/null && fail "trailing whitespace in lint SUCCESS stdout"
+rm -rf "$REPO" "$BASE"
+
+setup_repo; setup_base
+cp -R "$FIXTURES/missing-capability-wo" "$BASE/wo-1"
+export BF_HOME="$BASE"
+export BF_INSTALL_DIR="$REPO"
+run_bfh lint "wo-1"
+assert_eq "$RC" "1" "lint bad wo exit 1"
+FIRST_LINE=$(printf "%s\n" "$STDOUT" | head -1)
+assert_eq "$FIRST_LINE" "FAIL" "lint stdout line 1 is FAIL"
+assert_match "$STDOUT" "CAPABILITY_UNKNOWN" "lint stdout contains error code"
+printf "%s\n" "$STDOUT" | grep -E ' +$' >/dev/null && fail "trailing whitespace in lint FAIL stdout"
+unset BF_HOME BF_INSTALL_DIR
+rm -rf "$REPO" "$BASE"
+
 pass

@@ -58,4 +58,20 @@ run_verify "task-a"
 assert_json_field "$STDOUT" .ok false
 cleanup
 
+# CLI-level: phase-mismatch (a setup failure) routes to stderr with the
+# `bf-harness verify:` prefix and exits 1 (command-level failure — exit 2 is
+# reserved for CLI argument errors per the acceptance criteria). Stdout
+# stays empty so the FAIL prefix on stdout always means "verification ran
+# and produced a FAIL result", never "the command couldn't start".
+setup
+export BF_HOME="$BASE"
+export BF_INSTALL_DIR="$REPO"
+run_bfh verify "wo-1/task-a"
+assert_eq "$RC" "1" "verify setup failure exit 1"
+assert_eq "$STDOUT" "" "verify setup failure stdout empty"
+assert_match "$STDERR" "bf-harness verify:" "verify setup failure stderr prefix"
+assert_match "$STDERR" "phase mismatch" "verify setup failure stderr body"
+unset BF_HOME BF_INSTALL_DIR
+cleanup
+
 pass

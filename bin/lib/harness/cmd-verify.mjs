@@ -90,8 +90,7 @@ function checkRoundFreshness(parsedResults, bundle) {
     const epoch = tsToEpoch(t.spec.frontmatter.Updated);
     if (!Number.isNaN(epoch) && epoch > latestCompletedMs) latestCompletedMs = epoch;
   }
-  // 余量 60 秒，避免同一秒写入导致的边界
-  if (latestCompletedMs > 0 && earliestMtimeMs <= latestCompletedMs + 60_000) {
+  if (latestCompletedMs > 0 && earliestMtimeMs < latestCompletedMs) {
     return ["stale round: round files predate latest task completion; run start-review for bf-level review"];
   }
   return [];
@@ -134,6 +133,13 @@ export async function cmdVerify({ baseHome, woId, taskId = null, installDir, now
   if (!mode) {
     const scope = taskId ? `${woId}/${taskId}` : woId;
     return { ok: false, error: `phase mismatch: cannot verify ${scope} when bf.md.State = ${bundle.bf.frontmatter.State}` };
+  }
+  if (mode === "B") {
+    const task = bundle.tasks.find(t => t.id === taskId);
+    const taskState = task?.spec?.frontmatter.State || "missing";
+    if (taskState !== "Tasking") {
+      return { ok: false, error: `phase mismatch: cannot verify ${woId}/${taskId} when task spec State = ${taskState}` };
+    }
   }
   const scopeDir = taskId ? taskDir(baseHome, woId, taskId) : woDir(baseHome, woId);
   const round = findLatestRound(scopeDir);

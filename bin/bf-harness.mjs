@@ -1,24 +1,18 @@
 #!/usr/bin/env node
 // To add a subcommand: create `cmd-foo.mjs` (pure, returns `{ok, ...}`) and
-// `format-foo.mjs` (pure, takes the cmd result, returns the printable text).
-// Wire it into the switch below. Stream / exit-code routing belongs in this
-// dispatcher — formatters return strings only.
+// export a matching `formatFoo` from the same file (pure, takes the cmd
+// result, returns the printable text). Wire it into the switch below.
+// Stream / exit-code routing belongs in this dispatcher — formatters return
+// strings only.
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { cmdList } from "./lib/harness/cmd-list.mjs";
-import { cmdLint } from "./lib/harness/cmd-lint.mjs";
-import { cmdStartReview } from "./lib/harness/cmd-start-review.mjs";
-import { cmdAccept } from "./lib/harness/cmd-accept.mjs";
-import { cmdNext } from "./lib/harness/cmd-next.mjs";
-import { cmdVerify } from "./lib/harness/cmd-verify.mjs";
-import { cmdDiscard } from "./lib/harness/cmd-discard.mjs";
-import { formatList } from "./lib/harness/format-list.mjs";
-import { formatLint } from "./lib/harness/format-lint.mjs";
-import { formatAccept } from "./lib/harness/format-accept.mjs";
-import { formatNext } from "./lib/harness/format-next.mjs";
-import { formatStartReview } from "./lib/harness/format-start-review.mjs";
-import { formatDiscard } from "./lib/harness/format-discard.mjs";
-import { formatVerifyResult, formatVerifySetupError } from "./lib/harness/format-verify.mjs";
+import { cmdList, formatList } from "./lib/harness/cmd-list.mjs";
+import { cmdLint, formatLint } from "./lib/harness/cmd-lint.mjs";
+import { cmdStartReview, formatStartReview } from "./lib/harness/cmd-start-review.mjs";
+import { cmdAccept, formatAccept } from "./lib/harness/cmd-accept.mjs";
+import { cmdNext, formatNext } from "./lib/harness/cmd-next.mjs";
+import { cmdVerify, formatVerifyResult, formatVerifySetupError } from "./lib/harness/cmd-verify.mjs";
+import { cmdDiscard, formatDiscard } from "./lib/harness/cmd-discard.mjs";
 
 const USAGE = `Usage:
   bf-harness list

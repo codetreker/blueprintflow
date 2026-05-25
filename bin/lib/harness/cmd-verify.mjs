@@ -1,13 +1,12 @@
 import fs from "node:fs";
 import { woDir, taskDir, roundDir, verifyResultFile } from "./wo-paths.mjs";
-import { findLatestRound, listResultFiles } from "./verify-round.mjs";
+import { findLatestRound, listResultFiles, collectFindings } from "./verify-round.mjs";
 import { parseReviewResult } from "./parse-review-result.mjs";
 import { writeVerifyResultMd } from "./write-verify-result.mjs";
-import { formatTimestamp } from "./write-updated.mjs";
+import { flipCheckbox, writeState, writeUpdated, formatTimestamp } from "./write-mutations.mjs";
+import { computeAcSignoff } from "./compute-ac-signoff.mjs";
+import { parseTaskSpec } from "./parse-task-spec.mjs";
 import { loadWo } from "./load-wo.mjs";
-import { verifyModeA } from "./cmd-verify-mode-a.mjs";
-import { verifyModeB } from "./cmd-verify-mode-b.mjs";
-import { verifyModeC } from "./cmd-verify-mode-c.mjs";
 
 function decideMode({ taskId, bf, bundle }) {
   const state = bf.frontmatter.State;
@@ -18,6 +17,114 @@ function decideMode({ taskId, bf, bundle }) {
     return allCompleted ? "C" : null;
   }
   return null;
+}
+
+// Spec Review: 任一 reviewer 报 Blocker/High → FAIL；全 clean → SUCCESS。不动 state / checkbox。
+async function verifyModeA({ parsedResults }) {
+  const issues = collectFindings(parsedResults);
+  const status = (issues.blocker.length === 0 && issues.high.length === 0) ? "SUCCESS" : "FAIL";
+  return { status, issues };
+}
+
+// Mode B: Task Verification. OR semantics — ≥1 provider signed each AC → signed.
+async function verifyModeB({ bundle, parsedResults, taskId }) {
+  const issues = collectFindings(parsedResults);
+  if (issues.blocker.length > 0 || issues.high.length > 0) {
+    return { status: "FAIL", issues };
+  }
+  const task = bundle.tasks.find(t => t.id === taskId);
+  if (!task || !task.spec) {
+    return { status: "FAIL", issues: { blocker: [`task spec not found: ${taskId}`], high: [] } };
+  }
+  const signoff = computeAcSignoff({
+    acList: task.spec.acceptanceCriteria,
+    reviewResults: parsedResults,
+    roleReg: bundle.roleReg,
+  });
+  if (signoff.missing.length > 0) {
+    return { status: "FAIL", issues: { blocker: [], high: [] }, perAc: signoff.perAc };
+  }
+
+  // Apply mutations: flip newly signed AC checkboxes, refresh Updated, maybe state change.
+  let specText = fs.readFileSync(task.specPath, "utf8");
+  for (const id of signoff.flipped) specText = flipCheckbox(specText, id);
+  specText = writeUpdated(specText, formatTimestamp());
+  const stateChanges = [];
+  const refreshed = parseTaskSpec(specText);
+  const allChecked = refreshed.acceptanceCriteria.every(a => a.checked);
+  if (allChecked && task.spec.frontmatter.State === "Tasking") {
+    specText = writeState(specText, "Completed", { kind: "taskSpec" });
+    stateChanges.push(`${taskId}: Tasking -> Completed`);
+  }
+  fs.writeFileSync(task.specPath, specText);
+
+  return {
+    status: "SUCCESS",
+    perAc: signoff.perAc,
+    flipped: signoff.flipped,
+    stateChanges,
+  };
+}
+
+// "2026-05-19 12:34" → epoch ms; bad parse → NaN
+function tsToEpoch(s) {
+  if (!s) return NaN;
+  const m = String(s).match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})$/);
+  if (!m) return NaN;
+  const [, Y, M, D, h, mn] = m.map(Number);
+  return new Date(Y, M - 1, D, h, mn).getTime();
+}
+
+function checkRoundFreshness(parsedResults, bundle) {
+  if (parsedResults.length === 0) {
+    return ["no result files in round"];
+  }
+  let earliestMtimeMs = Infinity;
+  for (const r of parsedResults) {
+    const stat = fs.statSync(r.file);
+    if (stat.mtimeMs < earliestMtimeMs) earliestMtimeMs = stat.mtimeMs;
+  }
+  let latestCompletedMs = -Infinity;
+  for (const t of bundle.tasks) {
+    if (t.spec?.frontmatter.State !== "Completed") continue;
+    const epoch = tsToEpoch(t.spec.frontmatter.Updated);
+    if (!Number.isNaN(epoch) && epoch > latestCompletedMs) latestCompletedMs = epoch;
+  }
+  // 余量 60 秒，避免同一秒写入导致的边界
+  if (latestCompletedMs > 0 && earliestMtimeMs <= latestCompletedMs + 60_000) {
+    return ["stale round: round files predate latest task completion; run start-review for bf-level review"];
+  }
+  return [];
+}
+
+async function verifyModeC({ bundle, parsedResults }) {
+  const issues = collectFindings(parsedResults);
+  if (issues.blocker.length > 0 || issues.high.length > 0) {
+    return { status: "FAIL", issues };
+  }
+  const staleness = checkRoundFreshness(parsedResults, bundle);
+  if (staleness.length > 0) {
+    return { status: "FAIL", issues: { blocker: staleness, high: [] } };
+  }
+  const signoff = computeAcSignoff({
+    acList: bundle.bf.acceptanceCriteria,
+    reviewResults: parsedResults,
+    roleReg: bundle.roleReg,
+  });
+  if (signoff.missing.length > 0) {
+    return { status: "FAIL", issues: { blocker: [], high: [] }, perAc: signoff.perAc };
+  }
+  let bfText = fs.readFileSync(bundle.bfPath, "utf8");
+  for (const id of signoff.flipped) bfText = flipCheckbox(bfText, id);
+  bfText = writeState(bfText, "Completed", { kind: "bf" });
+  bfText = writeUpdated(bfText, formatTimestamp());
+  fs.writeFileSync(bundle.bfPath, bfText);
+  return {
+    status: "SUCCESS",
+    perAc: signoff.perAc,
+    flipped: signoff.flipped,
+    stateChanges: ["bf.md: Implementing -> Completed"],
+  };
 }
 
 export async function cmdVerify({ baseHome, woId, taskId = null, installDir, now = new Date() }) {
@@ -62,4 +169,23 @@ export async function cmdVerify({ baseHome, woId, taskId = null, installDir, now
     perAc: r.perAc || null, flipped: r.flipped || [], stateChanges: r.stateChanges || [],
   });
   return { ok: true, status: r.status, path: filePath, mode };
+}
+
+/**
+ * Format the result of cmdVerify.
+ * Three distinct outcomes — all rendered as plain strings; the dispatcher in
+ * bf-harness.mjs decides which stream and which exit code:
+ *   1. verification ran, status SUCCESS   -> stdout: "SUCCESS <abs-path>" (exit 0)
+ *   2. verification ran, status FAIL      -> stdout: "FAIL <abs-path>"    (exit 1)
+ *   3. command-level setup failure        -> stderr: "bf-harness verify: <error>" (exit 1)
+ *
+ * Load failures route to stderr so the same `FAIL` prefix on stdout always means
+ * "verification ran and produced a FAIL result", not "the command couldn't start".
+ */
+export function formatVerifyResult(r) {
+  return `${r.status} ${r.path}\n`;
+}
+
+export function formatVerifySetupError(r) {
+  return `bf-harness verify: ${r.error || "verify failed"}\n`;
 }

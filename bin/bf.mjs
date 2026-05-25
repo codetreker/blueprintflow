@@ -1,18 +1,16 @@
 #!/usr/bin/env node
 // To add a subcommand: create `cmd-foo.mjs` (pure, returns `{ok, ...}`) and
-// `format-foo.mjs` (pure, takes the cmd result, returns the printable text).
-// `install` / `uninstall` print conversationally via an injected `log` and
-// intentionally have no format-*.mjs counterpart.
+// export a matching `formatFoo` from the same file (pure, takes the cmd
+// result, returns the printable text). `install` / `uninstall` print
+// conversationally via an injected `log` and intentionally have no formatter.
 import path from "node:path";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { cmdListRoles } from "./lib/bf/cmd-list-roles.mjs";
-import { cmdListPacks } from "./lib/bf/cmd-list-packs.mjs";
+import { cmdListRoles, formatListRoles } from "./lib/bf/cmd-list-roles.mjs";
+import { cmdListPacks, formatListPacks } from "./lib/bf/cmd-list-packs.mjs";
 import { cmdInstall } from "./lib/bf/cmd-install.mjs";
 import { cmdUninstall } from "./lib/bf/cmd-uninstall.mjs";
 import { skillsDir } from "./lib/shared/install-paths.mjs";
-import { formatListPacks } from "./lib/bf/format-list-packs.mjs";
-import { formatListRoles } from "./lib/bf/format-list-roles.mjs";
 
 const USAGE = `Usage:
   bf list-roles [--pack <pack-id>]

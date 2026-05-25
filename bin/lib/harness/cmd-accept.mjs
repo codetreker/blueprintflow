@@ -52,10 +52,14 @@ export async function cmdAccept({ baseHome, woId, installDir, now = new Date() }
     text = writeState(text, "Ready", { kind: "taskSpec" });
     text = writeUpdated(text, ts);
     fs.writeFileSync(t.specPath, text);
-    transitions[t.id] = "Draft->Ready";
+    transitions[t.id] = { from: "Draft", to: "Ready" };
   }
   return {
     ok: true,
-    transitioned: { bf: "Draft->Accepted", tasks: transitions, timestamp: ts },
+    transitioned: {
+      bf: { from: "Draft", to: "Accepted" },
+      tasks: transitions,
+      timestamp: ts,
+    },
   };
 }

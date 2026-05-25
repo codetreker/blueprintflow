@@ -42,4 +42,24 @@ STDOUT=$(node --input-type=module -e "
 assert_json_field "$STDOUT" .ok false
 
 rm -rf "$BASE"
+
+# CLI-level: bf-harness start-review prints just the absolute round-dir
+# path on its own line (no JSON wrapping). No trailing whitespace.
+BASE=$(make_temp_home)
+mkdir -p "$BASE"
+cp -R "$FIXTURES/clean-wo" "$BASE/wo-1"
+export BF_HOME="$BASE"
+run_bfh start-review "wo-1"
+assert_eq "$RC" "0" "start-review exit 0"
+LINE_COUNT=$(printf "%s\n" "$STDOUT" | grep -c .)
+assert_eq "$LINE_COUNT" "1" "start-review stdout is exactly one non-empty line"
+# Output is an absolute path containing the expected suffix.
+case "$STDOUT" in
+  /*runs/reviews/round_1*) ;;
+  *) fail "start-review stdout not an absolute round-dir path: $STDOUT" ;;
+esac
+printf "%s\n" "$STDOUT" | grep -E ' +$' >/dev/null && fail "trailing whitespace in start-review stdout"
+unset BF_HOME
+rm -rf "$BASE"
+
 pass

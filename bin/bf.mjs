@@ -1,4 +1,8 @@
 #!/usr/bin/env node
+// To add a subcommand: create `cmd-foo.mjs` (pure, returns `{ok, ...}`) and
+// `format-foo.mjs` (pure, takes the cmd result, returns the printable text).
+// `install` / `uninstall` print conversationally via an injected `log` and
+// intentionally have no format-*.mjs counterpart.
 import path from "node:path";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -7,6 +11,8 @@ import { cmdListPacks } from "./lib/bf/cmd-list-packs.mjs";
 import { cmdInstall } from "./lib/bf/cmd-install.mjs";
 import { cmdUninstall } from "./lib/bf/cmd-uninstall.mjs";
 import { skillsDir } from "./lib/shared/install-paths.mjs";
+import { formatListPacks } from "./lib/bf/format-list-packs.mjs";
+import { formatListRoles } from "./lib/bf/format-list-roles.mjs";
 
 const USAGE = `Usage:
   bf list-roles [--pack <pack-id>]
@@ -15,7 +21,7 @@ const USAGE = `Usage:
   bf uninstall                Remove skill files (preserves custom roles/packs)
   bf version                  Show installed BF version`;
 
-function out(obj) { process.stdout.write(JSON.stringify(obj) + "\n"); }
+function write(text) { process.stdout.write(text.endsWith("\n") ? text : text + "\n"); }
 function fail(msg, code = 2) { process.stderr.write(msg + "\n"); process.exit(code); }
 
 function resolveInstallDir() {
@@ -52,12 +58,12 @@ async function main() {
       if (rest[i] === "--pack" && rest[i + 1]) { pack = rest[++i]; }
     }
     const r = await cmdListRoles({ cwd: installDir, pack, extensionRolesDirs });
-    out(r);
+    write(formatListRoles(r));
     process.exit(r.ok ? 0 : 1);
   }
   if (subcmd === "list-packs") {
     const r = await cmdListPacks({ cwd: installDir, extensionPacksDirs });
-    out(r);
+    write(formatListPacks(r));
     process.exit(r.ok ? 0 : 1);
   }
   if (subcmd === "install") {

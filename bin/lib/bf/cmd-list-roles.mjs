@@ -21,29 +21,42 @@ export async function cmdListRoles({ cwd, pack = null, extensionRolesDirs = [] }
 }
 
 /**
- * Format the result of cmdListRoles as line-oriented text.
- * Success: one role per line — `<id> | [<cap1>, <cap2>, ...] | <source> | <file>`.
- * Empty:   `(no roles installed)`.
- * Failure: `<error>` on stdout.
- * Warnings (if any) appended after rows as `# <warning>` lines.
+ * Format the result of cmdListRoles as labeled key:value blocks (one block
+ * per role, separated by a blank line). Matches the style of `bf-harness
+ * next` for consistency across the CLI.
  *
- * Column separator is ` | ` (space-pipe-space) so descriptions / file paths
- * containing double spaces parse cleanly with `cut -d'|'`. Empty fields render
- * as `-` so rows never end in trailing whitespace.
+ * Empty: `(no roles installed)`.
+ * Failure: `<error>` on stdout.
+ * Warnings (if any) appended at the end as `# <warning>` lines.
+ *
+ * Example:
+ *   Id: architect
+ *   Desc: System architect — owns design and design review.
+ *   Capabilities: [system-architecture, design-review]
+ *   Source: core
+ *   File: /…/roles/architect.md
+ *
+ * Every field is on its own line with a stable label; `grep '^Capabilities:'`
+ * pulls every role's capability list in one shot.
  */
 export function formatListRoles(r) {
   if (!r.ok) return `${r.error || "list-roles failed"}\n`;
-  const lines = [];
+  const blocks = [];
   if (!r.roles || r.roles.length === 0) {
-    lines.push("(no roles installed)");
+    blocks.push("(no roles installed)");
   } else {
     for (const role of r.roles) {
+      const desc = role.desc && role.desc.length > 0 ? role.desc : "-";
       const caps = `[${(role.capabilities || []).join(", ")}]`;
       const source = role.source || "-";
       const file = role.file && role.file.length > 0 ? role.file : "-";
-      lines.push(`${role.id} | ${caps} | ${source} | ${file}`);
+      blocks.push(
+        `Id: ${role.id}\nDesc: ${desc}\nCapabilities: ${caps}\nSource: ${source}\nFile: ${file}`
+      );
     }
   }
-  for (const w of r.warnings || []) lines.push(`# ${w}`);
-  return lines.join("\n") + "\n";
+  const warnings = (r.warnings || []).map(w => `# ${w}`);
+  const recordsStr = blocks.join("\n\n---\n\n");
+  const warningsStr = warnings.length > 0 ? "\n\n" + warnings.join("\n") : "";
+  return recordsStr + warningsStr + "\n";
 }

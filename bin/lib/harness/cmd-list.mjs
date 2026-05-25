@@ -34,31 +34,45 @@ export async function cmdList({ baseHome }) {
 }
 
 /**
- * Format the result of cmdList as line-oriented text.
- * Success: one bf-wo per line — `<id> | <state> | <updated> | <desc>`.
- * Empty:   `(no bf-wos)`.
- * Warnings appended as `# <warning>` lines (e.g. `# skip wo-marker: no bf.md`).
- * Failure: `<error>` on stdout.
+ * Format the result of cmdList as labeled key:value blocks (one block per
+ * bf-wo, separated by a blank line). Matches the style of `bf-harness next`
+ * for consistency across the CLI.
  *
- * Column separator is ` | ` (space-pipe-space) so a description containing
- * double spaces does not collide with the delimiter. Empty `desc` and missing
- * `updated` render as `-` so the row never ends in trailing whitespace
- * (Quality Constraint: no trailing whitespace). The `r.ok === false` guard
- * stays for defensive consistency with the other formatters.
+ * Empty: `(no bf-wos)`.
+ * Failure: `<error>` on stdout.
+ * Warnings (e.g. `skip <name>: no bf.md`) appended as `# <warning>` lines.
+ *
+ * Example:
+ *   Id: wo-1
+ *   State: Implementing
+ *   Updated: 2026-05-25T14:32:10Z
+ *   Desc: Add export pipeline
+ *
+ *   Id: wo-2
+ *   State: Draft
+ *   Updated: -
+ *   Desc: …
+ *
+ * Every field is on its own line with a stable label; `grep '^State:'` returns
+ * one line per bf-wo for quick filtering.
  */
 export function formatList(r) {
   if (r && r.ok === false) return `${r.error || "list failed"}\n`;
-  const lines = [];
   const woList = (r && r.woList) || [];
+  const blocks = [];
   if (woList.length === 0) {
-    lines.push("(no bf-wos)");
+    blocks.push("(no bf-wos)");
   } else {
     for (const wo of woList) {
       const updated = wo.updated || "-";
       const desc = wo.desc && wo.desc.length > 0 ? wo.desc : "-";
-      lines.push(`${wo.id} | ${wo.state} | ${updated} | ${desc}`);
+      blocks.push(
+        `Id: ${wo.id}\nState: ${wo.state}\nUpdated: ${updated}\nDesc: ${desc}`
+      );
     }
   }
-  for (const w of (r && r.warnings) || []) lines.push(`# ${w}`);
-  return lines.join("\n") + "\n";
+  const warnings = ((r && r.warnings) || []).map(w => `# ${w}`);
+  const recordsStr = blocks.join("\n\n---\n\n");
+  const warningsStr = warnings.length > 0 ? "\n\n" + warnings.join("\n") : "";
+  return recordsStr + warningsStr + "\n";
 }

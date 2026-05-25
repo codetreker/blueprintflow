@@ -29,25 +29,33 @@ assert_json_field "$STDOUT" .woList '[]'
 
 rm -rf "$BASE"
 
-# CLI-level: bf-harness list prints one row per wo in `<id> | <state> | ...`
-# format (pipe separator — see format-list.mjs). Empty desc renders as `-`
-# (no trailing whitespace).
+# CLI-level: bf-harness list prints one labeled key:value block per bf-wo
+# (Id/State/Updated/Desc), blocks separated by `---` on its own line.
+# Empty desc renders as `-`. No trailing whitespace. No pipe separator.
 BASE=$(make_temp_home)
 cp -R "$FIXTURES/clean-wo" "$BASE/clean-wo"
+# Add a second wo so we can assert the `---` separator appears between blocks.
+mkdir -p "$BASE/second-wo"
+cp "$FIXTURES/clean-wo/bf.md" "$BASE/second-wo/bf.md"
+# Patch Id field inside bf.md so it matches the dir name.
+node -e "
+  const fs=require('fs');
+  const p='$BASE/second-wo/bf.md';
+  fs.writeFileSync(p, fs.readFileSync(p,'utf8').replace(/Id: clean-wo/, 'Id: second-wo'));
+"
 export BF_HOME="$BASE"
 run_bfh list
 assert_eq "$RC" "0" "list exit 0"
-ROW_COUNT=$(printf "%s\n" "$STDOUT" | grep -cE '^clean-wo \| Draft \| ')
-assert_eq "$ROW_COUNT" "1" "list has 1 row for clean-wo"
-# Every non-comment row has exactly 3 ` | ` separators (4 columns).
-printf "%s\n" "$STDOUT" | grep -v '^#' | grep -v '^(no ' | while read -r line; do
-  [ -z "$line" ] && continue
-  sep_count=$(printf "%s" "$line" | grep -o ' | ' | wc -l)
-  if [ "$sep_count" != "3" ]; then
-    echo "row has $sep_count separators (expected 3): $line" >&2
-    exit 1
-  fi
-done || fail "list row format"
+ID_ROWS=$(printf "%s\n" "$STDOUT" | grep -cE '^Id: clean-wo$')
+assert_eq "$ID_ROWS" "1" "list has one 'Id: clean-wo' line"
+STATE_ROWS=$(printf "%s\n" "$STDOUT" | grep -cE '^State: Draft$')
+assert_eq "$STATE_ROWS" "2" "list has two 'State: Draft' lines (clean-wo + second-wo)"
+SEP_ROWS=$(printf "%s\n" "$STDOUT" | grep -cE '^---$')
+assert_eq "$SEP_ROWS" "1" "list has '---' separator between the 2 records"
+# Labeled shape: no pipe separator anywhere in the output.
+if printf "%s\n" "$STDOUT" | grep -qE ' \| '; then
+  fail "list output unexpectedly contains pipe separator"
+fi
 printf "%s\n" "$STDOUT" | grep -E ' +$' >/dev/null && fail "trailing whitespace in list stdout"
 unset BF_HOME
 rm -rf "$BASE"

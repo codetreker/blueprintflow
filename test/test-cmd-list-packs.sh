@@ -26,8 +26,8 @@ assert_json_field "$STDOUT" .packs '[]'
 
 rm -rf "$ROOT" "$EMPTY"
 
-# CLI-level: `bf list-packs` prints one row per pack in the documented
-# format `<id> | <desc> | <source>`. No trailing whitespace.
+# CLI-level: `bf list-packs` prints one labeled key:value block per pack
+# (Id/Desc/Source). No pipe separator. No trailing whitespace.
 ROOT=$(make_temp_home)
 mkdir -p "$ROOT/packs"
 cp -R "$FIXTURES/packs-engineering" "$ROOT/packs/engineering"
@@ -37,8 +37,14 @@ EMPTY_HOME=$(make_temp_home)
 export BF_HOME="$EMPTY_HOME"
 run_bf list-packs
 assert_eq "$RC" "0" "list-packs exit 0"
-ROW_COUNT=$(printf "%s\n" "$STDOUT" | grep -cE '^engineering \| .* \| core$')
-assert_eq "$ROW_COUNT" "1" "list-packs has 1 engineering row in '<id> | <desc> | <source>' shape"
+ID_ROWS=$(printf "%s\n" "$STDOUT" | grep -cE '^Id: engineering$')
+assert_eq "$ID_ROWS" "1" "list-packs has one 'Id: engineering' line"
+SRC_ROWS=$(printf "%s\n" "$STDOUT" | grep -cE '^Source: core$')
+assert_eq "$SRC_ROWS" "1" "list-packs has one 'Source: core' line"
+# Labeled shape: no pipe separator anywhere in the output.
+if printf "%s\n" "$STDOUT" | grep -qE ' \| '; then
+  fail "list-packs output unexpectedly contains pipe separator"
+fi
 printf "%s\n" "$STDOUT" | grep -E ' +$' >/dev/null && fail "trailing whitespace in list-packs stdout"
 unset BF_INSTALL_DIR BF_HOME
 rm -rf "$ROOT" "$EMPTY_HOME"

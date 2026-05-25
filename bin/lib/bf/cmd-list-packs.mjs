@@ -10,28 +10,40 @@ export async function cmdListPacks({ cwd, extensionPacksDirs = [] }) {
 }
 
 /**
- * Format the result of cmdListPacks as line-oriented text.
- * Success: one pack per line — `<id> | <desc> | <source>`.
- * Empty:   `(no packs installed)`.
- * Failure: `<error>` on stdout.
- * Warnings (if any) appended after rows as `# <warning>` lines.
+ * Format the result of cmdListPacks as labeled key:value blocks (one block
+ * per pack, separated by a blank line). Matches the style of `bf-harness
+ * next` for consistency across the CLI.
  *
- * Column separator is ` | ` (space-pipe-space) so descriptions containing
- * double spaces parse cleanly with `cut -d'|'`. Empty desc renders as `-` so
- * the row never ends in trailing whitespace.
+ * Empty: `(no packs installed)`.
+ * Failure: `<error>` on stdout.
+ * Warnings (if any) appended at the end as `# <warning>` lines.
+ *
+ * Example:
+ *   Id: engineering
+ *   Desc: Software engineering work …
+ *   Source: core
+ *
+ *   Id: research
+ *   Desc: Research planning + writeups
+ *   Source: extension
+ *
+ * Every field is on its own line with a stable label, so a downstream parser
+ * can grep any single column without column-counting (e.g. `grep '^Source:'`).
  */
 export function formatListPacks(r) {
   if (!r.ok) return `${r.error || "list-packs failed"}\n`;
-  const lines = [];
+  const blocks = [];
   if (!r.packs || r.packs.length === 0) {
-    lines.push("(no packs installed)");
+    blocks.push("(no packs installed)");
   } else {
     for (const p of r.packs) {
       const desc = p.desc && p.desc.length > 0 ? p.desc : "-";
       const source = p.source || "-";
-      lines.push(`${p.id} | ${desc} | ${source}`);
+      blocks.push(`Id: ${p.id}\nDesc: ${desc}\nSource: ${source}`);
     }
   }
-  for (const w of r.warnings || []) lines.push(`# ${w}`);
-  return lines.join("\n") + "\n";
+  const warnings = (r.warnings || []).map(w => `# ${w}`);
+  const recordsStr = blocks.join("\n\n---\n\n");
+  const warningsStr = warnings.length > 0 ? "\n\n" + warnings.join("\n") : "";
+  return recordsStr + warningsStr + "\n";
 }

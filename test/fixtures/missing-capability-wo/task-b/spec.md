@@ -19,6 +19,10 @@ Updated: 2026-05-19 10:00
 
 - [ ] AC-1|quality-assurance: B 的产出可验证
 
+## Evidence
+
+- EV-1|AC-1|review-note: tester signs AC-1 after checking task B evidence
+
 ## Boundary
 
 无。

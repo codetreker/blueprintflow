@@ -42,4 +42,52 @@ run_validate cycle-wo
 assert_match "$STDOUT" "DEP_CYCLE" "cycle detected"
 cleanup
 
+# task specs must carry an explicit Evidence section before lint can pass
+setup; cp -R "$FIXTURES/clean-wo" "$BASE/missing-evidence-section-wo"
+sed -i.bak '/^## Evidence$/,/^## Boundary$/d' "$BASE/missing-evidence-section-wo/task-a/spec.md"
+run_validate missing-evidence-section-wo
+assert_json_field "$STDOUT" .ok false
+assert_match "$STDOUT" "EVIDENCE_SECTION_MISSING" "missing Evidence section detected"
+cleanup
+
+# every task AC needs at least one Evidence entry in the explicit section
+setup; cp -R "$FIXTURES/clean-wo" "$BASE/missing-evidence-entry-wo"
+sed -i.bak '/^- EV-/d' "$BASE/missing-evidence-entry-wo/task-a/spec.md"
+run_validate missing-evidence-entry-wo
+assert_json_field "$STDOUT" .ok false
+assert_match "$STDOUT" "EVIDENCE_MISSING" "missing Evidence entry detected"
+cleanup
+
+# Evidence must reference an AC in the same task spec
+setup; cp -R "$FIXTURES/clean-wo" "$BASE/bad-evidence-ref-wo"
+sed -i.bak 's/^- EV-1|AC-1|review-note:/- EV-1|AC-99|review-note:/' "$BASE/bad-evidence-ref-wo/task-a/spec.md"
+run_validate bad-evidence-ref-wo
+assert_json_field "$STDOUT" .ok false
+assert_match "$STDOUT" "EVIDENCE_AC_UNKNOWN" "unknown evidence AC detected"
+cleanup
+
+# Evidence ids are stable handles and must be unique within one task spec
+setup; cp -R "$FIXTURES/clean-wo" "$BASE/duplicate-evidence-id-wo"
+sed -i.bak '/^## Boundary$/i - EV-1|AC-1|review-note: duplicate id should fail lint' "$BASE/duplicate-evidence-id-wo/task-a/spec.md"
+run_validate duplicate-evidence-id-wo
+assert_json_field "$STDOUT" .ok false
+assert_match "$STDOUT" "EVIDENCE_DUPLICATE_ID" "duplicate Evidence id detected"
+cleanup
+
+# Evidence kind is a linted vocabulary, not arbitrary prose
+setup; cp -R "$FIXTURES/clean-wo" "$BASE/unknown-evidence-kind-wo"
+sed -i.bak 's/^- EV-1|AC-1|review-note:/- EV-1|AC-1|memo:/' "$BASE/unknown-evidence-kind-wo/task-a/spec.md"
+run_validate unknown-evidence-kind-wo
+assert_json_field "$STDOUT" .ok false
+assert_match "$STDOUT" "EVIDENCE_KIND_UNKNOWN" "unknown Evidence kind detected"
+cleanup
+
+# Evidence text must state the required proof, not just reserve an id
+setup; cp -R "$FIXTURES/clean-wo" "$BASE/empty-evidence-text-wo"
+sed -i.bak 's#^- EV-1|AC-1|review-note:.*$#- EV-1|AC-1|command:   #' "$BASE/empty-evidence-text-wo/task-a/spec.md"
+run_validate empty-evidence-text-wo
+assert_json_field "$STDOUT" .ok false
+assert_match "$STDOUT" "EVIDENCE_TEXT_EMPTY" "empty Evidence text detected"
+cleanup
+
 pass

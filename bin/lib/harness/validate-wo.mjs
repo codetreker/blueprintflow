@@ -1,3 +1,11 @@
+const EVIDENCE_KINDS = new Set([
+  "artifact",
+  "command",
+  "file",
+  "review-note",
+  "screenshot",
+]);
+
 function detectCycle(bf) {
   const graph = new Map(bf.taskList.map((t) => [t.id, t.deps]));
   const WHITE = 0, GRAY = 1, BLACK = 2;
@@ -70,6 +78,58 @@ export function validateWo(bundle) {
     if (!t.spec) continue;
     checkCap(t.spec.frontmatter.Capability, t.specPath);
     for (const ac of t.spec.acceptanceCriteria) checkCap(ac.capability, t.specPath);
+    const acIds = new Set(t.spec.acceptanceCriteria.map(ac => ac.id));
+    const evidenceByAc = new Map(t.spec.acceptanceCriteria.map(ac => [ac.id, []]));
+    if (!t.spec.hasEvidenceSection) {
+      errors.push({
+        code: "EVIDENCE_SECTION_MISSING",
+        message: `task ${t.id}: spec.md must include a ## Evidence section`,
+        ref: t.specPath,
+      });
+    }
+    const evidenceIds = new Set();
+    for (const ev of t.spec.evidence || []) {
+      if (evidenceIds.has(ev.id)) {
+        errors.push({
+          code: "EVIDENCE_DUPLICATE_ID",
+          message: `task ${t.id}: evidence id ${ev.id} is duplicated`,
+          ref: t.specPath,
+        });
+      }
+      evidenceIds.add(ev.id);
+      if (!EVIDENCE_KINDS.has(ev.kind)) {
+        errors.push({
+          code: "EVIDENCE_KIND_UNKNOWN",
+          message: `task ${t.id}: evidence ${ev.id} uses unknown kind ${ev.kind}`,
+          ref: t.specPath,
+        });
+      }
+      if (ev.text.trim().length === 0) {
+        errors.push({
+          code: "EVIDENCE_TEXT_EMPTY",
+          message: `task ${t.id}: evidence ${ev.id} must state a required proof`,
+          ref: t.specPath,
+        });
+      }
+      if (!acIds.has(ev.acId)) {
+        errors.push({
+          code: "EVIDENCE_AC_UNKNOWN",
+          message: `task ${t.id}: evidence ${ev.id} references unknown AC ${ev.acId}`,
+          ref: t.specPath,
+        });
+      } else {
+        evidenceByAc.get(ev.acId).push(ev.id);
+      }
+    }
+    for (const ac of t.spec.acceptanceCriteria) {
+      if ((evidenceByAc.get(ac.id) || []).length === 0) {
+        errors.push({
+          code: "EVIDENCE_MISSING",
+          message: `task ${t.id}: AC ${ac.id} has no Evidence entry`,
+          ref: t.specPath,
+        });
+      }
+    }
   }
 
   return { ok: errors.length === 0, errors };

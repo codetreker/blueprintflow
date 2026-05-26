@@ -6,7 +6,7 @@ Goal: produce a locked `bf.md` + one `<task-id>/spec.md` per task, with every AC
 
 1. `bf list-roles --pack <id>` — get the available roles and the capabilities they provide.
 2. Author `bf.md` with `State: Draft` using `templates/bf.md`. Every AC must carry `{id}|{capability}`, and the capability must be declared in some role's `Capabilities:` list.
-3. Author each `<task>/spec.md` with `State: Draft` using `templates/task-spec.md`. Each task spec has exactly one `Capability` in frontmatter (execution capability) and AC lines with their own `{capability}` markers (review capability).
+3. Author each `<task>/spec.md` with `State: Draft` using `templates/task-spec.md`. Each task spec has exactly one `Capability` in frontmatter (execution capability), AC lines with their own `{capability}` markers (review capability), and an explicit `Evidence` section that maps each task AC to one or more required evidence items.
 4. `bf-harness lint <bf-wo>` — fix every error and re-run until SUCCESS.
 5. **Spec review loop (Mode A):**
    1. `bf-harness start-review <bf-wo>` — returns the round directory `<bf-wo>/runs/reviews/round_N/`.
@@ -22,7 +22,11 @@ Once `accept` runs, the LLM no longer edits `State`, AC checkboxes, or `Updated`
 
 - Every AC capability must be discoverable via `bf list-roles --pack <id>`. Lint will fail otherwise.
 - Each task spec's `Capability:` is the **execution** capability (what the doer needs). Each AC's `{capability}` is the **review** capability (what the reviewer needs). They can be the same or different.
-- Task dependencies are declared in the task spec frontmatter; lint catches cycles and unknown task ids.
+- Each task spec must include `## Evidence`. Each task AC must have at least one Evidence entry in the form `EV-1|AC-1|kind: requirement`.
+- Evidence ids must be unique within the task spec. Evidence `AC` references must point to AC ids in the same task spec.
+- Evidence kind must be one of `command`, `file`, `artifact`, `review-note`, or `screenshot`; the requirement text after `:` must be non-empty.
+- Evidence entries are locked with the task spec; execution produces evidence artifacts, not new evidence requirements.
+- Task dependencies are declared in `bf.md` `Task List`; lint catches cycles and unknown task ids.
 
 ## Exit
 

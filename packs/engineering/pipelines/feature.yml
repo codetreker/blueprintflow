@@ -1,0 +1,65 @@
+id: feature
+desc: Feature task with architecture, design, implementation, and review gates
+instruction: |
+  Use this pipeline for feature tasks whose execution needs design before code.
+  Run the stages in order. Read the task spec, bf.md Goal/Boundary, and any
+  relevant discussion before the first stage. Each stage must produce its named
+  artifact or review result before the next stage starts. Prefer separate
+  subagents for stage work when isolation improves review quality or context
+  focus; review stages must remain independent from the implementation work they
+  review. Stop on any Blocker or High review finding; fix the finding and rerun
+  the affected review stage before continuing. Do not edit locked bf.md or task
+  spec.md content after accept; only the harness may advance State, Updated, and
+  AC checkboxes.
+stages:
+  - id: architecture-design
+    capability: system-architecture
+    output: artifacts/architecture.md
+    instruction: |
+      Produce the architecture proposal for this task before implementation
+      design. Define the affected boundaries, public contracts, data/control
+      flow, key tradeoffs, risks, and what stays out of scope. Keep the artifact
+      specific enough for a reviewer to reject or approve before implementation
+      design starts.
+
+  - id: architecture-review
+    capability: design-review
+    reviews: artifacts/architecture.md
+    instruction: |
+      Review the architecture artifact against the task spec, bf.md Goal/Boundary,
+      existing system shape, and likely downstream implementation cost. Record
+      Blocker or High findings for unclear boundaries, unsafe coupling, missing
+      contracts, or scope drift. The pipeline stops until those findings are fixed.
+
+  - id: implementation-design
+    capability: system-architecture
+    output: artifacts/design.md
+    instruction: |
+      Produce the implementation design after architecture review passes. Name the
+      files/modules to change, interfaces to add or modify, migration or backward
+      compatibility concerns, test strategy, and evidence plan. The design should
+      be concrete enough for implementation to proceed without inventing scope.
+
+  - id: design-review
+    capability: design-review
+    reviews: artifacts/design.md
+    instruction: |
+      Review the implementation design before code changes. Check that it follows
+      the approved architecture, fits the task Boundary, has an executable test
+      and evidence plan, and does not hide extra work. Blocker or High findings
+      stop implementation until the design is revised and reviewed again.
+
+  - id: implementation
+    capability: software-implementation
+    instruction: |
+      Implement only the locked task scope. Follow the approved architecture and
+      implementation design, prefer TDD where it fits, and produce every required
+      Evidence artifact from the task spec. Record command output, changed files,
+      screenshots, or reviewer notes as requested by the Evidence section.
+
+  - id: code-review
+    capability: quality-assurance
+    instruction: |
+      Review the code, Evidence artifacts, and task AC from outside the
+      implementation. Confirm each AC has matching evidence and no Blocker or High
+      findings. Sign off only the AC ids that the review independently verifies.

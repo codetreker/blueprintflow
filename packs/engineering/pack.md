@@ -15,7 +15,8 @@ Not for: pure research write-ups, content production, incident response runbooks
 - **bf.md** — the blueprint contract; locked after `accept`.
 - **task spec.md** — per-task contract; locked after `accept`.
 - **AC (Acceptance Criterion)** — one checkbox on bf.md or a task spec; carries a stable id and a `capability` marker.
-- **Capability** — a string declared in a role's `Capabilities:` list; used to match doers and reviewers.
+- **Pipeline** — a named execution flow selected by task `Pipeline:` frontmatter and defined under `pipelines/*.yml`.
+- **Capability** — a string declared in a role's `Capabilities:` list; pipeline stages use it to pick doers, and AC use it to pick reviewers.
 - **doer** — the subagent that executes a task.
 - **reviewer** — a subagent that reviews a task or spec and writes `result_<role>_<idx>.md`.
 - **IV (Independent Verification)** — the same subagent instance must not be both doer and reviewer for the same task.
@@ -43,7 +44,7 @@ Anti-patterns to avoid:
 The architect decomposes the accepted Goal/Boundary into a task DAG. A good engineering task:
 
 - Is roughly 1 PR in size — small enough that one engineer subagent can finish it and produce evidence in a single session.
-- Has a single primary `Capability` in its frontmatter (`software-implementation`, etc.).
+- Has a `Pipeline` in its frontmatter. Use `bf list-pipelines --pack engineering` and pick the narrowest matching execution flow.
 - Has explicit `depends` edges in `bf.md`'s Task List — no implicit ordering.
 - Has AC that are observable from outside the task (a file exists, a command exits 0, a test passes, an endpoint returns X).
 - Names what it does not do in its own `Boundary`.
@@ -59,16 +60,17 @@ Typical patterns:
 
 For each task the engineer subagent picks up:
 
-1. Read `<task>/spec.md` end-to-end, plus the Goal/Boundary slice of `bf.md` and the relevant parts of `discussion.md` when the spec is ambiguous.
-2. Prefer TDD where it fits: write the failing test that encodes one AC, then make it pass.
-3. Commit per task with a descriptive message that names the task id.
-4. Evidence to produce:
+1. Read the pipeline file returned by `bf-harness next`, then read `<task>/spec.md` end-to-end, plus the Goal/Boundary slice of `bf.md` and the relevant parts of `discussion.md` when the spec is ambiguous.
+2. Follow the pipeline stages in order. Produce each named artifact or review result before moving to the next stage.
+3. Prefer TDD where it fits: write the failing test that encodes one AC, then make it pass.
+4. Commit per task with a descriptive message that names the task id.
+5. Evidence to produce:
    - Test output (the command and its result) for every AC that claims behavior.
    - The commit hash(es) for the change.
    - For UI work, a screenshot or an HTML snapshot.
-5. Never bypass the mutation whitelist: locked `bf.md` and `spec.md` bodies are off-limits. Only the harness flips checkboxes, State, and Updated.
-6. When the spec is ambiguous and `discussion.md` does not answer it, append a clarifying entry to `discussion.md` and stop to ask the user — do not invent contract.
-7. When done, hand off to a reviewer subagent (a different subagent instance — IV constraint). The reviewer reads the diff + test output and writes `result_<role>_<idx>.md`.
+6. Never bypass the mutation whitelist: locked `bf.md` and `spec.md` bodies are off-limits. Only the harness flips checkboxes, State, and Updated.
+7. When the spec is ambiguous and `discussion.md` does not answer it, append a clarifying entry to `discussion.md` and stop to ask the user — do not invent contract.
+8. When done, hand off to a reviewer subagent (a different subagent instance — IV constraint). The reviewer reads the diff + test output and writes `result_<role>_<idx>.md`.
 
 ## Phase Roles
 
@@ -79,7 +81,7 @@ This pack maps BF's phases to specific Core roles. **Capabilities are skills, no
 | Brainstorm | architect | system-architecture |
 | Spec / breakdown (write bf.md + task specs) | architect | system-architecture |
 | Spec review (Mode A) | architect, tester | design-review, quality-assurance |
-| Execute (per task; doer) | engineer | software-implementation (or task-specific Capability frontmatter) |
+| Execute (per task; pipeline stages) | architect, engineer, tester | stage capability from task Pipeline |
 | Task review (Mode B; reviewer) | tester | quality-assurance (or AC's capability marker) |
 | Final review (Mode C) | architect, tester | design-review, quality-assurance |
 

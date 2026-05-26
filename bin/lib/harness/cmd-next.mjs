@@ -2,6 +2,7 @@ import fs from "node:fs";
 import { taskDir } from "./wo-paths.mjs";
 import { writeState, writeUpdated, formatTimestamp } from "./write-mutations.mjs";
 import { loadWo } from "./load-wo.mjs";
+import { buildPipelineRegistry, findPipeline } from "../shared/pipeline-registry.mjs";
 
 export async function cmdNext({ baseHome, woId, installDir, now = new Date() }) {
   const bundle = await loadWo({ baseHome, woId, installDir });
@@ -22,6 +23,10 @@ export async function cmdNext({ baseHome, woId, installDir, now = new Date() }) 
   if (eligible.length === 0) return { ok: false, error: "no eligible task" };
 
   const chosen = eligible.find((t) => t.spec.frontmatter.State === "Ready") || eligible[0];
+  const pipeline = chosen.spec.frontmatter.Pipeline;
+  const pipelineReg = buildPipelineRegistry({ packReg: bundle.packReg, pack: bundle.bf.frontmatter.Pack });
+  const pipelineEntry = findPipeline(pipelineReg, bundle.bf.frontmatter.Pack, pipeline);
+  if (!pipelineEntry) return { ok: false, error: `pipeline not found: ${pipeline}` };
   const ts = formatTimestamp(now);
 
   if (chosen.spec.frontmatter.State === "Ready") {
@@ -38,9 +43,6 @@ export async function cmdNext({ baseHome, woId, installDir, now = new Date() }) 
     }
   }
 
-  const cap = chosen.spec.frontmatter.Capability;
-  const candidate_roles = (bundle.roleReg.byCapability.get(cap) || []).map((r) => r.id);
-
   return {
     ok: true,
     task: {
@@ -48,8 +50,8 @@ export async function cmdNext({ baseHome, woId, installDir, now = new Date() }) 
       taskDir: taskDir(baseHome, woId, chosen.id),
       specPath: chosen.specPath,
       desc: chosen.spec.frontmatter.Desc,
-      capability_required: cap,
-      candidate_roles,
+      pipeline,
+      pipelinePath: pipelineEntry.file,
       pack: bundle.bf.frontmatter.Pack,
     },
   };
@@ -59,22 +61,20 @@ export async function cmdNext({ baseHome, woId, installDir, now = new Date() }) 
  * Format the result of cmdNext as labeled key:value lines.
  * Success:
  *   Task: <id>
- *   Capability: <capability>
- *   Candidate roles: <r1>, <r2>, ...     (or "(none)" if empty)
+ *   Pipeline: <pipeline>
+ *   Pipeline path: <abs-path>
  *   Pack: <pack>
  *   Spec: <abs-spec-path>
  *   Dir: <abs-task-dir>
  * Failure:
  *   <error message>
  *
- * Required fields (`taskId`, `capability_required`, `pack`, `specPath`,
+ * Required fields (`taskId`, `pipeline`, `pipelinePath`, `pack`, `specPath`,
  * `taskDir`) must be present and non-empty on `ok: true` — a missing one
  * signals a cmd-layer bug, so this formatter throws rather than masking the
- * regression with a sentinel. Optional field `candidate_roles` may legitimately
- * be empty (no eligible roles), in which case the line renders as `(none)`
- * to preserve the no-trailing-whitespace invariant.
+ * regression with a sentinel.
  */
-const REQUIRED = ["taskId", "capability_required", "pack", "specPath", "taskDir"];
+const REQUIRED = ["taskId", "pipeline", "pipelinePath", "pack", "specPath", "taskDir"];
 
 function requireField(t, name) {
   const v = t?.[name];
@@ -88,12 +88,10 @@ export function formatNext(r) {
   if (!r.ok) return `${r.error || "next failed"}\n`;
   const t = r.task || {};
   for (const name of REQUIRED) requireField(t, name);
-  const rolesArr = t.candidate_roles || [];
-  const roles = rolesArr.length === 0 ? "(none)" : rolesArr.join(", ");
   const lines = [
     `Task: ${t.taskId}`,
-    `Capability: ${t.capability_required}`,
-    `Candidate roles: ${roles}`,
+    `Pipeline: ${t.pipeline}`,
+    `Pipeline path: ${t.pipelinePath}`,
     `Pack: ${t.pack}`,
     `Spec: ${t.specPath}`,
     `Dir: ${t.taskDir}`,

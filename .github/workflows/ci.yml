@@ -26,6 +26,9 @@ jobs:
       - name: Validate plugin layout
         run: .github/scripts/validate-plugin-layout.sh
 
+      - name: Validate BF package layout
+        run: .github/scripts/validate-bf-package-layout.sh
+
       - name: Validate skill metadata
         run: .github/scripts/validate-skills.sh
 

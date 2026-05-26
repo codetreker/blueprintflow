@@ -1,6 +1,6 @@
 ---
 State: Draft
-Capability: software-implementation
+Pipeline: feature
 Pack: engineering
 Desc: task A
 Creation: 2026-05-19 10:00

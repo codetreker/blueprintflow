@@ -1,7 +1,7 @@
 import { parseFrontmatter } from "../shared/parse-frontmatter.mjs";
 import { parseAcLine } from "./parse-ac-line.mjs";
 
-const REQUIRED_FM = ["State", "Capability", "Pack", "Desc"];
+const REQUIRED_FM = ["State", "Pipeline", "Pack", "Desc"];
 const EVIDENCE_RE = /^-\s+([A-Za-z][\w-]*)\|([A-Za-z][\w-]*)\|([A-Za-z][\w-]*):\s*(.*)$/;
 
 function splitSections(body) {

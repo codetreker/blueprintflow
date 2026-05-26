@@ -1,3 +1,5 @@
+import { buildPipelineRegistry, findPipeline } from "../shared/pipeline-registry.mjs";
+
 const EVIDENCE_KINDS = new Set([
   "artifact",
   "command",
@@ -73,10 +75,24 @@ export function validateWo(bundle) {
       });
     }
   };
+  const pipelineReg = buildPipelineRegistry({ packReg });
   for (const ac of bf.acceptanceCriteria) checkCap(ac.capability, bfPath);
   for (const t of tasks) {
     if (!t.spec) continue;
-    checkCap(t.spec.frontmatter.Capability, t.specPath);
+    if ("Capability" in t.spec.frontmatter) {
+      errors.push({
+        code: "TASK_CAPABILITY_FORBIDDEN",
+        message: `task ${t.id}: use Pipeline instead of task frontmatter Capability`,
+        ref: t.specPath,
+      });
+    }
+    if (!findPipeline(pipelineReg, t.spec.frontmatter.Pack, t.spec.frontmatter.Pipeline)) {
+      errors.push({
+        code: "PIPELINE_NOT_FOUND",
+        message: `task ${t.id}: Pipeline=${t.spec.frontmatter.Pipeline} not found in pack ${t.spec.frontmatter.Pack}`,
+        ref: t.specPath,
+      });
+    }
     for (const ac of t.spec.acceptanceCriteria) checkCap(ac.capability, t.specPath);
     const acIds = new Set(t.spec.acceptanceCriteria.map(ac => ac.id));
     const evidenceByAc = new Map(t.spec.acceptanceCriteria.map(ac => [ac.id, []]));

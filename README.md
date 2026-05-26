@@ -29,7 +29,7 @@ npm uninstall -g @codetreker/bf
 
 ## Extending BF — `extensions/`
 
-BF looks for additional roles and packs in two `extensions/` directories. Drop `.md` files in either, and BF will pick them up automatically.
+BF looks for additional roles and packs in two `extensions/` directories. Drop `.md` files in role dirs or full pack directories, and BF will pick them up automatically.
 
 | Location | When to use |
 |---|---|
@@ -42,13 +42,13 @@ BF looks for additional roles and packs in two `extensions/` directories. Drop `
 
 `bf install` and `bf uninstall` never touch `extensions/`. Upgrades that rename or remove BF-shipped files won't accidentally delete anything you put there.
 
-`bf list-roles [--pack <id>]` and `bf list-packs` show extension entries alongside Core ones, with a `source: "extension"` field so you can tell where each came from.
+`bf list-roles [--pack <id>]` and `bf list-packs` show extension entries alongside Core ones, with a `source: "extension"` field so you can tell where each came from. `bf list-pipelines [--pack <id>]` lists pipeline ids, descriptions, and file paths for the effective pack registry.
 
 ## What you get
 
 After install, two CLIs are on `$PATH`:
 
-- `bf` — read-only metadata + install management: `bf list-packs`, `bf list-roles [--pack <id>]`, `bf install`, `bf uninstall`, `bf version`
+- `bf` — read-only metadata + install management: `bf list-packs`, `bf list-pipelines [--pack <id>]`, `bf list-roles [--pack <id>]`, `bf install`, `bf uninstall`, `bf version`
 - `bf-harness` — state-mutating loop driver: `lint`, `start-review`, `accept`, `next`, `verify`, `discard`, `list`
 
 Run either with `--help` for full usage.
@@ -63,7 +63,7 @@ brainstorm  →  spec  ──accept──▶  execute  ──verify──▶  Co
 
 1. **Brainstorm** — drive a discussion with the user, pick a pack, write `discussion.md`.
 2. **Spec** — author `bf.md` + per-task `spec.md` in `Draft`, `lint`, run a spec review round, `verify` (Mode A), then `accept`. Contract is locked.
-3. **Execute** — `next` claims one ready task; a doer subagent does it; a **different** reviewer subagent grades it; `verify` (Mode B) flips its AC on SUCCESS. Repeat. A final `verify` (Mode C) flips the bf.md AC and marks the work Completed.
+3. **Execute** — `next` claims one ready task and returns its pipeline; subagents follow the pipeline instructions; a **different** reviewer subagent grades the final task AC; `verify` (Mode B) flips its AC on SUCCESS. Repeat. A final `verify` (Mode C) flips the bf.md AC and marks the work Completed.
 
 ## State layout
 

@@ -13,7 +13,7 @@ The engineer is the doer of code-changing tasks. The engineer reads one `<task>/
 
 ## Expertise
 
-- Translating a Capability marker into a concrete implementation plan inside the boundary the architect set.
+- Implementing an approved design or implementation-stage instruction within the locked task boundary.
 - Test-driven changes when the task lends itself to it; otherwise tests added alongside.
 - Small, focused commits with descriptive messages; one task → one logical change.
 - Reading the pack's Execute Guidance and respecting it (e.g. parser-first patterns, evidence shape).
@@ -21,6 +21,6 @@ The engineer is the doer of code-changing tasks. The engineer reads one `<task>/
 
 ## When to Include
 
-- Execute phase: primary doer for any task whose Capability is `software-implementation`. Refactoring and debugging are activities of that skill, not separate capabilities.
+- Implementation stage: doer for code-changing stages whose capability is `software-implementation`. Refactoring and debugging are activities of that skill, not separate capabilities.
 - Spec phase, sparingly: when the architect needs a feasibility sanity check before locking an AC.
 - Review phase: can be spawned as a reviewer subagent (Independent Verification — must be a different subagent instance than the doer for the same task).

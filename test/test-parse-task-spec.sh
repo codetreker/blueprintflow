@@ -5,7 +5,7 @@ source "$(dirname "$0")/test-helpers.sh"
 INPUT=$(cat <<'EOF'
 ---
 State: Draft
-Capability: software-implementation
+Pipeline: feature
 Pack: engineering
 Desc: 实现登录 API
 Creation: 2026-05-19 10:00
@@ -44,7 +44,7 @@ STDOUT=$(node --input-type=module -e "
   });
 " -- "$INPUT")
 
-assert_json_field "$STDOUT" .frontmatter.Capability "software-implementation"
+assert_json_field "$STDOUT" .frontmatter.Pipeline "feature"
 assert_json_field "$STDOUT" .frontmatter.State "Draft"
 assert_json_field "$STDOUT" .acceptanceCriteria.0.capability "quality-assurance"
 assert_json_field "$STDOUT" .acceptanceCriteria.1.capability "security-review"
@@ -54,7 +54,7 @@ assert_json_field "$STDOUT" .evidence.0.acId "AC-1"
 assert_json_field "$STDOUT" .evidence.0.kind "command"
 assert_json_field "$STDOUT" .evidence.1.kind "review-note"
 
-# 缺 Capability
+# 缺 Pipeline
 BAD=$(printf -- '---\nState: Draft\nPack: x\nDesc: y\n---\n')
 OUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/parse-task-spec.mjs').then(m => {
@@ -62,13 +62,13 @@ OUT=$(node --input-type=module -e "
     catch (e) { process.stdout.write('ERR:' + e.message); }
   });
 " -- "$BAD")
-assert_match "$OUT" "missing: Capability" "missing Capability"
+assert_match "$OUT" "missing: Pipeline" "missing Pipeline"
 
 # malformed Evidence line
 BAD_EVIDENCE=$(cat <<'EOF'
 ---
 State: Draft
-Capability: software-implementation
+Pipeline: feature
 Pack: engineering
 Desc: bad evidence
 ---

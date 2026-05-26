@@ -24,7 +24,6 @@ Updated: <yyyy-mm-dd hh:MM>
 - checkbox 状态由 bf-harness 在 verify 过程中翻动，LLM 不能直接改。
 - 每条带一个稳定的 id（推荐 AC-1、AC-2 这种形式）和验收这条标准所需的能力（capability）。
 - bf-harness 会用 capability 反查 roles 目录里谁有此能力，把对应的 role 拉起来做 review。
-- 验收能力跟 task spec.md 顶部的 Capability（执行能力）不是一回事；这里讲的是谁来验收，不是谁来做。
 
 - [ ] {id1}|{capability}: 一条独立可验证的验收标准
 - [ ] {id2}|{capability}: 另一条验收标准

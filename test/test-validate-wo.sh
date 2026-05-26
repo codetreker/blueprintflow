@@ -35,6 +35,22 @@ assert_json_field "$STDOUT" .ok false
 assert_match "$STDOUT" "CAPABILITY_UNKNOWN" "missing cap"
 cleanup
 
+# task specs bind to an execution Pipeline, not a single doer Capability
+setup; cp -R "$FIXTURES/clean-wo" "$BASE/forbidden-task-capability-wo"
+sed -i.bak '/^Pipeline: feature$/a Capability: software-implementation' "$BASE/forbidden-task-capability-wo/task-a/spec.md"
+run_validate forbidden-task-capability-wo
+assert_json_field "$STDOUT" .ok false
+assert_match "$STDOUT" "TASK_CAPABILITY_FORBIDDEN" "task Capability rejected"
+cleanup
+
+# task Pipeline must exist in the task Pack's effective pipeline registry
+setup; cp -R "$FIXTURES/clean-wo" "$BASE/unknown-pipeline-wo"
+sed -i.bak 's/^Pipeline: feature/Pipeline: ghost/' "$BASE/unknown-pipeline-wo/task-a/spec.md"
+run_validate unknown-pipeline-wo
+assert_json_field "$STDOUT" .ok false
+assert_match "$STDOUT" "PIPELINE_NOT_FOUND" "unknown pipeline rejected"
+cleanup
+
 # dep cycle: 把 task-a 改成依赖 task-b（task-b 已经依赖 task-a）
 setup; cp -R "$FIXTURES/clean-wo" "$BASE/cycle-wo"
 sed -i.bak 's/^- task-a$/- task-a: task-b/' "$BASE/cycle-wo/bf.md"

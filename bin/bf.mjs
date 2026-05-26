@@ -8,6 +8,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { cmdListRoles, formatListRoles } from "./lib/bf/cmd-list-roles.mjs";
 import { cmdListPacks, formatListPacks } from "./lib/bf/cmd-list-packs.mjs";
+import { cmdListPipelines, formatListPipelines } from "./lib/bf/cmd-list-pipelines.mjs";
 import { cmdInstall } from "./lib/bf/cmd-install.mjs";
 import { cmdUninstall } from "./lib/bf/cmd-uninstall.mjs";
 import { skillsDir } from "./lib/shared/install-paths.mjs";
@@ -15,6 +16,7 @@ import { skillsDir } from "./lib/shared/install-paths.mjs";
 const USAGE = `Usage:
   bf list-roles [--pack <pack-id>]
   bf list-packs
+  bf list-pipelines [--pack <pack-id>]
   bf install                  Copy skill files to ~/.claude/skills/bf/
   bf uninstall                Remove skill files (preserves custom roles/packs)
   bf version                  Show installed BF version`;
@@ -62,6 +64,15 @@ async function main() {
   if (subcmd === "list-packs") {
     const r = await cmdListPacks({ cwd: installDir, extensionPacksDirs });
     write(formatListPacks(r));
+    process.exit(r.ok ? 0 : 1);
+  }
+  if (subcmd === "list-pipelines") {
+    let pack = null;
+    for (let i = 0; i < rest.length; i++) {
+      if (rest[i] === "--pack" && rest[i + 1]) { pack = rest[++i]; }
+    }
+    const r = await cmdListPipelines({ cwd: installDir, pack, extensionPacksDirs });
+    write(formatListPipelines(r));
     process.exit(r.ok ? 0 : 1);
   }
   if (subcmd === "install") {

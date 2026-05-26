@@ -16,15 +16,26 @@ function latestRound(woPath) {
   return maxN;
 }
 
-function hasModeASuccess(woPath) {
+function latestModeAResult(woPath) {
   const n = latestRound(woPath);
-  if (n === 0) return false;
+  if (n === 0) return null;
   const file = verifyResultFile(roundDir(woPath, n));
-  if (!fs.existsSync(file)) return false;
+  if (!fs.existsSync(file)) return null;
   try {
     const { frontmatter } = parseFrontmatter(fs.readFileSync(file, "utf8"));
-    return frontmatter.Result === "SUCCESS" && frontmatter.Mode === "A";
-  } catch { return false; }
+    if (frontmatter.Result !== "SUCCESS" || frontmatter.Mode !== "A") return null;
+    return { round: n, file, mtimeMs: fs.statSync(file).mtimeMs };
+  } catch { return null; }
+}
+
+function contractFilesChangedAfterReview(bundle, reviewedAtMs) {
+  const changed = [];
+  const files = [bundle.bfPath, ...bundle.tasks.map(t => t.specPath)];
+  for (const file of files) {
+    const stat = fs.statSync(file);
+    if (stat.mtimeMs > reviewedAtMs) changed.push(file);
+  }
+  return changed;
 }
 
 export async function cmdAccept({ baseHome, woId, installDir, now = new Date() }) {
@@ -35,8 +46,21 @@ export async function cmdAccept({ baseHome, woId, installDir, now = new Date() }
   }
   const validation = validateWo(bundle);
   if (!validation.ok) return { ok: false, error: "lint failed", details: validation.errors };
-  if (!hasModeASuccess(bundle.woPath)) {
+  const modeA = latestModeAResult(bundle.woPath);
+  if (!modeA) {
     return { ok: false, error: "no Mode A SUCCESS in latest round; run start-review + spec review + verify first" };
+  }
+  const changed = contractFilesChangedAfterReview(bundle, modeA.mtimeMs);
+  if (changed.length > 0) {
+    return {
+      ok: false,
+      error: "contract changed after latest Mode A SUCCESS; run start-review + spec review + verify again",
+      details: changed.map(file => ({
+        code: "CONTRACT_CHANGED_AFTER_REVIEW",
+        message: `file changed after ${modeA.file}`,
+        ref: file,
+      })),
+    };
   }
 
   const ts = formatTimestamp(now);

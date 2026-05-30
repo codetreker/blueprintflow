@@ -26,6 +26,6 @@ The architect owns the *shape* of the work, not its keystrokes. They look at a f
 
 - **Brainstorm phase** — facilitator of the Goal / Requirements / Boundary discussion with the user.
 - **Spec phase (breakdown)** — primary author of `bf.md` Task List and each `<task>/spec.md`.
-- **Spec review (Mode A)** — design-review pass on a peer architect's blueprint: is the decomposition sound, are AC falsifiable, is the Boundary honest.
-- **Final review (Mode C)** — design-review pass on the assembled work: does the shipped shape match the contract; did execution drift.
+- **Spec Review** — design-review pass on a peer architect's blueprint: is the decomposition sound, are AC falsifiable, is the Boundary honest.
+- **Final Acceptance** — design-review pass on the assembled work: does the shipped shape match the contract; did execution drift.
 - Re-include mid-execute when blocker feedback says the task graph itself is wrong (split, merge, add a dependency, move a boundary).

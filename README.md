@@ -4,7 +4,7 @@
 
 BF turns a fuzzy user request into a locked contract (`bf.md` + per-task `spec.md`), then drives execution through a `next → do → review → verify` loop until every Acceptance Criterion is signed off by a reviewer subagent that is **not the same subagent instance** that did the work.
 
-This package ships the BF v1 core: the CLI (`bf`, `bf-harness`), the entry skill (`SKILL.md`), Core roles, the engineering pack, file templates, and phase references.
+This package ships the BF core: the CLI (`bf`, `bf-harness`), the entry skill (`SKILL.md`), Core roles, the engineering pack, file templates, and phase references.
 
 ## Install
 
@@ -62,8 +62,8 @@ brainstorm  →  spec  ──accept──▶  execute  ──verify──▶  Co
 ```
 
 1. **Brainstorm** — drive a discussion with the user, pick a pack, write `discussion.md`.
-2. **Spec** — author `bf.md` + per-task `spec.md` in `Draft`, `lint`, run a spec review round, `verify` (Mode A), then `accept`. Contract is locked.
-3. **Execute** — `next` claims one ready task and returns its pipeline; subagents follow the pipeline instructions; a **different** reviewer subagent grades the final task AC; `verify` (Mode B) flips its AC on SUCCESS. Repeat. A final `verify` (Mode C) flips the bf.md AC and marks the work Completed.
+2. **Spec** — author `bf.md` + per-task `spec.md` in `Draft`, `lint`, run a Spec Review round, `verify`, then `accept`. Contract is locked.
+3. **Execute** — `next` claims one ready task and returns its pipeline; subagents follow the pipeline instructions; a **different** reviewer subagent grades the final task AC; Task Verification flips its AC on SUCCESS. Repeat. Final Acceptance flips the bf.md AC and marks the work Completed.
 
 ## State layout
 
@@ -95,7 +95,7 @@ The harness cannot see subagent identity (review filenames are role-level). IV i
 
 - `SKILL.md` — entry doc for the orchestrating LLM (high-level contract + IV red line).
 - `references/phase-1-brainstorm.md` — drive the discussion, pick a pack.
-- `references/phase-2-spec.md` — author specs, lint, Mode A review, accept.
+- `references/phase-2-spec.md` — author specs, lint, Spec Review, accept.
 - `references/phase-3-execute.md` — `next → do → review → verify` loop.
 - `templates/` — frozen file shapes; copy these when authoring.
 - `roles/`, `packs/` — Core roles and installed packs.

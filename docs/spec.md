@@ -1,389 +1,63 @@
----
-State: Draft
----
+# BF Design Spec
 
-# bf(blueprint flow) draft ideas
+`docs/spec.md` is the entrypoint for the current BF design record. It points
+to focused subdocuments instead of carrying the full spec inline.
 
-## Skill目录结构
-```text
-<root>/
-  +- SKILL.md
-  +- bin/
-  |    +- lib/
-  |    +- bf.mjs
-  |    +- bf-harness.mjs
-  +- packs/
-  |    +- engineering/
-  |    +- ...
-  +- roles/
-  +- ...
+## System Boundary
+
+BF is the npm package `@codetreker/bf`. It provides:
+
+- runtime instructions for LLM orchestrators;
+- roles, packs, templates, and phase references;
+- `bf` metadata commands;
+- `bf-harness` state and verification commands.
+
+The runtime source lives at the repository root. Runtime artifacts must be
+self-contained and must not depend on this `docs/` design record.
+
+```mermaid
+flowchart TB
+  request[User Request] --> brainstorm[Brainstorm]
+  brainstorm --> spec[Draft bf.md + task specs]
+  spec --> specReview[Spec Review]
+  specReview --> accept[Accept locked contract]
+  specReview --> brainstorm
+  accept --> next[bf-harness next]
+  next --> doer[Doer executes pipeline]
+  doer --> taskReview[Task Verification]
+  taskReview --> next
+  taskReview --> finalReview[Final Acceptance]
+  finalReview --> completed[Completed]
 ```
 
-## 运行目录结构
-```text
-<bf-wo>/
-  +- bf.md
-  +- discussion.md
-  +- runs/
-  |    +- reviews/
-  |         +- round_{N}/                // review round N
-  |              +- result_{role}_{idx}.md  // {role} 的第 {idx} 个 subagent 的 review 结果
-  +- <task-id>/
-  |    +- runs/
-  |    |    +- reviews/
-  |    |    |    +- round_{N}/
-  |    |    |         +- result_{role}_{idx}.md
-  |    |    +- ...
-  |    +- spec.md
-  |    +- more files
-```
+## Reading Map
 
-## 我想到的流程 <完整流程>
-每个bf的主目录：`<project-root>/.bf/<bf-wo>/`
-我现在想到的流程：
-1. `/bf brainstorming` -- 也可以这样： "/bf 我们讨论一个方案", 从模糊idea变成一个实际可落地的方案。
-  - 运行`./bin/bf.mjs list-packs` 获得当前安装的所有bf pack（这个就是将来对不通的场景扩展的地方）
-  - 根据输入选择最合适的bf模版
-  - 开始根据模版讨论，边讨论边生成 discussion.md（直接写到 `<project-root>/.bf/<bf-wo>/`，crash-safe），这样可以随时恢复，在后续的所有任务中有需要都可以翻阅这个文件
-
-2. 写spec -- 可以是LLM Agent觉得已经足够清晰了就可以开始写spec；也可以用户说"/bf 开始写spec吧" 或者直接说 "写spec吧"，但是如果还有需要澄清的，LLM需要问用户并且给出建议，如果用户接受就开始写。
-  - 运行 `./bin/bf.mjs list-roles --pack <pack>` 拿到可用 roles 以及它们具有的 capabilities，
-  - 运行 `./bin/bf.mjs list-pipelines --pack <pack>` 拿到可用 task pipelines，
-  - 写bf.md，State=Draft
-  - 每个task一个目录，在目录里拆解出清晰的任务并为每个任务生成`spec.md`（State=Draft），并指定这个任务使用的 Pipeline
-  - 如果在拆解过程中遇到问题可以继续跟用户讨论直到没有疑问。
-  - 写完所有的spec以后，走Spec Review流程，直到所有的问题都解决，过程中可以要求用户补充说明。
-  - 运行 `./bin/bf-harness.mjs lint <bf-wo>` 校验, 解决所有问题，
-  - 等用户review方案，用户同意后运行`./bin/bf-harness.mjs accept <bf-wo>`，然后开始执行任务。
-  - Accept 后，bf.md / `<task>/spec.md` 的内容被 LLM 锁定，所有 task 级联转 `Ready`；具体的状态机和 mutation 白名单见 [核心约束 → State Machine](#state-machine) 一节。
-
-3. 执行任务 -- 写完spec后就可以开始执行任务了,
-  - LLM Agent调用 `./bin/bf-harness.mjs next <bf-wo>`, 得到一组任务，然后调用subagent执行；-- 任务包含完成这个任务所有必要的信息。
-  - 根据任务信息，加载对应的pack.md，按指示执行这个任务。
-  - 运行 `./bin/bf-harness.mjs verify <bf-wo>/<task>`，有问题解决，直到返回 SUCCESS
-
-bf的workflow我倾向于每次都是动态生成
-* /bf brainstorming ===> 直接生成到 `<project-root>/.bf/<bf-wo>/`（不走 /tmp 中转，保证 crash-safe + session 重启可恢复）
-
-## 核心约束
-
-### Independent Verification
-
-每个 task 在执行 → 评审过程里，**实现这个 task 的 subagent 不能被复用为 review 这个 task 的 subagent**。这是 BF 的核心轴 —— 做的人不验证。
-
-这是 subagent 层面的约束，不是 role 层面：同一个 role（比如 engineer）可以同时贡献 doer 和 reviewer，只要不是同一个 subagent 实例。harness 看不到 subagent 身份（review 文件名只到 role 级），所以这条约束**由编排 LLM 在 spawn subagent 时保证**，不由 harness 强制。
-
-harness 在这条约束里的职责只是给信息：
-
-* `next` 返回任务时声明 `Pipeline` 和 `Pipeline path`，让 LLM 按 pipeline stages 选择 doer/reviewer roles
-* `start-review` / `verify` 按 AC 的 capability 反查 reviewer roles
-* 一条 AC 至少要有一个 role 提供它的 reviewer capability（lint 检查），否则永远没人能 review
-
-### State Machine
-
-#### bf.md
-
-```
-Draft  ────►  Accepted  ────►  Implementing  ────►  Completed
-  ▲             │
-  └─ Spec Review iterates here (runs/reviews/round_N/)
-```
-
-| State | 含义 |
+| Need | Start Here |
 |---|---|
-| `Draft` | brainstorm + breakdown 写完；可能在做 review 轮次（review 进度在 `runs/reviews/round_N/`，state 不变） |
-| `Accepted` | 用户跑了 `bf-harness accept`，contract 锁定 |
-| `Implementing` | 至少有一个 task 进入 Tasking；`next` 第一次返回任务时 harness 自动转 |
-| `Completed` | 所有 task 都 → Completed，且对 bf.md AC 跑了一轮 bf-level review，`verify` Mode C 全部 sign-off |
+| Overall architecture | [Architecture](architecture.md) |
+| Runtime and work item layout | [Runtime layout and workflow](spec/runtime-layout-and-workflow.md) |
+| Independent Verification, state, and locked mutations | [Core constraints](spec/core-constraints.md) |
+| Durable file contracts | [File contracts](spec/file-contracts.md) |
+| CLI and harness command behavior | [CLI and harness](spec/cli-and-harness.md) |
+| Pack, role, and pipeline model | [Packs and pipelines](spec/packs-and-pipelines.md) |
 
-#### task spec.md
+## Module Summary
 
-```
-Draft  ────►  Ready  ────►  Tasking  ────►  Completed
-                              ▲    │
-                              └────┘
-                          verify FAIL: 留在 Tasking
-```
-
-| State | 含义 |
-|---|---|
-| `Draft` | breakdown 写完，bf.md 还没 Accepted |
-| `Ready` | bf.md → Accepted 时所有 task 级联转 Ready，`next` 可选 |
-| `Tasking` | `next` 返回了它；verify FAIL 时留在 Tasking 直到修通，不另设 Failed 状态 |
-| `Completed` | verify SUCCESS |
-
-#### State transitions（谁触发，谁写）
-
-| 转换 | 触发 | 由谁写 |
+| Module | Role | Durable Interfaces |
 |---|---|---|
-| bf.md `Draft` → `Accepted` | 用户 `bf-harness accept <bf-wo>` | harness |
-| bf.md `Accepted` → `Implementing` | 第一次 `next` 返回任务 | harness 自动 |
-| bf.md `Implementing` → `Completed` | 所有 task → Completed 之后跑 bf-level review → `verify <bf-wo>` Mode C SUCCESS | harness（Mode C 触发） |
-| task `Draft` → `Ready` | bf.md → Accepted 时级联 | harness 自动 |
-| task `Ready` → `Tasking` | `next` claim | harness |
-| task `Tasking` → `Completed` | `verify` SUCCESS | harness |
-
-cancel / abandon 不引入新状态：直接 `bf-harness discard <bf-wo>` 删整个 bf-wo 目录。
-
-### discussion.md vs bf.md
-
-两个文件不同角色：
-
-| 文件 | 角色 | 锁定 |
-|---|---|---|
-| `bf.md` | **Contract** —— 结构化承诺；被 lint / accept / 状态机驱动 | Accept 后由 LLM 锁定，harness 窄通道 mutation |
-| `discussion.md` | **Rationale archive** —— brainstorm/spec 阶段第一手讨论；trade-off / 被否方案 / 决策依据 | 从不锁，LLM 全程 appendable |
-
-**派生关系**：bf.md 派生自 discussion.md。LLM 在 spec 阶段从 discussion.md 提炼出结构化的 bf.md。原则上两者不应矛盾。
-
-**执行阶段如何使用 discussion.md**：
-- 执行时遇到 bf.md / spec.md 表述模糊或不足以拍板的细节 → **回 discussion.md 找答案**
-- discussion.md 也没答案 → LLM 可以 append 新的澄清条目；如果澄清涉及超出已锁 contract 的范围，停下来跟用户讨论
-
-**冲突如何处理**：
-- 如果发现 bf.md 跟 discussion.md 实质冲突（不只是 bf.md 没说清，而是说反了）：
-  - 这是个**信号 —— lock 时漂了**，bf.md 当时没准确反映 discussion
-  - **不能机械裁决"哪边赢"**；harness 不允许偷偷改 bf.md，LLM 也不该自动假定 discussion.md 是错的
-  - 正确动作：**停下来跟用户讨论**。用户决定要么 abandon 该 bf-wo 重做，要么明确接受 bf.md 的当前承诺继续
-
-### Accept 后允许的 Mutation 全集
-
-LLM 不能修改 bf.md / `<task>/spec.md` 的内容。harness 有以下窄授权（白名单）：
-
-1. AC 行上把 `[ ]` 翻成 `[x]`（`verify` 写）
-2. 文件头 `Updated:` 时间戳同步（任何 mutation 时一起更新）
-3. 文件头 `State:` 按上表状态机推进
-
-其它任何 mutation 一律非法 —— 加行、删行、改字段、改 task list、改 boundary 等都不允许。
-
-## Spec Review流程
-找到match的roles 开subagent review： 每个role可以开1-3个subagent。可以视任务的复杂程度增加或者减少subagent数，但是总数最多不超过10个subagent, `<round>`从0开始：
-  - 运行 `./bin/bf-harness.mjs start-review <bf-wo>`, 返回 review 输出目录（`<bf-wo>/runs/reviews/round_N/`），本轮所有 review 结果文件必须放到这个目录里
-  - 该目录所有 subagent 共享，每个 subagent 写一份 `result_<role>_<idx>.md`；`<idx>` 从 1 开始递增（同一 role 多 subagent 时用 idx 区分）
-  - 并行 review，如果 subagent 数撞墙了，关闭一些 stale 的，实在不行就排队
-  - 运行 `./bin/bf-harness.mjs verify <bf-wo>` 拿结果，通过会返回"SUCCESS"，其他情况会返回"FAIL"以及具体的错误信息和详细文件路径
-
-## Task Review流程
-
-## 任务格式
-每个task都是`<bf-wo>`目录里的一个子目录：
-* spec.md - 本次任务的目标/验收标准/执行本次任务要求的能力
-
-## 文件格式
-
-具体的 frontmatter 字段、section 结构、注释规范都放在 templates/ 目录下，可以直接复制使用。这一节只列每个文件的角色和约束。
-
-### bf.md —— blueprint 契约
-
-- 位置：`<project-root>/.bf/<bf-wo>/bf.md`
-- 角色：本次工作的结构化契约。Accept 后由 LLM 锁定，之后只有 bf-harness 可以在窄通道里改 checkbox、State、Updated。
-- 模板：[`templates/bf.md`](../templates/bf.md)
-- 关键约束：State 字段只能取 Draft、Accepted、Implementing、Completed；Acceptance Criteria 每条必须带 `{id}|{capability}` marker，capability 必须能在某个 role 文件里找到。
-
-### discussion.md —— 讨论档
-
-- 位置：`<project-root>/.bf/<bf-wo>/discussion.md`
-- 角色：brainstorm 和 spec 阶段的第一手讨论记录，包括决策、被否方案、trade-off。Accept 之后仍然可以 append；从不锁。
-- 模板：[`templates/discussion.md`](../templates/discussion.md)
-- 跟 bf.md 的关系：bf.md 派生自 discussion.md；详见前面"核心约束 → discussion.md vs bf.md"一节。
-
-### `<task-id>/spec.md` —— 任务契约
-
-- 位置：`<project-root>/.bf/<bf-wo>/<task-id>/spec.md`
-- 角色：每个 task 的契约。Accept 后由 LLM 锁定，bf-harness 同样有窄通道做 checkbox、State、Updated。
-- 模板：[`templates/task-spec.md`](../templates/task-spec.md)
-- 关键约束：State 字段只能取 Draft、Ready、Tasking、Completed；Pipeline 字段必须引用当前 Pack 中存在的 pipeline；task spec 不再有单个执行 Capability；Acceptance Criteria 每条带 `{id}|{capability}` marker（验收能力）；`## Evidence` section 必须存在；Evidence 每条用 `{evidence-id}|{ac-id}|{kind}: requirement` 绑定到本 task 已存在的 AC；每条 task AC 至少有一条 Evidence；同 task 内 evidence id 唯一；kind 只能是 `command`、`file`、`artifact`、`review-note`、`screenshot`；requirement 不能为空。
-
-### review_{round_N}/result_{role}_{idx}.md —— review 结果
-
-- 位置：`<bf-wo>/runs/reviews/round_N/result_<role>_<idx>.md`（bf-wo 级 review）或 `<bf-wo>/<task>/runs/reviews/round_N/result_<role>_<idx>.md`（task 级 review）
-- 角色：单个 reviewer subagent 在某一轮 review 的结果。同 round 同 role 可以有多个 subagent 并行，用 `idx`（从 1 开始）区分。
-- 模板：[`templates/review-result.md`](../templates/review-result.md)
-- 关键约束：Results 必须按 severity 分组（Blocker / High / Minor / Nit）；Accepted Criteria 引用的 id 必须是 bf.md 或 task spec.md 里实际存在的 AC id。
-
-### roles/<role>.md —— 角色定义
-
-- 位置：repo 根的 `roles/<role>.md`（Core role）或 `packs/<pack-id>/roles/<role>.md`（pack 私有 role）
-- 角色：定义一个 role 的身份和它提供的 capability 清单。
-- 模板：[`templates/role.md`](../templates/role.md)
-
-### pack.md —— pack 描述
-
-- 位置：`packs/<pack-id>/pack.md`
-- 角色：描述一个 pack 是什么、什么时候用、各阶段的指导。
-- 模板：[`templates/pack.md`](../templates/pack.md)
-
-### pipelines/<pipeline-id>.yml —— task 执行流程
-
-- 位置：`packs/<pack-id>/pipelines/<pipeline-id>.yml`
-- 角色：声明某类 task 的执行 pipeline。v0 作为 instruction pipeline 使用；后续再逐步迁移 stage state 和 gates 到 harness。
-- 关键约束：文件名必须是合法 pipeline id；`id` 和文件名一致；`desc` 用于 `bf list-pipelines`；top-level `instruction` 说明整条 pipeline 的执行规则；每个 stage 的 `instruction` 说明该 stage 怎么完成；`stages` 当前由 LLM 编排读取。
-
-## Binary files
-
-### .bin/bf.mjs
-bf的运行环境支持，运行目录是bf安装目录，支持下面这些cmd：
-
-* list-roles: 列出所有roles，在./roles目录下：
-  - 文件路径 / role id / description
-
-* list-packs: 列出来所有安装的模版，在./packs目录下的子目录:
-  - Pack ID / Desc
-
-* list-pipelines: 列出 pack 可用的 task pipeline:
-  - Pipeline ID / Desc / Path
-
-### .bin/bf-harness.mjs
-bf执行流程控制，运行目录是`<project-root>/.bf/<bf-wo>`，支持一下这些cmd：
-* list: 列出这个项目的所有bf-wo，就是去 `<project-root>/.bf/` 列出所有任务：
-  - Id / Desc / State / Time
-
-* `lint`: 验证spec:
-  - bf.md, tasks/spec.md的格式是否符合要求，各个字段是否存在，格式是否符合要求
-  - bf.md里task list中的taskid是否存在
-  - task之间的依赖关系是否有问题
-  - **capability registry 检查**：bf.md AC 里出现的每个 `{capability}`，必须能在某个 `roles/*.md` 的 `Capabilities` 列里找到声明（隐式注册），否则报错；防 typo
-  - task Pipeline 检查：每个 task spec 必须有 `Pipeline`；不能再写 task frontmatter `Capability`；Pipeline 必须存在于同一个 Pack 的 pipeline registry
-  - task Evidence 检查：`## Evidence` section 必须存在；每条 task AC 至少有一条 Evidence；Evidence id 在同一个 task spec.md 内唯一；Evidence 引用的 AC id 必须存在于同一个 task spec.md；kind 只能是 `command`、`file`、`artifact`、`review-note`、`screenshot`；requirement 文本不能为空
-  - State=Draft
-
-  结果：
-  - 成功返回：SUCCESS
-  - 失败：返回对应的错误，LLM Agent解决后再次调用，直到返回SUCCESS
-
-* `start-review <bf-wo>|<bf-wo>/<task>`: 开始新一轮review
-  - 找到`<project-root>/.bf/<bf-wo>/runs/reviews/round_{N}`中当前最大的N
-  - 创建目录 runs/reviews/round_{N+1}
-  - 返回新创建的目录完整路径
-
-* `next`: 获取下一组没有完成的任务(Ready|Tasking)（确保相互没有depends，且任务的depends已经完成），把任务标记为Tasking，返回内容包括：
-  - 任务目录
-  - spec文件路径
-  - 任务描述
-  - `Pipeline` — 这个 task 使用的执行流程
-  - `Pipeline path` — pipeline instruction 文件路径，LLM 按里面的 stages 调度 doer/reviewer
-  - 完成这个任务的pack id
-
-* `verify <bf-wo>` 或 `verify <bf-wo>/<task>`: 验证 review 结果
-
-  按 scope + bf.md.State 分派到三种 mode：
-
-  **Mode A：`verify <bf-wo>` 且 bf.md.State = `Draft`（Spec Review phase）**
-  - 找到 `<bf-wo>/runs/reviews/round_N/` 里 N 最大的那一轮
-  - 遍历所有 `result_<role>_<idx>.md`，解析 `## Results`
-  - 任一份有 Blocker 或 High → FAIL；全部 clean → SUCCESS
-  - **不 flip 任何 AC，不动 State** —— spec review 的产物只是"准 ready"，是否 Accept 由用户决定
-
-  **Mode B：`verify <bf-wo>/<task>` 且 bf.md.State ∈ `{Accepted, Implementing}`（Task Verification phase）**
-  - 找到 `<bf-wo>/<task>/runs/reviews/round_N/` 里 N 最大的那一轮
-  - 解析所有 `result_<role>_<idx>.md` 的 `## Results` + `## Accepted Criteria`
-  - 任一份有 Blocker 或 High → FAIL，**不动 state/checkbox**
-  - 没有 Blocker / High 时，对每条 task AC：
-    - 看这条 AC 标的 capability，去 roles 目录里找出所有声明了这个 capability 的 role
-    - 这些 role 里至少有一个 role 的 review 文件（`result_<role>_<idx>.md`）在 `## Accepted Criteria` 段列出了这条 AC 的 id → 这条 AC 算 signed
-    - 当一个 capability 由多个 role 提供时，由编排 LLM 在 start-review 阶段挑一个最相关的 role 去开 reviewer subagent；harness 不要求全部 provider 都签到，只要有人签到就算过
-    - flip `[ ]` → `[x]`，同步 task spec.md `Updated:`
-  - 任一 AC 没人签到 → FAIL，列出哪些 AC 缺哪个 capability 的签到
-  - task 所有 AC 都 `[x]` → task spec.md `State: Tasking → Completed`
-
-  **Mode C：`verify <bf-wo>` 且 bf.md.State = `Implementing` 且所有 task `Completed`（bf-wo Final Acceptance phase）**
-  - 跟 Mode B 同样流程，但 scope 是 bf.md 的 AC（不是任意 task 的 AC）
-  - 找到 `<bf-wo>/runs/reviews/round_N/` 里 N 最大的那一轮 —— 这一轮应该是 task 全部完成**之后**重新跑的 bf-level review（不是当年的 spec review；通过 round_N 递增区分）
-  - block + sign-off 逻辑同 Mode B
-  - 通过后 flip bf.md 里所有 AC 为 `[x]`，bf.md `State: Implementing → Completed`，同步 `Updated:`
-  - **bf-wo 级别 review 的 IV 约束**：暂不强制（final acceptance 是 integrative 检查，做整体集成的 reviewer 跟做某条单 task 的 doer 在职责上天然不重叠；如未来发现需要严格化再加）
-
-  **其它 scope/state 组合** → 返回 `phase mismatch: cannot verify <scope> when bf.md.State = <X>`
-
-  **输出**：
-  - 写一份 `verify-result.md` 到对应 round 目录（`<bf-wo>/runs/reviews/round_N/verify-result.md` 或 `<bf-wo>/<task>/runs/reviews/round_N/verify-result.md`）
-  - stdout 只回一行：`SUCCESS <绝对文件路径>` 或 `FAIL <绝对文件路径>`
-  - subagent 可以直接被指派去读这个文件，不需要把内容塞进 context
-
-  **verify-result.md 格式（结构化 markdown）**：
-  ```markdown
-  ---
-  Result: SUCCESS|FAIL
-  Mode: A|B|C
-  Scope: <bf-wo> 或 <bf-wo>/<task>
-  Round: <N>
-  Timestamp: <yyyy-mm-dd hh:MM>
-  ---
-
-  ## Issues
-  // FAIL 时填，按 severity 分组；每条带 file:line + 描述
-
-  ### Blocker
-  ### High
-
-  ## AC Sign-off
-  // Mode B / C 才有；列出每条 AC 的状态
-  - AC-1: signed (by tester, security)
-  - AC-2: missing (need: security; got: tester only)
-  - AC-3: blocked (Blocker raised; not yet evaluated)
-
-  ## Flipped
-  // Mode B / C；本次新翻 [x] 的 AC id 列表
-
-  ## State Changes
-  // 本次触发的 state 转换
-  - task-3: Tasking → Completed
-  - bf.md: Implementing → Completed
-  ```
-
-## Packs
-
-Packs 放在仓库根目录的 `packs/` 下，是 bf core 的扩展方式。每个 pack 描述一个领域或场景的工作流模式，比如 engineering、research、incident response、content production 等。
-
-### 目录结构
-
-```
-packs/
-  +- engineering/
-  |    +- pack.md           # 必需。pack 描述 + 三阶段指导。
-  |    +- pipelines/        # 可选。task 执行流程定义。
-  |    |    +- feature.yml
-  |    +- roles/            # 可选。pack 私有的 role。
-  |        +- designer.md
-  +- research/
-  +- ...
-```
-
-### pack.md 的结构
-
-每个 pack 必须有一份 `pack.md`，模板和写作规范见 [`templates/pack.md`](../templates/pack.md)。
-
-pack.md 包含 5 个 section，其中 `When to Use` 是必填，其它 4 个推荐填写但不强制：
-
-1. **When to Use**（必填）—— 一到三句话，说清楚什么样的工作适合用这个 pack。LLM 在 brainstorm 阶段拿到用户输入后，靠这一节判断选哪个 pack。
-2. **Domain Vocabulary** —— 此领域的关键术语和概念。帮 LLM 用对话语风格。
-3. **Brainstorm Guidance** —— brainstorm 阶段问什么样的问题，blueprint 该是什么形状。
-4. **Breakdown Guidance** —— 此领域里"一个 task"是什么形状，典型粒度、依赖模式。
-5. **Execute Guidance** —— 做一个 task 时的通用指导，常见 pattern 和反 pattern。
-
-### Pack 私有 role
-
-每个 pack 可以在自己目录下放 `roles/`，role 文件跟 Core role 用同一份模板（[`templates/role.md`](../templates/role.md)）。
-
-合并规则：
-- `bf list-roles` 输出会合并 Core roles 和当前 bf-wo 选定 pack 的 roles。
-- 同名 role 时 pack 优先级高于 Core，pack 覆盖 Core 的同名 role。
-- 此 pack 的 brainstorm、spec、execute 阶段都可以引用这些 role。
-
-### Pack pipeline
-
-每个 pack 可以在自己目录下放 `pipelines/`，pipeline 文件使用 `<pipeline-id>.yml` 命名。`bf list-pipelines --pack <id>` 只列出当前有效 pack 目录里的 pipeline，不把被 extension 覆盖的 core pack pipeline 混进来。
-
-第一版 pipeline 是 instruction：LLM 在执行阶段先读取 pipeline 顶层 instruction，再按 stage instruction 执行。是否使用 subagent 由 pipeline 或 stage instruction 决定。pipeline state 和 stage gate 后续再迁入 harness。
-
-### 跟 bf-wo 的耦合
-
-v1 强制约束：一个 bf-wo 只对应一个 pack（写在 bf.md frontmatter 的 Pack 字段）。跨 pack 的工作必须拆成多个 bf-wo。这个约束未来可能放宽，但 v1 不支持。
-
-### list-packs / list-pipelines 的容错策略
-
-`bf list-packs` 读取 `packs/` 目录时，对每个 pack 做基本结构检查（pack.md 是否存在、frontmatter 是否完整、Id 是否跟目录名一致）。发现结构问题的 pack 会被跳过并在 stderr 输出 warning，但不会让 list-packs 失败。
-
-`bf list-pipelines` 基于最终有效的 pack registry 扫描 `pipelines/*.yml`。pipeline 解析失败、id 和文件名不一致时跳过该 pipeline 并输出 warning，不让整个列表命令失败。
-
-理由：pack 作者的开发流程在 BF 之外，BF 只关心 pack 在运行时能不能被使用。pack 写不规范，用户从 warning 看到信息自己处理；BF 不接管 pack 开发工具链。
+| Runtime docs | Tell the orchestrating LLM how to run BF | `SKILL.md`, `references/`, `packs/`, `roles/`, `templates/` |
+| `bf` CLI | Read-only metadata and install management | `list-packs`, `list-pipelines`, `list-roles`, `install`, `uninstall`, `version` |
+| `bf-harness` CLI | State mutation and verification loop | `lint`, `start-review`, `accept`, `next`, `verify`, `discard`, `list` |
+| Work order state | Per-project BF work state | `<project-root>/.bf/<bf-wo>/` |
+| Extension registry | User and project roles/packs | `extensions/roles`, `extensions/packs` |
+
+## Implementation Anchors
+
+- Runtime entry: [`SKILL.md`](../SKILL.md)
+- CLIs: [`bin/bf.mjs`](../bin/bf.mjs), [`bin/bf-harness.mjs`](../bin/bf-harness.mjs)
+- Harness internals: [`bin/lib/harness/`](../bin/lib/harness/)
+- Shared registries/parsers: [`bin/lib/shared/`](../bin/lib/shared/)
+- Core roles: [`roles/`](../roles/)
+- Core packs: [`packs/`](../packs/)
+- File templates: [`templates/`](../templates/)
+- Runtime phase references: [`references/`](../references/)

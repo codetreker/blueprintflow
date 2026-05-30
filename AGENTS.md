@@ -1,72 +1,108 @@
 # Repository Guidelines
 
-## Project Structure & Module Organization
+## What BF Is
 
-Blueprintflow is a Markdown-first repository for Claude/OpenClaw/Codex skills, not an application runtime. The installable plugin package lives under `plugins/blueprintflow/`; public skill packages live under `plugins/blueprintflow/skills/bf-*/`. Repo-local maintenance skills live under `.claude/skills/`, with `.agents/skills/` reserved for thin pointers to those canonical skills; neither is part of the marketplace package. Root marketplace indexes live in `.claude-plugin/marketplace.json` and `.agents/plugins/marketplace.json`. Project documentation lives in `README.md`, `docs/CHANGELOG.md`, and `docs/tasks/BOARD.md`. Pull request process guidance is in `.github/pull_request_template.md`.
+BF is an evidence-gated workflow runtime for LLM orchestrators. It turns a user
+request into a locked Markdown contract, then drives implementation through
+harness-owned state transitions and independent reviewer sign-off.
 
-## Build, Test, and Development Commands
+BF is not an application server. Runtime artifacts are instructions, templates,
+roles, packs, and CLI tools that an orchestrating LLM reads and executes.
 
-There is no package manager, build step, or automated test runner in this repo. Use lightweight validation commands before opening a PR:
+## Source Of Truth
+
+| Area | Source |
+|---|---|
+| BF runtime | Root npm package: `SKILL.md`, `bin/`, `roles/`, `packs/`, `templates/`, `references/` |
+| BF design | `docs/`, especially `docs/spec.md` |
+| DDD draft work | `.tasks/` (gitignored) |
+| Tests | `test/` + `npm test` |
+| Legacy plugin | `plugins/blueprintflow/` (deprecated; edit only when explicitly requested) |
+
+## Hard Rules
+
+- Treat `docs/` as the durable, latest accepted design record.
+- Put draft DDD notes, alternatives, and discussion artifacts in `.tasks/`.
+- After DDD is accepted, update the relevant `docs/` files.
+- Keep runtime artifacts self-contained. `SKILL.md`, `roles/`, `packs/`, `templates/`, and `references/` must not reference `docs/` or `.tasks/`.
+- Use a worktree for implementation work.
+- Never push directly to `main`.
+- Do not use legacy plugin content as BF source of truth unless the user explicitly asks.
+
+## Required Flow
+
+For behavior, architecture, parser, harness, CLI, install, package layout, or runtime-instruction changes:
+
+1. Create or use a focused worktree.
+2. Discuss the design.
+3. Record draft design in `.tasks/`.
+4. Get user approval.
+5. Write the smallest failing test for one approved behavior.
+6. Confirm the test fails for the expected reason.
+7. Implement the smallest passing change.
+8. Re-run the focused test.
+9. Repeat red-green for remaining behavior.
+10. Update `docs/` with the accepted final design.
+11. Run full validation.
+12. Commit, push, and open a PR when requested.
+
+If implementation exposes a design gap, stop coding and return to DDD.
+
+## TDD Gate
+
+- No production code before a failing test.
+- No broad implementation before a focused red test.
+- No completion claim before `npm test` passes.
+- No test rewrite to fit an implementation unless the approved design changed.
+
+## Commands
 
 ```bash
-rg --files plugins/blueprintflow .claude docs .github .claude-plugin .agents
-```
-
-Lists tracked content areas and catches unexpected file placement.
-
-```bash
-rg "TODO|FIXME|TBD" plugins/blueprintflow/skills docs README.md
-```
-
-Finds unresolved placeholders before review.
-
-```bash
+npm install
+npm test
 git diff --check
+.github/scripts/validate-bf-package-layout.sh
+.github/scripts/validate-bf-version.sh origin/main
 ```
 
-Checks for whitespace errors in Markdown and JSON files.
+Focused test examples:
+
+```bash
+bash test/test-cmd-install.sh
+bash test/test-cmd-list-pipelines.sh
+```
+
+When legacy plugin files are touched, also run:
 
 ```bash
 .github/scripts/validate-plugin-layout.sh
-```
-
-Verifies the single-source plugin package and both marketplace manifests.
-
-```bash
 .github/scripts/validate-skills.sh
 .github/scripts/validate-release-version.sh origin/main
 ```
 
-Checks public plugin skill frontmatter/references and enforces version bumps for release-facing PR changes.
+## Version Gates
 
-## Long-Term CI Rules
+- Release-facing BF changes require a semver bump in `package.json` and `package-lock.json`.
+- Legacy plugin manifest versions matter only when legacy plugin files change.
 
-Long-term CI may enforce only stable, mechanical repository invariants: parseable JSON/YAML, expected file placement, required manifests, version consistency, valid relative references, and whitespace hygiene. Do not add CI checks for one-time migration cleanup, retired names, wording preferences, preferred examples, cron cadence choices, or any rule that encodes a current editorial stance rather than a durable structure contract. If a check would reasonably need removal after a rename, copy edit, workflow rethink, or release train, keep it as a temporary review command in the PR description instead of a permanent CI gate.
+## Style
 
-## Coding Style & Naming Conventions
+- Prefer small, scoped changes.
+- Use existing parsers, registries, and helpers before adding new mechanisms.
+- Write runtime instructions as direct commands.
+- Put durable rationale in `docs/`, not runtime files.
+- Use ASCII punctuation unless editing existing Chinese prose.
+- Use `apply_patch` for manual edits.
 
-Write skill content in concise Markdown with clear headings, direct instructions, and executable examples. Keep public skill directories named `plugins/blueprintflow/skills/bf-<topic>/`, with the public entrypoint always named `SKILL.md`; keep canonical repo-local maintenance skills under `.claude/skills/`, and keep any `.agents/skills/` entries as pointers only. Store longer role prompts, checklists, or execution notes in `references/*.md` rather than bloating the skill entrypoint. Keep JSON metadata formatted with two-space indentation. Prefer ASCII punctuation unless editing existing Chinese prose where full-width punctuation is already used.
+## Anti-Patterns
 
-## Testing Guidelines
-
-Validation is review-driven. For any skill change, manually check that triggers, responsibilities, examples, and referenced files still match the README skill table. If a skill references `references/foo.md`, verify the file exists and the relative path is correct. For workflow changes, test by reading the modified skill from a fresh-agent perspective: the next action should be unambiguous and verifiable.
-
-## Commit & Pull Request Guidelines
-
-Git history uses short conventional prefixes such as `feat:`, `fix:`, `chore:`, and `skill:`; keep that style, for example `fix: clarify phase exit gate checklist`. PRs should include a summary, affected skills, and the review checklist from the template. The expected review lenses are Architect consistency, PM readability, Dev executability, QA verifiability, and Owner direction. Link issues when relevant and update `docs/CHANGELOG.md` or plugin version metadata for release-facing changes.
-
-## Version Metadata
-
-Release-facing version bumps must update both `plugins/blueprintflow/.claude-plugin/plugin.json` and `plugins/blueprintflow/.codex-plugin/plugin.json` to the same version. CI enforces a semver increase when release-facing paths change and requires a matching `docs/CHANGELOG.md` entry. Do not add root `skills/`, `.codex-plugin/`, or `.claude-plugin/plugin.json`; root files are marketplace indexes only.
-
-## BF v1 Core — Dev vs Runtime Boundary
-
-The BF v1 core (entrypoint `SKILL.md`, `bin/bf*.mjs`, `roles/`, `packs/`, `templates/`, `references/`) is a **runtime** artifact set: it is what an LLM orchestrator reads and executes when running a BF workflow. Material under `docs/` is **development-time** documentation — the spec, design rationale, and implementation plans for the BF system itself.
-
-Runtime artifacts must never reference any file under `docs/`. `SKILL.md`, roles, packs, and templates are self-sufficient; an orchestrator running BF should never need to open `docs/spec.md` or anything else under `docs/` to do its job. The reverse direction is allowed: `docs/spec.md` may reference `templates/` (the runtime templates the spec defines) via a relative path. The forbidden direction is runtime → `docs/`.
-
-When adding to or editing runtime artifacts, grep for the literal `docs/` and remove any reference before committing.
-
-## Agent-Specific Instructions
-
-Keep future edits focused and prefer updating the smallest relevant `SKILL.md` or `references/*.md` file. Avoid unrelated formatting churn.
+- "This is small enough to code directly." --> No. Record the design in `.tasks/`, get approval, then enter TDD.
+- "I'll add tests after the implementation." --> No. Write the failing test first and confirm the expected failure.
+- "The test is failing because the implementation is not done, so I can keep coding." --> Stop. Confirm the failure matches the approved behavior before writing production code.
+- "The design gap is obvious; I'll decide in code." --> Stop. Return to DDD.
+- "This draft should live in `docs/` so it is easy to find." --> No. Put drafts in `.tasks/`; update `docs/` only after acceptance.
+- "The DDD is done, so the code is enough." --> No. Update the relevant `docs/` files with the final accepted design.
+- "Runtime can link to `docs/` for more detail." --> No. Keep runtime artifacts self-contained; move required instructions into runtime files.
+- "The old plugin already solved this." --> No. Treat `plugins/blueprintflow/` as deprecated unless the user asked for legacy plugin work.
+- "A CI check can enforce this wording preference." --> No. Keep permanent CI to stable mechanical invariants only.
+- "It is faster to rewrite the surrounding file." --> No. Make the smallest scoped edit that satisfies the approved task.

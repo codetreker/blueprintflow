@@ -42,7 +42,45 @@ STDOUT=$(node --input-type=module -e "
 assert_json_field "$STDOUT" .ok false
 assert_match "$STDOUT" "pack not found: nope" "missing pack error"
 
-rm -rf "$ROOT"
+# Extension-only pack roles are discovered through the effective pack registry.
+EXT=$(make_temp_home)
+mkdir -p "$EXT/packs/custom-pack/roles"
+cat > "$EXT/packs/custom-pack/pack.md" <<'EOF'
+---
+Id: custom-pack
+Desc: Extension-only pack
+---
+
+## When to Use
+
+Testing extension pack role discovery.
+EOF
+cat > "$EXT/packs/custom-pack/roles/custom-reviewer.md" <<'EOF'
+---
+Id: custom-reviewer
+Desc: Extension pack reviewer
+Capabilities:
+  - custom-review
+---
+
+# Custom Reviewer
+EOF
+STDOUT=$(node --input-type=module -e "
+  import('$REPO_ROOT/bin/lib/bf/cmd-list-roles.mjs').then(async (m) => {
+    const r = await m.cmdListRoles({
+      cwd: '$ROOT',
+      pack: 'custom-pack',
+      extensionPacksDirs: ['$EXT/packs'],
+    });
+    process.stdout.write(JSON.stringify(r));
+  });
+")
+assert_json_field "$STDOUT" .ok true
+assert_json_field "$STDOUT" .roles.0.id "custom-reviewer"
+assert_json_field "$STDOUT" .roles.0.source "pack"
+assert_json_field "$STDOUT" .roles.0.capabilities '["custom-review"]'
+
+rm -rf "$ROOT" "$EXT"
 
 # CLI-level: `bf list-roles` prints one labeled key:value block per role
 # (Id/Desc/Capabilities/Source/File). Blocks separated by `---` on its own
@@ -74,5 +112,39 @@ fi
 printf "%s\n" "$STDOUT" | grep -E ' +$' >/dev/null && fail "trailing whitespace in list-roles stdout"
 unset BF_INSTALL_DIR BF_HOME
 rm -rf "$ROOT" "$EMPTY_HOME"
+
+# CLI-level: project extension packs participate in `list-roles --pack`.
+ROOT=$(make_temp_home)
+BASE=$(make_temp_home)
+mkdir -p "$ROOT/roles" "$BASE/extensions/packs/custom-pack/roles"
+cp -R "$FIXTURES/roles-core/." "$ROOT/roles/"
+cat > "$BASE/extensions/packs/custom-pack/pack.md" <<'EOF'
+---
+Id: custom-pack
+Desc: Project extension pack
+---
+
+## When to Use
+
+Testing project extension pack role discovery.
+EOF
+cat > "$BASE/extensions/packs/custom-pack/roles/custom-reviewer.md" <<'EOF'
+---
+Id: custom-reviewer
+Desc: Project extension pack reviewer
+Capabilities:
+  - custom-review
+---
+
+# Custom Reviewer
+EOF
+export BF_INSTALL_DIR="$ROOT"
+export BF_HOME="$BASE"
+run_bf list-roles --pack custom-pack
+assert_eq "$RC" "0" "list-roles --pack extension pack exit 0"
+assert_match "$STDOUT" "Id: custom-reviewer" "extension pack role listed"
+assert_match "$STDOUT" "Capabilities: [custom-review]" "extension pack role capability listed"
+unset BF_INSTALL_DIR BF_HOME
+rm -rf "$ROOT" "$BASE"
 
 pass

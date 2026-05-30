@@ -4,6 +4,7 @@ import { writeState, writeUpdated, formatTimestamp } from "./write-mutations.mjs
 import { parseFrontmatter } from "../shared/parse-frontmatter.mjs";
 import { loadWo } from "./load-wo.mjs";
 import { validateWo } from "./validate-wo.mjs";
+import { VERIFY_MODES } from "./cmd-verify.mjs";
 
 function latestRound(woPath) {
   const dir = runsReviewsDir(woPath);
@@ -16,14 +17,14 @@ function latestRound(woPath) {
   return maxN;
 }
 
-function latestModeAResult(woPath) {
+function latestSpecReviewResult(woPath) {
   const n = latestRound(woPath);
   if (n === 0) return null;
   const file = verifyResultFile(roundDir(woPath, n));
   if (!fs.existsSync(file)) return null;
   try {
     const { frontmatter } = parseFrontmatter(fs.readFileSync(file, "utf8"));
-    if (frontmatter.Result !== "SUCCESS" || frontmatter.Mode !== "A") return null;
+    if (frontmatter.Result !== "SUCCESS" || frontmatter.Mode !== VERIFY_MODES.SPEC_REVIEW) return null;
     return { round: n, file, mtimeMs: fs.statSync(file).mtimeMs };
   } catch { return null; }
 }
@@ -46,18 +47,18 @@ export async function cmdAccept({ baseHome, woId, installDir, now = new Date() }
   }
   const validation = validateWo(bundle);
   if (!validation.ok) return { ok: false, error: "lint failed", details: validation.errors };
-  const modeA = latestModeAResult(bundle.woPath);
-  if (!modeA) {
-    return { ok: false, error: "no Mode A SUCCESS in latest round; run start-review + spec review + verify first" };
+  const specReview = latestSpecReviewResult(bundle.woPath);
+  if (!specReview) {
+    return { ok: false, error: "no Spec Review SUCCESS in latest round; run start-review + spec review + verify first" };
   }
-  const changed = contractFilesChangedAfterReview(bundle, modeA.mtimeMs);
+  const changed = contractFilesChangedAfterReview(bundle, specReview.mtimeMs);
   if (changed.length > 0) {
     return {
       ok: false,
-      error: "contract changed after latest Mode A SUCCESS; run start-review + spec review + verify again",
+      error: "contract changed after latest Spec Review SUCCESS; run start-review + spec review + verify again",
       details: changed.map(file => ({
         code: "CONTRACT_CHANGED_AFTER_REVIEW",
-        message: `file changed after ${modeA.file}`,
+        message: `file changed after ${specReview.file}`,
         ref: file,
       })),
     };

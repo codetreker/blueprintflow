@@ -65,6 +65,22 @@ copy_fixture() {
   cp -R "$FIXTURES/$name/." "$dest/"
 }
 
+write_local_pipeline() {
+  local file="$1" id="$2"
+  mkdir -p "$(dirname "$file")"
+  cat > "$file" <<EOF
+id: $id
+desc: Local pipeline $id
+instruction: |
+  Follow this local pipeline for the task.
+stages:
+  - id: implementation
+    capability: software-implementation
+    instruction: |
+      Implement the task and produce the required evidence.
+EOF
+}
+
 # run_bf <args...> → 把 stdout 打到全局变量 STDOUT，stderr 打到 STDERR，exit code 打到 RC
 run_bf() {
   STDOUT=$(node "$BF" "$@" 2>/tmp/bf-test-stderr.$$) ; RC=$?

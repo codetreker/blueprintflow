@@ -10,7 +10,9 @@ make_src() {
   echo "# eng role" > "$SRC/roles/engineer.md"
   echo "# sample pack" > "$SRC/packs/sample/pack.md"
   echo "# bf template" > "$SRC/templates/bf.md"
-  echo "# phase 1" > "$SRC/references/phase-1.md"
+  echo "# Brainstorm" > "$SRC/references/brainstorm.md"
+  echo "# Spec Authoring" > "$SRC/references/spec-authoring.md"
+  echo "# Execution" > "$SRC/references/execution.md"
   echo "#!/usr/bin/env node" > "$SRC/bin/bf.mjs"
   cat > "$SRC/package.json" <<'JSON'
 {"name":"@codetreker/bf","version":"9.9.9"}
@@ -24,7 +26,9 @@ assert_snapshot() {
   [ -f "$target/roles/engineer.md" ] || fail "roles/engineer.md not copied to $target"
   [ -f "$target/packs/sample/pack.md" ] || fail "packs/sample/pack.md not copied to $target"
   [ -f "$target/templates/bf.md" ] || fail "templates/bf.md not copied to $target"
-  [ -f "$target/references/phase-1.md" ] || fail "references/phase-1.md not copied to $target"
+  [ -f "$target/references/brainstorm.md" ] || fail "references/brainstorm.md not copied to $target"
+  [ -f "$target/references/spec-authoring.md" ] || fail "references/spec-authoring.md not copied to $target"
+  [ -f "$target/references/execution.md" ] || fail "references/execution.md not copied to $target"
   [ ! -e "$target/bin" ] || fail "bin/ should not be copied to discovery snapshot"
   [ ! -e "$target/package.json" ] || fail "package.json should not be copied to discovery snapshot"
   [ ! -e "$target/extensions" ] || fail "extensions/ should not exist in discovery snapshot"
@@ -114,5 +118,22 @@ assert_eq "$RC" "2" "target is case-sensitive"
 [ ! -e "$HOME_DIR/.agents/skills/bf" ] || fail "invalid target should not mutate Codex"
 unset HOME BF_INSTALL_DIR
 rm -rf "$HOME_DIR" "$SRC"
+
+# Real package snapshot includes semantic references and pipeline-designer role.
+HOME_DIR=$(make_temp_home)
+STDOUT=$(node --input-type=module -e "
+  import('$REPO_ROOT/bin/lib/bf/cmd-install.mjs').then(async (m) => {
+    const r = await m.cmdInstall({ srcDir: '$REPO_ROOT', home: '$HOME_DIR', target: 'codex', log: () => {} });
+    process.stdout.write(JSON.stringify(r));
+  });
+")
+assert_json_field "$STDOUT" .ok true
+TARGET="$HOME_DIR/.agents/skills/bf"
+[ -f "$TARGET/roles/pipeline-designer.md" ] || fail "pipeline-designer role not copied"
+[ -f "$TARGET/references/brainstorm.md" ] || fail "brainstorm reference not copied"
+[ -f "$TARGET/references/spec-authoring.md" ] || fail "spec-authoring reference not copied"
+[ -f "$TARGET/references/execution.md" ] || fail "execution reference not copied"
+[ -f "$TARGET/templates/pipeline.yml" ] || fail "pipeline template not copied"
+rm -rf "$HOME_DIR"
 
 pass

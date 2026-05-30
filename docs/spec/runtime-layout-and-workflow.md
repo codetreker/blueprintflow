@@ -18,9 +18,9 @@ This page describes the BF runtime file layout and the high-level workflow.
   +- ...
 ```
 
-## Work Order Layout
+## Work Object Layout
 
-Every BF work order lives under `<project-root>/.bf/<bf-wo>/`.
+Every BF work object lives under `<project-root>/.bf/<bf-wo>/`.
 
 ```text
 <bf-wo>/
@@ -54,6 +54,8 @@ Every BF work order lives under `<project-root>/.bf/<bf-wo>/`.
    - Write `bf.md` with `State: Draft`.
    - Create one directory per task and write `<task>/spec.md` with `State: Draft`.
    - Each task spec selects exactly one `Pipeline`.
+   - If no selected-pack pipeline fits, spawn a `pipeline-designer` subagent to
+     design a bf-wo local pipeline under `<bf-wo>/pipelines/<id>.yml`.
    - Continue discussion with the user until ambiguity is resolved.
    - Run `bf-harness lint <bf-wo>` until it returns success.
    - Run the spec review loop.
@@ -74,10 +76,11 @@ Every BF work order lives under `<project-root>/.bf/<bf-wo>/`.
 1. Run `bf-harness start-review <bf-wo>`.
 2. The command returns a review directory: `<bf-wo>/runs/reviews/round_N/`.
 3. For each matching reviewer role, spawn one to three subagents, capped at ten total subagents.
-4. Each reviewer writes `result_<role>_<idx>.md`; `<idx>` starts at 1 for each role.
-5. Run `bf-harness verify <bf-wo>`.
-6. On `FAIL`, read the verify result, update the draft specs, and start a new review round.
-7. On `SUCCESS`, wait for user approval before `accept`.
+4. If the bf-wo has local pipelines, include an independent `pipeline-review` reviewer.
+5. Each reviewer writes `result_<role>_<idx>.md`; `<idx>` starts at 1 for each role.
+6. Run `bf-harness verify <bf-wo>`.
+7. On `FAIL`, read the verify result, update the draft specs/local pipelines, and start a new review round.
+8. On `SUCCESS`, wait for user approval before `accept`.
 
 ## Task Review Flow
 

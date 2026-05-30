@@ -11,7 +11,7 @@ BF owns:
 
 - runtime instructions for the orchestrating LLM;
 - role, pack, pipeline, and template definitions;
-- work-order state under `<project-root>/.bf/<bf-wo>/`;
+- work-object state under `<project-root>/.bf/<bf-wo>/`;
 - mechanical lint, state transition, and review verification commands.
 
 BF does not own:
@@ -34,7 +34,7 @@ flowchart LR
   runtime --> templates[Templates]
   bfcli --> registries[Role/Pack/Pipeline Registries]
   harness --> registries
-  harness --> wo[(.bf Work Order State)]
+  harness --> wo[(.bf Work Object State)]
   orchestrator --> subagents[Doer + Reviewer Subagents]
   subagents --> project[Target Project Code + Evidence]
   subagents --> reviewResults[Review Results]
@@ -51,7 +51,7 @@ flowchart LR
 | Packs | Define domain guidance and available pipelines. | Domain workflow authority. |
 | `bf` CLI | Lists roles, packs, pipelines, and manages host discovery snapshots. | Read-only metadata authority. |
 | `bf-harness` CLI | Lints, accepts, claims tasks, starts reviews, verifies sign-off, and mutates allowed state. | State transition authority. |
-| Work order state | Stores contracts, discussion, review rounds, verify results, and task state. | Durable workflow state. |
+| Work object state | Stores contracts, discussion, review rounds, verify results, and task state. | Durable workflow state. |
 
 ## State Authority
 
@@ -80,7 +80,7 @@ sequenceDiagram
   participant O as Orchestrator
   participant B as bf
   participant H as bf-harness
-  participant W as Work Order
+  participant W as Work Object
   participant S as Subagents
 
   U->>O: Request
@@ -89,7 +89,7 @@ sequenceDiagram
   O->>H: lint
   O->>S: Spec Review
   S->>W: result_role_idx.md
-  O->>H: verify work order
+  O->>H: verify work object
   U->>O: Approve
   O->>H: accept
   loop Each task
@@ -101,10 +101,10 @@ sequenceDiagram
     S->>W: result_role_idx.md
     O->>H: verify task
   end
-  O->>H: start-review work order
+  O->>H: start-review work object
   O->>S: Final Acceptance
   S->>W: result_role_idx.md
-  O->>H: verify work order
+  O->>H: verify work object
 ```
 
 ## Verification Boundary
@@ -141,7 +141,7 @@ operations.
 
 Pipeline definitions are currently instruction-level. The orchestrator reads the
 pipeline and executes stages in order. Stage state and gate enforcement can move
-into the harness later without changing the work-order contract model.
+into the harness later without changing the work-object contract model.
 
 ## Design Drill-Downs
 

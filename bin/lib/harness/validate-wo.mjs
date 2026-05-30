@@ -1,3 +1,6 @@
+import fs from "node:fs";
+import path from "node:path";
+import { parsePipeline } from "../shared/parse-pipeline.mjs";
 import { buildPipelineRegistry, findPipeline } from "../shared/pipeline-registry.mjs";
 
 const EVIDENCE_KINDS = new Set([
@@ -24,6 +27,72 @@ function detectCycle(bf) {
   return null;
 }
 
+const PIPELINE_FILE_RE = /^[a-z][a-z0-9-]*\.yml$/;
+
+function localPipelineFiles(dir) {
+  if (!dir || !fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir)
+    .filter(n => !n.startsWith("."))
+    .map(n => path.join(dir, n));
+}
+
+function validateLocalPipelines({ bundle, pipelineReg, selectedPackPipelineReg, errors }) {
+  const dir = bundle.localPipelinesDir;
+  const referenced = new Set(
+    bundle.tasks
+      .filter(t => t.spec)
+      .map(t => `${t.spec.frontmatter.Pack}/${t.spec.frontmatter.Pipeline}`)
+  );
+  const seen = new Set();
+  for (const file of localPipelineFiles(dir)) {
+    const name = path.basename(file);
+    if (!fs.statSync(file).isFile() || !PIPELINE_FILE_RE.test(name)) {
+      errors.push({ code: "PIPELINE_LOCAL_FILENAME_INVALID", message: `invalid local pipeline filename: ${name}`, ref: file });
+      continue;
+    }
+    const idFromFile = name.replace(/\.yml$/, "");
+    let parsed;
+    try {
+      parsed = parsePipeline(fs.readFileSync(file, "utf8"));
+    } catch (e) {
+      errors.push({ code: "PIPELINE_LOCAL_PARSE_ERROR", message: e.message, ref: file });
+      continue;
+    }
+    if (parsed.id !== idFromFile) {
+      errors.push({ code: "PIPELINE_LOCAL_ID_MISMATCH", message: `local pipeline id "${parsed.id}" != filename "${idFromFile}"`, ref: file });
+    }
+    if (selectedPackPipelineReg.pipelines.has(`${bundle.bf.frontmatter.Pack}/${parsed.id}`)) {
+      errors.push({ code: "PIPELINE_LOCAL_COLLISION", message: `local pipeline id collides with selected pack pipeline: ${parsed.id}`, ref: file });
+    }
+    if (!referenced.has(`${bundle.bf.frontmatter.Pack}/${parsed.id}`)) {
+      errors.push({ code: "PIPELINE_LOCAL_UNREFERENCED", message: `local pipeline is not referenced by any task: ${parsed.id}`, ref: file });
+    }
+    if (!parsed.instruction) {
+      errors.push({ code: "PIPELINE_LOCAL_INSTRUCTION_MISSING", message: `local pipeline ${parsed.id} must have top-level instruction`, ref: file });
+    }
+    if (!Array.isArray(parsed.stages) || parsed.stages.length === 0) {
+      errors.push({ code: "PIPELINE_LOCAL_STAGES_EMPTY", message: `local pipeline ${parsed.id} must have stages`, ref: file });
+    }
+    seen.clear();
+    for (const stage of parsed.stages || []) {
+      const sid = String(stage?.id || "").trim();
+      if (!sid) {
+        errors.push({ code: "PIPELINE_LOCAL_STAGE_ID_EMPTY", message: `local pipeline ${parsed.id} has empty stage id`, ref: file });
+      } else if (seen.has(sid)) {
+        errors.push({ code: "PIPELINE_LOCAL_STAGE_ID_DUPLICATE", message: `local pipeline ${parsed.id} duplicates stage id ${sid}`, ref: file });
+      }
+      seen.add(sid);
+      if (!String(stage?.instruction || "").trim()) {
+        errors.push({ code: "PIPELINE_LOCAL_STAGE_INSTRUCTION_EMPTY", message: `local pipeline ${parsed.id} stage ${sid || "<empty>"} must have instruction`, ref: file });
+      }
+      const cap = String(stage?.capability || "").trim();
+      if (cap && !bundle.roleReg.byCapability.has(cap)) {
+        errors.push({ code: "PIPELINE_LOCAL_CAPABILITY_UNKNOWN", message: `local pipeline ${parsed.id} stage ${sid || "<empty>"} capability "${cap}" has no provider`, ref: file });
+      }
+    }
+  }
+}
+
 export function validateWo(bundle) {
   const errors = [...bundle.errors];
   const { bf, bfPath, packReg, roleReg, tasks } = bundle;
@@ -47,6 +116,13 @@ export function validateWo(bundle) {
   }
   const ids = new Set(bf.taskList.map((t) => t.id));
   for (const t of bf.taskList) {
+    if (t.id === "pipelines") {
+      errors.push({
+        code: "TASK_ID_RESERVED",
+        message: `task id "${t.id}" is reserved`,
+        ref: bfPath,
+      });
+    }
     for (const d of t.deps) {
       if (!ids.has(d)) {
         errors.push({
@@ -75,7 +151,9 @@ export function validateWo(bundle) {
       });
     }
   };
-  const pipelineReg = buildPipelineRegistry({ packReg });
+  const selectedPackPipelineReg = buildPipelineRegistry({ packReg, pack: bf.frontmatter.Pack });
+  const pipelineReg = buildPipelineRegistry({ packReg, pack: bf.frontmatter.Pack, localPipelinesDir: bundle.localPipelinesDir });
+  validateLocalPipelines({ bundle, pipelineReg, selectedPackPipelineReg, errors });
   for (const ac of bf.acceptanceCriteria) checkCap(ac.capability, bfPath);
   for (const t of tasks) {
     if (!t.spec) continue;

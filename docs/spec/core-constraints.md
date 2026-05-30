@@ -63,14 +63,14 @@ Draft  ────►  Ready  ────►  Tasking  ────►  Comple
 | task `Tasking` --> `Completed` | Task Verification succeeds | harness |
 
 Cancel and abandon do not add states. `bf-harness discard <bf-wo>` deletes the
-whole work order.
+whole work object.
 
 ## discussion.md vs bf.md
 
 | File | Role | Locking |
 |---|---|---|
 | `bf.md` | Contract: structured commitment driven by lint, accept, and the state machine. | Locked after accept; only harness narrow mutations are allowed. |
-| `discussion.md` | Rationale archive: brainstorm and spec discussion, tradeoffs, rejected options, decisions. | Never locked; LLM may append throughout the work order. |
+| `discussion.md` | Rationale archive: brainstorm and spec discussion, tradeoffs, rejected options, decisions. | Never locked; LLM may append throughout the work object. |
 
 `bf.md` is derived from `discussion.md`. During spec, the LLM distills
 discussion into the structured contract. They should not contradict each other.
@@ -85,7 +85,7 @@ Conflict handling:
 
 - If `bf.md` contradicts `discussion.md`, treat it as a lock-time drift signal.
 - Do not silently choose which file wins.
-- Stop and ask the user whether to abandon and recreate the work order or accept the current `bf.md` contract.
+- Stop and ask the user whether to abandon and recreate the work object or accept the current `bf.md` contract.
 
 ## Allowed Mutations After Accept
 

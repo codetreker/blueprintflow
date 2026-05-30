@@ -64,10 +64,35 @@ The first pipeline version is instruction-only:
 - Pipeline or stage instructions decide when subagents are preferred or required.
 - Pipeline state and stage gates may later move into the harness.
 
-## Work Order Coupling
+## BF-WO Local Pipelines
 
-BF requires one pack per work order. The pack id lives in `bf.md` frontmatter.
-Cross-pack work must be split into multiple work orders.
+A bf-wo may define local pipelines under `<bf-wo>/pipelines/*.yml`. Tasks in
+that bf-wo reference them with the normal `Pipeline:` frontmatter.
+
+Rules:
+
+- Local pipeline ids must not collide with the effective selected pack's pipeline ids.
+- Every local pipeline must be referenced by at least one task.
+- `pipelines` is a reserved task id.
+- Local pipelines use the same YAML contract as pack pipelines.
+- Local pipelines are contract files after Spec Review and `accept`.
+
+Local pipelines are for one bf-wo only. If the flow should be reusable across
+bf-wos, stop and design a pack-level pipeline as separate work.
+
+## Pipeline Designer
+
+The Core `pipeline-designer` role designs bf-wo local pipelines and reviews
+pipeline structure. It provides `pipeline-design` and `pipeline-review`.
+
+When Spec Authoring creates a bf-wo local pipeline, a `pipeline-designer`
+subagent designs it. Spec Review includes an independent `pipeline-review`
+reviewer; the orchestrator enforces subagent-instance independence.
+
+## Work Object Coupling
+
+BF requires one pack per work object. The pack id lives in `bf.md` frontmatter.
+Cross-pack work must be split into multiple work objects.
 
 ## List Command Tolerance
 

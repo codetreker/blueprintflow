@@ -1,4 +1,4 @@
-# Phase 1 — Brainstorm
+# Brainstorm
 
 Goal: produce `discussion.md` capturing the user's intent, decisions, and trade-offs.
 
@@ -25,4 +25,4 @@ Write each Q&A or decision to `discussion.md` **as it happens**. Do not buffer i
 
 ## Exit
 
-Phase 1 ends when the user agrees you have captured enough to write a spec. Move to [phase-2-spec.md](phase-2-spec.md).
+Brainstorm ends when the user agrees you have captured enough to write a spec. Move to [spec-authoring.md](spec-authoring.md).

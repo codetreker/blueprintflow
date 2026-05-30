@@ -32,6 +32,17 @@ function latestSpecReviewResult(woPath) {
 function contractFilesChangedAfterReview(bundle, reviewedAtMs) {
   const changed = [];
   const files = [bundle.bfPath, ...bundle.tasks.map(t => t.specPath)];
+  const localPipelineIds = new Set(
+    bundle.tasks
+      .filter(t => t.spec)
+      .map(t => t.spec.frontmatter.Pipeline)
+  );
+  if (fs.existsSync(bundle.localPipelinesDir)) {
+    for (const name of fs.readdirSync(bundle.localPipelinesDir)) {
+      const m = name.match(/^([a-z][a-z0-9-]*)\.yml$/);
+      if (m && localPipelineIds.has(m[1])) files.push(`${bundle.localPipelinesDir}/${name}`);
+    }
+  }
   for (const file of files) {
     const stat = fs.statSync(file);
     if (stat.mtimeMs > reviewedAtMs) changed.push(file);

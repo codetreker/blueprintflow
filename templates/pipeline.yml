@@ -1,0 +1,21 @@
+id: <pipeline-id>
+desc: <one sentence describing when this pipeline should be used>
+instruction: |
+  Describe the whole execution flow. Include the stage order, required
+  artifacts, stop conditions, subagent expectations, and how the pipeline
+  satisfies the task AC and Evidence requirements.
+stages:
+  - id: <stage-id>
+    capability: <capability>
+    output: <artifact-path>
+    instruction: |
+      Tell the assigned subagent exactly what this stage must produce, what
+      context to read, what evidence to record, and when to stop.
+
+  - id: <review-stage-id>
+    capability: <review-capability>
+    reviews: <artifact-path>
+    instruction: |
+      Tell the reviewer what artifact or change to review, what severity levels
+      block the pipeline, and which AC or Evidence requirements this review
+      signs off.

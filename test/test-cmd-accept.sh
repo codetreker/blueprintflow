@@ -144,4 +144,40 @@ printf "%s\n" "$STDOUT" | grep -E ' +$' >/dev/null && fail "trailing whitespace 
 unset BF_HOME BF_INSTALL_DIR
 cleanup
 
+# accept stale gate includes referenced local pipeline files
+setup
+sed -i.bak 's/^Pipeline: feature/Pipeline: api-migration/' "$BASE/clean-wo/task-a/spec.md"
+write_local_pipeline "$BASE/clean-wo/pipelines/api-migration.yml" "api-migration"
+seed_mode_a_success "$BASE/clean-wo"
+sleep 1
+echo "# changed after review" >> "$BASE/clean-wo/pipelines/api-migration.yml"
+STDOUT=$(node --input-type=module -e "
+  import('$REPO_ROOT/bin/lib/harness/cmd-accept.mjs').then(async (m) => {
+    process.stdout.write(JSON.stringify(await m.cmdAccept({
+      baseHome: '$BASE', woId: 'clean-wo', installDir: '$REPO',
+    })));
+  });
+")
+assert_json_field "$STDOUT" .ok false
+assert_match "$STDOUT" "CONTRACT_CHANGED_AFTER_REVIEW" "changed local pipeline is stale contract"
+assert_match "$STDOUT" "pipelines/api-migration.yml" "changed local pipeline path reported"
+cleanup
+
+# deleted referenced local pipeline blocks accept
+setup
+sed -i.bak 's/^Pipeline: feature/Pipeline: api-migration/' "$BASE/clean-wo/task-a/spec.md"
+write_local_pipeline "$BASE/clean-wo/pipelines/api-migration.yml" "api-migration"
+seed_mode_a_success "$BASE/clean-wo"
+rm "$BASE/clean-wo/pipelines/api-migration.yml"
+STDOUT=$(node --input-type=module -e "
+  import('$REPO_ROOT/bin/lib/harness/cmd-accept.mjs').then(async (m) => {
+    process.stdout.write(JSON.stringify(await m.cmdAccept({
+      baseHome: '$BASE', woId: 'clean-wo', installDir: '$REPO',
+    })));
+  });
+")
+assert_json_field "$STDOUT" .ok false
+assert_match "$STDOUT" "PIPELINE_NOT_FOUND" "deleted local pipeline blocks accept via lint"
+cleanup
+
 pass

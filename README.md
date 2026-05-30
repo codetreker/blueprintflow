@@ -101,9 +101,9 @@ The harness cannot see subagent identity (review filenames are role-level). IV i
 ## Where to read next
 
 - `SKILL.md` — entry doc for the orchestrating LLM (high-level contract + IV red line).
-- `references/phase-1-brainstorm.md` — drive the discussion, pick a pack.
-- `references/phase-2-spec.md` — author specs, lint, Spec Review, accept.
-- `references/phase-3-execute.md` — `next → do → review → verify` loop.
+- `references/brainstorm.md` — drive the discussion, pick a pack.
+- `references/spec-authoring.md` — author specs, design any bf-wo local pipelines, lint, Spec Review, accept.
+- `references/execution.md` — `next → do → review → verify` loop.
 - `templates/` — frozen file shapes; copy these when authoring.
 - `roles/`, `packs/` — Core roles and installed packs.
 

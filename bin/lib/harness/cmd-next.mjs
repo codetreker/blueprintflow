@@ -24,7 +24,11 @@ export async function cmdNext({ baseHome, woId, installDir, now = new Date() }) 
 
   const chosen = eligible.find((t) => t.spec.frontmatter.State === "Ready") || eligible[0];
   const pipeline = chosen.spec.frontmatter.Pipeline;
-  const pipelineReg = buildPipelineRegistry({ packReg: bundle.packReg, pack: bundle.bf.frontmatter.Pack });
+  const pipelineReg = buildPipelineRegistry({
+    packReg: bundle.packReg,
+    pack: bundle.bf.frontmatter.Pack,
+    localPipelinesDir: bundle.localPipelinesDir,
+  });
   const pipelineEntry = findPipeline(pipelineReg, bundle.bf.frontmatter.Pack, pipeline);
   if (!pipelineEntry) return { ok: false, error: `pipeline not found: ${pipeline}` };
   const ts = formatTimestamp(now);

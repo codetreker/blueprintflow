@@ -72,6 +72,23 @@ assert_json_field "$STDOUT" .ok false
 assert_match "$STDOUT" "wrong state" "draft rejected"
 cleanup
 
+# Local pipeline path wins when task references a bf-wo local pipeline id.
+setup_accepted
+sed -i.bak 's/^Pipeline: feature/Pipeline: api-migration/' "$BASE/wo-1/task-a/spec.md"
+write_local_pipeline "$BASE/wo-1/pipelines/api-migration.yml" "api-migration"
+STDOUT=$(node --input-type=module -e "
+  import('$REPO_ROOT/bin/lib/harness/cmd-next.mjs').then(async (m) => {
+    process.stdout.write(JSON.stringify(await m.cmdNext({
+      baseHome: '$BASE', woId: 'wo-1', installDir: '$REPO',
+    })));
+  });
+")
+assert_json_field "$STDOUT" .ok true
+assert_json_field "$STDOUT" .task.pipeline "api-migration"
+assert_match "$STDOUT" "$BASE/wo-1/pipelines/api-migration.yml" "local pipeline path returned"
+assert_not_match "$STDOUT" "packs/engineering/pipelines/feature.yml" "pack pipeline path should not be used"
+cleanup
+
 # All completed -> no eligible
 setup_accepted
 sed -i.bak 's/^State: Ready/State: Completed/' "$BASE/wo-1/task-a/spec.md"

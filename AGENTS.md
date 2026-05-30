@@ -27,6 +27,10 @@ roles, packs, and CLI tools that an orchestrating LLM reads and executes.
 - Keep runtime artifacts self-contained. `SKILL.md`, `roles/`, `packs/`, `templates/`, and `references/` must not reference `docs/` or `.tasks/`.
 - Use a worktree for implementation work.
 - Never push directly to `main`.
+- Never use admin merge. If a PR is blocked, resolve every blocking review,
+  check, branch policy, or conversation issue and merge normally.
+- When spawning subagents, use the same thinking/reasoning effort as the main
+  agent. Do not lower effort unless the user explicitly requests it.
 - Do not use legacy plugin content as BF source of truth unless the user explicitly asks.
 
 ## Required Flow

@@ -113,6 +113,43 @@ printf "%s\n" "$STDOUT" | grep -E ' +$' >/dev/null && fail "trailing whitespace 
 unset BF_INSTALL_DIR BF_HOME
 rm -rf "$ROOT" "$EMPTY_HOME"
 
+# CLI-level: global extension roles live under $HOME/.bf/extensions; host
+# discovery extensions are ignored.
+ROOT=$(make_temp_home)
+HOME_DIR=$(make_temp_home)
+BASE=$(make_temp_home)
+mkdir -p "$ROOT/roles" "$HOME_DIR/.bf/extensions/roles" "$HOME_DIR/.claude/skills/bf/extensions/roles"
+cp -R "$FIXTURES/roles-core/." "$ROOT/roles/"
+cat > "$HOME_DIR/.bf/extensions/roles/global-reviewer.md" <<'EOF'
+---
+Id: global-reviewer
+Desc: Global extension reviewer
+Capabilities:
+  - global-review
+---
+
+# Global Reviewer
+EOF
+cat > "$HOME_DIR/.claude/skills/bf/extensions/roles/ignored-reviewer.md" <<'EOF'
+---
+Id: ignored-reviewer
+Desc: Ignored host discovery reviewer
+Capabilities:
+  - ignored-review
+---
+
+# Ignored Reviewer
+EOF
+export HOME="$HOME_DIR"
+export BF_INSTALL_DIR="$ROOT"
+export BF_HOME="$BASE"
+run_bf list-roles
+assert_eq "$RC" "0" "list-roles with global extensions exit 0"
+assert_match "$STDOUT" "Id: global-reviewer" "global extension role listed"
+assert_not_match "$STDOUT" "ignored-reviewer" "host discovery extension role ignored"
+unset HOME BF_INSTALL_DIR BF_HOME
+rm -rf "$ROOT" "$HOME_DIR" "$BASE"
+
 # CLI-level: project extension packs participate in `list-roles --pack`.
 ROOT=$(make_temp_home)
 BASE=$(make_temp_home)

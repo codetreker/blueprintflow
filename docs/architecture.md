@@ -49,7 +49,7 @@ flowchart LR
 | Templates | Define durable Markdown file shapes. | File contract authority. |
 | Roles | Declare review and execution capabilities. | Capability registry authority. |
 | Packs | Define domain guidance and available pipelines. | Domain workflow authority. |
-| `bf` CLI | Lists roles, packs, pipelines, and manages the installed skill copy. | Read-only metadata authority. |
+| `bf` CLI | Lists roles, packs, pipelines, and manages host discovery snapshots. | Read-only metadata authority. |
 | `bf-harness` CLI | Lints, accepts, claims tasks, starts reviews, verifies sign-off, and mutates allowed state. | State transition authority. |
 | Work order state | Stores contracts, discussion, review rounds, verify results, and task state. | Durable workflow state. |
 
@@ -131,9 +131,13 @@ The orchestrator verifies:
 ## Extension Boundary
 
 Packs and roles are extension points. Core definitions live in the npm package.
-User and project extensions can add or override roles and packs through the
-extension registry. Effective registries are built before lint, listing, next,
-and verify operations.
+Global user extensions live under `~/.bf/extensions/`. Project extensions live
+under `<project-root>/.bf/extensions/`. Host discovery snapshots under
+`~/.claude/skills/bf/` and `~/.agents/skills/bf/` are generated copies and are
+not extension roots.
+
+Effective registries are built before lint, listing, next, and verify
+operations.
 
 Pipeline definitions are currently instruction-level. The orchestrator reads the
 pipeline and executes stages in order. Stage state and gate enforcement can move

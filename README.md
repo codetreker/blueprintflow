@@ -14,33 +14,40 @@ npm install -g @codetreker/bf
 
 Requires Node.js ≥ 20. **Install globally** (`-g`) so the `bf` and `bf-harness` CLIs land on `$PATH` — that is the only supported install mode. Local installs (`--save-dev`) put the CLIs in `node_modules/.bin/` only and break shell invocations from subagent commands.
 
-`npm install` also runs a `postinstall` step that copies the skill files (`SKILL.md`, `roles/`, `packs/`, `templates/`, `references/`, `bin/`) into `~/.claude/skills/bf/` so Claude Code can discover the `/bf` skill. Re-run manually anytime with `bf install`.
+`npm install` also runs a `postinstall` step that copies a host discovery snapshot (`SKILL.md`, `roles/`, `packs/`, `templates/`, `references/`) for detected LLM hosts. Claude Code uses `~/.claude/skills/bf/`; Codex uses `~/.agents/skills/bf/`. Re-run manually anytime with `bf install`.
+
+`bf install` auto-detects supported targets. Use `--target` to install one explicitly:
+
+```bash
+bf install --target claude
+bf install --target codex
+```
 
 ### Uninstalling
 
-npm (≥ v7) does **not** run lifecycle scripts on `npm uninstall`, so removing the package does **not** clean up `~/.claude/skills/bf/` automatically. To remove the skill files, run:
+npm (≥ v7) does **not** run lifecycle scripts on `npm uninstall`, so removing the package does **not** clean up host discovery snapshots automatically. To remove them, run:
 
 ```bash
 bf uninstall                              # before npm uninstall, while the CLI is still on $PATH
 npm uninstall -g @codetreker/bf
 ```
 
-`bf uninstall` removes only files BF installed; anything you put under `extensions/` is preserved (see below).
+`bf uninstall` auto-detects supported targets. Use `bf uninstall --target claude` or `bf uninstall --target codex` for one target.
 
 ## Extending BF — `extensions/`
 
-BF looks for additional roles and packs in two `extensions/` directories. Drop `.md` files in role dirs or full pack directories, and BF will pick them up automatically.
+BF looks for additional roles and packs in host-neutral `extensions/` directories. Drop `.md` files in role dirs or full pack directories, and BF will pick them up automatically.
 
 | Location | When to use |
 |---|---|
-| `~/.claude/skills/bf/extensions/roles/<name>.md` | A custom role you want available across every project |
-| `~/.claude/skills/bf/extensions/packs/<id>/pack.md` | A custom pack available globally |
+| `~/.bf/extensions/roles/<name>.md` | A custom role you want available across every project |
+| `~/.bf/extensions/packs/<id>/pack.md` | A custom pack available globally |
 | `<project-root>/.bf/extensions/roles/<name>.md` | A role only this project should see |
 | `<project-root>/.bf/extensions/packs/<id>/pack.md` | A pack only this project should see |
 
-**Precedence (highest wins):** project extension → global extension → pack-private role → Core role. So a project-local `engineer.md` overrides anything else with that id.
+**Precedence (highest wins):** project extension → global extension → selected pack-private role → Core role. So a project-local `engineer.md` overrides anything else with that id.
 
-`bf install` and `bf uninstall` never touch `extensions/`. Upgrades that rename or remove BF-shipped files won't accidentally delete anything you put there.
+Host discovery snapshots are generated copies. Do not put extensions under `~/.claude/skills/bf/` or `~/.agents/skills/bf/`; BF does not read those locations.
 
 `bf list-roles [--pack <id>]` and `bf list-packs` show extension entries alongside Core ones, with a `source: "extension"` field so you can tell where each came from. `bf list-pipelines [--pack <id>]` lists pipeline ids, descriptions, and file paths for the effective pack registry.
 

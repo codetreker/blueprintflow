@@ -1,18 +1,16 @@
-import { existsSync, mkdirSync, cpSync, rmSync, readFileSync, lstatSync, realpathSync } from "node:fs";
+import { existsSync, mkdirSync, cpSync, rmSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { homedir } from "node:os";
-import { skillsDir, SKILL_NAME } from "../shared/install-paths.mjs";
+import { discoveryTargetDir, resolveDiscoveryTargets, SKILL_NAME } from "../shared/install-paths.mjs";
 
 export { SKILL_NAME };
 // Back-compat re-export — kept so cmd-uninstall and tests can keep their existing import.
-export const skillsTargetDir = skillsDir;
+export const skillsTargetDir = (home = homedir()) => discoveryTargetDir("claude", home);
 
-// Files/dirs installed and managed by `bf install`. Anything else under the install dir
-// (notably `extensions/`) is left alone — that is the user's space.
+// Files/dirs included in the host discovery snapshot.
 // `bin/` and `package.json` are intentionally NOT here: with `npm install -g` they live
-// inside the npm package dir, are on $PATH via npm-created symlinks, and never get read
-// from ~/.claude/skills/bf/.
-export const MANAGED_ENTRIES = [
+// inside the npm package dir and npm puts the commands on PATH.
+export const SNAPSHOT_ENTRIES = [
   "SKILL.md",
   "roles",
   "packs",
@@ -20,33 +18,31 @@ export const MANAGED_ENTRIES = [
   "references",
 ];
 
-export async function cmdInstall({ srcDir, home = homedir(), log = console.log }) {
-  const target = skillsDir(home);
+export async function cmdInstall({ srcDir, home = homedir(), target = null, log = console.log }) {
+  const selectedTargets = resolveDiscoveryTargets({ target, home });
   const pkg = JSON.parse(readFileSync(join(srcDir, "package.json"), "utf8"));
 
-  // Dev mode: if target is already a symlink to srcDir, leave it alone.
-  if (existsSync(target) && lstatSync(target).isSymbolicLink()) {
-    const linkTarget = realpathSync(target);
-    const src = realpathSync(srcDir);
-    if (linkTarget === src) {
-      log(`✓ BF v${pkg.version} already linked at ${target}`);
-      return { ok: true, mode: "linked", path: target, version: pkg.version };
-    }
+  if (selectedTargets.length === 0) {
+    log("No supported BF discovery target detected. Use --target claude or --target codex to install explicitly.");
+    return { ok: true, mode: "noop", version: pkg.version, targets: [] };
   }
 
-  mkdirSync(target, { recursive: true });
-  const copied = [];
-  for (const entry of MANAGED_ENTRIES) {
-    const src = join(srcDir, entry);
-    const dest = join(target, entry);
-    // Nuke + replace: removes orphans from prior versions without a stale-files list.
-    if (existsSync(dest)) rmSync(dest, { recursive: true, force: true });
-    if (!existsSync(src)) continue;
-    cpSync(src, dest, { recursive: true });
-    copied.push(entry);
+  const results = [];
+  for (const t of selectedTargets) {
+    const path = discoveryTargetDir(t, home);
+    rmSync(path, { recursive: true, force: true });
+    mkdirSync(path, { recursive: true });
+    const copied = [];
+    for (const entry of SNAPSHOT_ENTRIES) {
+      const src = join(srcDir, entry);
+      const dest = join(path, entry);
+      if (!existsSync(src)) continue;
+      cpSync(src, dest, { recursive: true });
+      copied.push(entry);
+    }
+    log(`✓ BF v${pkg.version} installed to ${path} (${t})`);
+    results.push({ target: t, status: "installed", path, copied });
   }
-  log(`✓ BF v${pkg.version} installed to ${target}`);
-  log(`  Use /bf in Claude Code to get started.`);
-  log(`  Custom roles/packs go in ${join(target, "extensions")}/ — never touched by install/uninstall.`);
-  return { ok: true, mode: "copied", path: target, version: pkg.version, copied };
+  log("  Custom roles/packs go in ~/.bf/extensions/ or <project>/.bf/extensions/.");
+  return { ok: true, mode: "copied", version: pkg.version, targets: results };
 }

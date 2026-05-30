@@ -1,43 +1,25 @@
-import { existsSync, rmSync, readdirSync, lstatSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync, rmSync } from "node:fs";
 import { homedir } from "node:os";
-import { MANAGED_ENTRIES, skillsTargetDir } from "./cmd-install.mjs";
+import { discoveryTargetDir, resolveDiscoveryTargets } from "../shared/install-paths.mjs";
 
-export async function cmdUninstall({ home = homedir(), log = console.log } = {}) {
-  const skillsDir = skillsTargetDir(home);
-
-  if (!existsSync(skillsDir)) {
-    log(`Nothing to remove — ${skillsDir} does not exist.`);
-    return { ok: true, mode: "noop" };
+export async function cmdUninstall({ home = homedir(), target = null, log = console.log } = {}) {
+  const selectedTargets = resolveDiscoveryTargets({ target, home });
+  if (selectedTargets.length === 0) {
+    log("No supported BF discovery target detected. Use --target claude or --target codex to uninstall explicitly.");
+    return { ok: true, mode: "noop", targets: [] };
   }
 
-  // Symlink mode: remove just the link.
-  if (lstatSync(skillsDir).isSymbolicLink()) {
-    rmSync(skillsDir);
-    log(`✓ BF symlink removed: ${skillsDir}`);
-    return { ok: true, mode: "symlink-removed", path: skillsDir };
-  }
-
-  // Remove every managed entry. Anything else (notably extensions/) is the user's
-  // and is left untouched.
-  for (const entry of MANAGED_ENTRIES) {
-    const target = join(skillsDir, entry);
-    if (existsSync(target)) rmSync(target, { recursive: true, force: true });
-  }
-
-  // Remove skillsDir only if nothing else remains.
-  let kept = [];
-  try {
-    kept = readdirSync(skillsDir);
-    if (kept.length === 0) {
-      rmSync(skillsDir, { recursive: true });
-    } else {
-      log(`  Kept ${kept.length} user entry/entries in ${skillsDir} (${kept.slice(0, 3).join(", ")}${kept.length > 3 ? ", ..." : ""})`);
+  const results = [];
+  for (const t of selectedTargets) {
+    const path = discoveryTargetDir(t, home);
+    if (!existsSync(path)) {
+      log(`Nothing to remove — ${path} does not exist (${t}).`);
+      results.push({ target: t, status: "missing", path });
+      continue;
     }
-  } catch (err) {
-    log(`  ⚠ Could not inspect ${skillsDir}: ${err.message}`);
+    rmSync(path, { recursive: true, force: true });
+    log(`✓ BF removed from ${path} (${t})`);
+    results.push({ target: t, status: "removed", path });
   }
-
-  log(`✓ BF removed from ${skillsDir}`);
-  return { ok: true, mode: "removed", path: skillsDir, kept };
+  return { ok: true, mode: "removed", targets: results };
 }

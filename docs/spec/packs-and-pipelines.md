@@ -38,7 +38,15 @@ Merge rules:
 
 - `bf list-roles` merges Core roles and roles from the selected pack.
 - Pack-private roles override Core roles with the same id.
+- Global extension roles under `~/.bf/extensions/roles` override selected
+  pack-private roles.
+- Project extension roles under `<project-root>/.bf/extensions/roles` override
+  global extension roles.
 - The selected pack may use its private roles in brainstorm, spec, and execute phases.
+
+Global extension packs live under `~/.bf/extensions/packs`. Project extension
+packs live under `<project-root>/.bf/extensions/packs`. Project packs override
+global packs, and global packs override Core packs with the same id.
 
 ## Pack Pipelines
 

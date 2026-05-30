@@ -49,6 +49,43 @@ printf "%s\n" "$STDOUT" | grep -E ' +$' >/dev/null && fail "trailing whitespace 
 unset BF_INSTALL_DIR BF_HOME
 rm -rf "$ROOT" "$EMPTY_HOME"
 
+# CLI-level: global extensions live under $HOME/.bf/extensions; host discovery
+# extensions are ignored.
+ROOT=$(make_temp_home)
+HOME_DIR=$(make_temp_home)
+BASE=$(make_temp_home)
+mkdir -p "$ROOT/packs" "$HOME_DIR/.bf/extensions/packs/global-pack" "$HOME_DIR/.claude/skills/bf/extensions/packs/ignored-pack"
+cp -R "$FIXTURES/packs-engineering" "$ROOT/packs/engineering"
+cat > "$HOME_DIR/.bf/extensions/packs/global-pack/pack.md" <<'EOF'
+---
+Id: global-pack
+Desc: Global extension pack
+---
+
+## When to Use
+
+Testing global extension pack discovery.
+EOF
+cat > "$HOME_DIR/.claude/skills/bf/extensions/packs/ignored-pack/pack.md" <<'EOF'
+---
+Id: ignored-pack
+Desc: Ignored host discovery pack
+---
+
+## When to Use
+
+Should not be read.
+EOF
+export HOME="$HOME_DIR"
+export BF_INSTALL_DIR="$ROOT"
+export BF_HOME="$BASE"
+run_bf list-packs
+assert_eq "$RC" "0" "list-packs with global extensions exit 0"
+assert_match "$STDOUT" "Id: global-pack" "global extension pack listed"
+assert_not_match "$STDOUT" "ignored-pack" "host discovery extension pack ignored"
+unset HOME BF_INSTALL_DIR BF_HOME
+rm -rf "$ROOT" "$HOME_DIR" "$BASE"
+
 # Empty (no packs dir): prints the placeholder.
 EMPTY=$(make_temp_home)
 export BF_INSTALL_DIR="$EMPTY"

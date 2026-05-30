@@ -5,7 +5,7 @@ import { parseBfMd } from "./parse-bf-md.mjs";
 import { parseTaskSpec } from "./parse-task-spec.mjs";
 import { buildRoleRegistry } from "../shared/role-registry.mjs";
 import { buildPackRegistry } from "../shared/pack-registry.mjs";
-import { skillsDir } from "../shared/install-paths.mjs";
+import { globalExtensionsDir } from "../shared/install-paths.mjs";
 
 export async function loadWo({ baseHome, woId, installDir }) {
   const wo = woDir(baseHome, woId);
@@ -26,10 +26,9 @@ export async function loadWo({ baseHome, woId, installDir }) {
       errors: [{ code: "PARSE_BF", message: e.message, ref: bfPath }],
     };
   }
-  // Extension dirs: global lives under the user-facing skills dir, NOT under installDir
-  // (which for `npm install -g` is the npm package dir). Project ext lives in
-  // <baseHome>/extensions/. Project wins on same id.
-  const globalExt = path.join(skillsDir(), "extensions");
+  // Extension dirs: global is host-neutral under ~/.bf/extensions. Project ext
+  // lives in <baseHome>/extensions/. Project wins on same id.
+  const globalExt = globalExtensionsDir();
   const extensionPacksDirs = [
     path.join(globalExt, "packs"),
     path.join(baseHome, "extensions", "packs"),

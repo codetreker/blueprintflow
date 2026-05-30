@@ -11,14 +11,14 @@ import { cmdListPacks, formatListPacks } from "./lib/bf/cmd-list-packs.mjs";
 import { cmdListPipelines, formatListPipelines } from "./lib/bf/cmd-list-pipelines.mjs";
 import { cmdInstall } from "./lib/bf/cmd-install.mjs";
 import { cmdUninstall } from "./lib/bf/cmd-uninstall.mjs";
-import { skillsDir } from "./lib/shared/install-paths.mjs";
+import { globalExtensionsDir, isDiscoveryTarget } from "./lib/shared/install-paths.mjs";
 
 const USAGE = `Usage:
   bf list-roles [--pack <pack-id>]
   bf list-packs
   bf list-pipelines [--pack <pack-id>]
-  bf install                  Copy skill files to ~/.claude/skills/bf/
-  bf uninstall                Remove skill files (preserves custom roles/packs)
+  bf install [--target claude|codex]
+  bf uninstall [--target claude|codex]
   bf version                  Show installed BF version`;
 
 function write(text) { process.stdout.write(text.endsWith("\n") ? text : text + "\n"); }
@@ -27,6 +27,20 @@ function fail(msg, code = 2) { process.stderr.write(msg + "\n"); process.exit(co
 function resolveInstallDir() {
   if (process.env.BF_INSTALL_DIR) return process.env.BF_INSTALL_DIR;
   return path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+}
+
+function parseTargetOption(rest) {
+  let target = null;
+  for (let i = 0; i < rest.length; i++) {
+    const arg = rest[i];
+    if (arg !== "--target") return { ok: false, error: `unknown option: ${arg}` };
+    if (target !== null) return { ok: false, error: "--target may be specified only once" };
+    const value = rest[++i];
+    if (!value || value.startsWith("--")) return { ok: false, error: "--target requires a value" };
+    if (!isDiscoveryTarget(value)) return { ok: false, error: `unknown target: ${value}` };
+    target = value;
+  }
+  return { ok: true, target };
 }
 
 async function main() {
@@ -39,10 +53,9 @@ async function main() {
 
   const installDir = resolveInstallDir();
   const baseHome = process.env.BF_HOME || path.join(process.cwd(), ".bf");
-  // Extension dirs: global lives under the user-facing skills dir (~/.claude/skills/bf/),
-  // NOT under installDir (which for `npm install -g` is the npm package dir).
-  // Project ext lives in <baseHome>/extensions/. Project wins.
-  const globalExt = path.join(skillsDir(), "extensions");
+  // Extension dirs: global lives under ~/.bf/extensions. Project ext lives in
+  // <baseHome>/extensions/. Project wins.
+  const globalExt = globalExtensionsDir();
   const extensionRolesDirs = [
     path.join(globalExt, "roles"),
     path.join(baseHome, "extensions", "roles"),
@@ -76,11 +89,15 @@ async function main() {
     process.exit(r.ok ? 0 : 1);
   }
   if (subcmd === "install") {
-    const r = await cmdInstall({ srcDir: installDir });
+    const parsed = parseTargetOption(rest);
+    if (!parsed.ok) fail(`${parsed.error}\n${USAGE}`, 2);
+    const r = await cmdInstall({ srcDir: installDir, target: parsed.target });
     process.exit(r.ok ? 0 : 1);
   }
   if (subcmd === "uninstall") {
-    const r = await cmdUninstall();
+    const parsed = parseTargetOption(rest);
+    if (!parsed.ok) fail(`${parsed.error}\n${USAGE}`, 2);
+    const r = await cmdUninstall({ target: parsed.target });
     process.exit(r.ok ? 0 : 1);
   }
   if (subcmd === "version" || subcmd === "-v" || subcmd === "--version") {

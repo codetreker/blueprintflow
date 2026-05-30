@@ -91,4 +91,49 @@ printf "%s\n" "$STDOUT" | grep -E ' +$' >/dev/null && fail "trailing whitespace 
 unset BF_INSTALL_DIR BF_HOME
 rm -rf "$ROOT" "$EMPTY_HOME"
 
+# CLI-level: global extension pack pipelines live under $HOME/.bf/extensions.
+ROOT=$(make_temp_home)
+HOME_DIR=$(make_temp_home)
+BASE=$(make_temp_home)
+mkdir -p "$ROOT/packs" "$HOME_DIR/.bf/extensions/packs/engineering/pipelines" "$HOME_DIR/.agents/skills/bf/extensions/packs/engineering/pipelines"
+cp -R "$FIXTURES/packs-engineering" "$ROOT/packs/engineering"
+cat > "$HOME_DIR/.bf/extensions/packs/engineering/pack.md" <<'EOF'
+---
+Id: engineering
+Desc: Global extension engineering pack
+---
+
+## When to Use
+
+Testing global extension pipeline discovery.
+EOF
+cat > "$HOME_DIR/.bf/extensions/packs/engineering/pipelines/custom.yml" <<'EOF'
+id: custom
+desc: Custom global extension pipeline
+EOF
+cat > "$HOME_DIR/.agents/skills/bf/extensions/packs/engineering/pack.md" <<'EOF'
+---
+Id: engineering
+Desc: Ignored host discovery engineering pack
+---
+
+## When to Use
+
+Should not be read.
+EOF
+cat > "$HOME_DIR/.agents/skills/bf/extensions/packs/engineering/pipelines/ignored.yml" <<'EOF'
+id: ignored
+desc: Ignored host discovery pipeline
+EOF
+export HOME="$HOME_DIR"
+export BF_INSTALL_DIR="$ROOT"
+export BF_HOME="$BASE"
+run_bf list-pipelines --pack engineering
+assert_eq "$RC" "0" "list-pipelines with global extension pack exit 0"
+assert_match "$STDOUT" "Id: custom" "global extension pipeline listed"
+assert_not_match "$STDOUT" "feature" "core pipeline hidden by global extension pack override"
+assert_not_match "$STDOUT" "ignored" "host discovery extension pipeline ignored"
+unset HOME BF_INSTALL_DIR BF_HOME
+rm -rf "$ROOT" "$HOME_DIR" "$BASE"
+
 pass

@@ -1,4 +1,4 @@
-# Phase 3 — Execute
+# Execution
 
 Goal: loop until `bf-harness verify <bf-wo>` returns Final Acceptance SUCCESS.
 

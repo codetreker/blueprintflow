@@ -70,6 +70,7 @@ export async function loadWo({ baseHome, woId, installDir }) {
     bf,
     bfPath,
     woPath: wo,
+    localPipelinesDir: path.join(wo, "pipelines"),
     tasks,
     packReg,
     roleReg,

@@ -21,6 +21,18 @@ assert_json_field "$STDOUT" .roles.0.source "core"
 assert_json_field "$STDOUT" .roles.1.id "qa-engineer"
 assert_json_field "$STDOUT" .roles.2.id "tester"
 
+# Root runtime includes pipeline-designer.
+STDOUT=$(node --input-type=module -e "
+  import('$REPO_ROOT/bin/lib/bf/cmd-list-roles.mjs').then(async (m) => {
+    const r = await m.cmdListRoles({ cwd: '$REPO_ROOT' });
+    const role = r.roles.find((x) => x.id === 'pipeline-designer');
+    process.stdout.write(JSON.stringify({ ok: r.ok, role }));
+  });
+")
+assert_json_field "$STDOUT" .ok true
+assert_json_field "$STDOUT" .role.id "pipeline-designer"
+assert_json_field "$STDOUT" .role.capabilities '["pipeline-design","pipeline-review"]'
+
 # With pack（pack 覆盖 core engineer）
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/bf/cmd-list-roles.mjs').then(async (m) => {

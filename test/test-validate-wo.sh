@@ -51,6 +51,90 @@ assert_json_field "$STDOUT" .ok false
 assert_match "$STDOUT" "PIPELINE_NOT_FOUND" "unknown pipeline rejected"
 cleanup
 
+# task Pipeline can resolve to a bf-wo local pipeline
+setup; cp -R "$FIXTURES/clean-wo" "$BASE/local-pipeline-wo"
+sed -i.bak 's/^Pipeline: feature/Pipeline: api-migration/' "$BASE/local-pipeline-wo/task-a/spec.md"
+write_local_pipeline "$BASE/local-pipeline-wo/pipelines/api-migration.yml" "api-migration"
+run_validate local-pipeline-wo
+assert_json_field "$STDOUT" .ok true
+cleanup
+
+# local pipeline id must not collide with selected pack pipeline id
+setup; cp -R "$FIXTURES/clean-wo" "$BASE/local-pipeline-collision-wo"
+write_local_pipeline "$BASE/local-pipeline-collision-wo/pipelines/feature.yml" "feature"
+run_validate local-pipeline-collision-wo
+assert_json_field "$STDOUT" .ok false
+assert_match "$STDOUT" "PIPELINE_LOCAL_COLLISION" "local/pack pipeline id collision rejected"
+cleanup
+
+# local pipelines must be referenced by at least one task
+setup; cp -R "$FIXTURES/clean-wo" "$BASE/unreferenced-local-pipeline-wo"
+write_local_pipeline "$BASE/unreferenced-local-pipeline-wo/pipelines/api-migration.yml" "api-migration"
+run_validate unreferenced-local-pipeline-wo
+assert_json_field "$STDOUT" .ok false
+assert_match "$STDOUT" "PIPELINE_LOCAL_UNREFERENCED" "unreferenced local pipeline rejected"
+cleanup
+
+# local pipeline must have instruction and stages
+setup; cp -R "$FIXTURES/clean-wo" "$BASE/bad-local-pipeline-wo"
+sed -i.bak 's/^Pipeline: feature/Pipeline: api-migration/' "$BASE/bad-local-pipeline-wo/task-a/spec.md"
+mkdir -p "$BASE/bad-local-pipeline-wo/pipelines"
+cat > "$BASE/bad-local-pipeline-wo/pipelines/api-migration.yml" <<'EOF'
+id: api-migration
+desc: Missing required local pipeline fields
+EOF
+run_validate bad-local-pipeline-wo
+assert_json_field "$STDOUT" .ok false
+assert_match "$STDOUT" "PIPELINE_LOCAL_INSTRUCTION_MISSING" "missing local pipeline instruction rejected"
+assert_match "$STDOUT" "PIPELINE_LOCAL_STAGES_EMPTY" "empty local pipeline stages rejected"
+cleanup
+
+# local pipeline stage capability must exist
+setup; cp -R "$FIXTURES/clean-wo" "$BASE/bad-local-capability-wo"
+sed -i.bak 's/^Pipeline: feature/Pipeline: api-migration/' "$BASE/bad-local-capability-wo/task-a/spec.md"
+write_local_pipeline "$BASE/bad-local-capability-wo/pipelines/api-migration.yml" "api-migration"
+sed -i.bak 's/capability: software-implementation/capability: ghost-capability/' "$BASE/bad-local-capability-wo/pipelines/api-migration.yml"
+run_validate bad-local-capability-wo
+assert_json_field "$STDOUT" .ok false
+assert_match "$STDOUT" "PIPELINE_LOCAL_CAPABILITY_UNKNOWN" "unknown local stage capability rejected"
+cleanup
+
+# local pipeline filenames are linted even when the extension is wrong
+setup; cp -R "$FIXTURES/clean-wo" "$BASE/bad-local-filename-wo"
+mkdir -p "$BASE/bad-local-filename-wo/pipelines"
+cat > "$BASE/bad-local-filename-wo/pipelines/Bad.yaml" <<'EOF'
+id: Bad
+desc: Invalid filename
+EOF
+run_validate bad-local-filename-wo
+assert_json_field "$STDOUT" .ok false
+assert_match "$STDOUT" "PIPELINE_LOCAL_FILENAME_INVALID" "invalid local pipeline filename rejected"
+cleanup
+
+# local pipeline stage ids must be unique
+setup; cp -R "$FIXTURES/clean-wo" "$BASE/duplicate-stage-wo"
+sed -i.bak 's/^Pipeline: feature/Pipeline: api-migration/' "$BASE/duplicate-stage-wo/task-a/spec.md"
+write_local_pipeline "$BASE/duplicate-stage-wo/pipelines/api-migration.yml" "api-migration"
+cat >> "$BASE/duplicate-stage-wo/pipelines/api-migration.yml" <<'EOF'
+  - id: implementation
+    capability: software-implementation
+    instruction: |
+      Duplicate stage id.
+EOF
+run_validate duplicate-stage-wo
+assert_json_field "$STDOUT" .ok false
+assert_match "$STDOUT" "PIPELINE_LOCAL_STAGE_ID_DUPLICATE" "duplicate local stage id rejected"
+cleanup
+
+# task id 'pipelines' is reserved
+setup; cp -R "$FIXTURES/clean-wo" "$BASE/reserved-task-id-wo"
+sed -i.bak 's/^- task-a$/- pipelines/' "$BASE/reserved-task-id-wo/bf.md"
+mv "$BASE/reserved-task-id-wo/task-a" "$BASE/reserved-task-id-wo/pipelines"
+run_validate reserved-task-id-wo
+assert_json_field "$STDOUT" .ok false
+assert_match "$STDOUT" "TASK_ID_RESERVED" "reserved task id rejected"
+cleanup
+
 # dep cycle: 把 task-a 改成依赖 task-b（task-b 已经依赖 task-a）
 setup; cp -R "$FIXTURES/clean-wo" "$BASE/cycle-wo"
 sed -i.bak 's/^- task-a$/- task-a: task-b/' "$BASE/cycle-wo/bf.md"

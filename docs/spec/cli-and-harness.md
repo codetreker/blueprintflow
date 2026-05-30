@@ -41,11 +41,11 @@ Output includes:
 
 ## `bf-harness`
 
-`bf-harness` controls BF work-order state under `<project-root>/.bf/<bf-wo>`.
+`bf-harness` controls BF work-object state under `<project-root>/.bf/<bf-wo>`.
 
 ### `list`
 
-Lists project work orders under `<project-root>/.bf/`.
+Lists project work objects under `<project-root>/.bf/`.
 
 Output includes:
 
@@ -56,7 +56,7 @@ Output includes:
 
 ### `lint`
 
-Validates a draft work order.
+Validates a draft work object.
 
 Checks:
 
@@ -65,7 +65,8 @@ Checks:
 - Task ids in `bf.md` task list.
 - Task dependencies, including unknown ids and cycles.
 - AC capability registry: every `{capability}` marker must be declared by at least one role.
-- Task pipeline registry: each task has `Pipeline`; task frontmatter does not have `Capability`; the selected pipeline exists in the selected pack.
+- Task pipeline registry: each task has `Pipeline`; task frontmatter does not have `Capability`; the selected pipeline exists in the bf-wo local pipeline registry or selected pack.
+- BF-WO local pipelines: local pipeline files are valid YAML, have matching filename/id, do not collide with selected pack pipeline ids, have instruction and stages, use known stage capabilities, and are referenced by at least one task.
 - Task evidence: `## Evidence` exists; each task AC has evidence; evidence ids are unique; evidence AC refs exist; kind is valid; requirement text is non-empty.
 - State is valid for the phase.
 
@@ -95,7 +96,7 @@ Behavior:
 
 - Marks the task `Tasking`.
 - Moves bf.md from `Accepted` to `Implementing` on first returned task.
-- Returns task directory, spec path, task description, `Pipeline`, `Pipeline path`, and pack id.
+- Returns task directory, spec path, task description, `Pipeline`, resolved `Pipeline path`, and pack id.
 
 ### `verify <bf-wo>` / `verify <bf-wo>/<task>`
 

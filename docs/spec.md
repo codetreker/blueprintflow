@@ -48,7 +48,7 @@ flowchart TB
 | Runtime docs | Tell the orchestrating LLM how to run BF | `SKILL.md`, `references/`, `packs/`, `roles/`, `templates/` |
 | `bf` CLI | Read-only metadata and install management | `list-packs`, `list-pipelines`, `list-roles`, `install`, `uninstall`, `version` |
 | `bf-harness` CLI | State mutation and verification loop | `lint`, `start-review`, `accept`, `next`, `verify`, `discard`, `list` |
-| Work order state | Per-project BF work state | `<project-root>/.bf/<bf-wo>/` |
+| Work object state | Per-project BF work state | `<project-root>/.bf/<bf-wo>/` |
 | Extension registry | User and project roles/packs | `extensions/roles`, `extensions/packs` |
 
 ## Implementation Anchors

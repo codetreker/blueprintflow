@@ -20,7 +20,7 @@ requirements, and selected execution pipeline.
 ## bf.md
 
 - Location: `<project-root>/.bf/<bf-wo>/bf.md`
-- Role: structured work-order contract.
+- Role: structured work-object contract.
 - Template: [`templates/bf.md`](../../templates/bf.md)
 - State values: `Draft`, `Accepted`, `Implementing`, `Completed`.
 - Acceptance Criteria lines must carry `{id}|{capability}` markers.
@@ -32,7 +32,7 @@ requirements, and selected execution pipeline.
 - Location: `<project-root>/.bf/<bf-wo>/discussion.md`
 - Role: brainstorm and spec rationale archive.
 - Template: [`templates/discussion.md`](../../templates/discussion.md)
-- Locking: never locked; appendable throughout the work order.
+- Locking: never locked; appendable throughout the work object.
 - Relationship: `bf.md` is derived from `discussion.md`.
 
 ## `<task-id>/spec.md`
@@ -41,7 +41,8 @@ requirements, and selected execution pipeline.
 - Role: task-level contract.
 - Template: [`templates/task-spec.md`](../../templates/task-spec.md)
 - State values: `Draft`, `Ready`, `Tasking`, `Completed`.
-- The `Pipeline` field must reference a pipeline in the selected pack.
+- The `Pipeline` field must reference a pipeline in the selected pack or a
+  bf-wo local pipeline under `<bf-wo>/pipelines/<id>.yml`.
 - Task frontmatter must not contain execution `Capability`.
 - Acceptance Criteria lines carry `{id}|{capability}` review markers.
 - `## Evidence` is required.
@@ -86,3 +87,13 @@ requirements, and selected execution pipeline.
 - Top-level `instruction` describes the whole pipeline.
 - Each stage `instruction` describes that stage.
 - `stages` are currently orchestrated by the LLM; later versions may migrate stage state and gates into the harness.
+
+## BF-WO Local Pipeline
+
+- Location: `<project-root>/.bf/<bf-wo>/pipelines/<pipeline-id>.yml`
+- Role: declare a task execution pipeline usable only inside one bf-wo.
+- Shape: same YAML shape as pack pipelines.
+- Key constraints: filename and `id` match; `desc`, top-level `instruction`, and
+  at least one stage are required; stage ids are unique; stage instructions are
+  non-empty; stage capabilities must exist in the role registry.
+- Locking: referenced local pipelines are contract files after accept.

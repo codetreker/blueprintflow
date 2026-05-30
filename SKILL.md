@@ -30,9 +30,9 @@ Re-check this every time you spawn a reviewer. It is the one rule the system can
 
 ## Pointers
 
-- `references/phase-1-brainstorm.md` — drive the discussion, pick a pack, append `discussion.md`.
-- `references/phase-2-spec.md` — author `bf.md` + per-task `spec.md`, lint, Spec Review loop, `accept`.
-- `references/phase-3-execute.md` — `next → do → review → verify` loop, Task Verification and Final Acceptance.
+- `references/brainstorm.md` — drive the discussion, pick a pack, append `discussion.md`.
+- `references/spec-authoring.md` — author `bf.md` + per-task `spec.md`, lint, Spec Review loop, `accept`.
+- `references/execution.md` — `next → do → review → verify` loop, Task Verification and Final Acceptance.
 - `templates/` — frozen file shapes (`bf.md`, `task-spec.md`, `discussion.md`, `review-result.md`, `role.md`, `pack.md`). Copy these when authoring; do not improvise.
 - `roles/` — Core roles (`architect`, `engineer`, `tester`, …). Each pack's `pack.md` declares which role plays which phase. Packs may add private roles under `packs/<id>/roles/`.
 - `packs/` — installed packs. Each `pack.md` has `When to Use` + the three phase guidances. Pack pipelines live under `packs/<id>/pipelines/*.yml` and are discoverable with `bf list-pipelines --pack <id>`.

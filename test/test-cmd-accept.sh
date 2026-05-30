@@ -19,7 +19,7 @@ seed_mode_a_success() {
   cat > "$dir/verify-result.md" <<'EOF'
 ---
 Result: SUCCESS
-Mode: A
+Mode: Spec Review
 Scope: clean-wo
 Round: 1
 Timestamp: 2026-05-19 10:00
@@ -59,7 +59,7 @@ STDOUT=$(node --input-type=module -e "
   });
 ")
 assert_json_field "$STDOUT" .ok false
-assert_match "$STDOUT" "no Mode A SUCCESS" "Mode A gate"
+assert_match "$STDOUT" "no Spec Review SUCCESS" "Spec Review gate"
 grep -q "^State: Draft" "$BASE/clean-wo/bf.md" || fail "bf.md unexpectedly modified"
 cleanup
 
@@ -116,10 +116,10 @@ setup
 export BF_HOME="$BASE"
 export BF_INSTALL_DIR="$REPO"
 run_bfh accept "clean-wo"
-assert_eq "$RC" "1" "accept without Mode A exit 1"
+assert_eq "$RC" "1" "accept without Spec Review exit 1"
 FIRST_LINE=$(printf "%s\n" "$STDOUT" | head -1)
 assert_eq "$FIRST_LINE" "FAIL" "accept stdout line 1 is FAIL"
-assert_match "$STDOUT" "no Mode A SUCCESS" "accept FAIL body has error"
+assert_match "$STDOUT" "no Spec Review SUCCESS" "accept FAIL body has error"
 # FAIL body shape: line 1 "FAIL", line 2 blank, line 3 top-level reason.
 SECOND_LINE=$(printf "%s\n" "$STDOUT" | sed -n 2p)
 assert_eq "$SECOND_LINE" "" "accept FAIL line 2 is blank (lint-style)"

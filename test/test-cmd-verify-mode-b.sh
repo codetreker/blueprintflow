@@ -65,7 +65,7 @@ setup clean-wo
 write_signed_review "$BASE/wo-1/task-a/runs/reviews/round_1" tester 1 "AC-1"
 run_verify_b
 assert_json_field "$STDOUT" .status "SUCCESS"
-assert_json_field "$STDOUT" .mode "B"
+assert_json_field "$STDOUT" .mode "Task Verification"
 grep -qE "^- \[x\] AC-1\|" "$BASE/wo-1/task-a/spec.md" || fail "AC-1 not flipped"
 grep -q "^State: Completed" "$BASE/wo-1/task-a/spec.md" || fail "task-a not Completed"
 grep -q "^State: Implementing" "$BASE/wo-1/bf.md" || fail "bf.md state changed unexpectedly"

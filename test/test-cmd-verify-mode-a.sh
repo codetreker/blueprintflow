@@ -64,22 +64,22 @@ run_verify() {
   ")
 }
 
-# Mode A SUCCESS（state=Draft + clean review）
+# Spec Review SUCCESS（state=Draft + clean review）
 setup
 write_clean_review "$BASE/wo-1/runs/reviews/round_1" tester 1
 run_verify
 assert_json_field "$STDOUT" .ok true
 assert_json_field "$STDOUT" .status "SUCCESS"
-assert_json_field "$STDOUT" .mode "A"
+assert_json_field "$STDOUT" .mode "Spec Review"
 RESULT_FILE="$BASE/wo-1/runs/reviews/round_1/verify-result.md"
 [ -f "$RESULT_FILE" ] || fail "verify-result.md missing"
 grep -q "^Result: SUCCESS" "$RESULT_FILE" || fail "Result field"
-grep -q "^Mode: A" "$RESULT_FILE" || fail "Mode field"
+grep -q "^Mode: Spec Review" "$RESULT_FILE" || fail "Mode field"
 if grep -q "## Issues" "$RESULT_FILE"; then fail "SUCCESS should NOT have Issues section"; fi
 grep -q "^State: Draft" "$BASE/wo-1/bf.md" || fail "bf.md State changed (should not)"
 cleanup
 
-# Mode A FAIL（Blocker）
+# Spec Review FAIL（Blocker）
 setup
 write_blocker_review "$BASE/wo-1/runs/reviews/round_1" tester 1
 run_verify
@@ -89,7 +89,19 @@ grep -q "^Result: FAIL" "$RESULT_FILE" || fail "FAIL not recorded"
 grep -q "范围越界" "$RESULT_FILE" || fail "blocker not propagated"
 cleanup
 
-# Mode A 没 round → ok:false + error 含 "no review round"，**不创建 round_1 目录**
+# Spec Review with an empty round must FAIL and produce a verify-result.
+setup
+mkdir -p "$BASE/wo-1/runs/reviews/round_1"
+run_verify
+assert_json_field "$STDOUT" .ok true
+assert_json_field "$STDOUT" .status "FAIL"
+assert_json_field "$STDOUT" .mode "Spec Review"
+RESULT_FILE="$BASE/wo-1/runs/reviews/round_1/verify-result.md"
+[ -f "$RESULT_FILE" ] || fail "empty-round verify-result.md missing"
+grep -q "no result files in round" "$RESULT_FILE" || fail "empty round issue not recorded"
+cleanup
+
+# Spec Review 没 round → ok:false + error 含 "no review round"，**不创建 round_1 目录**
 setup
 run_verify
 assert_json_field "$STDOUT" .ok false

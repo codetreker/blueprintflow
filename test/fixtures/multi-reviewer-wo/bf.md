@@ -9,7 +9,7 @@ Updated: 2026-05-19 10:00
 
 # Goal
 
-测 Mode B 的 OR 语义：多 provider 时 ≥1 签到即过。
+测 Task Verification 的 OR 语义：多 provider 时 ≥1 签到即过。
 
 ## Requirement
 

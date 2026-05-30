@@ -80,9 +80,9 @@ This pack maps BF's phases to specific Core roles. **Capabilities are skills, no
 |---|---|---|
 | Brainstorm | architect | system-architecture |
 | Spec / breakdown (write bf.md + task specs) | architect | system-architecture |
-| Spec review (Mode A) | architect, tester | design-review, quality-assurance |
+| Spec Review | architect, tester | design-review, quality-assurance |
 | Execute (per task; pipeline stages) | architect, engineer, tester | stage capability from task Pipeline |
-| Task review (Mode B; reviewer) | tester | quality-assurance (or AC's capability marker) |
-| Final review (Mode C) | architect, tester | design-review, quality-assurance |
+| Task Verification (reviewer) | tester | quality-assurance (or AC's capability marker) |
+| Final Acceptance | architect, tester | design-review, quality-assurance |
 
 Independent Verification still applies: the *subagent instance* doing a task cannot be the subagent reviewing it (different instances of the same role are OK).

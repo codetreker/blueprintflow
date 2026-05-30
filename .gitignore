@@ -1,4 +1,5 @@
 .worktrees/
+.tasks/
 docs/superpowers/
 docs/tasks/
 node_modules/

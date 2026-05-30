@@ -57,7 +57,7 @@ async function main() {
     for (let i = 0; i < rest.length; i++) {
       if (rest[i] === "--pack" && rest[i + 1]) { pack = rest[++i]; }
     }
-    const r = await cmdListRoles({ cwd: installDir, pack, extensionRolesDirs });
+    const r = await cmdListRoles({ cwd: installDir, pack, extensionRolesDirs, extensionPacksDirs });
     write(formatListRoles(r));
     process.exit(r.ok ? 0 : 1);
   }

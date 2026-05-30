@@ -51,7 +51,7 @@ write_signed_review "$ROUND_DIR" tester 1 "AC-1"
 touch -d "2026-05-19 11:00" "$ROUND_DIR/result_tester_1.md"
 run_verify_c
 assert_json_field "$STDOUT" .status "SUCCESS"
-assert_json_field "$STDOUT" .mode "C"
+assert_json_field "$STDOUT" .mode "Final Acceptance"
 grep -qE "^- \[x\] AC-1\|" "$BASE/wo-1/bf.md" || fail "bf.md AC-1 not flipped"
 grep -q "^State: Completed" "$BASE/wo-1/bf.md" || fail "bf.md not Completed"
 cleanup

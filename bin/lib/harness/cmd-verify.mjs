@@ -8,25 +8,34 @@ import { computeAcSignoff } from "./compute-ac-signoff.mjs";
 import { parseTaskSpec } from "./parse-task-spec.mjs";
 import { loadWo } from "./load-wo.mjs";
 
+export const VERIFY_MODES = {
+  SPEC_REVIEW: "Spec Review",
+  TASK_VERIFICATION: "Task Verification",
+  FINAL_ACCEPTANCE: "Final Acceptance",
+};
+
 function decideMode({ taskId, bf, bundle }) {
   const state = bf.frontmatter.State;
-  if (!taskId && state === "Draft") return "A";
-  if (taskId && ["Accepted", "Implementing"].includes(state)) return "B";
+  if (!taskId && state === "Draft") return VERIFY_MODES.SPEC_REVIEW;
+  if (taskId && ["Accepted", "Implementing"].includes(state)) return VERIFY_MODES.TASK_VERIFICATION;
   if (!taskId && state === "Implementing") {
     const allCompleted = bundle.tasks.every(t => t.spec?.frontmatter.State === "Completed");
-    return allCompleted ? "C" : null;
+    return allCompleted ? VERIFY_MODES.FINAL_ACCEPTANCE : null;
   }
   return null;
 }
 
 // Spec Review: 任一 reviewer 报 Blocker/High → FAIL；全 clean → SUCCESS。不动 state / checkbox。
 async function verifyModeA({ parsedResults }) {
+  if (parsedResults.length === 0) {
+    return { status: "FAIL", issues: { blocker: ["no result files in round"], high: [] } };
+  }
   const issues = collectFindings(parsedResults);
   const status = (issues.blocker.length === 0 && issues.high.length === 0) ? "SUCCESS" : "FAIL";
   return { status, issues };
 }
 
-// Mode B: Task Verification. OR semantics — ≥1 provider signed each AC → signed.
+// Task Verification. OR semantics — ≥1 provider signed each AC → signed.
 async function verifyModeB({ bundle, parsedResults, taskId }) {
   const issues = collectFindings(parsedResults);
   if (issues.blocker.length > 0 || issues.high.length > 0) {
@@ -134,7 +143,7 @@ export async function cmdVerify({ baseHome, woId, taskId = null, installDir, now
     const scope = taskId ? `${woId}/${taskId}` : woId;
     return { ok: false, error: `phase mismatch: cannot verify ${scope} when bf.md.State = ${bundle.bf.frontmatter.State}` };
   }
-  if (mode === "B") {
+  if (mode === VERIFY_MODES.TASK_VERIFICATION) {
     const task = bundle.tasks.find(t => t.id === taskId);
     const taskState = task?.spec?.frontmatter.State || "missing";
     if (taskState !== "Tasking") {
@@ -163,8 +172,8 @@ export async function cmdVerify({ baseHome, woId, taskId = null, installDir, now
 
   const ctx = { bundle, scopeDir, round, roundPath, parsedResults, taskId };
   let r;
-  if (mode === "A") r = await verifyModeA(ctx);
-  else if (mode === "B") r = await verifyModeB(ctx);
+  if (mode === VERIFY_MODES.SPEC_REVIEW) r = await verifyModeA(ctx);
+  else if (mode === VERIFY_MODES.TASK_VERIFICATION) r = await verifyModeB(ctx);
   else r = await verifyModeC(ctx);
 
   const ts = formatTimestamp(now);

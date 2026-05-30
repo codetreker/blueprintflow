@@ -21,7 +21,7 @@ seed_mode_a_success() {
   cat > "$dir/verify-result.md" <<'EOF'
 ---
 Result: SUCCESS
-Mode: A
+Mode: Spec Review
 Scope: clean-wo
 Round: 1
 Timestamp: 2026-05-19 10:00

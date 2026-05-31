@@ -41,10 +41,10 @@ export async function loadWo({ baseHome, woId, installDir }) {
     packsDir: path.join(installDir, "packs"),
     extensionPacksDirs,
   });
-  const packRolesDir = packReg.packs.get(bf.frontmatter.Pack)?.rolesDir || null;
+  const packRolesDirs = packReg.packs.get(bf.frontmatter.Pack)?.rolesDirs || [];
   const roleReg = buildRoleRegistry({
     coreRolesDir: path.join(installDir, "roles"),
-    packRolesDir,
+    packRolesDirs,
     extensionRolesDirs,
   });
   const tasks = bf.taskList.map((t) => {

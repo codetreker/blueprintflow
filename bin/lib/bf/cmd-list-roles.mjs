@@ -5,7 +5,7 @@ import { buildPackRegistry } from "../shared/pack-registry.mjs";
 
 export async function cmdListRoles({ cwd, pack = null, extensionRolesDirs = [], extensionPacksDirs = [] }) {
   const coreRolesDir = path.join(cwd, "roles");
-  let packRolesDir = null;
+  let packRolesDirs = [];
   let packWarnings = [];
   if (pack) {
     const packReg = buildPackRegistry({
@@ -17,9 +17,9 @@ export async function cmdListRoles({ cwd, pack = null, extensionRolesDirs = [], 
     if (!packEntry) {
       return { ok: false, error: `pack not found: ${pack}` };
     }
-    if (packEntry.rolesDir && fs.existsSync(packEntry.rolesDir)) packRolesDir = packEntry.rolesDir;
+    packRolesDirs = packEntry.rolesDirs || [];
   }
-  const reg = buildRoleRegistry({ coreRolesDir, packRolesDir, extensionRolesDirs });
+  const reg = buildRoleRegistry({ coreRolesDir, packRolesDirs, extensionRolesDirs });
   const roles = [...reg.roles.values()]
     .sort((a, b) => a.id.localeCompare(b.id))
     .map(r => ({ id: r.id, desc: r.desc, capabilities: r.capabilities, file: r.file, source: r.source }));

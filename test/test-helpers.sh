@@ -81,6 +81,21 @@ stages:
 EOF
 }
 
+write_pack_md() {
+  local file="$1" id="$2" desc="$3"
+  mkdir -p "$(dirname "$file")"
+  cat > "$file" <<EOF
+---
+Id: $id
+Desc: $desc
+---
+
+## When to Use
+
+Testing $id.
+EOF
+}
+
 # run_bf <args...> → 把 stdout 打到全局变量 STDOUT，stderr 打到 STDERR，exit code 打到 RC
 run_bf() {
   STDOUT=$(node "$BF" "$@" 2>/tmp/bf-test-stderr.$$) ; RC=$?

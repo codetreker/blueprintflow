@@ -49,7 +49,7 @@ BF looks for additional roles and packs in host-neutral `extensions/` directorie
 
 Host discovery snapshots are generated copies. Do not put extensions under `~/.claude/skills/bf/` or `~/.agents/skills/bf/`; BF does not read those locations.
 
-`bf list-roles [--pack <id>]` and `bf list-packs` show extension entries alongside Core ones, with a `source: "extension"` field so you can tell where each came from. `bf list-pipelines [--pack <id>]` lists pipeline ids, descriptions, and file paths for the effective pack registry.
+`bf list-packs` shows each effective pack with every `pack.md` path in read order. `bf list-roles [--pack <id>]` and `bf list-pipelines [--pack <id>]` show the final effective role and pipeline registries.
 
 ## What you get
 

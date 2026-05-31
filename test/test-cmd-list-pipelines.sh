@@ -38,15 +38,16 @@ assert_match "$STDOUT" "pack not found: nope" "missing pack error"
 
 rm -rf "$ROOT"
 
-# Extension pack overrides the core pack as a whole; pipelines do not merge.
+# Extension pack pipelines merge with core pack pipelines; same id overrides.
 ROOT=$(make_temp_home)
 EXT=$(make_temp_home)
-mkdir -p "$ROOT/packs" "$EXT/packs/engineering/pipelines"
+PROJECT_EXT=$(make_temp_home)
+mkdir -p "$ROOT/packs" "$EXT/packs/engineering/pipelines" "$PROJECT_EXT/packs/engineering/pipelines"
 cp -R "$FIXTURES/packs-engineering" "$ROOT/packs/engineering"
 cat > "$EXT/packs/engineering/pack.md" <<'EOF'
 ---
 Id: engineering
-Desc: Extension engineering pack
+Desc: Global extension engineering pack
 ---
 
 ## When to Use
@@ -57,18 +58,37 @@ cat > "$EXT/packs/engineering/pipelines/custom.yml" <<'EOF'
 id: custom
 desc: Custom extension pipeline
 EOF
+cat > "$EXT/packs/engineering/pipelines/feature.yml" <<'EOF'
+id: feature
+desc: Global feature override
+EOF
+cat > "$PROJECT_EXT/packs/engineering/pack.md" <<'EOF'
+---
+Id: engineering
+Desc: Project extension engineering pack
+---
+
+## When to Use
+
+Project extension pack.
+EOF
+cat > "$PROJECT_EXT/packs/engineering/pipelines/project-only.yml" <<'EOF'
+id: project-only
+desc: Project-only extension pipeline
+EOF
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/bf/cmd-list-pipelines.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdListPipelines({
-      cwd: '$ROOT', pack: 'engineering', extensionPacksDirs: ['$EXT/packs'],
+      cwd: '$ROOT', pack: 'engineering', extensionPacksDirs: ['$EXT/packs', '$PROJECT_EXT/packs'],
     })));
   });
 ")
 assert_json_field "$STDOUT" .ok true
-assert_json_field "$STDOUT" .pipelines.0.id "custom"
-assert_json_field "$STDOUT" .pipelines.0.source "extension"
-assert_not_match "$STDOUT" "feature" "core pipeline hidden by extension pack override"
-rm -rf "$ROOT" "$EXT"
+assert_match "$STDOUT" "custom" "global extension pipeline included"
+assert_match "$STDOUT" "project-only" "project extension pipeline included"
+assert_match "$STDOUT" "Global feature override" "global extension feature overrides core feature"
+assert_not_match "$STDOUT" "Feature task pipeline" "core feature pipeline overridden"
+rm -rf "$ROOT" "$EXT" "$PROJECT_EXT"
 
 # CLI-level: `bf list-pipelines` prints one labeled key:value block per pipeline.
 ROOT=$(make_temp_home)
@@ -131,7 +151,7 @@ export BF_HOME="$BASE"
 run_bf list-pipelines --pack engineering
 assert_eq "$RC" "0" "list-pipelines with global extension pack exit 0"
 assert_match "$STDOUT" "Id: custom" "global extension pipeline listed"
-assert_not_match "$STDOUT" "feature" "core pipeline hidden by global extension pack override"
+assert_match "$STDOUT" "feature" "core pipeline remains when global extension adds custom pipeline"
 assert_not_match "$STDOUT" "ignored" "host discovery extension pipeline ignored"
 unset HOME BF_INSTALL_DIR BF_HOME
 rm -rf "$ROOT" "$HOME_DIR" "$BASE"

@@ -40,9 +40,8 @@ function loadLocalPipelines(localPipelinesDir, pack, warnings) {
   return pipelines;
 }
 
-function loadPipelinesForPack(pack, warnings) {
+function loadPipelinesFromDir(pipelinesDir, pack, source, warnings) {
   const pipelines = [];
-  const pipelinesDir = path.join(pack.dir, "pipelines");
   for (const file of listPipelineFiles(pipelinesDir)) {
     const name = path.basename(file);
     if (!PIPELINE_FILE_RE.test(name)) {
@@ -59,12 +58,23 @@ function loadPipelinesForPack(pack, warnings) {
       pipelines.push({
         ...parsed,
         pack: pack.id,
-        source: pack.source,
+        source,
         file,
       });
     } catch (e) {
       warnings.push(`skip pipeline ${file}: ${e.message}`);
     }
+  }
+  return pipelines;
+}
+
+function loadPipelinesForPack(pack, warnings) {
+  const pipelines = [];
+  const dirs = pack.pipelinesDirs && pack.pipelinesDirs.length > 0
+    ? pack.layers.filter(l => l.pipelinesDir).map(l => [l.pipelinesDir, l.source])
+    : [[path.join(pack.dir, "pipelines"), pack.source]];
+  for (const [dir, source] of dirs) {
+    pipelines.push(...loadPipelinesFromDir(dir, pack, source, warnings));
   }
   return pipelines;
 }

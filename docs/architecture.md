@@ -136,8 +136,10 @@ under `<project-root>/.bf/extensions/`. Host discovery snapshots under
 `~/.claude/skills/bf/` and `~/.agents/skills/bf/` are generated copies and are
 not extension roots.
 
-Effective registries are built before lint, listing, next, and verify
-operations.
+Same-id extension packs merge with Core packs. Pack guidance remains
+LLM-readable through ordered `pack.md` paths; roles and pipelines merge
+mechanically. Effective registries are built before lint, listing, next, and
+verify operations.
 
 Pipeline definitions are currently instruction-level. The orchestrator reads the
 pipeline and executes stages in order. Stage state and gate enforcement can move

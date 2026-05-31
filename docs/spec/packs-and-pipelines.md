@@ -45,17 +45,18 @@ Merge rules:
 - The selected pack may use its private roles in brainstorm, spec, and execute phases.
 
 Global extension packs live under `~/.bf/extensions/packs`. Project extension
-packs live under `<project-root>/.bf/extensions/packs`. Project packs override
-global packs, and global packs override Core packs with the same id.
+packs live under `<project-root>/.bf/extensions/packs`. Same-id packs merge into
+one effective pack. `bf list-packs` returns every `pack.md` path in layer order:
+Core, global extension, then project extension. The LLM reads all paths in order;
+later paths have higher priority when guidance conflicts.
 
 ## Pack Pipelines
 
 Packs may define pipelines under `packs/<pack-id>/pipelines/`.
 
 Pipeline files use `<pipeline-id>.yml`. `bf list-pipelines --pack <id>` lists
-pipelines from the effective pack directory only. If an extension overrides a
-Core pack, Core pipelines from the overridden pack do not merge into the
-extension pack.
+pipelines from the effective pack layers. Same-id pipelines in higher-priority
+extension layers override lower-priority pipelines.
 
 The first pipeline version is instruction-only:
 

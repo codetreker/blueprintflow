@@ -27,7 +27,7 @@ Output includes:
 
 - pack id;
 - description;
-- source.
+- one or more pack.md paths in layer order.
 
 ### `list-pipelines`
 

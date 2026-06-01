@@ -100,4 +100,50 @@ assert_json_field "$STDOUT" .customSource "extension"
 assert_json_field "$STDOUT" .ids '["custom","engineer","qa-engineer","tester"]'
 
 rm -rf "$EXT_DIR"
+
+# multiple selected pack role dirs merge in order, later pack layer wins
+PACK_LAYER_DIR=$(make_temp_home)
+mkdir -p "$PACK_LAYER_DIR/core" "$PACK_LAYER_DIR/global" "$PACK_LAYER_DIR/project"
+cat > "$PACK_LAYER_DIR/core/pack-only.md" <<'EOF'
+---
+Id: pack-only
+Desc: core pack role
+Capabilities:
+  - core-pack-cap
+---
+body
+EOF
+cat > "$PACK_LAYER_DIR/global/pack-only.md" <<'EOF'
+---
+Id: pack-only
+Desc: global pack override
+Capabilities:
+  - global-pack-cap
+---
+body
+EOF
+cat > "$PACK_LAYER_DIR/project/project-only.md" <<'EOF'
+---
+Id: project-only
+Desc: project pack role
+Capabilities:
+  - project-pack-cap
+---
+body
+EOF
+STDOUT=$(node --input-type=module -e "
+  import('$REPO_ROOT/bin/lib/shared/role-registry.mjs').then(m => {
+    const r = m.buildRoleRegistry({
+      coreRolesDir: '$FIXTURES/roles-core',
+      packRolesDirs: ['$PACK_LAYER_DIR/core', '$PACK_LAYER_DIR/global', '$PACK_LAYER_DIR/project'],
+    });
+    process.stdout.write(JSON.stringify({
+      packOnlyCaps: r.roles.get('pack-only')?.capabilities,
+      projectOnlyCaps: r.roles.get('project-only')?.capabilities,
+    }));
+  });
+")
+assert_json_field "$STDOUT" .packOnlyCaps '["global-pack-cap"]'
+assert_json_field "$STDOUT" .projectOnlyCaps '["project-pack-cap"]'
+rm -rf "$PACK_LAYER_DIR"
 pass

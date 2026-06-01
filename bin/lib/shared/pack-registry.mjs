@@ -19,14 +19,42 @@ function loadPacksFrom(packsDir, source, packs, warnings) {
         continue;
       }
       const rolesDir = path.join(dir, "roles");
-      packs.set(name, {
+      const pipelinesDir = path.join(dir, "pipelines");
+      const layer = {
         id: parsed.id,
         desc: parsed.desc,
         sections: parsed.sections,
         dir,
+        packMd,
         rolesDir: fs.existsSync(rolesDir) ? rolesDir : null,
+        pipelinesDir: fs.existsSync(pipelinesDir) ? pipelinesDir : null,
         source,
-      });
+      };
+      const existing = packs.get(name);
+      if (!existing) {
+        packs.set(name, {
+          id: parsed.id,
+          desc: parsed.desc,
+          sections: parsed.sections,
+          dir,
+          rolesDir: layer.rolesDir,
+          source,
+          layers: [layer],
+          paths: [packMd],
+          rolesDirs: layer.rolesDir ? [layer.rolesDir] : [],
+          pipelinesDirs: layer.pipelinesDir ? [layer.pipelinesDir] : [],
+        });
+      } else {
+        existing.desc = parsed.desc;
+        existing.sections = parsed.sections;
+        existing.dir = dir;
+        existing.rolesDir = layer.rolesDir;
+        existing.source = source;
+        existing.layers.push(layer);
+        existing.paths.push(packMd);
+        if (layer.rolesDir) existing.rolesDirs.push(layer.rolesDir);
+        if (layer.pipelinesDir) existing.pipelinesDirs.push(layer.pipelinesDir);
+      }
     } catch (e) {
       warnings.push(`skip pack ${name} (${source}): ${e.message}`);
     }

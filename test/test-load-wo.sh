@@ -124,4 +124,46 @@ unset HOME
 rm -rf "$HOME_DIR"
 cleanup
 
+# loadWo consumes pack-private roles from all effective pack layers.
+setup
+HOME_DIR=$(make_temp_home)
+mkdir -p "$HOME_DIR/.bf/extensions/packs/engineering/roles"
+cat > "$HOME_DIR/.bf/extensions/packs/engineering/pack.md" <<'EOF'
+---
+Id: engineering
+Desc: Global extension engineering pack
+---
+
+## When to Use
+
+Global extension engineering pack.
+EOF
+cat > "$HOME_DIR/.bf/extensions/packs/engineering/roles/engineer.md" <<'EOF'
+---
+Id: engineer
+Desc: Global extension pack engineer
+Capabilities:
+  - software-implementation
+  - global-pack-engineer
+---
+
+# Engineer
+EOF
+export HOME="$HOME_DIR"
+STDOUT=$(node --input-type=module -e "
+  import('$REPO_ROOT/bin/lib/harness/load-wo.mjs').then(async (m) => {
+    const r = await m.loadWo({ baseHome: '$BASE', woId: 'clean-wo', installDir: '$REPO' });
+    process.stdout.write(JSON.stringify({
+      engineerCaps: r.roleReg.roles.get('engineer')?.capabilities,
+      packPaths: r.packReg.packs.get('engineering')?.paths,
+    }));
+  });
+")
+assert_json_field "$STDOUT" .engineerCaps '["software-implementation","global-pack-engineer"]'
+assert_match "$STDOUT" "$REPO/packs/engineering/pack.md" "core pack path remains in loadWo"
+assert_match "$STDOUT" "$HOME_DIR/.bf/extensions/packs/engineering/pack.md" "global pack path appears in loadWo"
+unset HOME
+rm -rf "$HOME_DIR"
+cleanup
+
 pass

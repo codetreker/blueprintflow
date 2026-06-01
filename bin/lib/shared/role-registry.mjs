@@ -23,14 +23,18 @@ function loadRolesFrom(dir, source, warnings) {
   return out;
 }
 
-// Precedence (later wins): core < pack < extensionRolesDirs[0] < extensionRolesDirs[1] < ...
+// Precedence (later wins): core < packRolesDirs... < extensionRolesDirs...
 // Callers should pass extensionRolesDirs ordered global-first, project-last so the project
 // override beats everything.
-export function buildRoleRegistry({ coreRolesDir, packRolesDir = null, extensionRolesDirs = [] }) {
+export function buildRoleRegistry({ coreRolesDir, packRolesDir = null, packRolesDirs = [], extensionRolesDirs = [] }) {
   const warnings = [];
+  const packDirs = [
+    ...(packRolesDir ? [packRolesDir] : []),
+    ...packRolesDirs,
+  ];
   const layers = [
     [coreRolesDir, "core"],
-    [packRolesDir, "pack"],
+    ...packDirs.map(d => [d, "pack"]),
     ...extensionRolesDirs.map(d => [d, "extension"]),
   ];
 

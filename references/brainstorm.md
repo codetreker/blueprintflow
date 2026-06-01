@@ -6,8 +6,8 @@ Goal: produce `discussion.md` capturing the user's intent, decisions, and trade-
 
 | Actor | Action |
 |---|---|
-| Harness | `bf list-packs` — enumerate installed packs. Output is one labeled key:value block per pack (`Id:`, `Desc:`, `Source:`), blocks separated by `---`. |
-| LLM | Pick the pack whose `Desc` / `When to Use` matches the request. |
+| Harness | `bf list-packs` — enumerate installed packs. Output is one labeled key:value block per pack (`Id:`, `Desc:`, one or more `Path:` lines), blocks separated by `---`. |
+| LLM | Pick the pack whose `Desc` / `When to Use` matches the request. Read every `Path:` for the selected pack in output order; later paths have higher priority when guidance conflicts. |
 | LLM | Drive an interactive discussion with the user, shaped by the chosen pack's `Brainstorm Guidance`. |
 | LLM | Append to `<project-root>/.bf/<bf-wo>/discussion.md` as the discussion happens. |
 

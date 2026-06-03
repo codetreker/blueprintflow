@@ -78,8 +78,10 @@ Rules:
 - Local pipelines use the same YAML contract as pack pipelines.
 - Local pipelines are contract files after Spec Review and `accept`.
 
-Local pipelines are for one bf-wo only. If the flow should be reusable across
-bf-wos, stop and design a pack-level pipeline as separate work.
+Local pipelines are for one bf-wo only. If the flow appears reusable across
+bf-wos, the orchestrator may mention that after Final Acceptance as advisory
+follow-up. It must not promote local pipelines, edit extension packs, create
+files, or open a PR unless there is an explicit user request for promotion.
 
 ## Pipeline Designer
 

@@ -29,6 +29,9 @@ roles, packs, and CLI tools that an orchestrating LLM reads and executes.
 - Never push directly to `main`.
 - Never use admin merge. If a PR is blocked, resolve every blocking review,
   check, branch policy, or conversation issue and merge normally.
+- Use the BF gate for PR readiness: the PR author records the BF work object
+  id/status and validation evidence, or records why BF was not required;
+  required GitHub reviews/checks pass; blocking conversations are resolved.
 - When spawning subagents, use the same thinking/reasoning effort as the main
   agent. Do not lower effort unless the user explicitly requests it.
 - Do not use legacy plugin content as BF source of truth unless the user explicitly asks.

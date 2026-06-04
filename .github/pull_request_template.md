@@ -4,11 +4,10 @@
 ## 影响的 skill
 <!-- 列出受影响的 skill -->
 
-## Review checklist
-<!-- 所有人 vote 后才能合并 -->
+## BF gate
+<!-- PR author/orchestrator records evidence here; reviewers verify it -->
 
-- [ ] 飞马 (Architect) — 一致性：跟其他 skill 矛盾吗？
-- [ ] 野马 (PM) — 用户视角：新团队读得懂吗？
-- [ ] 战马 (Dev) — 实施视角：规则能执行吗？有歧义吗？
-- [ ] 烈马 (QA) — 验收视角：规则可验证吗？示例够吗？
-- [ ] 建军 (Owner) — 方向确认
+- BF work object: <!-- id + state + final verify result, or BF-not-required reason -->
+- Validation evidence: <!-- commands + pass/fail summary -->
+- Required GitHub reviews/checks: <!-- pass/fail/pending summary -->
+- Blocking conversations: <!-- resolved / list blockers -->

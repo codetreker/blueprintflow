@@ -1,0 +1,68 @@
+name: Feedback
+description: Report a BF bug, improvement, docs issue, usage question, install failure, or design question.
+title: "[Feedback]: "
+labels: ["feedback"]
+body:
+  - type: dropdown
+    id: feedback-type
+    attributes:
+      label: Feedback type
+      description: Choose the closest category.
+      options:
+        - Bug
+        - Improvement suggestion
+        - Documentation unclear
+        - Usage confusion
+        - Installation failure
+        - Design question
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Describe the problem, suggestion, or question.
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: Explain who is affected and what this blocks, slows down, or improves.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Include BF version, host, operating system, commands, reproduction steps, logs, or usage scenario when relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: duplicate-search-result
+    attributes:
+      label: Duplicate search result
+      description: List similar GitHub issues checked, or state that no matching issue was found.
+    validations:
+      required: true
+  - type: textarea
+    id: filing-rationale
+    attributes:
+      label: Filing rationale
+      description: Explain why this should be a new issue instead of a comment on an existing issue.
+    validations:
+      required: true
+  - type: checkboxes
+    id: redaction-confirmation
+    attributes:
+      label: Redaction confirmation
+      options:
+        - label: I removed secrets, tokens, private code, private paths, and sensitive logs.
+          required: true
+  - type: textarea
+    id: expected-outcome
+    attributes:
+      label: Expected outcome
+      description: Describe the desired behavior, documentation change, answer, or maintainer decision.
+    validations:
+      required: true

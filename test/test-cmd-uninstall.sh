@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -u
 source "$(dirname "$0")/test-helpers.sh"
+unset CODEX_HOME
 
 make_target() {
   local target="$1"
@@ -25,7 +26,7 @@ run_uninstall_json() {
 # Auto-detect both existing targets and remove both snapshots.
 HOME_DIR=$(make_temp_home)
 make_target "$HOME_DIR/.claude/skills/bf"
-make_target "$HOME_DIR/.agents/skills/bf"
+make_target "$HOME_DIR/.codex/skills/bf"
 run_uninstall_json "$HOME_DIR"
 assert_json_field "$STDOUT" .ok true
 assert_json_field "$STDOUT" .targets.0.target "claude"
@@ -33,7 +34,7 @@ assert_json_field "$STDOUT" .targets.0.status "removed"
 assert_json_field "$STDOUT" .targets.1.target "codex"
 assert_json_field "$STDOUT" .targets.1.status "removed"
 [ ! -e "$HOME_DIR/.claude/skills/bf" ] || fail "Claude target should be removed"
-[ ! -e "$HOME_DIR/.agents/skills/bf" ] || fail "Codex target should be removed"
+[ ! -e "$HOME_DIR/.codex/skills/bf" ] || fail "Codex target should be removed"
 rm -rf "$HOME_DIR"
 
 # Auto-detect only Claude.
@@ -43,7 +44,7 @@ run_uninstall_json "$HOME_DIR"
 assert_json_field "$STDOUT" .targets.0.target "claude"
 assert_json_field "$STDOUT" .targets.0.status "removed"
 [ ! -e "$HOME_DIR/.claude/skills/bf" ] || fail "Claude target should be removed"
-[ ! -e "$HOME_DIR/.agents/skills/bf" ] || fail "Codex target should not be created"
+[ ! -e "$HOME_DIR/.codex/skills/bf" ] || fail "Codex target should not be created"
 rm -rf "$HOME_DIR"
 
 # Auto-detect none: no-op success.
@@ -56,12 +57,12 @@ rm -rf "$HOME_DIR"
 # Explicit target removes only selected snapshot.
 HOME_DIR=$(make_temp_home)
 make_target "$HOME_DIR/.claude/skills/bf"
-make_target "$HOME_DIR/.agents/skills/bf"
+make_target "$HOME_DIR/.codex/skills/bf"
 run_uninstall_json "$HOME_DIR" "codex"
 assert_json_field "$STDOUT" .targets.0.target "codex"
 assert_json_field "$STDOUT" .targets.0.status "removed"
 [ -f "$HOME_DIR/.claude/skills/bf/SKILL.md" ] || fail "explicit codex uninstall should leave Claude"
-[ ! -e "$HOME_DIR/.agents/skills/bf" ] || fail "explicit codex target should be removed"
+[ ! -e "$HOME_DIR/.codex/skills/bf" ] || fail "explicit codex target should be removed"
 rm -rf "$HOME_DIR"
 
 # Explicit missing target is success with missing status.

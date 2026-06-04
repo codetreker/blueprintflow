@@ -14,7 +14,7 @@ npm install -g @codetreker/bf
 
 Requires Node.js ≥ 20. **Install globally** (`-g`) so the `bf` and `bf-harness` CLIs land on `$PATH` — that is the only supported install mode. Local installs (`--save-dev`) put the CLIs in `node_modules/.bin/` only and break shell invocations from subagent commands.
 
-`npm install` also runs a `postinstall` step that copies a host discovery snapshot (`SKILL.md`, `roles/`, `packs/`, `templates/`, `references/`) for detected LLM hosts. Claude Code uses `~/.claude/skills/bf/`; Codex uses `~/.agents/skills/bf/`. The install output lists detected targets and whether each snapshot was installed, updated, refreshed, or updated from an unknown older copy. Re-run manually anytime with `bf install`.
+`npm install` also runs a `postinstall` step that copies a host discovery snapshot (`SKILL.md`, `roles/`, `packs/`, `templates/`, `references/`) for detected LLM hosts. Claude Code uses `~/.claude/skills/bf/`; Codex uses `$CODEX_HOME/skills/bf/`, defaulting to `~/.codex/skills/bf/`. The install output lists detected targets and whether each snapshot was installed, updated, refreshed, or updated from an unknown older copy. Re-run manually anytime with `bf install`.
 
 `bf install` auto-detects supported targets. Use `--target` to install one explicitly:
 
@@ -47,7 +47,7 @@ BF looks for additional roles and packs in host-neutral `extensions/` directorie
 
 **Precedence (highest wins):** project extension → global extension → selected pack-private role → Core role. So a project-local `engineer.md` overrides anything else with that id.
 
-Host discovery snapshots are generated copies. Do not put extensions under `~/.claude/skills/bf/` or `~/.agents/skills/bf/`; BF does not read those locations.
+Host discovery snapshots are generated copies. Do not put extensions under `~/.claude/skills/bf/` or `$CODEX_HOME/skills/bf/`; BF does not read those locations.
 
 `bf list-packs` shows each effective pack with every `pack.md` path in read order. `bf list-roles [--pack <id>]` and `bf list-pipelines [--pack <id>]` show the final effective role and pipeline registries.
 

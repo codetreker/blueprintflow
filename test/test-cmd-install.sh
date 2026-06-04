@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -u
 source "$(dirname "$0")/test-helpers.sh"
+unset CODEX_HOME
 
 make_src() {
   SRC=$(make_temp_home)
@@ -60,19 +61,19 @@ make_src
 
 # Auto-detect both host roots.
 HOME_DIR=$(make_temp_home)
-mkdir -p "$HOME_DIR/.claude" "$HOME_DIR/.agents"
+mkdir -p "$HOME_DIR/.claude" "$HOME_DIR/.codex"
 run_install_json "$HOME_DIR"
 assert_json_field "$STDOUT" .ok true
 assert_json_field "$STDOUT" .version "9.9.9"
 assert_json_field "$STDOUT" .targets.0.target "claude"
 assert_json_field "$STDOUT" .targets.0.status "installed"
 assert_match "$STDOUT" '"version":"9.9.9"' "install result records installed version"
-assert_json_field "$STDOUT" .targets.1.target "codex"
-assert_json_field "$STDOUT" .targets.1.status "installed"
+assert_match "$STDOUT" '"target":"codex"' "auto-detect should include Codex"
+assert_match "$STDOUT" '"status":"installed"' "auto-detected Codex should install"
 assert_snapshot "$HOME_DIR/.claude/skills/bf"
-assert_snapshot "$HOME_DIR/.agents/skills/bf"
+assert_snapshot "$HOME_DIR/.codex/skills/bf"
 assert_metadata "$HOME_DIR/.claude/skills/bf" "claude" "9.9.9"
-assert_metadata "$HOME_DIR/.agents/skills/bf" "codex" "9.9.9"
+assert_metadata "$HOME_DIR/.codex/skills/bf" "codex" "9.9.9"
 rm -rf "$HOME_DIR"
 
 # Auto-detect Claude only.
@@ -81,7 +82,7 @@ mkdir -p "$HOME_DIR/.claude"
 run_install_json "$HOME_DIR"
 assert_json_field "$STDOUT" .targets.0.target "claude"
 [ -f "$HOME_DIR/.claude/skills/bf/SKILL.md" ] || fail "Claude target should be installed"
-[ ! -e "$HOME_DIR/.agents/skills/bf" ] || fail "Codex target should not be installed"
+[ ! -e "$HOME_DIR/.codex/skills/bf" ] || fail "Codex target should not be installed"
 rm -rf "$HOME_DIR"
 
 # Auto-detect none: no-op success.
@@ -90,7 +91,7 @@ run_install_json "$HOME_DIR"
 assert_json_field "$STDOUT" .ok true
 assert_json_field "$STDOUT" .targets '[]'
 [ ! -e "$HOME_DIR/.claude/skills/bf" ] || fail "Claude target should not be created"
-[ ! -e "$HOME_DIR/.agents/skills/bf" ] || fail "Codex target should not be created"
+[ ! -e "$HOME_DIR/.codex/skills/bf" ] || fail "Codex target should not be created"
 rm -rf "$HOME_DIR"
 
 # Explicit target bypasses detection.
@@ -98,24 +99,24 @@ HOME_DIR=$(make_temp_home)
 run_install_json "$HOME_DIR" "codex"
 assert_json_field "$STDOUT" .targets.0.target "codex"
 assert_json_field "$STDOUT" .targets.0.status "installed"
-assert_snapshot "$HOME_DIR/.agents/skills/bf"
-assert_metadata "$HOME_DIR/.agents/skills/bf" "codex" "9.9.9"
+assert_snapshot "$HOME_DIR/.codex/skills/bf"
+assert_metadata "$HOME_DIR/.codex/skills/bf" "codex" "9.9.9"
 [ ! -e "$HOME_DIR/.claude/skills/bf" ] || fail "explicit codex target should not install Claude"
 rm -rf "$HOME_DIR"
 
 # Reinstall with no metadata refreshes an existing snapshot from unknown version.
 HOME_DIR=$(make_temp_home)
-mkdir -p "$HOME_DIR/.agents/skills/bf/roles" "$HOME_DIR/.agents/skills/bf/extensions/roles"
-echo "# stale" > "$HOME_DIR/.agents/skills/bf/roles/stale.md"
-echo "# old extension" > "$HOME_DIR/.agents/skills/bf/extensions/roles/old.md"
+mkdir -p "$HOME_DIR/.codex/skills/bf/roles" "$HOME_DIR/.codex/skills/bf/extensions/roles"
+echo "# stale" > "$HOME_DIR/.codex/skills/bf/roles/stale.md"
+echo "# old extension" > "$HOME_DIR/.codex/skills/bf/extensions/roles/old.md"
 run_install_json "$HOME_DIR" "codex"
 assert_json_field "$STDOUT" .targets.0.status "updated-from-unknown"
 assert_match "$STDOUT" '"previousVersion":null' "unknown update records null previous version"
 assert_match "$STDOUT" '"version":"9.9.9"' "unknown update records installed version"
-assert_snapshot "$HOME_DIR/.agents/skills/bf"
-assert_metadata "$HOME_DIR/.agents/skills/bf" "codex" "9.9.9"
-[ ! -e "$HOME_DIR/.agents/skills/bf/roles/stale.md" ] || fail "stale role should be removed by snapshot refresh"
-[ ! -e "$HOME_DIR/.agents/skills/bf/extensions" ] || fail "old discovery-target extensions should be removed by snapshot refresh"
+assert_snapshot "$HOME_DIR/.codex/skills/bf"
+assert_metadata "$HOME_DIR/.codex/skills/bf" "codex" "9.9.9"
+[ ! -e "$HOME_DIR/.codex/skills/bf/roles/stale.md" ] || fail "stale role should be removed by snapshot refresh"
+[ ! -e "$HOME_DIR/.codex/skills/bf/extensions" ] || fail "old discovery-target extensions should be removed by snapshot refresh"
 rm -rf "$HOME_DIR"
 
 # Reinstall with same metadata is refreshed.
@@ -125,20 +126,32 @@ run_install_json "$HOME_DIR" "codex"
 assert_json_field "$STDOUT" .targets.0.status "refreshed"
 assert_match "$STDOUT" '"previousVersion":"9.9.9"' "refresh records previous version"
 assert_match "$STDOUT" '"version":"9.9.9"' "refresh records installed version"
-assert_metadata "$HOME_DIR/.agents/skills/bf" "codex" "9.9.9"
+assert_metadata "$HOME_DIR/.codex/skills/bf" "codex" "9.9.9"
 rm -rf "$HOME_DIR"
 
 # Reinstall with older metadata is updated.
 HOME_DIR=$(make_temp_home)
-mkdir -p "$HOME_DIR/.agents/skills/bf"
-cat > "$HOME_DIR/.agents/skills/bf/.bf-install.json" <<'JSON'
+mkdir -p "$HOME_DIR/.codex/skills/bf"
+cat > "$HOME_DIR/.codex/skills/bf/.bf-install.json" <<'JSON'
 {"schema":1,"package":"@codetreker/bf","version":"9.9.8","target":"codex","installedAt":"2026-06-04T00:00:00.000Z"}
 JSON
 run_install_json "$HOME_DIR" "codex"
 assert_json_field "$STDOUT" .targets.0.status "updated"
 assert_match "$STDOUT" '"previousVersion":"9.9.8"' "update records previous version"
 assert_match "$STDOUT" '"version":"9.9.9"' "update records installed version"
-assert_metadata "$HOME_DIR/.agents/skills/bf" "codex" "9.9.9"
+assert_metadata "$HOME_DIR/.codex/skills/bf" "codex" "9.9.9"
+rm -rf "$HOME_DIR"
+
+# CODEX_HOME overrides the default Codex home.
+HOME_DIR=$(make_temp_home)
+CODEX_DIR="$HOME_DIR/custom-codex-home"
+export CODEX_HOME="$CODEX_DIR"
+run_install_json "$HOME_DIR" "codex"
+assert_json_field "$STDOUT" .targets.0.target "codex"
+assert_snapshot "$CODEX_DIR/skills/bf"
+assert_metadata "$CODEX_DIR/skills/bf" "codex" "9.9.9"
+[ ! -e "$HOME_DIR/.codex/skills/bf" ] || fail "CODEX_HOME install should not write default Codex home"
+unset CODEX_HOME
 rm -rf "$HOME_DIR"
 
 # CLI invalid target is usage error and mutates nothing.
@@ -159,14 +172,14 @@ assert_eq "$RC" "2" "repeated target exits 2"
 run_bf install --target Codex
 assert_eq "$RC" "2" "target is case-sensitive"
 [ ! -e "$HOME_DIR/.claude/skills/bf" ] || fail "invalid target should not mutate Claude"
-[ ! -e "$HOME_DIR/.agents/skills/bf" ] || fail "invalid target should not mutate Codex"
+[ ! -e "$HOME_DIR/.codex/skills/bf" ] || fail "invalid target should not mutate Codex"
 unset HOME BF_INSTALL_DIR
 rm -rf "$HOME_DIR" "$SRC"
 
 # CLI output summarizes auto-detected targets and explicit target installs.
 make_src
 HOME_DIR=$(make_temp_home)
-mkdir -p "$HOME_DIR/.claude" "$HOME_DIR/.agents"
+mkdir -p "$HOME_DIR/.claude" "$HOME_DIR/.codex"
 export HOME="$HOME_DIR"
 export BF_INSTALL_DIR="$SRC"
 run_bf install
@@ -192,7 +205,7 @@ STDOUT=$(node --input-type=module -e "
   });
 ")
 assert_json_field "$STDOUT" .ok true
-TARGET="$HOME_DIR/.agents/skills/bf"
+TARGET="$HOME_DIR/.codex/skills/bf"
 [ -f "$TARGET/roles/pipeline-designer.md" ] || fail "pipeline-designer role not copied"
 [ -f "$TARGET/references/brainstorm.md" ] || fail "brainstorm reference not copied"
 [ -f "$TARGET/references/spec-authoring.md" ] || fail "spec-authoring reference not copied"

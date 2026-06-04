@@ -22,5 +22,7 @@ stages:
     instruction: |
       Tell the reviewer what artifact or change to review, what severity levels
       block the pipeline, and which AC or Evidence requirements this review
-      signs off. Include checks for closure stages, handoffs, and the
-      user-perspective done state.
+      signs off. Keep capability as the review stage owner, then name any
+      independent review perspectives the orchestrator should gather, such as
+      implementation perspective, architecture perspective, and QA perspective.
+      Include checks for closure stages, handoffs, and the user-perspective done state.

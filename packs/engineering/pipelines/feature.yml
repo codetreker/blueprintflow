@@ -60,9 +60,12 @@ stages:
   - id: code-review
     capability: quality-assurance
     instruction: |
-      Review the code, Evidence artifacts, and task AC from outside the
-      implementation. Confirm each AC has matching evidence and no Blocker or High
-      findings. Sign off only the AC ids that the review independently verifies.
+      Run a multi-perspective review of the code, Evidence artifacts, and task
+      AC from outside the implementation. Gather implementation perspective
+      checks, architecture perspective checks, and QA perspective checks while
+      keeping quality-assurance as the stage owner. Confirm each AC has matching
+      evidence and no Blocker or High findings. Sign off only the AC ids that
+      the review independently verifies.
 
   - id: terminal-state-closure
     capability: quality-assurance

@@ -65,6 +65,15 @@ The first pipeline version is instruction-only:
 - Pipeline or stage instructions decide when subagents are preferred or required.
 - Pipeline state and stage gates may later move into the harness.
 
+Stage `capability` remains a single owner or coordinator capability. When a
+review stage needs multiple perspectives, the pipeline records those
+perspectives in the stage instruction instead of changing `capability` to an
+array. For example, the built-in engineering `feature` pipeline keeps
+`code-review.capability` as `quality-assurance` and asks the orchestrator to
+gather implementation, architecture, and QA perspectives in the instruction.
+Schema-level reviewer arrays are deferred until a pattern is stable and needs a
+harness-enforced mechanical gate.
+
 Built-in pack pipelines may include terminal-state closure stages. The built-in
 engineering `feature` pipeline ends with `terminal-state-closure`, a
 `quality-assurance` stage after `code-review`. That stage checks external

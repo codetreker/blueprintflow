@@ -63,3 +63,15 @@ stages:
       Review the code, Evidence artifacts, and task AC from outside the
       implementation. Confirm each AC has matching evidence and no Blocker or High
       findings. Sign off only the AC ids that the review independently verifies.
+
+  - id: terminal-state-closure
+    capability: quality-assurance
+    instruction: |
+      Run the final user-perspective completion check after code review. Inspect
+      the task spec, Evidence artifacts, review results, and implementation
+      output. List every external artifact or side effect created by the task,
+      such as a PR, deploy, release, ticket, published package, or handoff
+      document. Confirm each item has reached its terminal state, has an explicit
+      handoff owner, or is blocked by an explicit stop condition. Record a
+      Blocker or High finding and stop before task verification if any
+      user-perspective work is still dangling.

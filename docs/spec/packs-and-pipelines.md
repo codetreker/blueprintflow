@@ -65,6 +65,16 @@ The first pipeline version is instruction-only:
 - Pipeline or stage instructions decide when subagents are preferred or required.
 - Pipeline state and stage gates may later move into the harness.
 
+Built-in pack pipelines may include terminal-state closure stages. The built-in
+engineering `feature` pipeline ends with `terminal-state-closure`, a
+`quality-assurance` stage after `code-review`. That stage checks external
+artifacts and side effects from the user's perspective and stops on dangling
+work unless every item has reached a terminal state, has an explicit handoff
+owner, or is blocked by an explicit stop condition. This remains an
+instruction-level contract: BF does not add harness stage enforcement, infer side
+effects, require a schema field, add new capabilities, or hard-code
+merge/deploy/publish behavior.
+
 ## BF-WO Local Pipelines
 
 A bf-wo may define local pipelines under `<bf-wo>/pipelines/*.yml`. Tasks in

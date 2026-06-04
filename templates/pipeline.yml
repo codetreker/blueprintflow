@@ -3,14 +3,18 @@ desc: <one sentence describing when this pipeline should be used>
 instruction: |
   Describe the whole execution flow. Include the stage order, required
   artifacts, stop conditions, subagent expectations, and how the pipeline
-  satisfies the task AC and Evidence requirements.
+  satisfies the task AC and Evidence requirements. List every external artifact
+  or side effect the pipeline creates, then name the closure stage or handoff
+  that moves each one to a terminal state. Define the user-perspective done
+  state before the task may be considered complete.
 stages:
   - id: <stage-id>
     capability: <capability>
     output: <artifact-path>
     instruction: |
       Tell the assigned subagent exactly what this stage must produce, what
-      context to read, what evidence to record, and when to stop.
+      context to read, what evidence to record, which external artifacts or side
+      effects it creates, and when to stop.
 
   - id: <review-stage-id>
     capability: <review-capability>
@@ -18,4 +22,5 @@ stages:
     instruction: |
       Tell the reviewer what artifact or change to review, what severity levels
       block the pipeline, and which AC or Evidence requirements this review
-      signs off.
+      signs off. Include checks for closure stages, handoffs, and the
+      user-perspective done state.

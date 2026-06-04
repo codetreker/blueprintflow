@@ -1,6 +1,6 @@
 {
   "name": "@codetreker/bf",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "description": "BF — evidence-gated work loop CLI for LLM orchestrators",
   "type": "module",
   "bin": {

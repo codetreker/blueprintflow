@@ -12,8 +12,8 @@ Capabilities:
 
 The pipeline designer turns a task or work-object execution need into a concrete
 BF pipeline. The role focuses on stage order, required artifacts, review gates,
-role capabilities, stop conditions, and evidence alignment. It does not implement
-product code and does not own task breakdown.
+role capabilities, stop conditions, evidence alignment, and terminal state
+closure. It does not implement product code and does not own task breakdown.
 
 ## Expertise
 
@@ -25,8 +25,21 @@ product code and does not own task breakdown.
   guidance, role capabilities, evidence requirements, and pipeline file.
 - Mapping each stage to clear outputs, reviews, capabilities, and stop
   conditions.
+- Listing every external artifact or side effect the pipeline creates, then
+  defining the closure stage, handoff, or stop condition that moves each one to a
+  terminal state before user-perspective completion.
 - Reviewing pipeline definitions for executability, scope control, evidence
-  alignment, and review-gate integrity.
+  alignment, review-gate integrity, and terminal-state closure.
+
+## Design Checks
+
+- Identify each external artifact or side effect created by the pipeline, such
+  as a PR, deploy, release, ticket, published package, or handoff document.
+- For each item, state the closure path: the stage that closes it, the handoff
+  owner that closes it, or the explicit stop condition before BF should call the
+  task done.
+- Reject pipeline designs that create dangling external work while still
+  reaching a user-perspective completed state.
 
 ## When to Include
 

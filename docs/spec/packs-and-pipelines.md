@@ -78,6 +78,20 @@ Rules:
 - Local pipelines use the same YAML contract as pack pipelines.
 - Local pipelines are contract files after Spec Review and `accept`.
 
+Local pipeline design must account for terminal-state closure. When a pipeline
+creates an external artifact or side effect, such as a PR, deploy, release,
+ticket, published package, or handoff document, the pipeline must describe how
+that item reaches a terminal state before the task is complete from the user's
+perspective. The closure path can be a later stage, a named handoff owner, or an
+explicit stop condition that prevents BF from treating dangling work as done.
+
+Spec Review includes a `pipeline-review` reviewer for bf-wo local pipelines. The
+reviewer rejects local pipelines that create external artifacts or side effects
+without terminal-state closure. This is currently an instruction-level contract:
+the harness does not infer side effects from free-form YAML instructions, add a
+built-in merge stage, validate project-specific PR body conventions, or require
+a `terminal_state` schema field.
+
 Local pipelines are for one bf-wo only. If the flow appears reusable across
 bf-wos, the orchestrator may mention that after Final Acceptance as advisory
 follow-up. It must not promote local pipelines, edit extension packs, create

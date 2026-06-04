@@ -12,10 +12,14 @@ export function skillsDir(home = homedir()) {
   return discoveryTargetDir("claude", home);
 }
 
+export function codexHomeDir(home = homedir()) {
+  return process.env.CODEX_HOME || join(home, ".codex");
+}
+
 export function discoveryRootDir(target, home = homedir()) {
   switch (target) {
     case "claude": return join(home, ".claude");
-    case "codex": return join(home, ".agents");
+    case "codex": return codexHomeDir(home);
     default: throw new Error(`unknown discovery target: ${target}`);
   }
 }
@@ -23,7 +27,7 @@ export function discoveryRootDir(target, home = homedir()) {
 export function discoveryTargetDir(target, home = homedir()) {
   switch (target) {
     case "claude": return join(home, ".claude", "skills", SKILL_NAME);
-    case "codex": return join(home, ".agents", "skills", SKILL_NAME);
+    case "codex": return join(codexHomeDir(home), "skills", SKILL_NAME);
     default: throw new Error(`unknown discovery target: ${target}`);
   }
 }

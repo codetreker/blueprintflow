@@ -115,7 +115,7 @@ rm -rf "$ROOT" "$EMPTY_HOME"
 ROOT=$(make_temp_home)
 HOME_DIR=$(make_temp_home)
 BASE=$(make_temp_home)
-mkdir -p "$ROOT/packs" "$HOME_DIR/.bf/extensions/packs/engineering/pipelines" "$HOME_DIR/.agents/skills/bf/extensions/packs/engineering/pipelines"
+mkdir -p "$ROOT/packs" "$HOME_DIR/.bf/extensions/packs/engineering/pipelines" "$HOME_DIR/.codex/skills/bf/extensions/packs/engineering/pipelines"
 cp -R "$FIXTURES/packs-engineering" "$ROOT/packs/engineering"
 cat > "$HOME_DIR/.bf/extensions/packs/engineering/pack.md" <<'EOF'
 ---
@@ -131,7 +131,7 @@ cat > "$HOME_DIR/.bf/extensions/packs/engineering/pipelines/custom.yml" <<'EOF'
 id: custom
 desc: Custom global extension pipeline
 EOF
-cat > "$HOME_DIR/.agents/skills/bf/extensions/packs/engineering/pack.md" <<'EOF'
+cat > "$HOME_DIR/.codex/skills/bf/extensions/packs/engineering/pack.md" <<'EOF'
 ---
 Id: engineering
 Desc: Ignored host discovery engineering pack
@@ -141,7 +141,7 @@ Desc: Ignored host discovery engineering pack
 
 Should not be read.
 EOF
-cat > "$HOME_DIR/.agents/skills/bf/extensions/packs/engineering/pipelines/ignored.yml" <<'EOF'
+cat > "$HOME_DIR/.codex/skills/bf/extensions/packs/engineering/pipelines/ignored.yml" <<'EOF'
 id: ignored
 desc: Ignored host discovery pipeline
 EOF

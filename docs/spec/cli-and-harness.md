@@ -45,6 +45,9 @@ Installs host discovery snapshots for supported LLM hosts. Without `--target`,
 the command auto-detects existing host roots and installs every detected target.
 With `--target claude|codex`, it installs only that target.
 
+Codex discovery uses `$CODEX_HOME/skills/bf` when `CODEX_HOME` is set. Otherwise
+it uses `<home>/.codex/skills/bf`.
+
 Output includes:
 
 - BF package version;

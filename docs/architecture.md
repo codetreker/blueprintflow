@@ -133,8 +133,9 @@ The orchestrator verifies:
 Packs and roles are extension points. Core definitions live in the npm package.
 Global user extensions live under `~/.bf/extensions/`. Project extensions live
 under `<project-root>/.bf/extensions/`. Host discovery snapshots under
-`~/.claude/skills/bf/` and `~/.agents/skills/bf/` are generated copies and are
-not extension roots. Each snapshot carries `.bf-install.json` so `bf install`
+`~/.claude/skills/bf/` and `$CODEX_HOME/skills/bf/` are generated copies and are
+not extension roots. When `CODEX_HOME` is unset, Codex defaults to
+`~/.codex/skills/bf/`. Each snapshot carries `.bf-install.json` so `bf install`
 can report whether the snapshot was newly installed, refreshed, updated, or
 updated from an unknown older copy.
 

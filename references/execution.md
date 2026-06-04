@@ -17,6 +17,15 @@ Goal: loop until `bf-harness verify <bf-wo>` returns Final Acceptance SUCCESS.
    1. `bf-harness start-review <bf-wo>` — spawn reviewers against the `bf.md` AC.
    2. `bf-harness verify <bf-wo>` (Final Acceptance). On SUCCESS the harness flips all `bf.md` AC and sets `State: Completed`.
 
+## Pipeline promotion suggestions
+
+After Final Acceptance succeeds, you may mention that a bf-wo local pipeline
+appears reusable. This is advisory only.
+
+You must not promote local pipelines, edit extension packs, create files, or
+open a PR as part of execution completion. Promotion workflow starts only after
+an explicit user request.
+
 ## Verify output contract
 
 `verify` has three distinct outcomes; branch on exit code, not on stdout content:

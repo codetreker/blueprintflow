@@ -70,6 +70,10 @@ Every BF work object lives under `<project-root>/.bf/<bf-wo>/`.
    - Spawn independent reviewer subagents to write review results.
    - Run `bf-harness verify <bf-wo>/<task>` until the task verifies.
    - After all tasks complete, run bf-level final acceptance.
+   - After Final Acceptance, the orchestrator may make an advisory note when a
+     bf-wo local pipeline appears reusable. This is advisory only.
+   - Execution completion must not promote local pipelines, edit extension packs,
+     create files, or open a PR. Promotion starts only after an explicit user request.
 
 ## Spec Review Flow
 

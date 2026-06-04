@@ -134,7 +134,9 @@ Packs and roles are extension points. Core definitions live in the npm package.
 Global user extensions live under `~/.bf/extensions/`. Project extensions live
 under `<project-root>/.bf/extensions/`. Host discovery snapshots under
 `~/.claude/skills/bf/` and `~/.agents/skills/bf/` are generated copies and are
-not extension roots.
+not extension roots. Each snapshot carries `.bf-install.json` so `bf install`
+can report whether the snapshot was newly installed, refreshed, updated, or
+updated from an unknown older copy.
 
 Same-id extension packs merge with Core packs. Pack guidance remains
 LLM-readable through ordered `pack.md` paths; roles and pipelines merge

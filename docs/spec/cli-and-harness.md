@@ -39,6 +39,31 @@ Output includes:
 - description;
 - path.
 
+### `install`
+
+Installs host discovery snapshots for supported LLM hosts. Without `--target`,
+the command auto-detects existing host roots and installs every detected target.
+With `--target claude|codex`, it installs only that target.
+
+Output includes:
+
+- BF package version;
+- detected targets, or the explicit target;
+- one status line per target;
+- the unchanged global extension location.
+
+Target status values:
+
+- `installed`: target snapshot did not exist;
+- `updated`: target snapshot existed with a different BF install metadata version;
+- `refreshed`: target snapshot existed with the same BF install metadata version;
+- `updated-from-unknown`: target snapshot existed without readable BF install metadata.
+
+Each discovery snapshot includes `.bf-install.json` with schema, package name,
+package version, target, and install timestamp. This file is metadata for BF
+install status only; the discovery snapshot remains a generated host-readable
+copy, not an npm package mirror.
+
 ## `bf-harness`
 
 `bf-harness` controls BF work-object state under `<project-root>/.bf/<bf-wo>`.

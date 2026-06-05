@@ -7,10 +7,13 @@ instruction: |
   artifact or review result before the next stage starts. Prefer separate
   subagents for stage work when isolation improves review quality or context
   focus; review stages must remain independent from the implementation work they
-  review. Stop on any Blocker or High review finding; fix the finding and rerun
-  the affected review stage before continuing. Do not edit locked bf.md or task
-  spec.md content after accept; only the harness may advance State, Updated, and
-  AC checkboxes.
+  review. When starting a role-bound subagent, pass the role id and role
+  instruction path, then require the subagent to read that role instruction
+  before the stage instruction. Inline role instruction content only when local
+  file access is unavailable. Stop on any Blocker or High review finding; fix
+  the finding and rerun the affected review stage before continuing. Do not edit
+  locked bf.md or task spec.md content after accept; only the harness may
+  advance State, Updated, and AC checkboxes.
 stages:
   - id: architecture-design
     capability: system-architecture
@@ -60,9 +63,12 @@ stages:
   - id: code-review
     capability: quality-assurance
     instruction: |
-      Review the code, Evidence artifacts, and task AC from outside the
-      implementation. Confirm each AC has matching evidence and no Blocker or High
-      findings. Sign off only the AC ids that the review independently verifies.
+      Run a multi-perspective review of the code, Evidence artifacts, and task
+      AC from outside the implementation. Gather implementation perspective
+      checks, architecture perspective checks, and QA perspective checks while
+      keeping quality-assurance as the stage owner. Confirm each AC has matching
+      evidence and no Blocker or High findings. Sign off only the AC ids that
+      the review independently verifies.
 
   - id: terminal-state-closure
     capability: quality-assurance

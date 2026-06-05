@@ -1,6 +1,6 @@
 ---
 name: bf
-description: "Use when the user types /bf, asks to brainstorm a software change, decompose a feature into tasks, draft a spec, or ship work behind an explicit review-and-verify gate. Trigger symptoms: a multi-task feature needs structured planning, the user wants every acceptance criterion signed off by an independent reviewer, the user wants an audit trail of decisions and trade-offs, or strict separation between the agent doing the work and the agent reviewing it is required. Applies to any software task — new feature, bugfix, refactor, library/CLI/API."
+description: "Use when the user types /bf, asks to brainstorm a software change, decompose a feature into tasks, draft a spec, ship work behind an explicit review-and-verify gate, or explicitly asks to prepare, file, or comment on BF GitHub issue feedback. Applies to software tasks and BF feedback intake."
 ---
 
 # BF — Blueprintflow
@@ -33,6 +33,7 @@ Re-check this every time you spawn a reviewer. It is the one rule the system can
 - `references/brainstorm.md` — drive the discussion, pick a pack, append `discussion.md`.
 - `references/spec-authoring.md` — author `bf.md` + per-task `spec.md`, lint, Spec Review loop, `accept`.
 - `references/execution.md` — `next → do → review → verify` loop, Task Verification and Final Acceptance.
+- `references/feedback.md` — prepare user-requested GitHub issue feedback with duplicate checks, filing boundaries, redaction, and final user confirmation.
 - `templates/` — frozen file shapes (`bf.md`, `task-spec.md`, `discussion.md`, `review-result.md`, `role.md`, `pack.md`). Copy these when authoring; do not improvise.
 - `roles/` — Core roles (`architect`, `engineer`, `tester`, …). Each pack's `pack.md` declares which role plays which phase. Packs may add private roles under `packs/<id>/roles/`.
 - `packs/` — installed packs. Each `pack.md` has `When to Use` + the three phase guidances. Pack pipelines live under `packs/<id>/pipelines/*.yml` and are discoverable with `bf list-pipelines --pack <id>`.

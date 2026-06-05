@@ -5,7 +5,8 @@ description: "Part of the Blueprintflow methodology. Use when updating the Bluep
 
 # Repo Update
 
-All Blueprintflow repo changes go through: **worktree → PR → all-hands review → merge**. Never push to main directly.
+All Blueprintflow repo changes go through: **worktree → PR → BF gate → merge**.
+Never push to main directly.
 
 ## Flow
 
@@ -23,11 +24,11 @@ git push -u origin docs/<topic>
 # 3. Open PR
 gh pr create --repo codetreker/blueprintflow \
   --title "docs(<scope>): <description>" \
-  --body "## Summary\n<what + why>\n\n## Affected skills\n- ..."
+  --body "## Summary\n<what + why>\n\n## Affected skills\n- ...\n\n## BF gate\n- BF work object: <id + state + final verify result, or BF-not-required reason>\n- Validation evidence: <commands + pass/fail summary>\n- Required GitHub reviews/checks: <pass/fail/pending summary>\n- Blocking conversations: <resolved / list blockers>"
 
-# 4. All-hands review (see review table below)
+# 4. BF gate review (see BF gate below)
 
-# 5. Merge (after all ✅)
+# 5. Merge (after BF gate and required GitHub checks/reviews pass)
 gh pr merge <N> --repo codetreker/blueprintflow --squash
 
 # 6. Clean up
@@ -36,19 +37,22 @@ git worktree remove .worktrees/<topic>
 git fetch origin --prune
 ```
 
-## Review
+## BF Gate
 
-| Role | Lens | Question to answer |
-|---|---|---|
-| Dev | Implementation | Can these rules be executed without ambiguity? |
-| PM | User | Can a new team member understand this on first read? |
-| QA | Acceptance | Are the rules verifiable? Are there enough examples? |
-| Architect | Consistency | Does it conflict with other skills? Does the structure hold? |
-| All | Progressive disclosure | Should any section move to references/? |
+Before merge, verify:
+
+- The relevant BF work object is `Completed`, or the PR records why BF was not
+  required.
+- Required validation commands passed.
+- Required GitHub reviews and checks passed.
+- Blocking review comments, check failures, branch policy issues, and
+  conversation threads are resolved.
 
 **Format check**: bulk replace / rename PRs must verify ASCII art, tables, and code block indentation weren't damaged.
 
-**Review standard**: see `bf-pr-review-flow` for the full review protocol. Core: read the whole thing + put yourself in others' shoes + hunt for problems before LGTM.
+**Review standard**: reviewers read the whole changed file, then the diff. They
+verify the BF gate evidence, put themselves in the next agent's shoes, and hunt
+for blocking problems before LGTM.
 
 ## Skill Writing Standard
 
@@ -83,7 +87,7 @@ Run this gate after editing any skill body, skill reference, or skill metadata, 
 1. Spawn 4 local subagents in parallel when the runtime supports it.
 2. If capacity is insufficient, follow `bf-runtime-adapter`: ask for required authorization, then declare and record `serial fallback` only for true runtime/session incapacity.
 3. Give each reviewer the changed file paths, the diff, and this `repo-update` skill. Require each reviewer to read every changed skill/reference as a whole. Do not give them your intended conclusion.
-4. Give the Process reviewer `skill-creator` and `writing-skills`, or tell it to load them before review. If either skill is unavailable, record that as a Process blocker and ask Jianjun for a fallback in the PR.
+4. Give the Process reviewer `skill-creator` and `writing-skills`, or tell it to load them before review. If either skill is unavailable, record that as a Process blocker and ask the user for a fallback in the PR.
 5. For failure-driven changes, give every reviewer the recorded failure and prevention check.
 6. Require final output with `Blockers`, `Findings`, `Prevention check` when applicable, and `LGTM` or `NOT LGTM`.
 7. Require each finding to state whether it is informational or must-fix.
@@ -98,8 +102,8 @@ Run this gate after editing any skill body, skill reference, or skill metadata, 
 
 9. Architect records the 4 reviewer outcomes in the PR body under `Local Skill Review Gate`, or in a PR comment linked from that section.
 10. Fix every blocker and every must-fix finding. Re-run the affected reviewer lens after each fix.
-11. Treat local reviewer LGTM as a prerequisite only. It does not replace all-hands PR review or Jianjun approval.
-12. Do not check any PR `Review checklist` item until all 4 local reviewers return LGTM and the durable review artifact is recorded.
+11. Treat local reviewer LGTM as a prerequisite only. It does not replace BF final acceptance, required GitHub reviews/checks, or user approval when requested.
+12. Do not mark the PR `BF gate` ready until all 4 local reviewers return LGTM and the durable review artifact is recorded.
 13. Do not self-approve the gate.
 
 ## Anti-patterns
@@ -112,12 +116,16 @@ Run this gate after editing any skill body, skill reference, or skill metadata, 
 
 ## Rules
 
-- **Only the Architect opens PRs and merges**
+- **Open PRs and merge only through the BF gate**
 - **Never push to main directly**
-- **All-hands vote required** — Architect + PM + Dev + QA + Jianjun all ✅; any missing = don't merge
+- **BF gate required** — missing BF completion or BF-not-required reason,
+  required checks/reviews, or unresolved blocking conversations means don't
+  merge
 - **Read the whole file** — not just the diff
 - **No LGTM with open issues** — found a problem = NOT LGTM; author fixes, re-review, then LGTM. "LGTM, not blocking" does not exist
-- **Bump `plugin.json` version** — patch for fixes, minor for new public skills, major for public skill renames/removals. Same PR, not follow-up
+- **Bump package versions for release-facing BF changes** — update
+  `package.json` and `package-lock.json`. Legacy plugin manifest versions
+  change only when legacy plugin files change.
 - **Commit format**: `docs(<skill-name>): <description>`
 
 ## When it doesn't apply

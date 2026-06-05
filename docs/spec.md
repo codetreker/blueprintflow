@@ -40,6 +40,7 @@ flowchart TB
 | Durable file contracts | [File contracts](spec/file-contracts.md) |
 | CLI and harness command behavior | [CLI and harness](spec/cli-and-harness.md) |
 | Pack, role, and pipeline model | [Packs and pipelines](spec/packs-and-pipelines.md) |
+| User-requested GitHub issue feedback | [Feedback mechanism](spec/feedback.md) |
 
 ## Module Summary
 

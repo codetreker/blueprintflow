@@ -40,6 +40,10 @@ closure. It does not implement product code and does not own task breakdown.
   implementation, architecture, and QA, while keeping the stage owner simple.
 - Escalate multi-reviewer structure into schema only after the pattern is stable
   and must become a harness-enforced stable mechanical gate.
+- When a coordinator starts a role-bound subagent, include the role id and role
+  instruction file path in the prompt. Require the subagent to read that file
+  before following the stage instruction. If the runtime cannot guarantee local
+  file access, inline the role instruction content in the prompt.
 - Identify each external artifact or side effect created by the pipeline, such
   as a PR, deploy, release, ticket, published package, or handoff document.
 - For each item, state the closure path: the stage that closes it, the handoff

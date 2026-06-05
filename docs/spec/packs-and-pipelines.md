@@ -65,6 +65,11 @@ The first pipeline version is instruction-only:
 - Pipeline or stage instructions decide when subagents are preferred or required.
 - Pipeline state and stage gates may later move into the harness.
 
+When a coordinator starts a role-bound subagent, the prompt includes the role id
+and role instruction file path. The subagent must read that role instruction
+before following the stage instruction. If the runtime cannot guarantee local
+file access, the coordinator inlines the role instruction content in the prompt.
+
 Stage `capability` remains a single owner or coordinator capability. When a
 review stage needs multiple perspectives, the pipeline records those
 perspectives in the stage instruction instead of changing `capability` to an

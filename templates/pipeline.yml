@@ -5,8 +5,11 @@ instruction: |
   artifacts, stop conditions, subagent expectations, and how the pipeline
   satisfies the task AC and Evidence requirements. List every external artifact
   or side effect the pipeline creates, then name the closure stage or handoff
-  that moves each one to a terminal state. Define the user-perspective done
-  state before the task may be considered complete.
+  that moves each one to a terminal state. For any role-bound subagent, pass the
+  role id and role instruction path, then require the subagent to read that role
+  instruction before the stage instruction. Inline role instruction content only
+  when local file access is unavailable. Define the user-perspective done state
+  before the task may be considered complete.
 stages:
   - id: <stage-id>
     capability: <capability>

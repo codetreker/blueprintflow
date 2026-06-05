@@ -31,6 +31,7 @@ Re-check this every time you spawn a reviewer. It is the one rule the system can
 ## Pointers
 
 - `references/brainstorm.md` — drive the discussion, pick a pack, append `discussion.md`.
+- `references/project-docs.md` — discover project design docs, use them as design authority, and stop on design drift.
 - `references/spec-authoring.md` — author `bf.md` + per-task `spec.md`, lint, Spec Review loop, `accept`.
 - `references/execution.md` — `next → do → review → verify` loop, Task Verification and Final Acceptance.
 - `references/feedback.md` — prepare user-requested GitHub issue feedback with duplicate checks, filing boundaries, redaction, and final user confirmation.

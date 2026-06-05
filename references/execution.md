@@ -6,14 +6,15 @@ Goal: loop until `bf-harness verify <bf-wo>` returns Final Acceptance SUCCESS.
 
 1. `bf-harness next <bf-wo>` — prints labeled lines for one ready task: `Task:`, `Pipeline:`, `Pipeline path:`, `Pack:`, `Spec:`, `Dir:`. The harness flips the returned task to `Tasking` and (on the first call) flips `bf.md` to `Implementing`. If no task is ready (deps unmet) `next` exits non-zero with an error message on stdout; wait or run `verify` first.
 2. Read the returned pipeline file. Follow the top-level pipeline instruction first, then follow each stage instruction in order. Do not assume every stage requires a subagent; use one when the pipeline or stage instruction asks for one or when isolation/review quality requires it. Stop when a stage instruction says to stop, including any Blocker or High review finding.
-3. The implementation stage reads the pack's `Execute Guidance`, the task spec, and every `Evidence` entry, makes the changes, and produces evidence artifacts that satisfy the locked evidence requirements (commits, command output, screenshots, reviewer notes, or named files).
-4. `bf-harness start-review <bf-wo>/<task>` — returns the task-level round dir.
-5. For each AC's review capability, spawn one or more **reviewer** subagents — **different subagent instances than the implementation doer** (IV — see SKILL.md). Each writes `result_<role>_<idx>.md` into the round dir.
-6. `bf-harness verify <bf-wo>/<task>` (Task Verification). On FAIL, read the verify-result file, dispatch fixes (the same doer subagent or a new one), open a new review round, and re-verify. The task stays in `Tasking` until verify SUCCESS, at which point the harness flips its AC and sets `State: Completed`.
+3. Follow [project-docs.md](project-docs.md) during execution. If code and confirmed design docs disagree, record design drift and stop for user clarification. If implementation exposes a design gap in the accepted contract, stop and return to design discussion.
+4. The implementation stage reads the pack's `Execute Guidance`, the task spec, and every `Evidence` entry, makes the changes, and produces evidence artifacts that satisfy the locked evidence requirements (commits, command output, screenshots, reviewer notes, or named files).
+5. `bf-harness start-review <bf-wo>/<task>` — returns the task-level round dir.
+6. For each AC's review capability, spawn one or more **reviewer** subagents — **different subagent instances than the implementation doer** (IV — see SKILL.md). Each writes `result_<role>_<idx>.md` into the round dir.
+7. `bf-harness verify <bf-wo>/<task>` (Task Verification). On FAIL, read the verify-result file, dispatch fixes (the same doer subagent or a new one), open a new review round, and re-verify. The task stays in `Tasking` until verify SUCCESS, at which point the harness flips its AC and sets `State: Completed`.
 
 ## Final acceptance
 
-7. When all task `spec.md` are `Completed`, run one more bf-level review pass:
+8. When all task `spec.md` are `Completed`, run one more bf-level review pass:
    1. `bf-harness start-review <bf-wo>` — spawn reviewers against the `bf.md` AC.
    2. `bf-harness verify <bf-wo>` (Final Acceptance). On SUCCESS the harness flips all `bf.md` AC and sets `State: Completed`.
 

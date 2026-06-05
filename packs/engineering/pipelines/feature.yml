@@ -1,10 +1,16 @@
 id: feature
-desc: Feature task with architecture, design, implementation, and review gates
+desc: Feature task with design-first architecture, implementation, validation, docs sync, and review gates
 instruction: |
-  Use this pipeline for feature tasks whose execution needs design before code.
-  Run the stages in order. Read the task spec, bf.md Goal/Boundary, and any
-  relevant discussion before the first stage. Each stage must produce its named
-  artifact or review result before the next stage starts. Prefer separate
+  Use this design-first pipeline for feature tasks whose execution needs design
+  before code. It requires architecture/design, an evidence plan,
+  task-appropriate validation, design-doc-sync when accepted design changes, and
+  independent review. It does not require red-first TDD for every feature task;
+  use the bugfix pipeline when the task is a defect fix that needs strict
+  regression red-green work. Run the stages in order. Read the task spec, bf.md
+  Goal/Boundary, any relevant discussion, and confirmed project design docs
+  before the first stage. Each stage must produce its named artifact or review
+  result before the next stage starts. When design-doc sync or full validation is
+  not required, record explicit not-applicable evidence. Prefer separate
   subagents for stage work when isolation improves review quality or context
   focus; review stages must remain independent from the implementation work they
   review. When starting a role-bound subagent, pass the role id and role
@@ -56,17 +62,37 @@ stages:
     capability: software-implementation
     instruction: |
       Implement only the locked task scope. Follow the approved architecture and
-      implementation design, prefer TDD where it fits, and produce every required
-      Evidence artifact from the task spec. Record command output, changed files,
-      screenshots, or reviewer notes as requested by the Evidence section.
+      implementation design and produce every required Evidence artifact from
+      the task spec. Record command output, changed files, screenshots, or
+      reviewer notes as requested by the Evidence section.
+
+  - id: design-doc-sync
+    capability: system-architecture
+    output: artifacts/design-doc-sync.md
+    instruction: |
+      Update confirmed project design docs when the task changes accepted system
+      boundaries, module ownership, state authority, cross-module flows,
+      validation boundaries, or known gaps. If no design-doc sync is required,
+      write not-applicable evidence that names why the task did not change
+      accepted design.
+
+  - id: validation
+    capability: software-implementation
+    output: artifacts/validation.md
+    instruction: |
+      Run task-appropriate validation and record the command output. For runtime
+      or release-facing changes, run full validation unless the locked task
+      contract defines a narrower validation boundary. If full validation is not
+      required, write not-applicable evidence explaining the boundary.
 
   - id: code-review
     capability: quality-assurance
     instruction: |
-      Run a multi-perspective review of the code, Evidence artifacts, and task
-      AC from outside the implementation. Gather implementation perspective
-      checks, architecture perspective checks, and QA perspective checks while
-      keeping quality-assurance as the stage owner. Confirm each AC has matching
+      Run a multi-perspective review of the code, Evidence artifacts,
+      design-doc-sync evidence, validation evidence, and task AC from outside
+      the implementation. Gather implementation perspective checks, architecture
+      perspective checks, and QA perspective checks while keeping
+      quality-assurance as the stage owner. Confirm each AC has matching
       evidence and no Blocker or High findings. Sign off only the AC ids that
       the review independently verifies.
 

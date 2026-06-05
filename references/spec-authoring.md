@@ -6,16 +6,17 @@ Goal: produce a locked `bf.md` + one `<task-id>/spec.md` per task, with every AC
 
 1. `bf list-roles --pack <id>` — get the available roles and the capabilities they provide.
 2. `bf list-pipelines --pack <id>` — get the available task execution pipelines for this pack.
-3. Author `bf.md` with `State: Draft` using `templates/bf.md`. Every AC must carry `{id}|{capability}`, and the capability must be declared in some role's `Capabilities:` list.
-4. Author each `<task>/spec.md` with `State: Draft` using `templates/task-spec.md`. Each task spec has exactly one `Pipeline` in frontmatter, AC lines with their own `{capability}` markers (review capability), and an explicit `Evidence` section that maps each task AC to one or more required evidence items.
-5. If no pack pipeline fits a task, create a bf-wo local pipeline under `<bf-wo>/pipelines/<id>.yml`. The local pipeline must be designed by a `pipeline-designer` subagent. The designer must include terminal-state closure for every external artifact or side effect the pipeline creates, so the pipeline cannot reach user-perspective completion with dangling work. The parent orchestrator may only make mechanical path/format fixes; substantive stage, gate, capability, artifact, closure, handoff, or stop-condition changes go back to the designer.
-6. `bf-harness lint <bf-wo>` — fix every error and re-run until SUCCESS.
-7. **Spec Review loop:**
+3. Follow [project-docs.md](project-docs.md). If confirmed project design docs exist, treat them as design authority while drafting. If the work changes accepted system design, add design-doc update AC and Evidence to the relevant task specs.
+4. Author `bf.md` with `State: Draft` using `templates/bf.md`. Every AC must carry `{id}|{capability}`, and the capability must be declared in some role's `Capabilities:` list.
+5. Author each `<task>/spec.md` with `State: Draft` using `templates/task-spec.md`. Each task spec has exactly one `Pipeline` in frontmatter, AC lines with their own `{capability}` markers (review capability), and an explicit `Evidence` section that maps each task AC to one or more required evidence items.
+6. If no pack pipeline fits a task, create a bf-wo local pipeline under `<bf-wo>/pipelines/<id>.yml`. The local pipeline must be designed by a `pipeline-designer` subagent. The designer must include terminal-state closure for every external artifact or side effect the pipeline creates, so the pipeline cannot reach user-perspective completion with dangling work. The parent orchestrator may only make mechanical path/format fixes; substantive stage, gate, capability, artifact, closure, handoff, or stop-condition changes go back to the designer.
+7. `bf-harness lint <bf-wo>` — fix every error and re-run until SUCCESS.
+8. **Spec Review loop:**
    1. `bf-harness start-review <bf-wo>` — returns the round directory `<bf-wo>/runs/reviews/round_N/`.
    2. For each role returned by `bf list-roles --pack <id>` that provides a review capability used in the spec, spawn 1–3 reviewer subagents (cap total at 10). Each subagent writes `result_<role>_<idx>.md` into the round dir using `templates/review-result.md`.
    3. If the bf-wo has local pipelines, include an independent reviewer with `pipeline-review` capability. This reviewer must be a different subagent instance from the pipeline designer. The reviewer must reject any bf-wo local pipeline that creates external artifacts or side effects without a terminal-state closure path, handoff, or explicit stop condition for dangling work.
    4. `bf-harness verify <bf-wo>` (Spec Review) — `SUCCESS <path>` or `FAIL <path>`. On FAIL, read the verify-result file, fix `bf.md` / `spec.md` / local pipelines, then start a new round.
-8. When verify returns SUCCESS and the user agrees with the plan, `bf-harness accept <bf-wo>`. `bf.md` → `Accepted`; all tasks cascade `Draft` → `Ready`. **Contract is now locked.**
+9. When verify returns SUCCESS and the user agrees with the plan, `bf-harness accept <bf-wo>`. `bf.md` → `Accepted`; all tasks cascade `Draft` → `Ready`. **Contract is now locked.**
 
 ## Mutation whitelist after accept
 

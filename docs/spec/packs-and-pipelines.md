@@ -10,6 +10,7 @@ packs/
   +- engineering/
   |    +- pack.md           # required: pack description + phase guidance
   |    +- pipelines/        # optional: task execution pipelines
+  |    |    +- bugfix.yml
   |    |    +- feature.yml
   |    +- roles/            # optional: pack-private roles
   |        +- designer.md
@@ -88,6 +89,27 @@ owner, or is blocked by an explicit stop condition. This remains an
 instruction-level contract: BF does not add harness stage enforcement, infer side
 effects, require a schema field, add new capabilities, or hard-code
 merge/deploy/publish behavior.
+
+## Built-In Engineering Pipelines
+
+The engineering pack ships separate pipelines for feature work and defect fixes.
+
+`feature.yml` is design-first. It requires architecture/design artifacts,
+pre-implementation review, implementation, design-doc sync when accepted system
+design changes, task-appropriate validation, multi-perspective independent
+review, and terminal-state closure. It does not require red-first TDD for every
+feature task; the task contract chooses the evidence and validation boundary.
+
+`bugfix.yml` is regression red-green. It requires a focused failing regression
+test or reproduction before implementation, expected-failure review, the
+smallest fix, a focused passing test, design-doc sync when the clarified path or
+locked task scope changes accepted behavior contracts, validation, independent
+review, and terminal-state closure. If the bug exposes design drift, the
+pipeline stops for user clarification before changing docs.
+
+Both pipelines read confirmed project design docs as external design authority.
+Both require not-applicable evidence when design-doc sync or full validation is
+outside the locked task boundary.
 
 ## BF-WO Local Pipelines
 

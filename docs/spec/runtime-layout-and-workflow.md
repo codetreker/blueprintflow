@@ -1,6 +1,8 @@
 # Runtime Layout And Workflow
 
 This page describes the BF runtime file layout and the high-level workflow.
+BF runtime state lives under `.bf/`. BF does not define `.tasks/` as a runtime
+directory for drafts, design notes, or execution artifacts.
 
 ## Skill Directory Structure
 
@@ -14,6 +16,7 @@ This page describes the BF runtime file layout and the high-level workflow.
   +- packs/
   |    +- engineering/
   |    +- ...
+  +- references/
   +- roles/
   +- ...
 ```
@@ -46,11 +49,21 @@ Every BF work object lives under `<project-root>/.bf/<bf-wo>/`.
    - The LLM can be invoked by `/bf brainstorming`, `/bf 我们讨论一个方案`, or an equivalent user request.
    - Run `bf list-packs` to discover installed packs.
    - Select the pack that best fits the user's input.
+   - Follow [`references/project-docs.md`](../../references/project-docs.md)
+     to discover the project's design-doc root from project instructions,
+     repository structure, prompts, workflows, and document content.
+   - Record the doc-root discovery result in `discussion.md`. If a single root
+     is inferred rather than explicit, ask the user to confirm it before
+     treating it as authoritative.
    - Write `discussion.md` directly under `<project-root>/.bf/<bf-wo>/` so the discussion is crash-safe and restartable.
 
 2. Write spec.
    - Run `bf list-roles --pack <pack>` to discover available roles and capabilities.
    - Run `bf list-pipelines --pack <pack>` to discover available task pipelines.
+   - Treat confirmed project design docs as the external system design
+     authority. If the work changes accepted system boundaries, module
+     ownership, state authority, cross-module flows, validation boundaries, or
+     known gaps, include design-doc update requirements in task AC and Evidence.
    - Write `bf.md` with `State: Draft`.
    - Create one directory per task and write `<task>/spec.md` with `State: Draft`.
    - Each task spec selects exactly one `Pipeline`.
@@ -66,6 +79,12 @@ Every BF work object lives under `<project-root>/.bf/<bf-wo>/`.
    - Run `bf-harness next <bf-wo>` to claim the next eligible task.
    - Read the returned task spec, pack, and pipeline path.
    - Follow the pipeline instruction and stage instructions.
+   - Use confirmed project design docs while executing. If code and confirmed
+     design docs disagree, record design drift in `discussion.md` and stop for
+     user clarification.
+   - If implementation exposes a design gap in the accepted `bf.md` or task
+     `spec.md`, stop implementation and return to design discussion instead of
+     silently expanding locked scope.
    - Run `bf-harness start-review <bf-wo>/<task>`.
    - Spawn independent reviewer subagents to write review results.
    - Run `bf-harness verify <bf-wo>/<task>` until the task verifies.

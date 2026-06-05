@@ -15,16 +15,14 @@ roles, packs, and CLI tools that an orchestrating LLM reads and executes.
 |---|---|
 | BF runtime | Root npm package: `SKILL.md`, `bin/`, `roles/`, `packs/`, `templates/`, `references/` |
 | BF design | `docs/`, especially `docs/spec.md` |
-| DDD draft work | `.tasks/` (gitignored) |
 | Tests | `test/` + `npm test` |
 | Legacy plugin | `plugins/blueprintflow/` (deprecated; edit only when explicitly requested) |
 
 ## Hard Rules
 
 - Treat `docs/` as the durable, latest accepted design record.
-- Put draft DDD notes, alternatives, and discussion artifacts in `.tasks/`.
 - After DDD is accepted, update the relevant `docs/` files.
-- Keep runtime artifacts self-contained. `SKILL.md`, `roles/`, `packs/`, `templates/`, and `references/` must not reference `docs/` or `.tasks/`.
+- Keep runtime artifacts self-contained. `SKILL.md`, `roles/`, `packs/`, `templates/`, and `references/` must not reference `docs/`.
 - Use a worktree for implementation work.
 - Never push directly to `main`.
 - Never use admin merge. If a PR is blocked, resolve every blocking review,
@@ -42,7 +40,7 @@ For behavior, architecture, parser, harness, CLI, install, package layout, or ru
 
 1. Create or use a focused worktree.
 2. Discuss the design.
-3. Record draft design in `.tasks/`.
+3. Record the design discussion in BF work-object artifacts.
 4. Get user approval.
 5. Write the smallest failing test for one approved behavior.
 6. Confirm the test fails for the expected reason.
@@ -103,11 +101,11 @@ When legacy plugin files are touched, also run:
 
 ## Anti-Patterns
 
-- "This is small enough to code directly." --> No. Record the design in `.tasks/`, get approval, then enter TDD.
+- "This is small enough to code directly." --> No. Record the design, get approval, then enter TDD.
 - "I'll add tests after the implementation." --> No. Write the failing test first and confirm the expected failure.
 - "The test is failing because the implementation is not done, so I can keep coding." --> Stop. Confirm the failure matches the approved behavior before writing production code.
 - "The design gap is obvious; I'll decide in code." --> Stop. Return to DDD.
-- "This draft should live in `docs/` so it is easy to find." --> No. Put drafts in `.tasks/`; update `docs/` only after acceptance.
+- "This draft should live in `docs/` so it is easy to find." --> No. Update `docs/` only after the design is accepted.
 - "The DDD is done, so the code is enough." --> No. Update the relevant `docs/` files with the final accepted design.
 - "Runtime can link to `docs/` for more detail." --> No. Keep runtime artifacts self-contained; move required instructions into runtime files.
 - "The old plugin already solved this." --> No. Treat `plugins/blueprintflow/` as deprecated unless the user asked for legacy plugin work.

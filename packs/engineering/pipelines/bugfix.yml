@@ -13,7 +13,9 @@ instruction: |
   the implementation work they review. Stop on Blocker or High review findings
   and rerun the affected stage after fixes. Stop before task verification if any
   external artifact or side effect lacks a terminal state, handoff owner, or
-  explicit stop condition.
+  explicit stop condition. Do not edit locked bf.md or task spec.md content
+  after accept; only the harness may flip AC checkboxes, advance State, sync
+  Updated, and write task execution metadata.
 stages:
   - id: regression-reproduction
     capability: software-implementation

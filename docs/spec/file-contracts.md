@@ -5,10 +5,12 @@ section shapes, and comment rules live in `templates/`.
 
 ## Task Shape
 
-Each task is a child directory of `<bf-wo>/`:
+Each task is a child directory of a BF work object. New work objects live under
+`<state-home>/works/<bf-wo>/`; legacy direct `<state-home>/<bf-wo>/` work
+objects remain readable.
 
 ```text
-<bf-wo>/<task-id>/
+<state-home>/works/<bf-wo>/<task-id>/
   spec.md
   runs/
   ...
@@ -23,7 +25,7 @@ are already accepted user-facing contract or required Evidence.
 
 ## bf.md
 
-- Location: `<project-root>/.bf/<bf-wo>/bf.md`
+- Location: `<state-home>/works/<bf-wo>/bf.md` for new work objects.
 - Role: structured work-object contract.
 - Template: [`templates/bf.md`](../../templates/bf.md)
 - State values: `Draft`, `Accepted`, `Implementing`, `Completed`.
@@ -33,7 +35,7 @@ are already accepted user-facing contract or required Evidence.
 
 ## discussion.md
 
-- Location: `<project-root>/.bf/<bf-wo>/discussion.md`
+- Location: `<state-home>/works/<bf-wo>/discussion.md` for new work objects.
 - Role: brainstorm and spec rationale archive.
 - Template: [`templates/discussion.md`](../../templates/discussion.md)
 - Locking: never locked; appendable throughout the work object.
@@ -41,12 +43,17 @@ are already accepted user-facing contract or required Evidence.
 
 ## `<task-id>/spec.md`
 
-- Location: `<project-root>/.bf/<bf-wo>/<task-id>/spec.md`
+- Location: `<state-home>/works/<bf-wo>/<task-id>/spec.md` for new work objects.
 - Role: task-level contract.
 - Template: [`templates/task-spec.md`](../../templates/task-spec.md)
 - State values: `Draft`, `Ready`, `Tasking`, `Completed`.
 - The `Pipeline` field must reference a pipeline in the selected pack or a
-  bf-wo local pipeline under `<bf-wo>/pipelines/<id>.yml`.
+  bf-wo local pipeline under `<state-home>/works/<bf-wo>/pipelines/<id>.yml`.
+- The `Requires-Worktree` field is required and must be `true` or `false`.
+  Use `true` for tasks that change repository code or docs in a Git project.
+- `Branch`, `Worktree`, and `Pull-Request` are task execution metadata fields
+  owned by the harness. They are empty in Draft/Ready specs and are populated
+  only by `next` and `attach-pr`.
 - Task frontmatter must not contain execution `Capability`.
 - Acceptance Criteria lines carry `{id}|{capability}` review markers.
 - `## Evidence` is required.
@@ -56,7 +63,8 @@ are already accepted user-facing contract or required Evidence.
 - Evidence AC references must point to AC ids in the same task spec.
 - Evidence kind is one of `command`, `file`, `artifact`, `review-note`, or `screenshot`.
 - Evidence requirement text must be non-empty.
-- After accept, only the harness may mutate checkbox state, `State`, and `Updated`.
+- After accept, only the harness may mutate checkbox state, `State`, `Updated`,
+  and task execution metadata.
 - Spec review rejects contract gaps such as unclear ownership, broken handoffs,
   vague boundaries, unobservable AC, or missing Evidence. It does not require
   detailed implementation design before accept when the selected pipeline owns
@@ -64,8 +72,8 @@ are already accepted user-facing contract or required Evidence.
 
 ## Review Result
 
-- Location for bf-level review: `<bf-wo>/runs/reviews/round_N/result_<role>_<idx>.md`
-- Location for task-level review: `<bf-wo>/<task>/runs/reviews/round_N/result_<role>_<idx>.md`
+- Location for bf-level review: `<work-object>/runs/reviews/round_N/result_<role>_<idx>.md`
+- Location for task-level review: `<work-object>/<task>/runs/reviews/round_N/result_<role>_<idx>.md`
 - Role: one reviewer subagent's result for one review round.
 - Template: [`templates/review-result.md`](../../templates/review-result.md)
 - Multiple same-role reviewers in one round use different `idx` values starting at 1.
@@ -98,7 +106,7 @@ are already accepted user-facing contract or required Evidence.
 
 ## BF-WO Local Pipeline
 
-- Location: `<project-root>/.bf/<bf-wo>/pipelines/<pipeline-id>.yml`
+- Location: `<state-home>/works/<bf-wo>/pipelines/<pipeline-id>.yml`
 - Role: declare a task execution pipeline usable only inside one bf-wo.
 - Shape: same YAML shape as pack pipelines.
 - Key constraints: filename and `id` match; `desc`, top-level `instruction`, and

@@ -18,8 +18,8 @@ instruction: |
   before the stage instruction. Inline role instruction content only when local
   file access is unavailable. Stop on any Blocker or High review finding; fix
   the finding and rerun the affected review stage before continuing. Do not edit
-  locked bf.md or task spec.md content after accept; only the harness may
-  advance State, Updated, and AC checkboxes.
+  locked bf.md or task spec.md content after accept; only the harness may flip
+  AC checkboxes, advance State, sync Updated, and write task execution metadata.
 stages:
   - id: architecture-design
     capability: system-architecture

@@ -35,8 +35,10 @@ clarification instead of choosing whether code or docs win.
 
 BF does not define `.tasks/` as a runtime or draft-work directory. Draft
 discussion, contracts, task specs, review results, and execution artifacts are
-BF work-object state under `.bf/<bf-wo>/`; project-specific draft locations only
-exist when that project separately defines them.
+BF work-object state under `.bf/works/<bf-wo>/` in normal project work;
+project-specific draft locations only exist when that project separately
+defines them. Legacy `.bf/<bf-wo>/` work objects remain readable for
+compatibility.
 
 ```mermaid
 flowchart TB
@@ -70,12 +72,12 @@ flowchart TB
 | Module | Role | Durable Interfaces |
 |---|---|---|
 | Runtime docs | Tell the orchestrating LLM how to run BF | `SKILL.md`, `references/`, `packs/`, `roles/`, `templates/` |
-| Project design docs | Discovered external design authority for target-project work | Confirmed project doc root, recorded in `.bf/<bf-wo>/discussion.md`; runtime anchor `references/project-docs.md` |
+| Project design docs | Discovered external design authority for target-project work | Confirmed project doc root, recorded in `.bf/works/<bf-wo>/discussion.md`; runtime anchor `references/project-docs.md` |
 | Repo maintenance entry | Blueprintflow repository update workflow | `.claude/skills/repo-update/SKILL.md`, with `.agents/skills/repo-update/SKILL.md` as a discovery pointer |
 | `bf` CLI | Read-only metadata and install management | `list-packs`, `list-pipelines`, `list-roles`, `install`, `update`, `uninstall`, `version` |
-| `bf-harness` CLI | State mutation and verification loop | `lint`, `start-review`, `accept`, `next`, `verify`, `discard`, `list` |
-| Work object state | Per-project BF work state | `<project-root>/.bf/<bf-wo>/` |
-| Extension registry | User and project roles/packs | `extensions/roles`, `extensions/packs` |
+| `bf-harness` CLI | State mutation and verification loop | `lint`, `start-review`, `accept`, `next`, `attach-pr`, `verify`, `discard`, `list` |
+| Work object state | Per-project BF work state | Git default `<primary-worktree>/.bf/works/<bf-wo>/`; non-Git default `<cwd>/.bf/works/<bf-wo>/` |
+| Extension registry | User and project roles/packs | `~/.bf/extensions`, `<state-home>/extensions` |
 
 ## Implementation Anchors
 

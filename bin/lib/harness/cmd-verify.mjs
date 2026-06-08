@@ -7,6 +7,8 @@ import { flipCheckbox, writeState, writeUpdated, formatTimestamp } from "./write
 import { computeAcSignoff } from "./compute-ac-signoff.mjs";
 import { parseTaskSpec } from "./parse-task-spec.mjs";
 import { loadWo } from "./load-wo.mjs";
+import { parseGitHubPrUrl, parseGitHubRemoteUrl, readGitHubPr } from "./github-pr.mjs";
+import { spawnSync } from "node:child_process";
 
 export const VERIFY_MODES = {
   SPEC_REVIEW: "Spec Review",
@@ -53,6 +55,10 @@ async function verifyModeB({ bundle, parsedResults, taskId }) {
   if (signoff.missing.length > 0) {
     return { status: "FAIL", issues: { blocker: [], high: [] }, perAc: signoff.perAc };
   }
+  const prGate = checkGitHubPrGate(task);
+  if (!prGate.ok) {
+    return { status: "FAIL", issues: { blocker: [prGate.error], high: [] }, perAc: signoff.perAc };
+  }
 
   // Apply mutations: flip newly signed AC checkboxes, refresh Updated, maybe state change.
   let specText = fs.readFileSync(task.specPath, "utf8");
@@ -73,6 +79,48 @@ async function verifyModeB({ bundle, parsedResults, taskId }) {
     flipped: signoff.flipped,
     stateChanges,
   };
+}
+
+function runGit(cwd, args) {
+  const r = spawnSync("git", args, { cwd, encoding: "utf8" });
+  return {
+    ok: r.status === 0,
+    stdout: String(r.stdout || "").trim(),
+    stderr: String(r.stderr || "").trim(),
+  };
+}
+
+function checkGitHubPrGate(task) {
+  if (!task.spec.requiresWorktree) return { ok: true };
+  const metadata = task.spec.executionMetadata || {};
+  if (!metadata.worktree) return { ok: false, error: "worktree-required task is missing Worktree metadata" };
+  const remote = runGit(metadata.worktree, ["remote", "get-url", "origin"]);
+  if (!remote.ok) return { ok: false, error: "worktree-required task GitHub gate cannot read origin remote" };
+  const remoteRepo = parseGitHubRemoteUrl(remote.stdout);
+  if (!remoteRepo) return { ok: true };
+  if (!metadata.pullRequest) {
+    return { ok: false, error: "GitHub worktree-required task is missing Pull-Request metadata" };
+  }
+  const parsedPr = parseGitHubPrUrl(metadata.pullRequest);
+  if (!parsedPr) return { ok: false, error: "Pull-Request must be a GitHub PR URL" };
+  if (parsedPr.repoSlug !== remoteRepo.repoSlug) {
+    return {
+      ok: false,
+      error: `Pull-Request must belong to the same GitHub repository (${remoteRepo.owner}/${remoteRepo.repo})`,
+    };
+  }
+  const lookup = readGitHubPr(parsedPr.url);
+  if (!lookup.ok) return { ok: false, error: lookup.error };
+  if (lookup.pr.headRefName && metadata.branch && lookup.pr.headRefName !== metadata.branch) {
+    return {
+      ok: false,
+      error: `GitHub PR branch mismatch: expected ${metadata.branch}, found ${lookup.pr.headRefName}`,
+    };
+  }
+  if (lookup.pr.merged !== true) {
+    return { ok: false, error: "GitHub PR is not merged" };
+  }
+  return { ok: true };
 }
 
 // "2026-05-19 12:34" → epoch ms; bad parse → NaN

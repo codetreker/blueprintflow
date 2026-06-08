@@ -11,7 +11,7 @@ BF owns:
 
 - runtime instructions for the orchestrating LLM;
 - role, pack, pipeline, and template definitions;
-- work-object state under `<project-root>/.bf/<bf-wo>/`;
+- work-object state under the resolved BF state home;
 - mechanical lint, state transition, and review verification commands.
 
 BF does not own:
@@ -60,7 +60,8 @@ harness owns all contract state mutation:
 
 - AC checkbox flips;
 - `State:` transitions;
-- `Updated:` synchronization.
+- `Updated:` synchronization;
+- task execution metadata.
 
 The LLM continues to write non-locked artifacts:
 
@@ -132,14 +133,15 @@ The orchestrator verifies:
 
 Packs and roles are extension points. Core definitions live in the npm package.
 Global user extensions live under `~/.bf/extensions/`. Project extensions live
-under `<project-root>/.bf/extensions/`. Host discovery snapshots under
-`~/.claude/skills/bf/` and `$CODEX_HOME/skills/bf/` are generated copies and are
-not extension roots. When `CODEX_HOME` is unset, Codex defaults to
-`~/.codex/skills/bf/`. Each snapshot carries `.bf-install.json` so `bf install`
-can report whether the snapshot was newly installed, refreshed, updated, or
-updated from an unknown older copy. `bf update` upgrades the global BF npm
-package with `npm install -g @codetreker/bf@latest`; snapshot refresh remains
-the updated package's `postinstall` responsibility through `bf install`.
+under the project BF state home at `extensions/`; in normal Git work this is the
+primary worktree `.bf/extensions/`, linked worktrees included. Host discovery
+snapshots under `~/.claude/skills/bf/` and `$CODEX_HOME/skills/bf/` are
+generated copies and are not extension roots. When `CODEX_HOME` is unset, Codex
+defaults to `~/.codex/skills/bf/`. Each snapshot carries `.bf-install.json` so
+`bf install` can report whether the snapshot was newly installed, refreshed,
+updated, or updated from an unknown older copy. `bf update` upgrades the global
+BF npm package with `npm install -g @codetreker/bf@latest`; snapshot refresh
+remains the updated package's `postinstall` responsibility through `bf install`.
 
 Same-id extension packs merge with Core packs. Pack guidance remains
 LLM-readable through ordered `pack.md` paths; roles and pipelines merge

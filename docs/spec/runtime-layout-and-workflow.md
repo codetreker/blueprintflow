@@ -104,8 +104,8 @@ Every BF work object lives under `<project-root>/.bf/<bf-wo>/`.
 
 1. Run `bf-harness start-review <bf-wo>`.
 2. The command returns a review directory: `<bf-wo>/runs/reviews/round_N/`.
-3. For each matching reviewer role, spawn one to three subagents, capped at ten total subagents.
-4. If the bf-wo has local pipelines, include an independent `pipeline-review` reviewer.
+3. For each matching reviewer role, spawn exactly three reviewer subagents. Every reviewer in the same Spec Review round must be a distinct subagent instance.
+4. If the bf-wo has local pipelines, include three independent reviewer subagents with the `pipeline-review` capability. Each must be distinct from the pipeline designer and from every other reviewer in the same Spec Review round.
 5. Each reviewer writes `result_<role>_<idx>.md`; `<idx>` starts at 1 for each role.
 6. Run `bf-harness verify <bf-wo>`.
 7. On `FAIL`, read the verify result, update the draft specs/local pipelines, and start a new review round.

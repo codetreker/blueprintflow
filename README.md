@@ -23,6 +23,19 @@ bf install --target claude
 bf install --target codex
 ```
 
+### Updating
+
+Run `bf update` to upgrade the global BF npm package to the latest published
+version:
+
+```bash
+bf update
+```
+
+The command runs `npm install -g @codetreker/bf@latest`. The updated package's
+`postinstall` step then runs `bf install`, so Claude/Codex discovery snapshots
+are refreshed by the same install path instead of by a second manual refresh.
+
 ### Uninstalling
 
 npm (≥ v7) does **not** run lifecycle scripts on `npm uninstall`, so removing the package does **not** clean up host discovery snapshots automatically. To remove them, run:
@@ -55,7 +68,7 @@ Host discovery snapshots are generated copies. Do not put extensions under `~/.c
 
 After install, two CLIs are on `$PATH`:
 
-- `bf` — read-only metadata + install management: `bf list-packs`, `bf list-pipelines [--pack <id>]`, `bf list-roles [--pack <id>]`, `bf install`, `bf uninstall`, `bf version`
+- `bf` — read-only metadata + install management: `bf list-packs`, `bf list-pipelines [--pack <id>]`, `bf list-roles [--pack <id>]`, `bf install`, `bf update`, `bf uninstall`, `bf version`
 - `bf-harness` — state-mutating loop driver: `lint`, `start-review`, `accept`, `next`, `verify`, `discard`, `list`
 
 Run either with `--help` for full usage.

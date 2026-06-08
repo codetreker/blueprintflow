@@ -67,6 +67,24 @@ package version, target, and install timestamp. This file is metadata for BF
 install status only; the discovery snapshot remains a generated host-readable
 copy, not an npm package mirror.
 
+### `update`
+
+Updates the global BF npm package to the latest published version by running:
+
+```text
+npm install -g @codetreker/bf@latest
+```
+
+The command accepts no arguments. On start it prints:
+
+```text
+BF update: npm install -g @codetreker/bf@latest
+```
+
+Snapshot refresh is handled by the updated package's `postinstall` hook, which
+continues to run `bf install`. `bf update` does not run an additional manual
+`bf install` refresh after npm completes.
+
 ## `bf-harness`
 
 `bf-harness` controls BF work-object state under `<project-root>/.bf/<bf-wo>`.

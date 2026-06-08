@@ -31,49 +31,18 @@ plugin work or the current task intentionally touches those files.
 All Blueprintflow repo changes go through **worktree -> BF gate -> PR -> normal
 merge**. Never push directly to `main`.
 
-```bash
-# 1. Create or use a focused worktree
-cd <repo-root> && git fetch origin
-git worktree add .worktrees/<topic> -b docs/<topic> origin/main
-
-# 2. Use BF for design discussion, spec review, user approval, execution,
-#    task verification, and final acceptance when behavior, runtime
-#    instructions, package layout, CLI, harness, docs, or release-facing
-#    metadata change.
-cd .worktrees/<topic>
-bf-harness lint <bf-wo>
-bf-harness start-review <bf-wo>
-bf-harness verify <bf-wo>
-# After spec review succeeds and the user approves the locked contract:
-bf-harness accept <bf-wo>
-bf-harness next <bf-wo>
-bf-harness start-review <bf-wo>/<task>
-bf-harness verify <bf-wo>/<task>
-bf-harness start-review <bf-wo>
-bf-harness verify <bf-wo>
-
-# 3. Validate and commit
-npm test
-git diff --check
-.github/scripts/validate-bf-package-layout.sh
-.github/scripts/validate-bf-version.sh origin/main
-git add -A && git commit -m "docs(<scope>): <description>"
-git push -u origin docs/<topic>
-
-# 4. Open PR with BF gate evidence
-gh pr create --repo codetreker/blueprintflow \
-  --title "docs(<scope>): <description>" \
-  --body "## Summary\n<what + why>\n\n## Affected runtime/docs\n- ...\n\n## BF gate\n- BF work object: <id + state + final verify result, or BF-not-required reason>\n- Validation evidence: <commands + pass/fail summary>\n- Required GitHub reviews/checks: <pass/fail/pending summary>\n- Blocking conversations: <resolved / list blockers>"
-
-# 5. Merge only after BF gate, required GitHub reviews/checks, and blocking
-#    conversations are resolved.
-gh pr merge <N> --repo codetreker/blueprintflow --squash
-
-# 6. Clean up after merge
-cd <repo-root>
-git worktree remove .worktrees/<topic>
-git fetch origin --prune
-```
+1. Create or use a focused worktree.
+2. For behavior, architecture, parser, harness, CLI, install/update, package
+   layout, or runtime-instruction changes, run the current root BF workflow from
+   the shipped BF runtime instructions. Do not duplicate BF command recipes in
+   this skill.
+3. Validate the changed repo surfaces.
+4. Commit and push the focused branch.
+5. Open a PR that records BF gate evidence, validation evidence, required
+   GitHub review/check status, and blocking conversation status.
+6. Merge only after BF gate, required GitHub reviews/checks, and blocking
+   conversations are resolved.
+7. Clean up the worktree after merge.
 
 ## BF Gate
 

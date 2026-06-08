@@ -8,6 +8,10 @@ State: Draft
 Pipeline: feature
 Pack: engineering
 Desc: 实现登录 API
+Requires-Worktree: false
+Branch:
+Worktree:
+Pull-Request:
 Creation: 2026-05-19 10:00
 Updated: 2026-05-19 10:00
 ---
@@ -48,6 +52,8 @@ assert_json_field "$STDOUT" .frontmatter.Pipeline "feature"
 assert_json_field "$STDOUT" .frontmatter.State "Draft"
 assert_json_field "$STDOUT" .acceptanceCriteria.0.capability "quality-assurance"
 assert_json_field "$STDOUT" .acceptanceCriteria.1.capability "security-review"
+assert_json_field "$STDOUT" .requiresWorktree false
+assert_json_field "$STDOUT" .executionMetadata.branch null
 assert_json_field "$STDOUT" .hasEvidenceSection true
 assert_json_field "$STDOUT" .evidence.0.id "EV-1"
 assert_json_field "$STDOUT" .evidence.0.acId "AC-1"
@@ -55,7 +61,7 @@ assert_json_field "$STDOUT" .evidence.0.kind "command"
 assert_json_field "$STDOUT" .evidence.1.kind "review-note"
 
 # 缺 Pipeline
-BAD=$(printf -- '---\nState: Draft\nPack: x\nDesc: y\n---\n')
+BAD=$(printf -- '---\nState: Draft\nPack: x\nDesc: y\nRequires-Worktree: false\n---\n')
 OUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/parse-task-spec.mjs').then(m => {
     try { m.parseTaskSpec(process.argv[1]); process.stdout.write('ok'); }
@@ -71,6 +77,7 @@ State: Draft
 Pipeline: feature
 Pack: engineering
 Desc: bad evidence
+Requires-Worktree: false
 ---
 
 # Task

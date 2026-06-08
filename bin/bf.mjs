@@ -13,6 +13,7 @@ import { cmdInstall } from "./lib/bf/cmd-install.mjs";
 import { cmdUninstall } from "./lib/bf/cmd-uninstall.mjs";
 import { cmdUpdate } from "./lib/bf/cmd-update.mjs";
 import { globalExtensionsDir, isDiscoveryTarget } from "./lib/shared/install-paths.mjs";
+import { resolveDefaultStateHome } from "./lib/shared/state-home.mjs";
 
 const USAGE = `Usage:
   bf list-roles [--pack <pack-id>]
@@ -54,7 +55,7 @@ async function main() {
   }
 
   const installDir = resolveInstallDir();
-  const baseHome = process.env.BF_HOME || path.join(process.cwd(), ".bf");
+  const baseHome = resolveDefaultStateHome();
   // Extension dirs: global lives under ~/.bf/extensions. Project ext lives in
   // <baseHome>/extensions/. Project wins.
   const globalExt = globalExtensionsDir();

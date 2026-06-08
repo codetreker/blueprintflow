@@ -3,6 +3,10 @@ State: Draft|Ready|Tasking|Completed
 Pipeline: <pipeline id>
 Pack: <pack id>
 Desc: <任务的一句话描述>
+Requires-Worktree: true|false
+Branch:
+Worktree:
+Pull-Request:
 Creation: <yyyy-mm-dd hh:MM>
 Updated: <yyyy-mm-dd hh:MM>
 ---
@@ -14,6 +18,8 @@ frontmatter 字段说明：
 - Pipeline：这个 task 使用的执行流程。必须能在 `bf list-pipelines --pack <pack id>` 输出里找到。
 - Pack：跟所属 bf.md 的 Pack 一致。
 - Desc：一句话描述，让 doer 一眼看出在做什么。
+- Requires-Worktree：严格填写 `true` 或 `false`。会修改 repo 文件的 task 填 `true`。
+- Branch / Worktree / Pull-Request：harness-owned execution metadata。Draft/Ready 时保持空值，LLM 不直接修改。
 -->
 
 # Task

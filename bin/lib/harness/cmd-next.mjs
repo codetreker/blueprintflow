@@ -1,10 +1,11 @@
 import fs from "node:fs";
 import { taskDir } from "./wo-paths.mjs";
-import { writeState, writeUpdated, formatTimestamp } from "./write-mutations.mjs";
+import { writeState, writeUpdated, formatTimestamp, writeTaskExecutionMetadata } from "./write-mutations.mjs";
 import { loadWo } from "./load-wo.mjs";
 import { buildPipelineRegistry, findPipeline } from "../shared/pipeline-registry.mjs";
+import { prepareTaskWorktree } from "./managed-git.mjs";
 
-export async function cmdNext({ baseHome, woId, installDir, now = new Date() }) {
+export async function cmdNext({ baseHome, woId, installDir, now = new Date(), cwd = process.cwd() }) {
   const bundle = await loadWo({ baseHome, woId, installDir });
   if (!bundle.bf) return { ok: false, error: "load failed", details: bundle.errors };
   const bfState = bundle.bf.frontmatter.State;
@@ -32,10 +33,23 @@ export async function cmdNext({ baseHome, woId, installDir, now = new Date() }) 
   const pipelineEntry = findPipeline(pipelineReg, bundle.bf.frontmatter.Pack, pipeline);
   if (!pipelineEntry) return { ok: false, error: `pipeline not found: ${pipeline}` };
   const ts = formatTimestamp(now);
+  let executionMetadata = chosen.spec.executionMetadata || {};
 
   if (chosen.spec.frontmatter.State === "Ready") {
+    if (chosen.spec.requiresWorktree) {
+      const setup = prepareTaskWorktree({ baseHome, cwd, woId, taskId: chosen.id });
+      if (!setup.ok) return { ok: false, error: setup.error };
+      executionMetadata = {
+        branch: setup.branch,
+        worktree: setup.worktree,
+        pullRequest: null,
+      };
+    }
     let text = fs.readFileSync(chosen.specPath, "utf8");
     text = writeState(text, "Tasking", { kind: "taskSpec" });
+    if (chosen.spec.requiresWorktree) {
+      text = writeTaskExecutionMetadata(text, executionMetadata);
+    }
     text = writeUpdated(text, ts);
     fs.writeFileSync(chosen.specPath, text);
 
@@ -47,17 +61,21 @@ export async function cmdNext({ baseHome, woId, installDir, now = new Date() }) 
     }
   }
 
+  const task = {
+    taskId: chosen.id,
+    taskDir: taskDir(baseHome, woId, chosen.id),
+    specPath: chosen.specPath,
+    desc: chosen.spec.frontmatter.Desc,
+    pipeline,
+    pipelinePath: pipelineEntry.file,
+    pack: bundle.bf.frontmatter.Pack,
+  };
+  if (executionMetadata.branch) task.branch = executionMetadata.branch;
+  if (executionMetadata.worktree) task.worktree = executionMetadata.worktree;
+  if (executionMetadata.pullRequest) task.pullRequest = executionMetadata.pullRequest;
   return {
     ok: true,
-    task: {
-      taskId: chosen.id,
-      taskDir: taskDir(baseHome, woId, chosen.id),
-      specPath: chosen.specPath,
-      desc: chosen.spec.frontmatter.Desc,
-      pipeline,
-      pipelinePath: pipelineEntry.file,
-      pack: bundle.bf.frontmatter.Pack,
-    },
+    task,
   };
 }
 
@@ -100,5 +118,8 @@ export function formatNext(r) {
     `Spec: ${t.specPath}`,
     `Dir: ${t.taskDir}`,
   ];
+  if (t.branch) lines.push(`Branch: ${t.branch}`);
+  if (t.worktree) lines.push(`Worktree: ${t.worktree}`);
+  if (t.pullRequest) lines.push(`Pull-Request: ${t.pullRequest}`);
   return lines.join("\n") + "\n";
 }

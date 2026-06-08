@@ -1,7 +1,7 @@
 import { parseFrontmatter } from "../shared/parse-frontmatter.mjs";
 import { parseAcLine } from "./parse-ac-line.mjs";
 
-const REQUIRED_FM = ["State", "Pipeline", "Pack", "Desc"];
+const REQUIRED_FM = ["State", "Pipeline", "Pack", "Desc", "Requires-Worktree"];
 const EVIDENCE_RE = /^-\s+([A-Za-z][\w-]*)\|([A-Za-z][\w-]*)\|([A-Za-z][\w-]*):\s*(.*)$/;
 
 function splitSections(body) {
@@ -24,6 +24,14 @@ export function parseTaskSpec(text) {
   for (const k of REQUIRED_FM) {
     if (!(k in frontmatter)) throw new Error(`task spec.md frontmatter missing: ${k}`);
   }
+  const requiresWorktreeRaw = frontmatter["Requires-Worktree"];
+  if (requiresWorktreeRaw !== "true" && requiresWorktreeRaw !== "false") {
+    throw new Error(`task spec.md frontmatter Requires-Worktree must be true or false`);
+  }
+  const metadataValue = (key) => {
+    const value = frontmatter[key];
+    return typeof value === "string" && value.trim() ? value.trim() : null;
+  };
   const sections = splitSections(body);
   const hasEvidenceSection = Object.prototype.hasOwnProperty.call(sections, "Evidence");
   const acceptanceCriteria = [];
@@ -43,6 +51,12 @@ export function parseTaskSpec(text) {
   }
   return {
     frontmatter,
+    requiresWorktree: requiresWorktreeRaw === "true",
+    executionMetadata: {
+      branch: metadataValue("Branch"),
+      worktree: metadataValue("Worktree"),
+      pullRequest: metadataValue("Pull-Request"),
+    },
     task: sections["Task"] || "",
     requirements: (sections["Requirements"] || "")
       .split("\n").filter(l => l.startsWith("- ")).map(l => l.replace(/^-\s+/, "").trim()),

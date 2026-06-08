@@ -13,6 +13,7 @@ import { cmdAccept, formatAccept } from "./lib/harness/cmd-accept.mjs";
 import { cmdNext, formatNext } from "./lib/harness/cmd-next.mjs";
 import { cmdVerify, formatVerifyResult, formatVerifySetupError } from "./lib/harness/cmd-verify.mjs";
 import { cmdDiscard, formatDiscard } from "./lib/harness/cmd-discard.mjs";
+import { resolveDefaultStateHome } from "./lib/shared/state-home.mjs";
 
 const USAGE = `Usage:
   bf-harness list
@@ -23,7 +24,7 @@ const USAGE = `Usage:
   bf-harness verify <bf-wo>[/<task>]
   bf-harness discard <bf-wo>
 
-State directory: $BF_HOME (default: <cwd>/.bf).`;
+State directory: $BF_HOME (default: Git primary worktree .bf, else <cwd>/.bf).`;
 
 function write(text) { process.stdout.write(text.endsWith("\n") ? text : text + "\n"); }
 function fail(msg, code = 2) { process.stderr.write(msg + "\n"); process.exit(code); }
@@ -78,7 +79,7 @@ async function main() {
     return;
   }
 
-  const baseHome = process.env.BF_HOME || path.join(process.cwd(), ".bf");
+  const baseHome = resolveDefaultStateHome();
   const installDir = resolveInstallDir();
   const t = parseTarget(target);
   if (!t) fail(`invalid target argument\n${USAGE}`, 2);

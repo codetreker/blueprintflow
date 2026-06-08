@@ -71,6 +71,7 @@ flowchart TB
 |---|---|---|
 | Runtime docs | Tell the orchestrating LLM how to run BF | `SKILL.md`, `references/`, `packs/`, `roles/`, `templates/` |
 | Project design docs | Discovered external design authority for target-project work | Confirmed project doc root, recorded in `.bf/<bf-wo>/discussion.md`; runtime anchor `references/project-docs.md` |
+| Repo maintenance entry | Blueprintflow repository update workflow | `.claude/skills/repo-update/SKILL.md`, with `.agents/skills/repo-update/SKILL.md` as a discovery pointer |
 | `bf` CLI | Read-only metadata and install management | `list-packs`, `list-pipelines`, `list-roles`, `install`, `update`, `uninstall`, `version` |
 | `bf-harness` CLI | State mutation and verification loop | `lint`, `start-review`, `accept`, `next`, `verify`, `discard`, `list` |
 | Work object state | Per-project BF work state | `<project-root>/.bf/<bf-wo>/` |

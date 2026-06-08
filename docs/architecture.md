@@ -150,6 +150,19 @@ Pipeline definitions are currently instruction-level. The orchestrator reads the
 pipeline and executes stages in order. Stage state and gate enforcement can move
 into the harness later without changing the work-object contract model.
 
+## Repository Maintenance Boundary
+
+Blueprintflow repository maintenance is governed by the repo-local
+`repo-update` entry skill. That skill is not part of the published BF runtime;
+it describes how this repository changes the root package, accepted design
+docs, validation, CI, release metadata, and PR evidence.
+
+Default maintenance authority follows the root BF package and accepted docs.
+The deprecated `plugins/blueprintflow/` tree is an explicit exception path:
+maintenance work reads or edits it only when the user requests legacy plugin
+work. Legacy plugin validation and manifest version gates apply only to that
+exception path.
+
 ## Design Drill-Downs
 
 - [Spec overview](spec.md)

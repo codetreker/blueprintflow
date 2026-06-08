@@ -1,141 +1,157 @@
 ---
 name: repo-update
-description: "Part of the Blueprintflow methodology. Use when updating the Blueprintflow repository itself, including skills, plugin metadata, README, CI, scripts, or release notes."
+description: "Part of the Blueprintflow methodology. Use when updating the Blueprintflow repository itself, including the root BF runtime, accepted docs, package metadata, tests, CI, scripts, or release notes."
 ---
 
 # Repo Update
 
-All Blueprintflow repo changes go through: **worktree → PR → BF gate → merge**.
-Never push to main directly.
+Use this repo-local entry to change the Blueprintflow repository. Keep durable
+maintenance boundaries in accepted docs; keep this skill focused on actions,
+gates, and stop conditions.
+
+During normal maintenance, ignore `plugins/blueprintflow/`. Do not read or edit
+legacy plugin files, run legacy plugin validation, or bump legacy plugin
+manifest versions unless the user explicitly requests legacy plugin work or the
+current task intentionally touches those files.
 
 ## Flow
 
-```bash
-# 1. Create worktree
-cd <repo-root> && git fetch origin
-git worktree add .worktrees/<topic> -b docs/<topic> origin/main
+All Blueprintflow repo changes go through **worktree -> BF gate -> PR -> normal
+merge**. Never push directly to `main`.
 
-# 2. Edit + commit
-cd .worktrees/<topic>
-# ... edit repo files ...
-git add -A && git commit -m "docs(<scope>): <description>"
-git push -u origin docs/<topic>
-
-# 3. Open PR
-gh pr create --repo codetreker/blueprintflow \
-  --title "docs(<scope>): <description>" \
-  --body "## Summary\n<what + why>\n\n## Affected skills\n- ...\n\n## BF gate\n- BF work object: <id + state + final verify result, or BF-not-required reason>\n- Validation evidence: <commands + pass/fail summary>\n- Required GitHub reviews/checks: <pass/fail/pending summary>\n- Blocking conversations: <resolved / list blockers>"
-
-# 4. BF gate review (see BF gate below)
-
-# 5. Merge (after BF gate and required GitHub checks/reviews pass)
-gh pr merge <N> --repo codetreker/blueprintflow --squash
-
-# 6. Clean up
-cd <repo-root>
-git worktree remove .worktrees/<topic>
-git fetch origin --prune
-```
+1. Create or use a focused worktree.
+2. For behavior, architecture, parser, harness, CLI, install/update, package
+   layout, or runtime-instruction changes, run the current root BF workflow from
+   the shipped BF runtime instructions. Do not duplicate BF command recipes in
+   this skill.
+3. Validate the changed repo surfaces.
+4. Commit and push the focused branch.
+5. Open a PR that records BF gate evidence, validation evidence, required
+   GitHub review/check status, and blocking conversation status.
+6. Merge only after BF gate, required GitHub reviews/checks, and blocking
+   conversations are resolved.
+7. Clean up the worktree after merge.
 
 ## BF Gate
 
-Before merge, verify:
+Before PR readiness or merge, verify:
 
-- The relevant BF work object is `Completed`, or the PR records why BF was not
-  required.
-- Required validation commands passed.
-- Required GitHub reviews and checks passed.
-- Blocking review comments, check failures, branch policy issues, and
+- the relevant BF work object is `Completed`, or the PR records why BF was not
+  required;
+- required validation commands passed;
+- required GitHub reviews and checks passed;
+- blocking review comments, check failures, branch policy issues, and
   conversation threads are resolved.
 
-**Format check**: bulk replace / rename PRs must verify ASCII art, tables, and code block indentation weren't damaged.
+For behavior, architecture, parser, harness, CLI, install/update, package
+layout, or runtime-instruction changes, use BF unless the user explicitly says
+the request is discussion only.
 
-**Review standard**: reviewers read the whole changed file, then the diff. They
-verify the BF gate evidence, put themselves in the next agent's shoes, and hunt
-for blocking problems before LGTM.
+## Version Gates
 
-## Skill Writing Standard
+- Release-facing BF changes require a semver bump in `package.json` and
+  `package-lock.json`.
+- Root runtime and discovery-snapshot changes are release-facing when published
+  users receive different instructions, files, commands, package layout, or
+  install/update behavior.
+- Legacy plugin manifest versions change only when explicitly requested legacy
+  plugin work touches legacy plugin files.
 
-Write skills as executable instructions, not essays.
+## Validation
 
-Before changing `plugins/blueprintflow/skills/*`, use the active owning skill and its direct references as source of truth.
+Run for normal root BF changes:
 
-- Use imperative verbs: `Read`, `Create`, `Dispatch`, `Stop`, `Record`, `Verify`.
-- Name the trigger, action, owner, artifact, and stop condition.
-- Prefer positive commands. Replace prohibition text with the required action, required state, or stop condition.
-- Prefer tables, numbered steps, and checklists over paragraphs.
-- Keep background only when it changes a decision.
-- Keep wording short. Remove examples or explanations that do not prevent a real mistake.
-- Put durable docs at decision/state level: work item, owner or reviewer role, result/status, and blocker owner when blocked. Use PR comments or local notes for transient run details.
-- Avoid vague verbs: `consider`, `think about`, `handle`, `support`, `ensure` without a concrete check.
-- Review every changed skill for instruction clarity before LGTM.
+```bash
+npm test
+git diff --check
+.github/scripts/validate-bf-package-layout.sh
+.github/scripts/validate-bf-version.sh origin/main
+```
 
-## Failure-Driven Updates
+Run only when legacy plugin files are intentionally touched:
 
-When a real Blueprintflow run fails because an agent stalled, serialized independent work, bypassed a gate, misrouted, lost context, or required repeated user correction:
+```bash
+.github/scripts/validate-plugin-layout.sh
+.github/scripts/validate-skills.sh
+.github/scripts/validate-release-version.sh origin/main
+```
 
-1. Record the failure as `symptom -> missing/weak instruction -> owning skill/reference -> prevention check`.
-2. Patch the owning skill/reference. Do not add generic reminders to `using-plueprint` unless the failure is entry setup, routing, or global coordination.
-3. Add the prevention check to the Local Skill Review Gate prompt: `Would this exact instruction have prevented the observed failure? If not, return NOT LGTM with the missing command.`
-4. Record the prevention check result in the PR `Local Skill Review Gate` artifact.
-5. Stop before PR readiness if the prevention check is missing or NOT LGTM.
+## Runtime Instruction Review Gate
 
-## Local Skill Review Gate
+Run this local gate after editing root runtime instructions, role files, pack
+guidance, pipeline definitions, templates, repo-local skills, or skill metadata.
 
-Run this gate after editing any skill body, skill reference, or skill metadata, before marking the change ready.
-
-1. Spawn 4 local subagents in parallel when the runtime supports it.
-2. If capacity is insufficient, follow `bf-runtime-adapter`: ask for required authorization, then declare and record `serial fallback` only for true runtime/session incapacity.
-3. Give each reviewer the changed file paths, the diff, and this `repo-update` skill. Require each reviewer to read every changed skill/reference as a whole. Do not give them your intended conclusion.
-4. Give the Process reviewer `skill-creator` and `writing-skills`, or tell it to load them before review. If either skill is unavailable, record that as a Process blocker and ask the user for a fallback in the PR.
-5. For failure-driven changes, give every reviewer the recorded failure and prevention check.
-6. Require final output with `Blockers`, `Findings`, `Prevention check` when applicable, and `LGTM` or `NOT LGTM`.
-7. Require each finding to state whether it is informational or must-fix.
-8. Cover these lenses:
+1. Spawn four local reviewers in parallel when the runtime supports it. If
+   parallel reviewers are unavailable, run the same four lenses sequentially.
+   If four independent reviewer passes cannot be run, stop and record the
+   missing review capacity before PR readiness.
+2. Give each reviewer the changed file paths, the diff, this `repo-update`
+   skill, the relevant accepted docs, and any BF work-object artifacts.
+3. Require each reviewer to read every changed runtime instruction file as a
+   whole before reading the diff.
+4. For failure-driven changes, give every reviewer the recorded
+   `symptom -> missing/weak instruction -> owning file -> prevention check`.
+5. Require final output with `Blockers`, `Findings`, `Prevention check` when
+   applicable, and `LGTM` or `NOT LGTM`.
+6. Require each finding to state whether it is informational or must-fix.
+7. Cover these lenses:
 
 | Reviewer | Required questions |
 |---|---|
-| Global value / placement | Does the change improve repo-wide Blueprintflow maintenance or skill execution? Is it in the right skill/reference? Should it move, split, or stay out? |
-| Process / completeness | Does it follow `repo-update`, `skill-creator`, and `writing-skills`? Are trigger, action, owner, durable review artifact, fallback, and stop condition complete? |
-| Language / structure | Is it directive, concise, structured, and unambiguous? Remove vague or descriptive prose. |
-| Risk / anti-patterns | Does it create conflicts, loopholes, regressions, stale examples, validation gaps, or anti-patterns? |
+| Global value / placement | Does this improve BF repository maintenance or runtime execution? Is the change in the right root runtime, repo instruction, design doc, or validation surface? |
+| Process / completeness | Are trigger, action, owner, durable artifact, fallback, validation, and stop condition complete for the updated BF flow? |
+| Language / structure | Is the instruction directive, concise, structured, and unambiguous for an orchestrating LLM? |
+| Risk / anti-patterns | Does the change create source-of-truth drift, legacy-plugin leakage, version-gate gaps, stale examples, weak validation, or review bypasses? |
 
-9. Architect records the 4 reviewer outcomes in the PR body under `Local Skill Review Gate`, or in a PR comment linked from that section.
-10. Fix every blocker and every must-fix finding. Re-run the affected reviewer lens after each fix.
-11. Treat local reviewer LGTM as a prerequisite only. It does not replace BF final acceptance, required GitHub reviews/checks, or user approval when requested.
-12. Do not mark the PR `BF gate` ready until all 4 local reviewers return LGTM and the durable review artifact is recorded.
-13. Do not self-approve the gate.
+8. Record the four reviewer outcomes in the PR body under
+   `Runtime Instruction Review Gate`, or in a PR comment linked from that
+   section.
+9. Fix every blocker and every must-fix finding. Re-run the affected reviewer
+   lens after each fix.
+10. Treat local reviewer LGTM as a prerequisite only. It does not replace BF
+    final acceptance, required GitHub reviews/checks, or user approval when
+    requested.
+11. Do not mark the PR `BF gate` ready until all four local reviewers return
+    LGTM and the durable review artifact is recorded.
 
-## Anti-patterns
+## Failure-Driven Updates
 
-- ❌ Bulk-editing skills with `sed` / scripted replacement before classifying which skills the rule actually applies to.
-- ❌ Treating every `bf-*` skill as the same kind of child skill; entry workflows, repo-maintenance flows, role setup, and execution stages have different invocation boundaries.
-- ❌ Relying on validation scripts as semantic review. Every changed skill must be read as a whole after the edit.
-- ❌ Writing descriptive skill prose when a direct command, checklist, or decision table would remove ambiguity.
-- ❌ Updating a skill without the 4-lens local review gate.
+When a real BF run fails because an agent stalled, serialized independent work,
+bypassed a gate, misrouted, lost context, used legacy plugin source as current
+authority, or required repeated user correction:
+
+1. Record the failure as
+   `symptom -> missing/weak instruction -> owning file -> prevention check`.
+2. Patch the owning root runtime, repo instruction, accepted doc, or validation
+   surface. Do not add generic reminders to unrelated files.
+3. Ask local reviewers: `Would this exact instruction have prevented the
+   observed failure? If not, return NOT LGTM with the missing command.`
+4. Record the prevention-check result in the PR review-gate artifact.
+5. Stop before PR readiness if the prevention check is missing or NOT LGTM.
 
 ## Rules
 
-- **Open PRs and merge only through the BF gate**
-- **Never push to main directly**
-- **BF gate required** — missing BF completion or BF-not-required reason,
-  required checks/reviews, or unresolved blocking conversations means don't
-  merge
-- **Read the whole file** — not just the diff
-- **No LGTM with open issues** — found a problem = NOT LGTM; author fixes, re-review, then LGTM. "LGTM, not blocking" does not exist
-- **Bump package versions for release-facing BF changes** — update
-  `package.json` and `package-lock.json`. Legacy plugin manifest versions
-  change only when legacy plugin files change.
-- **Commit format**: `docs(<skill-name>): <description>`
+- Open PRs and merge only through the BF gate.
+- Never push directly to `main`.
+- Read changed runtime instruction files as whole files, not only diffs.
+- No LGTM with open must-fix findings.
+- Prefer scoped edits over rewrites unless the file's structure is stale enough
+  that a full rewrite is safer and easier to review.
+- Write runtime instructions as direct commands.
+- Put durable rationale in `docs/`, not runtime files.
+- Keep runtime artifacts self-contained; `SKILL.md`, `roles/`, `packs/`,
+  `templates/`, and `references/` must not depend on `docs/`.
+- Use `docs(<scope>): <description>` for repo-maintenance commits unless the
+  change is primarily code behavior.
 
-## When it doesn't apply
+## When It Does Not Apply
 
-- Business project code → `bf-git-workflow`
-- Skills in other projects → that project's own flow
-- Pure discussion → channel; only conclusions go through PR
+- Business project code: use that project's own workflow.
+- Skills or plugins outside this repository: use that project's own flow.
+- Pure discussion: record conclusions only when they become accepted BF work.
 
-## How to invoke
+## How To Invoke
 
-```
+```text
 follow skill repo-update
 ```

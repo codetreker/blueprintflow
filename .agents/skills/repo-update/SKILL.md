@@ -1,6 +1,6 @@
 ---
 name: repo-update
-description: "Use when updating the Blueprintflow repository itself, including skills, plugin metadata, README, CI, scripts, or release notes."
+description: "Use when updating the Blueprintflow repository itself, including the root BF runtime, accepted docs, package metadata, tests, CI, scripts, or release notes."
 ---
 
 # Repo Update

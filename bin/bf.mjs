@@ -11,6 +11,7 @@ import { cmdListPacks, formatListPacks } from "./lib/bf/cmd-list-packs.mjs";
 import { cmdListPipelines, formatListPipelines } from "./lib/bf/cmd-list-pipelines.mjs";
 import { cmdInstall } from "./lib/bf/cmd-install.mjs";
 import { cmdUninstall } from "./lib/bf/cmd-uninstall.mjs";
+import { cmdUpdate } from "./lib/bf/cmd-update.mjs";
 import { globalExtensionsDir, isDiscoveryTarget } from "./lib/shared/install-paths.mjs";
 
 const USAGE = `Usage:
@@ -19,6 +20,7 @@ const USAGE = `Usage:
   bf list-pipelines [--pack <pack-id>]
   bf install [--target claude|codex]
   bf uninstall [--target claude|codex]
+  bf update                   Update global BF package to latest
   bf version                  Show installed BF version`;
 
 function write(text) { process.stdout.write(text.endsWith("\n") ? text : text + "\n"); }
@@ -98,6 +100,11 @@ async function main() {
     const parsed = parseTargetOption(rest);
     if (!parsed.ok) fail(`${parsed.error}\n${USAGE}`, 2);
     const r = await cmdUninstall({ target: parsed.target });
+    process.exit(r.ok ? 0 : 1);
+  }
+  if (subcmd === "update") {
+    if (rest.length > 0) fail(`unknown option: ${rest[0]}\n${USAGE}`, 2);
+    const r = await cmdUpdate();
     process.exit(r.ok ? 0 : 1);
   }
   if (subcmd === "version" || subcmd === "-v" || subcmd === "--version") {

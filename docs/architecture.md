@@ -49,7 +49,7 @@ flowchart LR
 | Templates | Define durable Markdown file shapes. | File contract authority. |
 | Roles | Declare review and execution capabilities. | Capability registry authority. |
 | Packs | Define domain guidance and available pipelines. | Domain workflow authority. |
-| `bf` CLI | Lists roles, packs, pipelines, and manages host discovery snapshots. | Read-only metadata authority. |
+| `bf` CLI | Lists roles, packs, pipelines, manages host discovery snapshots, and updates the global BF npm package. | Read-only metadata and install-management authority. |
 | `bf-harness` CLI | Lints, accepts, claims tasks, starts reviews, verifies sign-off, and mutates allowed state. | State transition authority. |
 | Work object state | Stores contracts, discussion, review rounds, verify results, and task state. | Durable workflow state. |
 
@@ -137,7 +137,9 @@ under `<project-root>/.bf/extensions/`. Host discovery snapshots under
 not extension roots. When `CODEX_HOME` is unset, Codex defaults to
 `~/.codex/skills/bf/`. Each snapshot carries `.bf-install.json` so `bf install`
 can report whether the snapshot was newly installed, refreshed, updated, or
-updated from an unknown older copy.
+updated from an unknown older copy. `bf update` upgrades the global BF npm
+package with `npm install -g @codetreker/bf@latest`; snapshot refresh remains
+the updated package's `postinstall` responsibility through `bf install`.
 
 Same-id extension packs merge with Core packs. Pack guidance remains
 LLM-readable through ordered `pack.md` paths; roles and pipelines merge

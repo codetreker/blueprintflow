@@ -9,7 +9,7 @@ BF is the npm package `@codetreker/bf`. It provides:
 
 - runtime instructions for LLM orchestrators;
 - roles, packs, templates, and phase references;
-- `bf` metadata commands;
+- `bf` metadata and install-management commands;
 - `bf-harness` state and verification commands.
 
 The runtime source lives at the repository root. Runtime artifacts must be
@@ -71,7 +71,7 @@ flowchart TB
 |---|---|---|
 | Runtime docs | Tell the orchestrating LLM how to run BF | `SKILL.md`, `references/`, `packs/`, `roles/`, `templates/` |
 | Project design docs | Discovered external design authority for target-project work | Confirmed project doc root, recorded in `.bf/<bf-wo>/discussion.md`; runtime anchor `references/project-docs.md` |
-| `bf` CLI | Read-only metadata and install management | `list-packs`, `list-pipelines`, `list-roles`, `install`, `uninstall`, `version` |
+| `bf` CLI | Read-only metadata and install management | `list-packs`, `list-pipelines`, `list-roles`, `install`, `update`, `uninstall`, `version` |
 | `bf-harness` CLI | State mutation and verification loop | `lint`, `start-review`, `accept`, `next`, `verify`, `discard`, `list` |
 | Work object state | Per-project BF work state | `<project-root>/.bf/<bf-wo>/` |
 | Extension registry | User and project roles/packs | `extensions/roles`, `extensions/packs` |

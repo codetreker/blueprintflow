@@ -136,12 +136,15 @@ that item reaches a terminal state before the task is complete from the user's
 perspective. The closure path can be a later stage, a named handoff owner, or an
 explicit stop condition that prevents BF from treating dangling work as done.
 
-Spec Review includes a `pipeline-review` reviewer for bf-wo local pipelines. The
-reviewer rejects local pipelines that create external artifacts or side effects
-without terminal-state closure. This is currently an instruction-level contract:
-the harness does not infer side effects from free-form YAML instructions, add a
-built-in merge stage, validate project-specific PR body conventions, or require
-a `terminal_state` schema field.
+Spec Review includes three independent reviewer subagents with the
+`pipeline-review` capability for bf-wo local pipelines. Each reviewer is
+distinct from the pipeline designer and from every other reviewer in the same
+Spec Review round. The reviewers reject local pipelines that create external
+artifacts or side effects without terminal-state closure. This is currently an
+instruction-level contract: the harness does not infer side effects from
+free-form YAML instructions, add a built-in merge stage, validate
+project-specific PR body conventions, or require a `terminal_state` schema
+field.
 
 Local pipelines are for one bf-wo only. If the flow appears reusable across
 bf-wos, the orchestrator may mention that after Final Acceptance as advisory
@@ -154,8 +157,9 @@ The Core `pipeline-designer` role designs bf-wo local pipelines and reviews
 pipeline structure. It provides `pipeline-design` and `pipeline-review`.
 
 When Spec Authoring creates a bf-wo local pipeline, a `pipeline-designer`
-subagent designs it. Spec Review includes an independent `pipeline-review`
-reviewer; the orchestrator enforces subagent-instance independence.
+subagent designs it. Spec Review includes three independent reviewer subagents
+with the `pipeline-review` capability; the orchestrator enforces
+subagent-instance independence.
 
 ## Work Object Coupling
 

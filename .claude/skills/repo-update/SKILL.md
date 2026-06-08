@@ -5,26 +5,14 @@ description: "Part of the Blueprintflow methodology. Use when updating the Bluep
 
 # Repo Update
 
-Use this repo-local entry to change the Blueprintflow repository. BF ships from
-the root npm package `@codetreker/bf`; installed host skill directories such as
-`~/.claude/skills/bf/` and `$CODEX_HOME/skills/bf/` are generated discovery
-snapshots, not source of truth.
+Use this repo-local entry to change the Blueprintflow repository. Keep durable
+maintenance boundaries in accepted docs; keep this skill focused on actions,
+gates, and stop conditions.
 
-## Source Of Truth
-
-| Area | Default authority |
-|---|---|
-| BF runtime | `SKILL.md`, `bin/`, `roles/`, `packs/`, `templates/`, `references/` |
-| BF design | `docs/`, especially `docs/spec.md` |
-| Repo instructions | `AGENTS.md`, `.claude/skills/repo-update/SKILL.md`, `.agents/skills/repo-update/SKILL.md` |
-| Tests and CI | `test/`, `.github/`, validation scripts |
-| Release metadata | `package.json`, `package-lock.json`, docs/release notes when applicable |
-| Legacy plugin | `plugins/blueprintflow/`, only when the user explicitly requests legacy plugin work |
-
-Do not use `plugins/blueprintflow/` as BF source of truth during normal
-maintenance. Do not edit legacy plugin files, run legacy plugin validation, or
-bump legacy plugin manifest versions unless the user explicitly requests legacy
-plugin work or the current task intentionally touches those files.
+During normal maintenance, ignore `plugins/blueprintflow/`. Do not read or edit
+legacy plugin files, run legacy plugin validation, or bump legacy plugin
+manifest versions unless the user explicitly requests legacy plugin work or the
+current task intentionally touches those files.
 
 ## Flow
 

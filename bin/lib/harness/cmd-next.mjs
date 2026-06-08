@@ -3,7 +3,7 @@ import { taskDir } from "./wo-paths.mjs";
 import { writeState, writeUpdated, formatTimestamp, writeTaskExecutionMetadata } from "./write-mutations.mjs";
 import { loadWo } from "./load-wo.mjs";
 import { buildPipelineRegistry, findPipeline } from "../shared/pipeline-registry.mjs";
-import { prepareTaskWorktree } from "./managed-git.mjs";
+import { prepareTaskWorktree, validateTaskWorktree } from "./managed-git.mjs";
 
 export async function cmdNext({ baseHome, woId, installDir, now = new Date(), cwd = process.cwd() }) {
   const bundle = await loadWo({ baseHome, woId, installDir });
@@ -37,7 +37,9 @@ export async function cmdNext({ baseHome, woId, installDir, now = new Date(), cw
 
   if (chosen.spec.frontmatter.State === "Ready") {
     if (chosen.spec.requiresWorktree) {
-      const setup = prepareTaskWorktree({ baseHome, cwd, woId, taskId: chosen.id });
+      const setup = prepareTaskWorktree({
+        baseHome, cwd, woId, taskId: chosen.id, metadata: executionMetadata,
+      });
       if (!setup.ok) return { ok: false, error: setup.error };
       executionMetadata = {
         branch: setup.branch,
@@ -59,6 +61,16 @@ export async function cmdNext({ baseHome, woId, installDir, now = new Date(), cw
       bfText = writeUpdated(bfText, ts);
       fs.writeFileSync(bundle.bfPath, bfText);
     }
+  } else if (chosen.spec.requiresWorktree) {
+    const setup = validateTaskWorktree({
+      baseHome, cwd, woId, taskId: chosen.id, metadata: executionMetadata,
+    });
+    if (!setup.ok) return { ok: false, error: setup.error };
+    executionMetadata = {
+      ...executionMetadata,
+      branch: setup.branch,
+      worktree: setup.worktree,
+    };
   }
 
   const task = {

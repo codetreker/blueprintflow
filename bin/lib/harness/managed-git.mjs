@@ -19,7 +19,7 @@ function samePath(a, b) {
 function expectedTaskGit(primaryWorktree, woId, taskId) {
   return {
     branch: `bf/${woId}/${taskId}`,
-    worktree: path.join(primaryWorktree, ".worktrees", woId, taskId),
+    worktree: path.join(primaryWorktree, ".worktrees", "works", woId, taskId),
   };
 }
 

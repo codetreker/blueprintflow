@@ -96,6 +96,8 @@ Harness-only mutation whitelist:
 1. Flip AC lines from `[ ]` to `[x]`.
 2. Sync the frontmatter `Updated:` timestamp when a mutation occurs.
 3. Advance frontmatter `State:` according to the state machine.
+4. Write harness-owned task execution metadata: `Branch:`, `Worktree:`, and
+   `Pull-Request:`.
 
 Every other mutation is illegal, including adding lines, deleting lines, changing
-fields, changing the task list, or changing boundaries.
+non-whitelisted fields, changing the task list, or changing boundaries.

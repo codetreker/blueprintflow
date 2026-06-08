@@ -55,8 +55,8 @@ BF looks for additional roles and packs in host-neutral `extensions/` directorie
 |---|---|
 | `~/.bf/extensions/roles/<name>.md` | A custom role you want available across every project |
 | `~/.bf/extensions/packs/<id>/pack.md` | A custom pack available globally |
-| `<project-root>/.bf/extensions/roles/<name>.md` | A role only this project should see |
-| `<project-root>/.bf/extensions/packs/<id>/pack.md` | A pack only this project should see |
+| `<primary-worktree>/.bf/extensions/roles/<name>.md` | A role only this project should see |
+| `<primary-worktree>/.bf/extensions/packs/<id>/pack.md` | A pack only this project should see |
 
 **Precedence (highest wins):** project extension → global extension → selected pack-private role → Core role. So a project-local `engineer.md` overrides anything else with that id.
 
@@ -69,7 +69,7 @@ Host discovery snapshots are generated copies. Do not put extensions under `~/.c
 After install, two CLIs are on `$PATH`:
 
 - `bf` — read-only metadata + install management: `bf list-packs`, `bf list-pipelines [--pack <id>]`, `bf list-roles [--pack <id>]`, `bf install`, `bf update`, `bf uninstall`, `bf version`
-- `bf-harness` — state-mutating loop driver: `lint`, `start-review`, `accept`, `next`, `verify`, `discard`, `list`
+- `bf-harness` — state-mutating loop driver: `lint`, `start-review`, `accept`, `next`, `attach-pr`, `verify`, `discard`, `list`
 
 Run either with `--help` for full usage.
 
@@ -83,25 +83,44 @@ brainstorm  →  spec  ──accept──▶  execute  ──verify──▶  Co
 
 1. **Brainstorm** — drive a discussion with the user, pick a pack, write `discussion.md`.
 2. **Spec** — author `bf.md` + per-task `spec.md` in `Draft`, `lint`, run a Spec Review round, `verify`, then `accept`. Contract is locked.
-3. **Execute** — `next` claims one ready task and returns its pipeline; subagents follow the pipeline instructions; a **different** reviewer subagent grades the final task AC; Task Verification flips its AC on SUCCESS. Repeat. Final Acceptance flips the bf.md AC and marks the work Completed.
+3. **Execute** — `next` claims one ready task and returns its pipeline. For `Requires-Worktree: true` tasks in managed Git mode, it also creates and returns the task branch/worktree. Subagents follow the pipeline instructions; a **different** reviewer subagent grades the final task AC; Task Verification flips its AC on SUCCESS. GitHub worktree tasks can record a PR with `attach-pr`, and verification checks that recorded GitHub PR is merged. Non-GitHub providers remain process-gated by pipeline/reviewer evidence. Repeat. Final Acceptance flips the bf.md AC and marks the work Completed.
 
 ## State layout
 
-BF stores all work-in-progress state at `<cwd>/.bf/<bf-wo>/`. Add `.bf/` to your `.gitignore`. Override the location with the `BF_HOME` env var (mostly useful for tests).
+BF stores work-in-progress state under a state home:
+
+- In a Git repository, BF uses the primary worktree `.bf` even when commands run from a linked worktree.
+- Outside Git, BF uses `<cwd>/.bf`.
+- For tests, set `BF_HOME` to an isolated directory. Do not use it as normal project configuration.
+- New work objects live under `<state-home>/works/<bf-wo>/`.
+- Legacy direct `<state-home>/<bf-wo>/` work objects remain readable; when both layouts contain the same id, `works/<bf-wo>` wins.
+- Project extensions live under `<state-home>/extensions/`.
+
+Add `.bf/` and `.worktrees/` to your `.gitignore` when using project-local BF state and task worktrees. BF leaves old worktree-local `.bf` state in place; it does not migrate, copy, archive, or clean it up.
 
 ```
 <project-root>/
   .bf/
-    <bf-wo>/
-      bf.md
-      discussion.md
-      runs/reviews/round_N/
-        result_<role>_<idx>.md
-        verify-result.md
-      <task-id>/
-        spec.md
-        runs/reviews/round_N/...
+    extensions/
+    works/
+      <bf-wo>/
+        bf.md
+        discussion.md
+        runs/reviews/round_N/
+          result_<role>_<idx>.md
+          verify-result.md
+        <task-id>/
+          spec.md
+          runs/reviews/round_N/...
+  .worktrees/
+    works/
+      <bf-wo>/
+        <task-id>/
 ```
+
+Each task spec declares `Requires-Worktree: true|false`. Worktree-required tasks
+use harness-owned `Branch:`, `Worktree:`, and `Pull-Request:` fields; do not
+edit those fields by hand.
 
 ## The Independent Verification rule
 

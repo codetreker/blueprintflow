@@ -14,7 +14,7 @@ make_git_repo() {
   git -C "$PRIMARY" remote add origin "https://github.com/example/repo.git" >/dev/null 2>&1
   BASE="$PRIMARY/.bf"
   TASK_BRANCH="bf/wo-1/task-a"
-  TASK_WORKTREE="$PRIMARY/.worktrees/wo-1/task-a"
+  TASK_WORKTREE="$PRIMARY/.worktrees/works/wo-1/task-a"
   PR_URL="https://github.com/example/repo/pull/7"
 }
 

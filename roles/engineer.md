@@ -17,7 +17,7 @@ The engineer is the doer of code-changing tasks. The engineer reads one `<task>/
 - Test-driven changes when the task lends itself to it; otherwise tests added alongside.
 - Small, focused commits with descriptive messages; one task → one logical change.
 - Reading the pack's Execute Guidance and respecting it (e.g. parser-first patterns, evidence shape).
-- Knowing the mutation whitelist boundary: never edit a locked `bf.md` / `spec.md` body; only the harness flips checkboxes / State / Updated.
+- Knowing the mutation whitelist boundary: never edit a locked `bf.md` / `spec.md` body; only the harness flips checkboxes, advances State, syncs Updated, and writes task execution metadata.
 
 ## When to Include
 

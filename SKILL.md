@@ -10,7 +10,7 @@ Evidence-gated work loop for LLM orchestrators. BF turns a fuzzy user request in
 ## Core idea
 
 - **Independent Verification (IV) is the axis.** Every "done" claim is signed off by a reviewer subagent that is **not the same subagent instance** that did the work. Same `role` is fine (e.g. `engineer` doer + a different `engineer` reviewer). Same subagent is not.
-- **The harness owns the mutation whitelist; the LLM owns the content.** After `accept`, only the harness can flip `[ ]` → `[x]`, advance `State`, or sync `Updated` in `bf.md` / `spec.md`. The LLM never edits those fields directly again. Everything else (`discussion.md`, review results, code) is LLM-written.
+- **The harness owns the mutation whitelist; the LLM owns the content.** After `accept`, only the harness can flip `[ ]` → `[x]`, advance `State`, sync `Updated`, or write task execution metadata (`Branch`, `Worktree`, `Pull-Request`) in `bf.md` / `spec.md`. The LLM never edits those fields directly again. Everything else (`discussion.md`, review results, code) is LLM-written.
 - **Three phases, gated:** brainstorm → spec → execute.
 
 ```
@@ -38,5 +38,6 @@ Re-check this every time you spawn a reviewer. It is the one rule the system can
 - `templates/` — frozen file shapes (`bf.md`, `task-spec.md`, `discussion.md`, `review-result.md`, `role.md`, `pack.md`). Copy these when authoring; do not improvise.
 - `roles/` — Core roles (`architect`, `engineer`, `tester`, …). Each pack's `pack.md` declares which role plays which phase. Packs may add private roles under `packs/<id>/roles/`.
 - `packs/` — installed packs. Each `pack.md` has `When to Use` + the three phase guidances. Pack pipelines live under `packs/<id>/pipelines/*.yml` and are discoverable with `bf list-pipelines --pack <id>`.
-- `extensions/` (optional) — user-supplied roles and packs. Global extensions live at `~/.bf/extensions/`; project extensions live at `<project-root>/.bf/extensions/`. Project beats global beats selected pack-private roles and Core roles; same id wins by precedence.
+- `extensions/` (optional) — user-supplied roles and packs. Global extensions live at `~/.bf/extensions/`; project extensions live under the normal project BF state home at `.bf/extensions/`. Project beats global beats selected pack-private roles and Core roles; same id wins by precedence.
+- BF state — Git projects store BF state under the primary worktree `.bf`, even when commands run from linked worktrees. New work objects live under `.bf/works/<bf-wo>`; legacy `.bf/<bf-wo>` work objects remain readable. Non-Git directories fall back to `<cwd>/.bf`.
 - Run `bf --help` and `bf-harness --help` for the authoritative command reference.

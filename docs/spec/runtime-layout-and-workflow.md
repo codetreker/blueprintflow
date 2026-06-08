@@ -1,8 +1,10 @@
 # Runtime Layout And Workflow
 
 This page describes the BF runtime file layout and the high-level workflow.
-BF runtime state lives under `.bf/`. BF does not define `.tasks/` as a runtime
-directory for drafts, design notes, or execution artifacts.
+BF runtime state lives under a resolved state home. Git repositories use the
+primary worktree `.bf`, linked worktrees included, and non-Git directories use
+`<cwd>/.bf`. BF does not define `.tasks/` as a runtime directory for drafts,
+design notes, or execution artifacts.
 
 ## Skill Directory Structure
 
@@ -23,24 +25,32 @@ directory for drafts, design notes, or execution artifacts.
 
 ## Work Object Layout
 
-Every BF work object lives under `<project-root>/.bf/<bf-wo>/`.
+New BF work objects live under `<state-home>/works/<bf-wo>/`. Legacy direct
+`<state-home>/<bf-wo>/` work objects remain readable; if both layouts contain
+the same id, `works/<bf-wo>` wins.
 
 ```text
-<bf-wo>/
-  +- bf.md
-  +- discussion.md
-  +- runs/
-  |    +- reviews/
-  |         +- round_{N}/
-  |              +- result_{role}_{idx}.md
-  +- <task-id>/
-  |    +- runs/
-  |    |    +- reviews/
-  |    |    |    +- round_{N}/
-  |    |    |         +- result_{role}_{idx}.md
-  |    |    +- ...
-  |    +- spec.md
-  |    +- more files
+<primary-worktree>/
+  +- .bf/
+  |    +- extensions/
+  |    +- works/
+  |         +- <bf-wo>/
+  |              +- bf.md
+  |              +- discussion.md
+  |              +- runs/
+  |              |    +- reviews/
+  |              |         +- round_{N}/
+  |              |              +- result_{role}_{idx}.md
+  |              +- <task-id>/
+  |                   +- runs/
+  |                   |    +- reviews/
+  |                   |         +- round_{N}/
+  |                   |              +- result_{role}_{idx}.md
+  |                   +- spec.md
+  +- .worktrees/
+       +- works/
+            +- <bf-wo>/
+                 +- <task-id>/
 ```
 
 ## End-To-End Workflow
@@ -55,7 +65,7 @@ Every BF work object lives under `<project-root>/.bf/<bf-wo>/`.
    - Record the doc-root discovery result in `discussion.md`. If a single root
      is inferred rather than explicit, ask the user to confirm it before
      treating it as authoritative.
-   - Write `discussion.md` directly under `<project-root>/.bf/<bf-wo>/` so the discussion is crash-safe and restartable.
+   - Write `discussion.md` directly under `<state-home>/works/<bf-wo>/` so the discussion is crash-safe and restartable.
 
 2. Write spec.
    - Run `bf list-roles --pack <pack>` to discover available roles and capabilities.
@@ -72,8 +82,11 @@ Every BF work object lives under `<project-root>/.bf/<bf-wo>/`.
      accept unless those details are accepted user-facing contract or required
      Evidence.
    - Each task spec selects exactly one `Pipeline`.
+   - Each task spec declares `Requires-Worktree: true|false`. Use `true` for
+     tasks that change repository code or docs in a Git project; use `false`
+     for planning, review-only, and non-repository work.
    - If no selected-pack pipeline fits, spawn a `pipeline-designer` subagent to
-     design a bf-wo local pipeline under `<bf-wo>/pipelines/<id>.yml`.
+     design a bf-wo local pipeline under `<work-object>/pipelines/<id>.yml`.
    - Continue discussion with the user until ambiguity is resolved.
    - Run `bf-harness lint <bf-wo>` until it returns success.
    - Run the spec review loop. Spec Review blocks contract gaps, not
@@ -83,7 +96,10 @@ Every BF work object lives under `<project-root>/.bf/<bf-wo>/`.
 
 3. Execute tasks.
    - Run `bf-harness next <bf-wo>` to claim the next eligible task.
-   - Read the returned task spec, pack, and pipeline path.
+   - Read the returned task spec, pack, and pipeline path. For
+     `Requires-Worktree: true` tasks in managed Git mode, `next` also creates
+     and returns branch `bf/<bf-wo>/<task-id>` and worktree
+     `<primary-worktree>/.worktrees/works/<bf-wo>/<task-id>`.
    - Follow the pipeline instruction and stage instructions.
    - Use confirmed project design docs while executing. If code and confirmed
      design docs disagree, record design drift in `discussion.md` and stop for
@@ -91,9 +107,14 @@ Every BF work object lives under `<project-root>/.bf/<bf-wo>/`.
    - If implementation exposes a design gap in the accepted `bf.md` or task
      `spec.md`, stop implementation and return to design discussion instead of
      silently expanding locked scope.
+   - If the task has a GitHub PR, record it with
+     `bf-harness attach-pr <bf-wo>/<task> <github-pr-url>`.
    - Run `bf-harness start-review <bf-wo>/<task>`.
    - Spawn independent reviewer subagents to write review results.
-   - Run `bf-harness verify <bf-wo>/<task>` until the task verifies.
+   - Run `bf-harness verify <bf-wo>/<task>` until the task verifies. For
+     GitHub repositories, worktree-required task verification also checks that
+     the recorded same-repository PR is merged. Non-GitHub providers remain
+     process-gated by pipeline and review evidence.
    - After all tasks complete, run bf-level final acceptance.
    - After Final Acceptance, the orchestrator may make an advisory note when a
      bf-wo local pipeline appears reusable. This is advisory only.
@@ -103,7 +124,7 @@ Every BF work object lives under `<project-root>/.bf/<bf-wo>/`.
 ## Spec Review Flow
 
 1. Run `bf-harness start-review <bf-wo>`.
-2. The command returns a review directory: `<bf-wo>/runs/reviews/round_N/`.
+2. The command returns a review directory: `<work-object>/runs/reviews/round_N/`.
 3. For each matching reviewer role, spawn exactly three reviewer subagents. Every reviewer in the same Spec Review round must be a distinct subagent instance.
 4. If the bf-wo has local pipelines, include three independent reviewer subagents with the `pipeline-review` capability. Each must be distinct from the pipeline designer and from every other reviewer in the same Spec Review round.
 5. Each reviewer writes `result_<role>_<idx>.md`; `<idx>` starts at 1 for each role.
@@ -116,7 +137,7 @@ Every BF work object lives under `<project-root>/.bf/<bf-wo>/`.
 Task review uses the same review-result file shape as spec review, scoped under:
 
 ```text
-<bf-wo>/<task>/runs/reviews/round_N/
+<work-object>/<task>/runs/reviews/round_N/
 ```
 
 Task review must satisfy Independent Verification: the task doer and task

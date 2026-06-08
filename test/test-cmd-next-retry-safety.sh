@@ -23,7 +23,7 @@ make_git_repo_with_origin() {
 
   BASE="$PRIMARY/.bf"
   EXPECTED_BRANCH="bf/wo-1/task-a"
-  EXPECTED_WORKTREE="$PRIMARY/.worktrees/wo-1/task-a"
+  EXPECTED_WORKTREE="$PRIMARY/.worktrees/works/wo-1/task-a"
 }
 
 prepare_ready_wo() {

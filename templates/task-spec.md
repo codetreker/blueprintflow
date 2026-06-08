@@ -18,7 +18,7 @@ frontmatter 字段说明：
 - Pipeline：这个 task 使用的执行流程。必须能在 `bf list-pipelines --pack <pack id>` 输出里找到。
 - Pack：跟所属 bf.md 的 Pack 一致。
 - Desc：一句话描述，让 doer 一眼看出在做什么。
-- Requires-Worktree：严格填写 `true` 或 `false`。会修改 repo 文件的 task 填 `true`。
+- Requires-Worktree：严格填写 `true` 或 `false`。在 Git project 里会修改 repo 代码或文档的 task 填 `true`；planning/review-only/non-repo task 填 `false`。
 - Branch / Worktree / Pull-Request：harness-owned execution metadata。Draft/Ready 时保持空值，LLM 不直接修改。
 -->
 

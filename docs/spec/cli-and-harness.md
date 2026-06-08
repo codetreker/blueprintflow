@@ -87,11 +87,19 @@ continues to run `bf install`. `bf update` does not run an additional manual
 
 ## `bf-harness`
 
-`bf-harness` controls BF work-object state under `<project-root>/.bf/<bf-wo>`.
+`bf-harness` controls BF work-object state under the resolved BF state home.
+
+In Git repositories, the default state home is the primary worktree `.bf`, even
+when commands run from linked worktrees. Outside Git, the default state home is
+`<cwd>/.bf`.
+
+New work objects live under `<state-home>/works/<bf-wo>`. Legacy direct
+`<state-home>/<bf-wo>` work objects remain readable; when both layouts contain
+the same id, `works/<bf-wo>` wins.
 
 ### `list`
 
-Lists project work objects under `<project-root>/.bf/`.
+Lists project work objects under the state home.
 
 Output includes:
 
@@ -112,6 +120,7 @@ Checks:
 - Task dependencies, including unknown ids and cycles.
 - AC capability registry: every `{capability}` marker must be declared by at least one role.
 - Task pipeline registry: each task has `Pipeline`; task frontmatter does not have `Capability`; the selected pipeline exists in the bf-wo local pipeline registry or selected pack.
+- Task worktree contract: each task has `Requires-Worktree: true|false`.
 - BF-WO local pipelines: local pipeline files are valid YAML, have matching filename/id, do not collide with selected pack pipeline ids, have instruction and stages, use known stage capabilities, and are referenced by at least one task.
 - Task evidence: `## Evidence` exists; each task AC has evidence; evidence ids are unique; evidence AC refs exist; kind is valid; requirement text is non-empty.
 - State is valid for the phase.
@@ -143,6 +152,33 @@ Behavior:
 - Marks the task `Tasking`.
 - Moves bf.md from `Accepted` to `Implementing` on first returned task.
 - Returns task directory, spec path, task description, `Pipeline`, resolved `Pipeline path`, and pack id.
+- For `Requires-Worktree: false`, does not create branch/worktree execution
+  metadata.
+- For `Requires-Worktree: true` in managed Git mode, fetches `origin`, creates
+  branch `bf/<bf-wo>/<task-id>` from `origin/HEAD`, creates worktree
+  `<primary-worktree>/.worktrees/works/<bf-wo>/<task-id>`, records `Branch` and
+  `Worktree`, and returns both values.
+- Retry safety requires any existing branch, worktree, and task metadata to
+  match exactly. Conflicts fail before contract mutation and do not clean up
+  user files.
+
+Managed Git mode requires a Git worktree, an `origin` remote, `origin/HEAD`,
+and the primary-worktree `.bf` state home.
+
+### `attach-pr <bf-wo>/<task> <github-pr-url>`
+
+Records a GitHub PR URL for a claimed worktree-required task.
+
+Behavior:
+
+- Requires task state `Tasking`.
+- Requires `Requires-Worktree: true`.
+- Requires existing `Branch` and `Worktree` metadata.
+- Requires the task worktree `origin` remote and the PR URL to refer to the
+  same GitHub repository.
+- When GitHub PR metadata is available, requires the PR head branch to match
+  the recorded task branch.
+- Writes task-level `Pull-Request` metadata and synchronizes `Updated`.
 
 ### `verify <bf-wo>` / `verify <bf-wo>/<task>`
 
@@ -157,7 +193,7 @@ Applies when:
 
 Behavior:
 
-- Reads the latest `<bf-wo>/runs/reviews/round_N/`.
+- Reads the latest `<work-object>/runs/reviews/round_N/`.
 - Parses all `result_<role>_<idx>.md` files.
 - Any Blocker or High finding fails the round.
 - Clean review results return success.
@@ -173,7 +209,7 @@ Applies when:
 
 Behavior:
 
-- Reads the latest `<bf-wo>/<task>/runs/reviews/round_N/`.
+- Reads the latest `<work-object>/<task>/runs/reviews/round_N/`.
 - Parses `## Results` and `## Accepted Criteria`.
 - Any Blocker or High finding fails without mutation.
 - For each task AC, finds roles that provide the AC capability.
@@ -181,6 +217,10 @@ Behavior:
 - Multiple provider roles do not all need to sign; the orchestrator chooses the relevant reviewer role before review.
 - Signed ACs flip from `[ ]` to `[x]`.
 - `Updated:` is synchronized.
+- For GitHub repositories, a worktree-required task must have a recorded
+  same-repository `Pull-Request`, and that PR must be merged.
+- For non-GitHub providers, PR completion is not mechanically checked by the
+  harness; pipeline and reviewer evidence remain the gate.
 - When all task ACs are checked, task state moves from `Tasking` to `Completed`.
 
 #### Final Acceptance

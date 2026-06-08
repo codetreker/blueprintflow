@@ -115,7 +115,7 @@ STDOUT=$(cmd_next_json "$PRIMARY")
 assert_json_field "$STDOUT" .ok true
 assert_json_field "$STDOUT" .task.taskId task-a
 EXPECTED_BRANCH="bf/wo-1/task-a"
-EXPECTED_WORKTREE="$PRIMARY/.worktrees/wo-1/task-a"
+EXPECTED_WORKTREE="$PRIMARY/.worktrees/works/wo-1/task-a"
 TASK_BRANCH=$(node -e "const j=JSON.parse(process.argv[1]); process.stdout.write(j.task?.branch || '');" "$STDOUT")
 TASK_WORKTREE=$(node -e "const j=JSON.parse(process.argv[1]); process.stdout.write(j.task?.worktree || '');" "$STDOUT")
 assert_eq "$TASK_BRANCH" "$EXPECTED_BRANCH" "returned Branch metadata"
@@ -127,6 +127,23 @@ git -C "$PRIMARY" show-ref --verify "refs/heads/$EXPECTED_BRANCH" >/dev/null 2>&
 [ -d "$EXPECTED_WORKTREE/.git" ] || [ -f "$EXPECTED_WORKTREE/.git" ] || fail "expected task worktree missing"
 CURRENT_BRANCH=$(git -C "$EXPECTED_WORKTREE" branch --show-current)
 assert_eq "$CURRENT_BRANCH" "$EXPECTED_BRANCH" "task worktree branch"
+rm -rf "$ROOT"
+
+# A bf-wo may itself run from a linked worktree under .worktrees/<bf-wo>.
+# Task worktrees must use a non-nesting namespace so they do not appear as
+# untracked directories inside that active worktree.
+make_git_repo_with_origin
+prepare_wo true
+LINKED="$PRIMARY/.worktrees/wo-1"
+git -C "$PRIMARY" fetch origin >/dev/null 2>&1 || fail "fetch origin failed"
+git -C "$PRIMARY" worktree add -b active-wo "$LINKED" refs/remotes/origin/HEAD >/dev/null 2>&1 || fail "create active linked worktree failed"
+STDOUT=$(cmd_next_json "$LINKED")
+assert_json_field "$STDOUT" .ok true
+EXPECTED_WORKTREE="$PRIMARY/.worktrees/works/wo-1/task-a"
+TASK_WORKTREE=$(node -e "const j=JSON.parse(process.argv[1]); process.stdout.write(j.task?.worktree || '');" "$STDOUT")
+assert_eq "$TASK_WORKTREE" "$EXPECTED_WORKTREE" "task worktree must not nest under active linked worktree"
+LINKED_STATUS=$(git -C "$LINKED" status --porcelain --untracked-files=normal)
+[ -z "$LINKED_STATUS" ] || fail "task worktree appeared as untracked content in active linked worktree: $LINKED_STATUS"
 rm -rf "$ROOT"
 
 # Outside managed Git mode, next must fail before any contract mutation.

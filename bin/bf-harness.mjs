@@ -26,7 +26,7 @@ const USAGE = `Usage:
   bf-harness verify <bf-wo>[/<task>]
   bf-harness discard <bf-wo>
 
-State directory: $BF_HOME (default: Git primary worktree .bf, else <cwd>/.bf).`;
+State directory: Git primary worktree .bf, else <cwd>/.bf.`;
 
 function write(text) { process.stdout.write(text.endsWith("\n") ? text : text + "\n"); }
 function fail(msg, code = 2) { process.stderr.write(msg + "\n"); process.exit(code); }

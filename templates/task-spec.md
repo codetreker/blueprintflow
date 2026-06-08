@@ -18,12 +18,16 @@ frontmatter 字段说明：
 
 # Task
 
-详细的任务描述。doer 主要参考这里来理解要做什么。
+任务的 scope contract。这里说明这个 task 要完成什么、由谁负责哪段范围、
+交付给谁、做到什么状态才算完成。这里不是详细 implementation design；
+具体文件、命令参数、内部 API、migration 策略和实现顺序，除非已经是用户
+接受的 contract 或 Evidence 要求，否则留给执行阶段的 design artifact。
 
 ## Requirements
 
 - 必须满足的具体要求
 - 每条都应该是可以从外部观察的成果
+- 不要把未验证的实现细节写成要求；写可观察结果和边界
 
 ## Acceptance Criteria
 
@@ -59,3 +63,4 @@ frontmatter 字段说明：
 ## Boundary
 
 明确不在这个任务范围内的事情。doer 执行时遇到模糊的边界，先看这里再判断。
+如果这里没有说明 owner、handoff 或 terminal state，spec review 应该要求补清楚。

@@ -99,6 +99,11 @@ pre-implementation review, implementation, design-doc sync when accepted system
 design changes, task-appropriate validation, multi-perspective independent
 review, and terminal-state closure. It does not require red-first TDD for every
 feature task; the task contract chooses the evidence and validation boundary.
+The accepted task spec supplies the scope contract. The pipeline's
+architecture-design and implementation-design stages own file-level
+investigation, exact commands, API shapes, migration strategy, and implementation
+sequence unless those details were already accepted as user-facing contract or
+required Evidence.
 
 `bugfix.yml` is regression red-green. It requires a focused failing regression
 test or reproduction before implementation, expected-failure review, the

@@ -48,6 +48,11 @@ The architect decomposes the accepted Goal/Boundary into a task DAG. A good engi
 - Has explicit `depends` edges in `bf.md`'s Task List — no implicit ordering.
 - Has AC that are observable from outside the task (a file exists, a command exits 0, a test passes, an endpoint returns X).
 - Names what it does not do in its own `Boundary`.
+- Defines a scope contract, not implementation design. Lock what the task must
+  accomplish, who owns it, what it hands off, and how it will be accepted; leave
+  exact file paths, command flags, internal API shapes, and implementation
+  sequence to the selected pipeline's design stages unless the user already made
+  those details part of the accepted contract.
 
 Typical patterns:
 
@@ -55,6 +60,14 @@ Typical patterns:
 - **Tests live with the code**: each task includes its own tests; do not create a "write all tests" task at the end.
 - **One module per task** is a reasonable default; split if a single module has two unrelated AC.
 - **Refactor before feature**: if the new feature needs a shape the code does not have yet, the refactor is its own task with its own AC (e.g. "no behavior change; existing tests still pass").
+
+## Spec Review Guidance
+
+Review the task DAG and specs as contracts. Block unclear ownership, missing
+handoffs, broken dependencies, overlapping tasks, vague boundaries,
+unobservable AC, missing Evidence, and user-visible requirements with no task
+owner. Do not block only because repository investigation or implementation
+strategy remains for the task pipeline's architecture/design stages.
 
 ## Execute Guidance
 

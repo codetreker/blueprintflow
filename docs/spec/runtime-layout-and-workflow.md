@@ -66,12 +66,18 @@ Every BF work object lives under `<project-root>/.bf/<bf-wo>/`.
      known gaps, include design-doc update requirements in task AC and Evidence.
    - Write `bf.md` with `State: Draft`.
    - Create one directory per task and write `<task>/spec.md` with `State: Draft`.
+   - Keep specs at contract granularity: task decomposition, scope, boundary,
+     dependencies, ownership or handoff expectations, observable AC, and
+     evidence intent. Do not require implementation design details before
+     accept unless those details are accepted user-facing contract or required
+     Evidence.
    - Each task spec selects exactly one `Pipeline`.
    - If no selected-pack pipeline fits, spawn a `pipeline-designer` subagent to
      design a bf-wo local pipeline under `<bf-wo>/pipelines/<id>.yml`.
    - Continue discussion with the user until ambiguity is resolved.
    - Run `bf-harness lint <bf-wo>` until it returns success.
-   - Run the spec review loop.
+   - Run the spec review loop. Spec Review blocks contract gaps, not
+     implementation investigation that belongs to task execution design stages.
    - After user approval, run `bf-harness accept <bf-wo>`.
    - After accept, `bf.md` and task `spec.md` content is locked for the LLM. The harness cascades tasks to `Ready`.
 

@@ -14,8 +14,12 @@ Each task is a child directory of `<bf-wo>/`:
   ...
 ```
 
-`spec.md` is the task contract: goal, scope, acceptance criteria, evidence
-requirements, and selected execution pipeline.
+`spec.md` is the task contract: task goal, scope, boundary, dependencies,
+handoff or terminal-state expectations, acceptance criteria, evidence
+requirements, and selected execution pipeline. It is not implementation design.
+File-level investigation, exact command flags, internal API shapes, migration
+strategy, and implementation sequence belong to execution design unless they
+are already accepted user-facing contract or required Evidence.
 
 ## bf.md
 
@@ -53,6 +57,10 @@ requirements, and selected execution pipeline.
 - Evidence kind is one of `command`, `file`, `artifact`, `review-note`, or `screenshot`.
 - Evidence requirement text must be non-empty.
 - After accept, only the harness may mutate checkbox state, `State`, and `Updated`.
+- Spec review rejects contract gaps such as unclear ownership, broken handoffs,
+  vague boundaries, unobservable AC, or missing Evidence. It does not require
+  detailed implementation design before accept when the selected pipeline owns
+  that design work.
 
 ## Review Result
 

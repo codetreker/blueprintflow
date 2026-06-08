@@ -13,6 +13,13 @@ assert_eq "$FIRST" "# Spec Authoring" "spec-authoring H1"
 FIRST=$(sed -n '1p' "$REPO_ROOT/references/execution.md")
 assert_eq "$FIRST" "# Execution" "execution H1"
 
+SPEC_AUTHORING_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/references/spec-authoring.md")
+assert_match "$SPEC_AUTHORING_BODY" "scope contract" "spec authoring defines task specs as scope contracts"
+assert_match "$SPEC_AUTHORING_BODY" "not implementation design" "spec authoring separates specs from implementation design"
+assert_match "$SPEC_AUTHORING_BODY" "contract gaps" "spec review blocks contract gaps"
+assert_match "$SPEC_AUTHORING_BODY" "execution design" "spec authoring leaves details to execution design"
+assert_match "$SPEC_AUTHORING_BODY" "accepted user-facing contract" "spec authoring preserves accepted-detail exception"
+
 if rg -n "phase-1|phase-2|phase-3" \
   "$REPO_ROOT/README.md" "$REPO_ROOT/SKILL.md" "$REPO_ROOT/docs" "$REPO_ROOT/references" \
   >/tmp/bf-semantic-refs.$$; then

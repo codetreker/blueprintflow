@@ -11,6 +11,7 @@ import { cmdLint, formatLint } from "./lib/harness/cmd-lint.mjs";
 import { cmdStartReview, formatStartReview } from "./lib/harness/cmd-start-review.mjs";
 import { cmdAccept, formatAccept } from "./lib/harness/cmd-accept.mjs";
 import { cmdNext, formatNext } from "./lib/harness/cmd-next.mjs";
+import { cmdAttachPr, formatAttachPr } from "./lib/harness/cmd-attach-pr.mjs";
 import { cmdVerify, formatVerifyResult, formatVerifySetupError } from "./lib/harness/cmd-verify.mjs";
 import { cmdDiscard, formatDiscard } from "./lib/harness/cmd-discard.mjs";
 import { resolveDefaultStateHome } from "./lib/shared/state-home.mjs";
@@ -21,6 +22,7 @@ const USAGE = `Usage:
   bf-harness start-review <bf-wo>[/<task>]
   bf-harness accept <bf-wo>
   bf-harness next <bf-wo>
+  bf-harness attach-pr <bf-wo>/<task> <github-pr-url>
   bf-harness verify <bf-wo>[/<task>]
   bf-harness discard <bf-wo>
 
@@ -51,6 +53,7 @@ const ARITY = {
   lint:           { wo: "required",  task: "forbidden" },
   accept:         { wo: "required",  task: "forbidden" },
   next:           { wo: "required",  task: "forbidden" },
+  "attach-pr":    { wo: "required",  task: "required" },
   discard:        { wo: "required",  task: "forbidden" },
   "start-review": { wo: "required",  task: "optional" },
   verify:         { wo: "required",  task: "optional" },
@@ -61,6 +64,7 @@ function validateArity(subcmd, t) {
   if (!rule) return null;
   if (rule.wo === "required" && !t.woId) return `${subcmd} requires <bf-wo>`;
   if (rule.wo === "forbidden" && t.woId) return `${subcmd} takes no positional target`;
+  if (rule.task === "required" && !t.taskId) return `${subcmd} requires <bf-wo>/<task>`;
   if (rule.task === "forbidden" && t.taskId) return `${subcmd} does not accept a task id`;
   return null;
 }
@@ -73,6 +77,7 @@ function resolveInstallDir() {
 async function main() {
   const args = process.argv.slice(2);
   const [subcmd, target] = args;
+  const extraArgs = args.slice(2);
 
   if (!subcmd || subcmd === "--help" || subcmd === "-h") {
     process.stdout.write(USAGE + "\n");
@@ -113,6 +118,10 @@ async function main() {
     case "next":
       r = await cmdNext({ baseHome, woId: t.woId, installDir });
       text = formatNext(r); break;
+    case "attach-pr":
+      if (extraArgs.length !== 1) fail(`attach-pr requires <github-pr-url>\n${USAGE}`, 2);
+      r = await cmdAttachPr({ baseHome, woId: t.woId, taskId: t.taskId, prUrl: extraArgs[0], installDir });
+      text = formatAttachPr(r); break;
     case "discard":
       r = await cmdDiscard({ baseHome, woId: t.woId });
       text = formatDiscard(r); break;

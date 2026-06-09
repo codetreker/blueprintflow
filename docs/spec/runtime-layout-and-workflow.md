@@ -133,9 +133,12 @@ Verification, and Final Acceptance. Task drivers do not advance locked BF state.
    - For `Requires-Worktree: true` tasks in managed Git mode, `next` also
      creates and returns branch `bf/<bf-wo>/<task-id>` and worktree
      `<primary-worktree>/.worktrees/works/<bf-wo>/<task-id>`.
-   - Assign a host-compatible task driver. The task driver follows the pipeline
-     instruction and stage instructions and hands evidence back to the
-     coordinator before BF acceptance review.
+   - Assign a host-compatible task driver before claimed task leaf work starts.
+     In Codex, that actor is a Codex subagent. The task driver follows
+     the pipeline instruction and stage instructions and hands evidence back to
+     the coordinator before BF acceptance review. If task-driver capacity or
+     tooling is unavailable, the coordinator stops instead of doing leaf work
+     unless the user explicitly overrides the delegation rule.
    - When accepted contract intent is unclear, read `discussion.md` before
      inventing scope. If it does not answer an ambiguity that affects scope,
      boundary, acceptance, or design intent, stop for clarification.
@@ -155,7 +158,12 @@ Verification, and Final Acceptance. Task drivers do not advance locked BF state.
      GitHub repositories, worktree-required task verification also checks that
      the recorded same-repository PR is merged. Non-GitHub providers remain
      process-gated by pipeline and review evidence.
+   - If task verification fails, verification-fix work goes to the same task
+     driver or a new task driver. The coordinator opens a new review round and
+     reruns verification after the fix and independent review.
    - After all tasks complete, run bf-level final acceptance.
+     Final Acceptance uses bf-level reviewers and existing harness verification;
+     it does not add cross-task tracking of every task driver.
    - After Final Acceptance, the orchestrator may make an advisory note when a
      bf-wo local pipeline appears reusable. This is advisory only.
    - Execution completion must not promote local pipelines, edit extension packs,

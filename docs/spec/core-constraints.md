@@ -28,6 +28,11 @@ Actor identity, nested-delegation support, and closure state are
 instruction-level constraints. The harness does not observe them, so the
 coordinator enforces them when selecting task drivers, dispatching reviewers,
 and accounting for actor lifecycle.
+For execute-stage tasks, the coordinator assigns every claimed task and
+verification fix to a host-compatible task driver instead of doing leaf work in
+the main session. In Codex, that actor is a Codex subagent. The harness
+does not track task-driver identity or mechanically enforce this delegation
+rule.
 
 ## Independent Verification
 

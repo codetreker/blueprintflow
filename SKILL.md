@@ -11,7 +11,7 @@ Evidence-gated work loop for LLM orchestrators. BF turns a fuzzy user request in
 
 - **Independent Verification (IV) is the axis.** Every "done" claim is signed off by a reviewer actor that is **not the same actor instance** whose work is reviewed. Same `role` is fine (e.g. an `engineer` task driver + a different `engineer` reviewer). Same actor instance is not.
 - **The harness owns the mutation whitelist; the LLM owns the content.** After `accept`, only the harness can flip `[ ]` → `[x]`, advance `State`, sync `Updated`, or write task execution metadata (`Branch`, `Worktree`, `Pull-Request`) in `bf.md` / `spec.md`. The LLM never edits those fields directly again. Everything else (`discussion.md`, review results, code) is LLM-written.
-- **Host runtime strategy is explicit.** The main session is the BF coordinator. It records the host runtime, task driver type, nested-delegation limit, lifecycle/closure rule, and reviewer spawning owner before Spec Review and task execution.
+- **Host runtime strategy is explicit.** The main session is the BF coordinator. It records the host runtime, task driver type, nested-delegation limit, lifecycle/closure rule, and reviewer spawning owner before Spec Review and task execution. During execute, every claimed task and verification fix is assigned to a host-compatible task driver; in Codex this is a Codex subagent task driver.
 - **Three phases, gated:** brainstorm → spec → execute.
 
 ```
@@ -38,7 +38,9 @@ Use these generic actor names in BF core guidance:
   and actor lifecycle accounting.
 - **task driver** — the actor assigned one concrete task. It follows the task
   pipeline and produces artifacts, evidence, pipeline review outputs, closure
-  evidence, and a review-ready handoff.
+  evidence, and a review-ready handoff. The coordinator assigns claimed task
+  work and verification fixes to a task driver instead of doing that leaf work
+  in the main session.
 - **leaf worker** — a bounded helper for one stage or artifact, used only when
   the current host runtime supports that delegation from the current actor.
 - **reviewer** — an independent actor that writes review results. IV applies to

@@ -10,15 +10,21 @@ instruction: |
   before the first stage.
   Each stage must produce its named artifact or review result before the next
   stage starts. When design-doc sync or full validation is not required, record
-  explicit not-applicable evidence. Review stages must remain independent from
-  the implementation work they review. Stop on Blocker or High review findings
-  and rerun the affected stage after fixes. Stop before task verification if any
-  external artifact or side effect lacks a terminal state, handoff owner, or
-  explicit stop condition. Do not edit locked bf.md or task spec.md content
-  after accept; only the harness may flip AC checkboxes, advance State, sync
-  Updated, and write task execution metadata. The task driver produces closure
-  evidence, but the coordinator owns the acceptance-readiness terminal-state
-  closure decision before task-level BF acceptance review.
+  explicit not-applicable evidence. For claimed task work, the coordinator
+  assigns regression reproduction, implementation, focused passing-test,
+  validation, design-doc sync, and verification fixes to a host-compatible task
+  driver; in Codex, that actor is a Codex subagent. If task-driver
+  capacity or tooling is unavailable, stop unless the user explicitly overrides
+  the delegation rule. Review stages must remain independent from the actor
+  whose work they review. Stop on Blocker or High review findings and send
+  fixes to the same task driver or a new task driver before rerunning the
+  affected stage. Stop before task verification if any external artifact or
+  side effect lacks a terminal state, handoff owner, or explicit stop condition.
+  Do not edit locked bf.md or task spec.md content after accept; only the
+  harness may flip AC checkboxes, advance State, sync Updated, and write task
+  execution metadata. The task driver produces closure evidence, but the
+  coordinator owns the acceptance-readiness terminal-state closure decision
+  before task-level BF acceptance review.
 stages:
   - id: regression-reproduction
     capability: software-implementation

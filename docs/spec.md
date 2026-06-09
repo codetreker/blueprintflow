@@ -62,6 +62,13 @@ flowchart TB
   finalReview --> completed[Completed]
 ```
 
+During execute, the main session is the coordinator. It runs harness commands,
+routes claimed tasks, dispatches task drivers and reviewers, reads outputs, and
+stops on ambiguity or blocked setup. Every claimed task and verification fix is
+assigned to a host-compatible task driver; in Codex, that actor is a Codex
+subagent. Reviewers remain different actor instances from the actor whose
+work they review.
+
 ## Reading Map
 
 | Need | Start Here |

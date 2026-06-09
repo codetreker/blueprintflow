@@ -24,10 +24,19 @@ Claude Code `teammate` and Codex subagent are host-specific task driver
 implementations. If a task driver cannot spawn a nested worker or reviewer,
 it hands that need back to the coordinator.
 
+After `bf-harness next` claims a task, the coordinator must assign the claimed
+task work to a host-compatible task driver before leaf work starts. In Codex,
+that actor is a Codex subagent task driver for the claimed task. The coordinator
+does not implement, test-fix, refactor, edit task-scoped code or docs, produce
+task-driver-owned evidence, write task review results, or directly patch
+verification findings for a claimed task. If task-driver capacity or tooling is
+unavailable, stop instead of doing the leaf work in the coordinator unless the
+user explicitly overrides the delegation rule.
+
 ## Outer loop (per task)
 
 1. `bf-harness next <bf-wo>` — coordinator command. It prints labeled lines for one ready task: `Task:`, `Pipeline:`, `Pipeline path:`, `Pack:`, `Spec:`, `Dir:`, and for worktree-required tasks also `Branch:` and `Worktree:`. The harness flips the returned task to `Tasking` and (on the first call) flips `bf.md` to `Implementing`. For `Requires-Worktree: true` tasks in managed Git mode, `next` creates branch `bf/<bf-wo>/<task-id>` from `origin/HEAD`, creates worktree `<primary-worktree>/.worktrees/works/<bf-wo>/<task-id>`, and records task-level `Branch:` / `Worktree:` metadata before claiming. For `Requires-Worktree: false` tasks, `next` does not create or require execution metadata. If no task is ready (deps unmet), Git setup is unavailable, or existing branch/worktree/metadata conflicts with the expected task, `next` exits non-zero before contract mutation.
-2. The task driver reads the returned pipeline file. Follow the top-level pipeline instruction first, then follow each stage instruction in order. Do not assume every stage requires a leaf worker; use one only when the pipeline or stage instruction asks for one and the host-runtime strategy allows the current actor to spawn it. Stop when a stage instruction says to stop, including any Blocker or High review finding.
+2. Assign a host-compatible task driver for the claimed task. The task driver reads the returned pipeline file and follows the top-level pipeline instruction first, then follows each stage instruction in order. Do not assume every stage requires a leaf worker; use one only when the pipeline or stage instruction asks for one and the host-runtime strategy allows the current actor to spawn it. Stop when a stage instruction says to stop, including any Blocker or High review finding.
 3. When accepted contract intent is unclear, read discussion.md first. If
    it answers the ambiguity, proceed from the recorded answer. If it does not
    answer, and the ambiguity affects scope, boundary, acceptance, or design intent, append the ambiguity to `discussion.md` and stop for collaborative clarification.
@@ -38,7 +47,7 @@ it hands that need back to the coordinator.
 8. Run acceptance-readiness terminal-state closure before BF acceptance review. The coordinator confirms every task-local external artifact or side effect has a terminal state, handoff owner, or explicit stop condition. If the side effect spans tasks or the whole work object, record it for bf-level Final Acceptance closure too.
 9. `bf-harness start-review <bf-wo>/<task>` — coordinator command. It returns the task-level round dir.
 10. Coordinator dispatches BF acceptance reviewers for each AC's review capability. Each reviewer must be a different actor instance than the actor whose work is reviewed (IV — see SKILL.md). Each writes `result_<role>_<idx>.md` into the round dir. If a task driver cannot spawn a needed independent reviewer, the coordinator dispatches that reviewer.
-11. `bf-harness verify <bf-wo>/<task>` (Task Verification) — coordinator command. On FAIL, read the verify-result file, dispatch fixes (the same task driver or a new one), open a new review round, and re-verify. For GitHub repositories, worktree-required task verification also requires recorded same-repository `Pull-Request:` metadata and confirms the PR is merged. Non-GitHub providers remain pipeline/process gated; the harness does not mechanically check provider completion there. The task stays in `Tasking` until verify SUCCESS, at which point the harness flips its AC and sets `State: Completed`.
+11. `bf-harness verify <bf-wo>/<task>` (Task Verification) — coordinator command. On FAIL, read the verify-result file. Verification-fix work is claimed task work: dispatch fixes to the same task driver or a new task driver, open a new review round, and re-verify. Do not patch the fix directly in the coordinator. For GitHub repositories, worktree-required task verification also requires recorded same-repository `Pull-Request:` metadata and confirms the PR is merged. Non-GitHub providers remain pipeline/process gated; the harness does not mechanically check provider completion there. The task stays in `Tasking` until verify SUCCESS, at which point the harness flips its AC and sets `State: Completed`.
 
 ## Final acceptance
 
@@ -46,6 +55,10 @@ it hands that need back to the coordinator.
    1. The coordinator confirms whole-work-object terminal-state closure for external artifacts or side effects that span tasks.
    2. `bf-harness start-review <bf-wo>` — coordinator command. Spawn reviewers against the `bf.md` AC.
    3. `bf-harness verify <bf-wo>` (Final Acceptance) — coordinator command. On SUCCESS the harness flips all `bf.md` AC and sets `State: Completed`.
+
+Final Acceptance remains an integrative bf-level review. This runtime guidance
+does not add a requirement to track every task driver across bf-level Final
+Acceptance.
 
 ## Pipeline promotion suggestions
 

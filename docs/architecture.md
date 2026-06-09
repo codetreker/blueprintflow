@@ -160,6 +160,14 @@ runtime, and accepted docs. It is not a repo-maintenance skill or pack.
 Repository changes still use the BF gate, normal validation, release metadata,
 and PR evidence required by `AGENTS.md`.
 
+Repository validation that can invoke BF install or test code runs with isolated
+state: temporary `HOME`, `CODEX_HOME`, and `BF_HOME`. This prevents dependency
+install hooks, host discovery snapshots, and BF work-object state from mutating
+the user's real Claude, Codex, or BF directories. Ordinary CI and the manual
+publish preflight both run dependency installation and the full npm test gate
+under that isolation; publish then adds npm version/tag freshness checks and the
+actual npm publish/tag steps.
+
 Default maintenance authority follows the root BF package and accepted docs.
 The deprecated `plugins/blueprintflow/` tree is an explicit exception path:
 maintenance work reads or edits it only when the user requests legacy plugin

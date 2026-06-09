@@ -30,6 +30,9 @@ roles, packs, and CLI tools that an orchestrating LLM reads and executes.
 - Use the BF gate for PR readiness: the PR author records the BF work object
   id/status and validation evidence, or records why BF was not required;
   required GitHub reviews/checks pass; blocking conversations are resolved.
+- Run dependency install and test validation that can invoke BF with isolated
+  `HOME`, `CODEX_HOME`, and `BF_HOME`; use
+  `.github/scripts/with-isolated-bf-env.sh` for repository validation.
 - When spawning subagents, use the same thinking/reasoning effort as the main
   agent. Do not lower effort unless the user explicitly requests it.
 - Do not use legacy plugin content as BF source of truth unless the user explicitly asks.
@@ -63,8 +66,8 @@ If implementation exposes a design gap, stop coding and return to DDD.
 ## Commands
 
 ```bash
-npm install
-npm test
+bash .github/scripts/with-isolated-bf-env.sh npm install
+bash .github/scripts/with-isolated-bf-env.sh npm test
 git diff --check
 .github/scripts/validate-bf-package-layout.sh
 .github/scripts/validate-bf-version.sh origin/main

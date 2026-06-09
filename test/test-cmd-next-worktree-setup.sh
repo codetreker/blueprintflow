@@ -173,6 +173,7 @@ rm -rf "$ROOT"
 
 make_git_repo_with_origin
 prepare_wo true
+git -C "$ORIGIN" symbolic-ref HEAD refs/heads/missing >/dev/null 2>&1 || fail "break origin HEAD failed"
 git -C "$PRIMARY" symbolic-ref --delete refs/remotes/origin/HEAD >/dev/null 2>&1 || true
 STDOUT=$(cmd_next_json "$PRIMARY")
 assert_json_field "$STDOUT" .ok false

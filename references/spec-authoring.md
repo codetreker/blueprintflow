@@ -21,22 +21,41 @@ or handoff chains, missing terminal-state expectations, vague boundaries,
 unobservable AC, missing Evidence, or task overlap. Spec Review does not block
 only because implementation investigation remains for execution design.
 
+## Discussion Source Coverage
+
+Before authoring `bf.md`, verify that discussion.md contains source material for
+the concise contract: Goal, Requirement, Acceptance Criteria, Boundary, and Task
+List rationale. The source material may be direct user input or a confirmed or
+accepted assistant proposal.
+
+If source material is missing, stop before task breakdown. Return to
+brainstorm, append the missing question, decision, or proposal to
+`discussion.md`, and continue only after the gap is resolved.
+
+This traceability does not belong in the contract text. bf.md must not cite or quote discussion.md by default. It should distill the recorded discussion into a short scope contract.
+
 ## Steps
 
 1. `bf list-roles --pack <id>` — get the available roles and the capabilities they provide.
 2. `bf list-pipelines --pack <id>` — get the available task execution pipelines for this pack.
 3. Follow [project-docs.md](project-docs.md). If confirmed project design docs exist, treat them as design authority while drafting. If the work changes accepted system design, add design-doc update AC and Evidence to the relevant task specs.
-4. Author `bf.md` with `State: Draft` using `templates/bf.md`. Every AC must carry `{id}|{capability}`, and the capability must be declared in some role's `Capabilities:` list.
-5. Author each `<task>/spec.md` with `State: Draft` using `templates/task-spec.md`. Each task spec has exactly one `Pipeline`, a required `Requires-Worktree: true|false`, empty `Branch` / `Worktree` / `Pull-Request` metadata, AC lines with their own `{capability}` markers (review capability), and an explicit `Evidence` section that maps each task AC to one or more required evidence items. Keep the task spec at contract granularity; leave detailed design to the task pipeline.
-6. If no pack pipeline fits a task, create a bf-wo local pipeline under `<work-object>/pipelines/<id>.yml`. The local pipeline must be designed by a `pipeline-designer` subagent. The designer must include terminal-state closure for every external artifact or side effect the pipeline creates, so the pipeline cannot reach user-perspective completion with dangling work. The parent orchestrator may only make mechanical path/format fixes; substantive stage, gate, capability, artifact, closure, handoff, or stop-condition changes go back to the designer.
-7. `bf-harness lint <bf-wo>` — fix every error and re-run until SUCCESS.
-8. **Spec Review loop:**
+4. Confirm discussion source coverage before task breakdown. Do not author `bf.md` until the coverage check is satisfied.
+5. Author `bf.md` with `State: Draft` using `templates/bf.md`. Every AC must carry `{id}|{capability}`, and the capability must be declared in some role's `Capabilities:` list.
+6. Author each `<task>/spec.md` with `State: Draft` using `templates/task-spec.md`. Each task spec has exactly one `Pipeline`, a required `Requires-Worktree: true|false`, empty `Branch` / `Worktree` / `Pull-Request` metadata, AC lines with their own `{capability}` markers (review capability), and an explicit `Evidence` section that maps each task AC to one or more required evidence items. Keep the task spec at contract granularity; leave detailed design to the task pipeline.
+7. If no pack pipeline fits a task, create a bf-wo local pipeline under `<work-object>/pipelines/<id>.yml`. The local pipeline must be designed by a `pipeline-designer` actor. The designer must include terminal-state closure for every external artifact or side effect the pipeline creates, so the pipeline cannot reach user-perspective completion with dangling work. The parent orchestrator may only make mechanical path/format fixes; substantive stage, gate, capability, artifact, closure, handoff, or stop-condition changes go back to the designer.
+8. `bf-harness lint <bf-wo>` — fix every error and re-run until SUCCESS.
+9. Record the **host-runtime strategy** in `discussion.md` before Spec Review:
+   host runtime, task driver type, nested-delegation limit, lifecycle or
+   closure rule, and reviewer spawning owner. Use generic BF actor names in the
+   contract; map host-specific names such as Claude Code `teammate` or Codex
+   subagent only as runtime guidance.
+10. **Spec Review loop:**
    1. `bf-harness start-review <bf-wo>` — returns the round directory `<work-object>/runs/reviews/round_N/`.
    2. For each role returned by `bf list-roles --pack <id>` that provides a review capability used in the spec, spawn exactly three reviewer subagents. Every reviewer in the same Spec Review round must be a distinct subagent instance. Each subagent writes `result_<role>_<idx>.md` into the round dir using `templates/review-result.md`; `<idx>` starts at 1 for each role.
    3. If the bf-wo has local pipelines, include three independent reviewer subagents with the `pipeline-review` capability. Each `pipeline-review` reviewer must be a different subagent instance from the pipeline designer and from every other reviewer in the same Spec Review round. The reviewers must reject any bf-wo local pipeline that creates external artifacts or side effects without a terminal-state closure path, handoff, or explicit stop condition for dangling work.
    4. Tell reviewers to reject contract gaps, not missing implementation-design detail. A reviewer may reject a detail that is already locked and wrong, but must not require file-level investigation before `accept` when the selected pipeline owns that design work.
    5. `bf-harness verify <bf-wo>` (Spec Review) — `SUCCESS <path>` or `FAIL <path>`. On FAIL, read the verify-result file, fix `bf.md` / `spec.md` / local pipelines, then start a new round.
-9. When verify returns SUCCESS and the user agrees with the plan, `bf-harness accept <bf-wo>`. `bf.md` → `Accepted`; all tasks cascade `Draft` → `Ready`. **Contract is now locked.**
+11. When verify returns SUCCESS and the user agrees with the plan, `bf-harness accept <bf-wo>`. `bf.md` → `Accepted`; all tasks cascade `Draft` → `Ready`. **Contract is now locked.**
 
 ## Mutation whitelist after accept
 
@@ -45,7 +64,7 @@ Once `accept` runs, the LLM no longer edits `State`, AC checkboxes, `Updated`, o
 ## Authoring rules
 
 - Every AC capability must be discoverable via `bf list-roles --pack <id>`. Lint will fail otherwise.
-- Each task spec's `Pipeline:` selects the **execution pipeline**. Doer/reviewer capabilities for execution stages live in the pipeline file, not in task frontmatter.
+- Each task spec's `Pipeline:` selects the **execution pipeline**. Stage-owner and reviewer capabilities for execution stages live in the pipeline file, not in task frontmatter.
 - `Requires-Worktree:` is required. Use `true` for tasks that change repository code or docs in a Git project; use `false` for planning, review-only, and non-repository work.
 - `Branch:`, `Worktree:`, and `Pull-Request:` are harness-owned metadata. Keep them empty while drafting.
 - `Pipeline:` may reference a selected pack pipeline or a bf-wo local pipeline under `<work-object>/pipelines/<id>.yml`.

@@ -18,6 +18,24 @@ Goal: produce `discussion.md` capturing the user's intent, decisions, and trade-
 
 Write each Q&A or decision to `discussion.md` **as it happens**. Do not buffer in memory and dump at the end — if the session crashes mid-discussion, only what is on disk survives. Use the `templates/discussion.md` shape.
 
+## Source coverage
+
+Before moving to spec authoring, confirm source coverage in `discussion.md`.
+Recorded discussion must answer requirement, acceptance, out-of-scope boundary,
+important constraints or tradeoffs, evidence shape, and remaining open questions
+or accepted proposals.
+
+You may fill gaps with an assistant-led proposal instead of only asking the
+user a question. Append the proposal to `discussion.md`, discuss it with the
+user, and treat it as source material only after it becomes a confirmed or
+accepted proposal.
+Only a confirmed or accepted proposal can support `bf.md`.
+
+Every bf.md section must be supportable from `discussion.md`: Goal,
+Requirement, Acceptance Criteria, Boundary, and Task List rationale. This is an
+authoring and review discipline, not a formatting requirement. Keep `bf.md`
+concise; do not quote or cite discussion entries by default.
+
 ## Pack selection
 
 - One pack per bf-wo. The pack you pick here governs role/capability lookups for Phases 2 and 3.
@@ -26,4 +44,6 @@ Write each Q&A or decision to `discussion.md` **as it happens**. Do not buffer i
 
 ## Exit
 
-Brainstorm ends when the user agrees you have captured enough to write a spec. Move to [spec-authoring.md](spec-authoring.md).
+Brainstorm ends when the user agrees you have captured enough to write a spec
+and the source coverage check is satisfied. Move to
+[spec-authoring.md](spec-authoring.md).

@@ -2,7 +2,7 @@
 
 **BF — evidence-gated work loop CLI for LLM orchestrators.**
 
-BF turns a fuzzy user request into a locked contract (`bf.md` + per-task `spec.md`), then drives execution through a `next → do → review → verify` loop until every Acceptance Criterion is signed off by a reviewer subagent that is **not the same subagent instance** that did the work.
+BF turns a fuzzy user request into a locked contract (`bf.md` + per-task `spec.md`), then drives execution through a `next → do → review → verify` loop until every Acceptance Criterion is signed off by a reviewer actor that is **not the same actor instance** whose work is reviewed.
 
 This package ships the BF core: the CLI (`bf`, `bf-harness`), the entry skill (`SKILL.md`), Core roles, the engineering pack, file templates, and phase references.
 
@@ -12,7 +12,7 @@ This package ships the BF core: the CLI (`bf`, `bf-harness`), the entry skill (`
 npm install -g @codetreker/bf
 ```
 
-Requires Node.js ≥ 20. **Install globally** (`-g`) so the `bf` and `bf-harness` CLIs land on `$PATH` — that is the only supported install mode. Local installs (`--save-dev`) put the CLIs in `node_modules/.bin/` only and break shell invocations from subagent commands.
+Requires Node.js ≥ 20. **Install globally** (`-g`) so the `bf` and `bf-harness` CLIs land on `$PATH` — that is the only supported install mode. Local installs (`--save-dev`) put the CLIs in `node_modules/.bin/` only and break shell invocations from delegated actor commands.
 
 `npm install` also runs a `postinstall` step that copies a host discovery snapshot (`SKILL.md`, `roles/`, `packs/`, `templates/`, `references/`) for detected LLM hosts. Claude Code uses `~/.claude/skills/bf/`; Codex uses `$CODEX_HOME/skills/bf/`, defaulting to `~/.codex/skills/bf/`. The install output lists detected targets and whether each snapshot was installed, updated, refreshed, or updated from an unknown older copy. Re-run manually anytime with `bf install`.
 
@@ -83,7 +83,7 @@ brainstorm  →  spec  ──accept──▶  execute  ──verify──▶  Co
 
 1. **Brainstorm** — drive a discussion with the user, pick a pack, write `discussion.md`.
 2. **Spec** — author `bf.md` + per-task `spec.md` in `Draft`, `lint`, run a Spec Review round, `verify`, then `accept`. Contract is locked.
-3. **Execute** — `next` claims one ready task and returns its pipeline. For `Requires-Worktree: true` tasks in managed Git mode, it also creates and returns the task branch/worktree. Subagents follow the pipeline instructions; a **different** reviewer subagent grades the final task AC; Task Verification flips its AC on SUCCESS. GitHub worktree tasks can record a PR with `attach-pr`, and verification checks that recorded GitHub PR is merged. Non-GitHub providers remain process-gated by pipeline/reviewer evidence. Repeat. Final Acceptance flips the bf.md AC and marks the work Completed.
+3. **Execute** — `next` claims one ready task and returns its pipeline. For `Requires-Worktree: true` tasks in managed Git mode, it also creates and returns the task branch/worktree. A host-compatible task driver follows the pipeline instructions; a **different** reviewer actor grades the final task AC. GitHub worktree tasks can record a PR with `attach-pr`, and verification checks that the recorded GitHub PR is merged. Non-GitHub providers remain process-gated by pipeline/reviewer evidence. Repeat. Final Acceptance flips the bf.md AC and marks the work Completed.
 
 ## State layout
 
@@ -124,11 +124,11 @@ edit those fields by hand.
 
 ## The Independent Verification rule
 
-The harness cannot see subagent identity (review filenames are role-level). IV is enforced **only by the orchestrator** when spawning subagents:
+The harness cannot see actor identity (review filenames are role-level). IV is enforced **only by the coordinator** when dispatching reviewers:
 
-- For any given task, the doer and any reviewer must be **different subagent instances**.
-- Same `role` on both sides is fine (e.g. `engineer` doer + a separate `engineer` reviewer).
-- Same subagent instance on both sides is a contract violation the harness will not catch.
+- For any given task, the actor whose work is reviewed and any reviewer must be **different actor instances**.
+- Same `role` on both sides is fine (e.g. an `engineer` task driver + a separate `engineer` reviewer).
+- Same actor instance on both sides is a contract violation the harness will not catch.
 
 ## Where to read next
 

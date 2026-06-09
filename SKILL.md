@@ -5,12 +5,13 @@ description: "Use when the user types /bf, asks to brainstorm a software change,
 
 # BF — Blueprintflow
 
-Evidence-gated work loop for LLM orchestrators. BF turns a fuzzy user request into a locked contract (`bf.md` + per-task `spec.md`), then drives execution through a `next → do → review → verify` loop until every Acceptance Criterion is signed off by a reviewer subagent.
+Evidence-gated work loop for LLM orchestrators. BF turns a fuzzy user request into a locked contract (`bf.md` + per-task `spec.md`), then drives execution through a `next → do → review → verify` loop until every Acceptance Criterion is signed off by an independent reviewer.
 
 ## Core idea
 
-- **Independent Verification (IV) is the axis.** Every "done" claim is signed off by a reviewer subagent that is **not the same subagent instance** that did the work. Same `role` is fine (e.g. `engineer` doer + a different `engineer` reviewer). Same subagent is not.
+- **Independent Verification (IV) is the axis.** Every "done" claim is signed off by a reviewer actor that is **not the same actor instance** whose work is reviewed. Same `role` is fine (e.g. an `engineer` task driver + a different `engineer` reviewer). Same actor instance is not.
 - **The harness owns the mutation whitelist; the LLM owns the content.** After `accept`, only the harness can flip `[ ]` → `[x]`, advance `State`, sync `Updated`, or write task execution metadata (`Branch`, `Worktree`, `Pull-Request`) in `bf.md` / `spec.md`. The LLM never edits those fields directly again. Everything else (`discussion.md`, review results, code) is LLM-written.
+- **Host runtime strategy is explicit.** The main session is the BF coordinator. It records the host runtime, task driver type, nested-delegation limit, lifecycle/closure rule, and reviewer spawning owner before Spec Review and task execution.
 - **Three phases, gated:** brainstorm → spec → execute.
 
 ```
@@ -21,12 +22,31 @@ brainstorm  →  spec  ──accept──▶  execute  ──verify──▶  Co
 
 ## IV — non-negotiable
 
-The harness cannot see subagent identity (review filenames are role-level). IV is enforced **only by you** when you spawn subagents:
+The harness cannot see actor identity (review filenames are role-level). IV is enforced **only by you** when you spawn reviewers:
 
-- For any given task, the doer subagent and any reviewer subagent must be **different subagent instances**.
-- The same `role` may appear on both sides; the same subagent instance on both sides is a contract violation the harness will not catch.
+- For any given task, the actor whose work is reviewed and any reviewer actor must be **different actor instances**.
+- The same `role` may appear on both sides; the same actor instance on both sides is a contract violation the harness will not catch.
 
 Re-check this every time you spawn a reviewer. It is the one rule the system cannot self-defend.
+
+## Host Runtime Actors
+
+Use these generic actor names in BF core guidance:
+
+- **coordinator** — the main session. It owns `next`, `start-review`, `verify`,
+  Final Acceptance, BF state transitions, reviewer dispatch for BF acceptance,
+  and actor lifecycle accounting.
+- **task driver** — the actor assigned one concrete task. It follows the task
+  pipeline and produces artifacts, evidence, pipeline review outputs, closure
+  evidence, and a review-ready handoff.
+- **leaf worker** — a bounded helper for one stage or artifact, used only when
+  the current host runtime supports that delegation from the current actor.
+- **reviewer** — an independent actor that writes review results. IV applies to
+  the actor instance whose work is reviewed.
+
+Claude Code `teammate` and Codex subagent are host-specific task driver
+implementations, not BF core roles. If a task driver cannot spawn nested
+workers or reviewers, it hands the need back to the coordinator.
 
 ## Pointers
 

@@ -31,7 +31,7 @@ contains_all "$TEMPLATE_BODY" "pipeline template" \
   "implementation perspective" \
   "architecture perspective" \
   "qa perspective" \
-  "role-bound subagent" \
+  "role-bound actor" \
   "role instruction path" \
   "read that role instruction before"
 
@@ -74,7 +74,7 @@ FEATURE_INSTRUCTION=$(node -e "const p = JSON.parse(process.argv[1]); process.st
 
 assert_eq "$CODE_REVIEW_CAP" "quality-assurance" "code-review capability should remain scalar"
 contains_all "$FEATURE_INSTRUCTION" "feature pipeline instruction" \
-  "role-bound subagent" \
+  "role-bound actor" \
   "role instruction path" \
   "read that role instruction before"
 contains_all "$CODE_REVIEW_INSTRUCTION" "code-review instruction" \
@@ -85,7 +85,7 @@ contains_all "$CODE_REVIEW_INSTRUCTION" "code-review instruction" \
 
 DOCS_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/docs/spec/packs-and-pipelines.md")
 contains_all "$DOCS_BODY" "packs and pipelines docs" \
-  "role-bound subagent" \
+  "role-bound actor" \
   "role instruction file" \
   "read that role instruction before"
 

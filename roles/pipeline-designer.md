@@ -40,8 +40,8 @@ closure. It does not implement product code and does not own task breakdown.
   implementation, architecture, and QA, while keeping the stage owner simple.
 - Escalate multi-reviewer structure into schema only after the pattern is stable
   and must become a harness-enforced stable mechanical gate.
-- When a coordinator starts a role-bound subagent, include the role id and role
-  instruction file path in the prompt. Require the subagent to read that file
+- When a coordinator starts a role-bound actor, include the role id and role
+  instruction file path in the prompt. Require the actor to read that file
   before following the stage instruction. If the runtime cannot guarantee local
   file access, inline the role instruction content in the prompt.
 - Identify each external artifact or side effect created by the pipeline, such
@@ -56,5 +56,5 @@ closure. It does not implement product code and does not own task breakdown.
 
 - Spec Authoring for any bf-wo local pipeline.
 - Spec Review when a bf-wo local pipeline exists. The reviewer must be a
-  different subagent instance from the designer that created the pipeline.
+  different actor instance from the designer that created the pipeline.
 - Future pack-level pipeline design or review work.

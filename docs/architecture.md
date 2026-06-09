@@ -18,7 +18,7 @@ BF does not own:
 
 - the target project's application runtime;
 - the user's git workflow beyond BF-generated evidence and review needs;
-- subagent identity enforcement inside the harness;
+- host actor identity enforcement inside the harness;
 - domain-specific implementation choices inside a task.
 
 ## Architecture Map
@@ -35,9 +35,9 @@ flowchart LR
   bfcli --> registries[Role/Pack/Pipeline Registries]
   harness --> registries
   harness --> wo[(.bf Work Object State)]
-  orchestrator --> subagents[Doer + Reviewer Subagents]
-  subagents --> project[Target Project Code + Evidence]
-  subagents --> reviewResults[Review Results]
+  orchestrator --> actors[Task Drivers + Reviewers]
+  actors --> project[Target Project Code + Evidence]
+  actors --> reviewResults[Review Results]
   reviewResults --> wo
 ```
 
@@ -68,7 +68,7 @@ The LLM continues to write non-locked artifacts:
 - `discussion.md` append entries;
 - implementation changes;
 - evidence artifacts;
-- review result files written by reviewer subagents.
+- review result files written by reviewers.
 
 This split keeps human-readable contracts editable during design while making
 execution progress mechanically auditable after acceptance.
@@ -82,35 +82,36 @@ sequenceDiagram
   participant B as bf
   participant H as bf-harness
   participant W as Work Object
-  participant S as Subagents
+  participant D as Task Driver
+  participant R as Reviewers
 
   U->>O: Request
   O->>B: list-packs / list-roles / list-pipelines
   O->>W: Write discussion.md, bf.md, task specs
   O->>H: lint
-  O->>S: Spec Review
-  S->>W: result_role_idx.md
+  O->>R: Spec Review
+  R->>W: result_role_idx.md
   O->>H: verify work object
   U->>O: Approve
   O->>H: accept
   loop Each task
     O->>H: next
-    O->>S: Execute pipeline
-    S->>W: review results and task-local evidence
+    O->>D: Execute pipeline
+    D->>W: task-local evidence and review-ready handoff
     O->>H: start-review task
-    O->>S: Task Verification
-    S->>W: result_role_idx.md
+    O->>R: Task Verification
+    R->>W: result_role_idx.md
     O->>H: verify task
   end
   O->>H: start-review work object
-  O->>S: Final Acceptance
-  S->>W: result_role_idx.md
+  O->>R: Final Acceptance
+  R->>W: result_role_idx.md
   O->>H: verify work object
 ```
 
 ## Verification Boundary
 
-Review sign-off is content written by reviewer subagents. Verification is the
+Review sign-off is content written by reviewers. Verification is the
 mechanical harness step that reads review results and decides whether the
 contract can advance.
 
@@ -124,7 +125,7 @@ The harness verifies:
 
 The orchestrator verifies:
 
-- doer and reviewer are different subagent instances;
+- the actor whose work is reviewed and the reviewer are different actor instances;
 - reviewers receive the correct scope and evidence;
 - fixes are dispatched after failed review;
 - user approval happens before `accept`.
@@ -154,10 +155,10 @@ into the harness later without changing the work-object contract model.
 
 ## Repository Maintenance Boundary
 
-Blueprintflow repository maintenance is governed by the repo-local
-`repo-update` entry skill. That skill is not part of the published BF runtime;
-it describes how this repository changes the root package, accepted design
-docs, validation, CI, release metadata, and PR evidence.
+Blueprintflow repository maintenance is governed by `AGENTS.md`, the root BF
+runtime, and accepted docs. It is not a repo-maintenance skill or pack.
+Repository changes still use the BF gate, normal validation, release metadata,
+and PR evidence required by `AGENTS.md`.
 
 Default maintenance authority follows the root BF package and accepted docs.
 The deprecated `plugins/blueprintflow/` tree is an explicit exception path:

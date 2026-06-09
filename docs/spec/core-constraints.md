@@ -2,15 +2,43 @@
 
 This page records BF's non-negotiable runtime constraints.
 
+## Host Runtime Actors
+
+The host runtime is the orchestration environment that runs BF, such as Claude
+Code, Codex, or a future LLM host. It is distinct from the BF npm runtime and
+from the target project's application runtime.
+
+BF core uses generic actor names:
+
+- **coordinator**: the main session. It owns BF state machine commands,
+  `next`, `start-review`, `verify`, Final Acceptance, reviewer dispatch for BF
+  acceptance, and actor lifecycle accounting.
+- **task driver**: an actor assigned one concrete task. It follows the task
+  pipeline and produces artifacts, evidence, pipeline review outputs, closure
+  evidence, and a review-ready handoff.
+- **leaf worker**: a bounded helper for one stage or artifact, used only when
+  the current host runtime supports that delegation from the current actor.
+- **reviewer**: an independent actor that writes review results.
+
+Host-specific names map onto these actors without becoming BF core concepts.
+For example, Claude Code `teammate` and Codex subagent can be task drivers when
+the coordinator records a compatible host-runtime strategy.
+
+Actor identity, nested-delegation support, and closure state are
+instruction-level constraints. The harness does not observe them, so the
+coordinator enforces them when selecting task drivers, dispatching reviewers,
+and accounting for actor lifecycle.
+
 ## Independent Verification
 
-For each task, the subagent that implements the task must not be reused as the
-subagent that reviews the task. The doer must not verify its own work.
+For each task, the actor whose work is reviewed must not be reused as the
+reviewer for that work. A task driver or leaf worker must not verify its own
+work.
 
-This is a subagent-instance constraint, not a role constraint. The same role can
-contribute both the doer and the reviewer as long as the instances are different.
-The harness cannot see subagent identity because review filenames are role-level,
-so the orchestrating LLM enforces this rule when it spawns subagents.
+This is an actor-instance constraint, not a role constraint. The same role can
+contribute both the work and the review as long as the instances are different.
+The harness cannot see actor identity because review filenames are role-level,
+so the coordinator enforces this rule when it dispatches reviewers.
 
 Harness responsibilities:
 
@@ -74,6 +102,10 @@ whole work object.
 
 `bf.md` is derived from `discussion.md`. During spec, the LLM distills
 discussion into the structured contract. They should not contradict each other.
+discussion.md is durable source material for `bf.md`: each contract section
+must be supportable from recorded discussion, including accepted assistant-led
+proposals. bf.md does not need direct citations to `discussion.md`; redundant
+quotes or links make the contract noisy.
 
 Execution use:
 

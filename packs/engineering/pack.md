@@ -16,10 +16,12 @@ Not for: pure research write-ups, content production, incident response runbooks
 - **task spec.md** — per-task contract; locked after `accept`.
 - **AC (Acceptance Criterion)** — one checkbox on bf.md or a task spec; carries a stable id and a `capability` marker.
 - **Pipeline** — a named execution flow selected by task `Pipeline:` frontmatter and defined under `pipelines/*.yml`.
-- **Capability** — a string declared in a role's `Capabilities:` list; pipeline stages use it to pick doers, and AC use it to pick reviewers.
-- **doer** — the subagent that executes a task.
-- **reviewer** — a subagent that reviews a task or spec and writes `result_<role>_<idx>.md`.
-- **IV (Independent Verification)** — the same subagent instance must not be both doer and reviewer for the same task.
+- **Capability** — a string declared in a role's `Capabilities:` list; pipeline stages use it to pick stage owners, and AC use it to pick reviewers.
+- **coordinator** — the main session that owns BF harness commands, acceptance review setup, verification, final acceptance, and host actor lifecycle accounting.
+- **task driver** — the actor that executes one concrete task by following its selected pipeline and producing a review-ready handoff.
+- **leaf worker** — a bounded helper for one stage or artifact, used only when the host runtime supports delegation from the current actor.
+- **reviewer** — an independent actor that reviews a task, artifact, or spec and writes review results.
+- **IV (Independent Verification)** — the same actor instance must not both produce work and review that work for the same task.
 - **Mutation whitelist** — the only edits the harness will make to locked files: flip AC `[ ]` → `[x]`, update `State`, sync `Updated`, and write task execution metadata.
 - **Task worktree contract** — task frontmatter that records whether a task needs an isolated Git worktree and, when applicable, the branch/worktree/PR used to complete it. `Requires-Worktree` is spec-authored and locked after accept; `Branch`, `Worktree`, and `Pull-Request` are harness-owned task execution metadata.
 
@@ -33,6 +35,11 @@ The architect facilitates this phase. Before any breakdown, drive the discussion
 - **Evidence shape**: what tests / runs / screenshots will count as "done"? (Pushes the user to write falsifiable AC.)
 - **Constraints from the existing codebase**: language, framework, lint/test toolchain, conventions to follow.
 
+Before writing `bf.md`, confirm `discussion.md` has source coverage for the
+Goal, Requirement, Acceptance Criteria, Boundary, and Task List rationale. You
+may propose missing material and append it to `discussion.md`, but only user
+answers or accepted proposals become source material for the contract.
+
 The bf.md that comes out should have a tight Goal (one or two sentences), a Requirements list that a user could observe, AC that are checkable from the outside, and a Boundary that names at least one tempting-but-deferred adjacent thing.
 
 Anti-patterns to avoid:
@@ -44,7 +51,7 @@ Anti-patterns to avoid:
 
 The architect decomposes the accepted Goal/Boundary into a task DAG. A good engineering task:
 
-- Is roughly 1 PR in size — small enough that one engineer subagent can finish it and produce evidence in a single session.
+- Is roughly 1 PR in size — small enough that one host-compatible task driver can finish it and produce evidence in a single session.
 - Has a `Pipeline` in its frontmatter. Use `bf list-pipelines --pack engineering` and pick the narrowest matching execution flow.
 - Has `Requires-Worktree: true|false`. Use `true` for tasks that change repository code or docs in a Git project; use `false` for planning, review-only, or non-repository work.
 - Has explicit `depends` edges in `bf.md`'s Task List — no implicit ordering.
@@ -73,10 +80,10 @@ strategy remains for the task pipeline's architecture/design stages.
 
 ## Execute Guidance
 
-For each task the engineer subagent picks up:
+For each task the task driver picks up:
 
 1. Read the pipeline file returned by `bf-harness next`, then read `<task>/spec.md` end-to-end, plus the Goal/Boundary slice of `bf.md` and the relevant parts of `discussion.md` when the spec is ambiguous.
-2. Follow the pipeline stages in order. Produce each named artifact or review result before moving to the next stage.
+2. Follow the pipeline stages in order. Produce each named artifact or pipeline review result before moving to the next stage. Use leaf workers only when the host-runtime strategy allows the current actor to spawn them.
 3. Prefer TDD where it fits: write the failing test that encodes one AC, then make it pass.
 4. For `Requires-Worktree: true` tasks, work in the branch/worktree returned by `bf-harness next`. If a GitHub PR is created, record it with `bf-harness attach-pr <bf-wo>/<task> <github-pr-url>`. Non-GitHub providers are process-gated by the pipeline and reviewer evidence instead of mechanically checked by the harness.
 5. Commit per task with a descriptive message that names the task id.
@@ -86,7 +93,7 @@ For each task the engineer subagent picks up:
    - For UI work, a screenshot or an HTML snapshot.
 7. Never bypass the mutation whitelist: locked `bf.md` and `spec.md` bodies are off-limits. Only the harness flips checkboxes, State, Updated, and task execution metadata.
 8. When the spec is ambiguous and `discussion.md` does not answer it, append a clarifying entry to `discussion.md` and stop to ask the user — do not invent contract.
-9. When done, hand off to a reviewer subagent (a different subagent instance — IV constraint). The reviewer reads the diff + test output and writes `result_<role>_<idx>.md`.
+9. When done, hand a review-ready package back to the coordinator: summary, changed artifacts, Evidence outputs, pipeline review outputs, and closure evidence. The coordinator runs `start-review`, dispatches BF acceptance reviewers, and runs `verify`.
 
 ## Phase Roles
 
@@ -101,4 +108,4 @@ This pack maps BF's phases to specific Core roles. **Capabilities are skills, no
 | Task Verification (reviewer) | tester | quality-assurance (or AC's capability marker) |
 | Final Acceptance | architect, tester | design-review, quality-assurance |
 
-Independent Verification still applies: the *subagent instance* doing a task cannot be the subagent reviewing it (different instances of the same role are OK).
+Independent Verification still applies: the *actor instance* whose work is reviewed cannot be the reviewer for that work (different instances of the same role are OK).

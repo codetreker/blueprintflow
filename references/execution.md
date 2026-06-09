@@ -2,21 +2,49 @@
 
 Goal: loop until `bf-harness verify <bf-wo>` returns Final Acceptance SUCCESS.
 
+## Host-runtime strategy
+
+Before task execution, read `discussion.md` and record or confirm the
+host-runtime strategy: host runtime, task driver type, nested-delegation limit,
+lifecycle or closure rule, and reviewer spawning owner.
+
+Use these actor boundaries:
+
+- The **coordinator** is the main session. The coordinator runs `next`,
+  `start-review`, task-level `verify`, bf-level Final Acceptance, and actor
+  lifecycle accounting.
+- A **task driver** may execute one concrete task by following its selected
+  pipeline. The task driver produces artifacts, evidence, pipeline review
+  outputs, closure evidence, and a review-ready handoff.
+- A **leaf worker** is a bounded helper for one stage or artifact, used only
+  when the host runtime supports that delegation from the current actor.
+- A **reviewer** is an independent actor that writes review results.
+
+Claude Code `teammate` and Codex subagent are host-specific task driver
+implementations. If a task driver cannot spawn a nested worker or reviewer,
+it hands that need back to the coordinator.
+
 ## Outer loop (per task)
 
-1. `bf-harness next <bf-wo>` — prints labeled lines for one ready task: `Task:`, `Pipeline:`, `Pipeline path:`, `Pack:`, `Spec:`, `Dir:`. The harness flips the returned task to `Tasking` and (on the first call) flips `bf.md` to `Implementing`. If no task is ready (deps unmet) `next` exits non-zero with an error message on stdout; wait or run `verify` first.
-2. Read the returned pipeline file. Follow the top-level pipeline instruction first, then follow each stage instruction in order. Do not assume every stage requires a subagent; use one when the pipeline or stage instruction asks for one or when isolation/review quality requires it. Stop when a stage instruction says to stop, including any Blocker or High review finding.
-3. Follow [project-docs.md](project-docs.md) during execution. If code and confirmed design docs disagree, record design drift and stop for user clarification. If implementation exposes a design gap in the accepted contract, stop and return to design discussion.
-4. The implementation stage reads the pack's `Execute Guidance`, the task spec, and every `Evidence` entry, makes the changes, and produces evidence artifacts that satisfy the locked evidence requirements (commits, command output, screenshots, reviewer notes, or named files).
-5. `bf-harness start-review <bf-wo>/<task>` — returns the task-level round dir.
-6. For each AC's review capability, spawn one or more **reviewer** subagents — **different subagent instances than the implementation doer** (IV — see SKILL.md). Each writes `result_<role>_<idx>.md` into the round dir.
-7. `bf-harness verify <bf-wo>/<task>` (Task Verification). On FAIL, read the verify-result file, dispatch fixes (the same doer subagent or a new one), open a new review round, and re-verify. The task stays in `Tasking` until verify SUCCESS, at which point the harness flips its AC and sets `State: Completed`.
+1. `bf-harness next <bf-wo>` — coordinator command. It prints labeled lines for one ready task: `Task:`, `Pipeline:`, `Pipeline path:`, `Pack:`, `Spec:`, `Dir:`. The harness flips the returned task to `Tasking` and (on the first call) flips `bf.md` to `Implementing`. If no task is ready (deps unmet) `next` exits non-zero with an error message on stdout; wait or run `verify` first.
+2. The task driver reads the returned pipeline file. Follow the top-level pipeline instruction first, then follow each stage instruction in order. Do not assume every stage requires a leaf worker; use one only when the pipeline or stage instruction asks for one and the host-runtime strategy allows the current actor to spawn it. Stop when a stage instruction says to stop, including any Blocker or High review finding.
+3. When accepted contract intent is unclear, read discussion.md first. If
+   it answers the ambiguity, proceed from the recorded answer. If it does not
+   answer, and the ambiguity affects scope, boundary, acceptance, or design intent, append the ambiguity to `discussion.md` and stop for collaborative clarification.
+4. Follow [project-docs.md](project-docs.md) during execution. If code and confirmed design docs disagree, record design drift and stop for user clarification. If implementation exposes a design gap in the accepted contract, stop and return to design discussion.
+5. The implementation stage reads the pack's `Execute Guidance`, the task spec, and every `Evidence` entry, makes the changes, and produces evidence artifacts that satisfy the locked evidence requirements (commits, command output, screenshots, reviewer notes, or named files).
+6. The task driver gives the coordinator a review-ready handoff: task summary, changed artifacts, Evidence outputs, pipeline review outputs, and any closure evidence or side-effect list.
+7. Run acceptance-readiness terminal-state closure before BF acceptance review. The coordinator confirms every task-local external artifact or side effect has a terminal state, handoff owner, or explicit stop condition. If the side effect spans tasks or the whole work object, record it for bf-level Final Acceptance closure too.
+8. `bf-harness start-review <bf-wo>/<task>` — coordinator command. It returns the task-level round dir.
+9. Coordinator dispatches BF acceptance reviewers for each AC's review capability. Each reviewer must be a different actor instance than the actor whose work is reviewed (IV — see SKILL.md). Each writes `result_<role>_<idx>.md` into the round dir. If a task driver cannot spawn a needed independent reviewer, the coordinator dispatches that reviewer.
+10. `bf-harness verify <bf-wo>/<task>` (Task Verification) — coordinator command. On FAIL, read the verify-result file, dispatch fixes (the same task driver or a new one), open a new review round, and re-verify. The task stays in `Tasking` until verify SUCCESS, at which point the harness flips its AC and sets `State: Completed`.
 
 ## Final acceptance
 
-8. When all task `spec.md` are `Completed`, run one more bf-level review pass:
-   1. `bf-harness start-review <bf-wo>` — spawn reviewers against the `bf.md` AC.
-   2. `bf-harness verify <bf-wo>` (Final Acceptance). On SUCCESS the harness flips all `bf.md` AC and sets `State: Completed`.
+11. When all task `spec.md` are `Completed`, run one more bf-level review pass:
+   1. The coordinator confirms whole-work-object terminal-state closure for external artifacts or side effects that span tasks.
+   2. `bf-harness start-review <bf-wo>` — coordinator command. Spawn reviewers against the `bf.md` AC.
+   3. `bf-harness verify <bf-wo>` (Final Acceptance) — coordinator command. On SUCCESS the harness flips all `bf.md` AC and sets `State: Completed`.
 
 ## Pipeline promotion suggestions
 

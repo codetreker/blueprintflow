@@ -38,6 +38,12 @@ discussion, contracts, task specs, review results, and execution artifacts are
 BF work-object state under `.bf/<bf-wo>/`; project-specific draft locations only
 exist when that project separately defines them.
 
+BF requires discussion.md source coverage before `bf.md` authoring. The
+recorded discussion must contain source material for the future Goal,
+Requirement, Acceptance Criteria, Boundary, and Task List rationale. `bf.md`
+stays concise: it distills the recorded discussion into a contract without
+quoting or citing `discussion.md` by default.
+
 ```mermaid
 flowchart TB
   request[User Request] --> brainstorm[Brainstorm]
@@ -46,8 +52,9 @@ flowchart TB
   specReview --> accept[Accept locked contract]
   specReview --> brainstorm
   accept --> next[bf-harness next]
-  next --> doer[Doer executes pipeline]
-  doer --> taskReview[Task Verification]
+  next --> driver[Task Driver executes pipeline]
+  driver --> readiness[Coordinator-owned acceptance readiness]
+  readiness --> taskReview[Coordinator-owned Task Verification]
   taskReview --> next
   taskReview --> finalReview[Final Acceptance]
   finalReview --> completed[Completed]
@@ -71,7 +78,7 @@ flowchart TB
 |---|---|---|
 | Runtime docs | Tell the orchestrating LLM how to run BF | `SKILL.md`, `references/`, `packs/`, `roles/`, `templates/` |
 | Project design docs | Discovered external design authority for target-project work | Confirmed project doc root, recorded in `.bf/<bf-wo>/discussion.md`; runtime anchor `references/project-docs.md` |
-| Repo maintenance entry | Blueprintflow repository update workflow | `.claude/skills/repo-update/SKILL.md`, with `.agents/skills/repo-update/SKILL.md` as a discovery pointer |
+| Repository maintenance authority | Blueprintflow maintenance rules | `AGENTS.md`, root BF runtime, accepted docs, validation scripts, and PR gate evidence |
 | `bf` CLI | Read-only metadata and install management | `list-packs`, `list-pipelines`, `list-roles`, `install`, `update`, `uninstall`, `version` |
 | `bf-harness` CLI | State mutation and verification loop | `lint`, `start-review`, `accept`, `next`, `verify`, `discard`, `list` |
 | Work object state | Per-project BF work state | `<project-root>/.bf/<bf-wo>/` |

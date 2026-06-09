@@ -2,7 +2,7 @@
 
 **BF — evidence-gated work loop CLI for LLM orchestrators.**
 
-BF turns a fuzzy user request into a locked contract (`bf.md` + per-task `spec.md`), then drives execution through a `next → do → review → verify` loop until every Acceptance Criterion is signed off by a reviewer subagent that is **not the same subagent instance** that did the work.
+BF turns a fuzzy user request into a locked contract (`bf.md` + per-task `spec.md`), then drives execution through a `next → do → review → verify` loop until every Acceptance Criterion is signed off by a reviewer actor that is **not the same actor instance** whose work is reviewed.
 
 This package ships the BF core: the CLI (`bf`, `bf-harness`), the entry skill (`SKILL.md`), Core roles, the engineering pack, file templates, and phase references.
 
@@ -83,7 +83,7 @@ brainstorm  →  spec  ──accept──▶  execute  ──verify──▶  Co
 
 1. **Brainstorm** — drive a discussion with the user, pick a pack, write `discussion.md`.
 2. **Spec** — author `bf.md` + per-task `spec.md` in `Draft`, `lint`, run a Spec Review round, `verify`, then `accept`. Contract is locked.
-3. **Execute** — `next` claims one ready task and returns its pipeline; subagents follow the pipeline instructions; a **different** reviewer subagent grades the final task AC; Task Verification flips its AC on SUCCESS. Repeat. Final Acceptance flips the bf.md AC and marks the work Completed.
+3. **Execute** — `next` claims one ready task and returns its pipeline; a host-compatible task driver follows the pipeline instructions; a **different** reviewer actor grades the final task AC; Task Verification flips its AC on SUCCESS. Repeat. Final Acceptance flips the bf.md AC and marks the work Completed.
 
 ## State layout
 
@@ -105,11 +105,11 @@ BF stores all work-in-progress state at `<cwd>/.bf/<bf-wo>/`. Add `.bf/` to your
 
 ## The Independent Verification rule
 
-The harness cannot see subagent identity (review filenames are role-level). IV is enforced **only by the orchestrator** when spawning subagents:
+The harness cannot see actor identity (review filenames are role-level). IV is enforced **only by the coordinator** when dispatching reviewers:
 
-- For any given task, the doer and any reviewer must be **different subagent instances**.
-- Same `role` on both sides is fine (e.g. `engineer` doer + a separate `engineer` reviewer).
-- Same subagent instance on both sides is a contract violation the harness will not catch.
+- For any given task, the actor whose work is reviewed and any reviewer must be **different actor instances**.
+- Same `role` on both sides is fine (e.g. an `engineer` task driver + a separate `engineer` reviewer).
+- Same actor instance on both sides is a contract violation the harness will not catch.
 
 ## Where to read next
 

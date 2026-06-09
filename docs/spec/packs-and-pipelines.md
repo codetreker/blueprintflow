@@ -63,13 +63,15 @@ The first pipeline version is instruction-only:
 
 - The LLM reads the top-level pipeline `instruction`.
 - The LLM follows stage `instruction` values in order.
-- Pipeline or stage instructions decide when subagents are preferred or required.
+- Pipeline or stage instructions decide when task drivers, leaf workers, or
+  reviewers are preferred or required.
 - Pipeline state and stage gates may later move into the harness.
 
-When a coordinator starts a role-bound subagent, the prompt includes the role id
-and role instruction file path. The subagent must read that role instruction
-before following the stage instruction. If the runtime cannot guarantee local
-file access, the coordinator inlines the role instruction content in the prompt.
+When a coordinator or task driver starts a role-bound actor, the prompt includes
+the role id and role instruction file path. The actor must read that role
+instruction before following the stage instruction. If the runtime cannot
+guarantee local file access, the coordinator or task driver inlines the role
+instruction content in the prompt.
 
 Stage `capability` remains a single owner or coordinator capability. When a
 review stage needs multiple perspectives, the pipeline records those
@@ -89,6 +91,15 @@ owner, or is blocked by an explicit stop condition. This remains an
 instruction-level contract: BF does not add harness stage enforcement, infer side
 effects, require a schema field, add new capabilities, or hard-code
 merge/deploy/publish behavior.
+
+Pipeline review, acceptance-readiness closure, and BF acceptance are separate
+layers. Pipeline review checks task-driver artifacts such as architecture,
+implementation design, code, tests, and evidence before the task is handed back
+to the coordinator. Acceptance-readiness terminal-state closure checks whether
+external artifacts and side effects are terminal, handed off, or explicitly
+stopped before BF acceptance review starts. BF acceptance is the coordinator-run
+`start-review` plus reviewer sign-off plus `verify` gate that can advance
+locked task or bf state.
 
 ## Built-In Engineering Pipelines
 
@@ -156,8 +167,8 @@ files, or open a PR unless there is an explicit user request for promotion.
 The Core `pipeline-designer` role designs bf-wo local pipelines and reviews
 pipeline structure. It provides `pipeline-design` and `pipeline-review`.
 
-When Spec Authoring creates a bf-wo local pipeline, a `pipeline-designer`
-subagent designs it. Spec Review includes three independent reviewer subagents
+When Spec Authoring creates a bf-wo local pipeline, a `pipeline-designer` actor
+designs it. Spec Review includes three independent reviewer subagents
 with the `pipeline-review` capability; the orchestrator enforces
 subagent-instance independence.
 

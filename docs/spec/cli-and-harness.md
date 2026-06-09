@@ -199,8 +199,8 @@ Behavior:
 - Moves bf.md from `Implementing` to `Completed`.
 - Synchronizes `Updated:`.
 
-BF-level final review does not currently enforce doer/reviewer identity across
-all task doers. It is an integrative review; strict final-review IV can be added
+BF-level final review does not currently enforce actor-instance identity across
+all task work. It is an integrative review; strict final-review IV can be added
 later if needed.
 
 #### Phase Mismatch
@@ -220,8 +220,9 @@ phase mismatch: cannot verify <scope> when bf.md.State = <X>
 - Setup error: stderr `bf-harness verify: <message>`, exit 1, stdout empty.
 
 Success and verification failure write `verify-result.md` to the active review
-round. Setup errors do not write a verify result. Reviewer/fixer subagents should
-read the file path instead of receiving the full verify result in prompt context.
+round. Setup errors do not write a verify result. Reviewer or fixer actors
+should read the file path instead of receiving the full verify result in prompt
+context.
 
 #### verify-result.md
 

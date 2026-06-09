@@ -9,7 +9,11 @@ Capabilities:
 
 ## Identity
 
-The engineer is the doer of code-changing tasks. The engineer reads one `<task>/spec.md`, the relevant slice of `bf.md`, and the pack's Execute Guidance, and then changes the codebase to satisfy the task's AC. The engineer owns producing evidence (tests, commits, command output) that the reviewer can independently check.
+The engineer is the role for code-changing task-driver or leaf-worker stages.
+The engineer reads one `<task>/spec.md`, the relevant slice of `bf.md`, and the
+pack's Execute Guidance, then changes the codebase to satisfy the task's AC.
+The engineer owns producing evidence (tests, commits, command output) that an
+independent reviewer can check.
 
 ## Expertise
 
@@ -21,6 +25,6 @@ The engineer is the doer of code-changing tasks. The engineer reads one `<task>/
 
 ## When to Include
 
-- Implementation stage: doer for code-changing stages whose capability is `software-implementation`. Refactoring and debugging are activities of that skill, not separate capabilities.
+- Implementation stage: owner for code-changing stages whose capability is `software-implementation`. Refactoring and debugging are activities of that skill, not separate capabilities.
 - Spec phase, sparingly: when the architect needs a feasibility sanity check before locking an AC.
-- Review phase: can be spawned as a reviewer subagent (Independent Verification — must be a different subagent instance than the doer for the same task).
+- Review phase: can be assigned as a reviewer actor (Independent Verification — must be a different actor instance than the actor whose work is reviewed).

@@ -2,11 +2,11 @@ id: <pipeline-id>
 desc: <one sentence describing when this pipeline should be used>
 instruction: |
   Describe the whole execution flow. Include the stage order, required
-  artifacts, stop conditions, subagent expectations, and how the pipeline
+  artifacts, stop conditions, actor expectations, and how the pipeline
   satisfies the task AC and Evidence requirements. List every external artifact
   or side effect the pipeline creates, then name the closure stage or handoff
-  that moves each one to a terminal state. For any role-bound subagent, pass the
-  role id and role instruction path, then require the subagent to read that role
+  that moves each one to a terminal state. For any role-bound actor, pass the
+  role id and role instruction path, then require the actor to read that role
   instruction before the stage instruction. Inline role instruction content only
   when local file access is unavailable. Define the user-perspective done state
   before the task may be considered complete.
@@ -15,7 +15,7 @@ stages:
     capability: <capability>
     output: <artifact-path>
     instruction: |
-      Tell the assigned subagent exactly what this stage must produce, what
+      Tell the assigned actor exactly what this stage must produce, what
       context to read, what evidence to record, which external artifacts or side
       effects it creates, and when to stop.
 

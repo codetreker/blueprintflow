@@ -13,7 +13,7 @@ frontmatter 字段说明：
 - State：由 bf-harness 维护。LLM 不能直接修改。
 - Pipeline：这个 task 使用的执行流程。必须能在 `bf list-pipelines --pack <pack id>` 输出里找到。
 - Pack：跟所属 bf.md 的 Pack 一致。
-- Desc：一句话描述，让 doer 一眼看出在做什么。
+- Desc：一句话描述，让 task driver 一眼看出在做什么。
 -->
 
 # Task
@@ -36,9 +36,9 @@ frontmatter 字段说明：
 格式跟 bf.md 一致：稳定 id + capability marker + 验收标准描述。
 
 注意区分两种 capability：
-- frontmatter 顶部的 Pipeline 是**执行流程**（doer/reviewer 需要按哪个 pipeline 做）。
+- frontmatter 顶部的 Pipeline 是**执行流程**（task driver/reviewer 需要按哪个 pipeline 做）。
 - 这里 AC 行上的 capability 是**验收能力**（reviewer 验收这条标准需要什么能力）。
-- 执行阶段的 doer capability 由 pipeline stage 定义；task spec 不再填单个执行 Capability。
+- 执行阶段的 stage-owner capability 由 pipeline stage 定义；task spec 不再填单个执行 Capability。
 
 - [ ] {id1}|{capability}: 验收标准 1
 - [ ] {id2}|{capability}: 验收标准 2
@@ -62,5 +62,5 @@ frontmatter 字段说明：
 
 ## Boundary
 
-明确不在这个任务范围内的事情。doer 执行时遇到模糊的边界，先看这里再判断。
+明确不在这个任务范围内的事情。task driver 执行时遇到模糊的边界，先看这里再判断。
 如果这里没有说明 owner、handoff 或 terminal state，spec review 应该要求补清楚。

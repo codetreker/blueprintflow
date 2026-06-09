@@ -66,7 +66,7 @@ are already accepted user-facing contract or required Evidence.
 
 - Location for bf-level review: `<bf-wo>/runs/reviews/round_N/result_<role>_<idx>.md`
 - Location for task-level review: `<bf-wo>/<task>/runs/reviews/round_N/result_<role>_<idx>.md`
-- Role: one reviewer subagent's result for one review round.
+- Role: one reviewer's result for one review round.
 - Template: [`templates/review-result.md`](../../templates/review-result.md)
 - Multiple same-role reviewers in one round use different `idx` values starting at 1.
 - `## Results` must group findings by severity: Blocker, High, Minor, Nit.

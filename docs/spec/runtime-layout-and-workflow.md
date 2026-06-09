@@ -43,6 +43,30 @@ Every BF work object lives under `<project-root>/.bf/<bf-wo>/`.
   |    +- more files
 ```
 
+## Host Runtime Actor Model
+
+The host runtime is the orchestration environment that runs BF. It is distinct
+from the BF npm runtime and from the target project's application runtime.
+
+BF core uses generic actor names:
+
+- `coordinator`: the main session. The coordinator runs `next`, manages task
+  assignment, records host-runtime strategy, accounts for actor lifecycle,
+  dispatches BF acceptance reviewers, and owns Final Acceptance.
+- `task driver`: an actor that executes one concrete task by following the
+  selected task pipeline and producing a review-ready handoff.
+- `leaf worker`: a bounded helper for one stage or artifact, used only when the
+  current host runtime supports nested delegation from the current actor.
+- `reviewer`: an independent actor that writes review results.
+
+Claude Code `teammate` can be a task driver. Codex subagent can be a task
+driver when the coordinator can track closure and capacity. Host-specific actor
+names do not become BF core roles.
+
+The coordinator runs `start-review` for Spec Review, Task Verification, and
+Final Acceptance. The coordinator runs `verify` for Spec Review, Task
+Verification, and Final Acceptance. Task drivers do not advance locked BF state.
+
 ## End-To-End Workflow
 
 1. Brainstorm.
@@ -56,6 +80,10 @@ Every BF work object lives under `<project-root>/.bf/<bf-wo>/`.
      is inferred rather than explicit, ask the user to confirm it before
      treating it as authoritative.
    - Write `discussion.md` directly under `<project-root>/.bf/<bf-wo>/` so the discussion is crash-safe and restartable.
+   - Confirm source coverage before spec authoring: recorded discussion must
+     support the future `bf.md` Goal, Requirement, Acceptance Criteria,
+     Boundary, and Task List rationale. Missing material can be added through
+     user answers or accepted assistant-led proposals.
 
 2. Write spec.
    - Run `bf list-roles --pack <pack>` to discover available roles and capabilities.
@@ -66,15 +94,20 @@ Every BF work object lives under `<project-root>/.bf/<bf-wo>/`.
      known gaps, include design-doc update requirements in task AC and Evidence.
    - Write `bf.md` with `State: Draft`.
    - Create one directory per task and write `<task>/spec.md` with `State: Draft`.
+   - Do not start task breakdown when `discussion.md` lacks source material for
+     the concise contract. Return to brainstorm first.
    - Keep specs at contract granularity: task decomposition, scope, boundary,
      dependencies, ownership or handoff expectations, observable AC, and
      evidence intent. Do not require implementation design details before
      accept unless those details are accepted user-facing contract or required
      Evidence.
    - Each task spec selects exactly one `Pipeline`.
-   - If no selected-pack pipeline fits, spawn a `pipeline-designer` subagent to
+   - If no selected-pack pipeline fits, assign a `pipeline-designer` actor to
      design a bf-wo local pipeline under `<bf-wo>/pipelines/<id>.yml`.
    - Continue discussion with the user until ambiguity is resolved.
+   - Record the host-runtime strategy in `discussion.md`: host runtime, task
+     driver type, nested-delegation limit, lifecycle or closure rule, and
+     reviewer spawning owner.
    - Run `bf-harness lint <bf-wo>` until it returns success.
    - Run the spec review loop. Spec Review blocks contract gaps, not
      implementation investigation that belongs to task execution design stages.
@@ -84,16 +117,23 @@ Every BF work object lives under `<project-root>/.bf/<bf-wo>/`.
 3. Execute tasks.
    - Run `bf-harness next <bf-wo>` to claim the next eligible task.
    - Read the returned task spec, pack, and pipeline path.
-   - Follow the pipeline instruction and stage instructions.
+   - Assign a host-compatible task driver. The task driver follows the pipeline
+     instruction and stage instructions and hands evidence back to the
+     coordinator before BF acceptance review.
+   - When accepted contract intent is unclear, read `discussion.md` before
+     inventing scope. If it does not answer an ambiguity that affects scope,
+     boundary, acceptance, or design intent, stop for clarification.
    - Use confirmed project design docs while executing. If code and confirmed
      design docs disagree, record design drift in `discussion.md` and stop for
      user clarification.
    - If implementation exposes a design gap in the accepted `bf.md` or task
      `spec.md`, stop implementation and return to design discussion instead of
      silently expanding locked scope.
-   - Run `bf-harness start-review <bf-wo>/<task>`.
-   - Spawn independent reviewer subagents to write review results.
-   - Run `bf-harness verify <bf-wo>/<task>` until the task verifies.
+   - Run acceptance-readiness terminal-state closure before task-level BF
+     acceptance review.
+   - The coordinator runs `bf-harness start-review <bf-wo>/<task>`.
+   - The coordinator dispatches independent reviewers to write review results.
+   - The coordinator runs `bf-harness verify <bf-wo>/<task>` until the task verifies.
    - After all tasks complete, run bf-level final acceptance.
    - After Final Acceptance, the orchestrator may make an advisory note when a
      bf-wo local pipeline appears reusable. This is advisory only.
@@ -119,5 +159,5 @@ Task review uses the same review-result file shape as spec review, scoped under:
 <bf-wo>/<task>/runs/reviews/round_N/
 ```
 
-Task review must satisfy Independent Verification: the task doer and task
-reviewer must be different subagent instances.
+Task review must satisfy Independent Verification: the actor whose work is
+reviewed and the reviewer must be different actor instances.

@@ -6,14 +6,17 @@ instruction: |
   smallest fix, a focused passing test, validation, design-doc-sync when the fix
   changes accepted behavior contracts, independent review, and a terminal-state
   closure stage. Run the stages in order. Read the task spec, bf.md Goal/Boundary,
-  relevant discussion, and confirmed project design docs before the first stage.
+  relevant discussion, confirmed project design docs, and host-runtime strategy
+  before the first stage.
   Each stage must produce its named artifact or review result before the next
   stage starts. When design-doc sync or full validation is not required, record
   explicit not-applicable evidence. Review stages must remain independent from
   the implementation work they review. Stop on Blocker or High review findings
   and rerun the affected stage after fixes. Stop before task verification if any
   external artifact or side effect lacks a terminal state, handoff owner, or
-  explicit stop condition.
+  explicit stop condition. The task driver produces closure evidence, but the
+  coordinator owns the acceptance-readiness terminal-state closure decision
+  before task-level BF acceptance review.
 stages:
   - id: regression-reproduction
     capability: software-implementation
@@ -75,11 +78,12 @@ stages:
   - id: terminal-state-closure
     capability: quality-assurance
     instruction: |
-      Run the final user-perspective completion check after code review. Inspect
+      Produce task-local terminal-state closure evidence after code review. Inspect
       the task spec, Evidence artifacts, review results, and implementation
       output. List every external artifact or side effect created by the fix,
       such as a PR, release, deploy, ticket, published package, or handoff
       document. Confirm each item has reached its terminal state, has an explicit
-      handoff owner, or is blocked by an explicit stop condition. Record a
-      Blocker or High finding and stop before task verification if any
-      user-perspective work is still dangling.
+      handoff owner, or is blocked by an explicit stop condition. Record any
+      whole-work-object side effect that must be checked again at Final
+      Acceptance. The coordinator decides whether this evidence is sufficient
+      before opening task-level BF acceptance review.

@@ -8,13 +8,15 @@ instruction: |
   use the bugfix pipeline when the task is a defect fix that needs strict
   regression red-green work. Run the stages in order. Read the task spec, bf.md
   Goal/Boundary, any relevant discussion, and confirmed project design docs
-  before the first stage. Each stage must produce its named artifact or review
-  result before the next stage starts. When design-doc sync or full validation is
+  before the first stage, along with the host-runtime strategy. Each stage must
+  produce its named artifact or review result before the next stage starts. When
+  design-doc sync or full validation is
   not required, record explicit not-applicable evidence. Prefer separate
-  subagents for stage work when isolation improves review quality or context
-  focus; review stages must remain independent from the implementation work they
-  review. When starting a role-bound subagent, pass the role id and role
-  instruction path, then require the subagent to read that role instruction
+  leaf workers for stage work when isolation improves review quality or context
+  focus and the host-runtime strategy allows nested delegation; review stages
+  must remain independent from the implementation work they review. When
+  starting a role-bound actor, pass the role id and role
+  instruction path, then require the actor to read that role instruction
   before the stage instruction. Inline role instruction content only when local
   file access is unavailable. Stop on any Blocker or High review finding; fix
   the finding and rerun the affected review stage before continuing. Do not edit
@@ -99,11 +101,13 @@ stages:
   - id: terminal-state-closure
     capability: quality-assurance
     instruction: |
-      Run the final user-perspective completion check after code review. Inspect
+      Produce task-local terminal-state closure evidence after code review. Inspect
       the task spec, Evidence artifacts, review results, and implementation
       output. List every external artifact or side effect created by the task,
       such as a PR, deploy, release, ticket, published package, or handoff
       document. Confirm each item has reached its terminal state, has an explicit
-      handoff owner, or is blocked by an explicit stop condition. Record a
-      Blocker or High finding and stop before task verification if any
-      user-perspective work is still dangling.
+      handoff owner, or is blocked by an explicit stop condition, so no
+      dangling user-perspective work is treated as done. Record any
+      whole-work-object side effect that must be checked again at Final
+      Acceptance. The coordinator decides whether this evidence is sufficient
+      before opening task-level BF acceptance review.

@@ -34,7 +34,7 @@ export function parseGitHubRemoteUrl(url) {
 }
 
 export function readGitHubPr(url) {
-  const r = spawnSync("gh", ["pr", "view", url, "--json", "merged,headRefName,url"], {
+  const r = spawnSync("gh", ["pr", "view", url, "--json", "mergedAt,state,headRefName,url"], {
     encoding: "utf8",
   });
   if (r.status !== 0) {
@@ -44,7 +44,14 @@ export function readGitHubPr(url) {
     };
   }
   try {
-    return { ok: true, pr: JSON.parse(String(r.stdout || "{}")) };
+    const pr = JSON.parse(String(r.stdout || "{}"));
+    return {
+      ok: true,
+      pr: {
+        ...pr,
+        merged: pr.state === "MERGED" || Boolean(pr.mergedAt),
+      },
+    };
   } catch (err) {
     return { ok: false, error: `GitHub PR lookup returned invalid JSON: ${err.message}` };
   }

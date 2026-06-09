@@ -16,11 +16,11 @@ STDOUT=$(node --input-type=module -e "
   });
 ")
 
-assert_json_field "$STDOUT" .wo "/tmp/bfh/wo-1"
-assert_json_field "$STDOUT" .task "/tmp/bfh/wo-1/task-a"
-assert_json_field "$STDOUT" .runs "/tmp/bfh/wo-1/runs/reviews"
-assert_json_field "$STDOUT" .round "/tmp/bfh/wo-1/runs/reviews/round_3"
-assert_json_field "$STDOUT" .result "/tmp/bfh/w/runs/reviews/round_1/result_tester_2.md"
-assert_json_field "$STDOUT" .verify "/tmp/bfh/w/runs/reviews/round_1/verify-result.md"
+assert_json_field "$STDOUT" .wo "/tmp/bfh/works/wo-1"
+assert_json_field "$STDOUT" .task "/tmp/bfh/works/wo-1/task-a"
+assert_json_field "$STDOUT" .runs "/tmp/bfh/works/wo-1/runs/reviews"
+assert_json_field "$STDOUT" .round "/tmp/bfh/works/wo-1/runs/reviews/round_3"
+assert_json_field "$STDOUT" .result "/tmp/bfh/works/w/runs/reviews/round_1/result_tester_2.md"
+assert_json_field "$STDOUT" .verify "/tmp/bfh/works/w/runs/reviews/round_1/verify-result.md"
 
 pass

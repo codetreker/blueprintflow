@@ -11,7 +11,7 @@ Not for: pure research write-ups, content production, incident response runbooks
 
 ## Domain Vocabulary
 
-- **bf-wo** — a single blueprint work object (one directory under `<project-root>/.bf/`).
+- **bf-wo** — a single blueprint work object. In normal project work, new work objects live under the primary BF state home at `works/<bf-wo>`; legacy direct `<bf-wo>` directories remain readable.
 - **bf.md** — the blueprint contract; locked after `accept`.
 - **task spec.md** — per-task contract; locked after `accept`.
 - **AC (Acceptance Criterion)** — one checkbox on bf.md or a task spec; carries a stable id and a `capability` marker.
@@ -22,7 +22,8 @@ Not for: pure research write-ups, content production, incident response runbooks
 - **leaf worker** — a bounded helper for one stage or artifact, used only when the host runtime supports delegation from the current actor.
 - **reviewer** — an independent actor that reviews a task, artifact, or spec and writes review results.
 - **IV (Independent Verification)** — the same actor instance must not both produce work and review that work for the same task.
-- **Mutation whitelist** — the only edits the harness will make to locked files: flip AC `[ ]` → `[x]`, update `State`, sync `Updated`.
+- **Mutation whitelist** — the only edits the harness will make to locked files: flip AC `[ ]` → `[x]`, update `State`, sync `Updated`, and write task execution metadata.
+- **Task worktree contract** — task frontmatter that records whether a task needs an isolated Git worktree and, when applicable, the branch/worktree/PR used to complete it. `Requires-Worktree` is spec-authored and locked after accept; `Branch`, `Worktree`, and `Pull-Request` are harness-owned task execution metadata.
 
 ## Brainstorm Guidance
 
@@ -52,6 +53,7 @@ The architect decomposes the accepted Goal/Boundary into a task DAG. A good engi
 
 - Is roughly 1 PR in size — small enough that one host-compatible task driver can finish it and produce evidence in a single session.
 - Has a `Pipeline` in its frontmatter. Use `bf list-pipelines --pack engineering` and pick the narrowest matching execution flow.
+- Has `Requires-Worktree: true|false`. Use `true` for tasks that change repository code or docs in a Git project; use `false` for planning, review-only, or non-repository work.
 - Has explicit `depends` edges in `bf.md`'s Task List — no implicit ordering.
 - Has AC that are observable from outside the task (a file exists, a command exits 0, a test passes, an endpoint returns X).
 - Names what it does not do in its own `Boundary`.
@@ -83,14 +85,15 @@ For each task the task driver picks up:
 1. Read the pipeline file returned by `bf-harness next`, then read `<task>/spec.md` end-to-end, plus the Goal/Boundary slice of `bf.md` and the relevant parts of `discussion.md` when the spec is ambiguous.
 2. Follow the pipeline stages in order. Produce each named artifact or pipeline review result before moving to the next stage. Use leaf workers only when the host-runtime strategy allows the current actor to spawn them.
 3. Prefer TDD where it fits: write the failing test that encodes one AC, then make it pass.
-4. Commit per task with a descriptive message that names the task id.
-5. Evidence to produce:
+4. For `Requires-Worktree: true` tasks, work in the branch/worktree returned by `bf-harness next`. If a GitHub PR is created, record it with `bf-harness attach-pr <bf-wo>/<task> <github-pr-url>`. Non-GitHub providers are process-gated by the pipeline and reviewer evidence instead of mechanically checked by the harness.
+5. Commit per task with a descriptive message that names the task id.
+6. Evidence to produce:
    - Test output (the command and its result) for every AC that claims behavior.
    - The commit hash(es) for the change.
    - For UI work, a screenshot or an HTML snapshot.
-6. Never bypass the mutation whitelist: locked `bf.md` and `spec.md` bodies are off-limits. Only the harness flips checkboxes, State, and Updated.
-7. When the spec is ambiguous and `discussion.md` does not answer it, append a clarifying entry to `discussion.md` and stop to ask the user — do not invent contract.
-8. When done, hand a review-ready package back to the coordinator: summary, changed artifacts, Evidence outputs, pipeline review outputs, and closure evidence. The coordinator runs `start-review`, dispatches BF acceptance reviewers, and runs `verify`.
+7. Never bypass the mutation whitelist: locked `bf.md` and `spec.md` bodies are off-limits. Only the harness flips checkboxes, State, Updated, and task execution metadata.
+8. When the spec is ambiguous and `discussion.md` does not answer it, append a clarifying entry to `discussion.md` and stop to ask the user — do not invent contract.
+9. When done, hand a review-ready package back to the coordinator: summary, changed artifacts, Evidence outputs, pipeline review outputs, and closure evidence. The coordinator runs `start-review`, dispatches BF acceptance reviewers, and runs `verify`.
 
 ## Phase Roles
 

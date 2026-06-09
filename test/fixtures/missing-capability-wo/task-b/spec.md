@@ -3,6 +3,10 @@ State: Draft
 Pipeline: feature
 Pack: engineering
 Desc: task B
+Requires-Worktree: false
+Branch:
+Worktree:
+Pull-Request:
 Creation: 2026-05-19 10:00
 Updated: 2026-05-19 10:00
 ---

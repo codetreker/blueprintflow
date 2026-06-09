@@ -1,10 +1,17 @@
 // Mutation-whitelist primitives: every in-place edit to bf.md / spec.md goes
-// through one of these helpers (flipCheckbox, writeState, writeUpdated). The
-// formatTimestamp helper produces the canonical "YYYY-MM-DD HH:MM" string used
-// by writeUpdated and the verify result writer.
+// through one of these helpers (flipCheckbox, writeState, writeUpdated, and
+// task execution metadata writers). The formatTimestamp helper produces the
+// canonical "YYYY-MM-DD HH:MM" string used by writeUpdated and the verify
+// result writer.
 import { assertTransition } from "./state-machine.mjs";
+import { parseTaskSpec } from "./parse-task-spec.mjs";
 
 const ALL_STATES = new Set(["Draft", "Accepted", "Implementing", "Completed", "Ready", "Tasking"]);
+const TASK_METADATA_KEYS = new Map([
+  ["branch", "Branch"],
+  ["worktree", "Worktree"],
+  ["pullRequest", "Pull-Request"],
+]);
 
 export function flipCheckbox(text, acId) {
   const lines = text.split("\n");
@@ -65,5 +72,41 @@ export function writeUpdated(text, timestamp) {
     }
   }
   lines.splice(end, 0, `Updated: ${timestamp}`);
+  return lines.join("\n");
+}
+
+export function writeTaskExecutionMetadata(text, metadata = {}) {
+  const lines = text.split("\n");
+  if (lines[0] !== "---") throw new Error("no frontmatter");
+  let end = -1;
+  for (let i = 1; i < lines.length; i++) {
+    if (lines[i] === "---") { end = i; break; }
+  }
+  if (end === -1) throw new Error("unterminated frontmatter");
+  for (let i = 1; i < end; i++) {
+    if (/^Id\s*:/.test(lines[i])) throw new Error("writeTaskExecutionMetadata requires a task spec");
+  }
+  try {
+    parseTaskSpec(text);
+  } catch (err) {
+    throw new Error(`writeTaskExecutionMetadata requires a task spec: ${err.message}`);
+  }
+
+  for (const [inputKey, fmKey] of TASK_METADATA_KEYS.entries()) {
+    if (!(inputKey in metadata)) continue;
+    const value = metadata[inputKey] == null ? "" : String(metadata[inputKey]);
+    let found = false;
+    for (let i = 1; i < end; i++) {
+      if (new RegExp(`^${fmKey}\\s*:`).test(lines[i])) {
+        lines[i] = value ? `${fmKey}: ${value}` : `${fmKey}:`;
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      lines.splice(end, 0, value ? `${fmKey}: ${value}` : `${fmKey}:`);
+      end++;
+    }
+  }
   return lines.join("\n");
 }

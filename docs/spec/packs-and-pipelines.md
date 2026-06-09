@@ -41,15 +41,16 @@ Merge rules:
 - Pack-private roles override Core roles with the same id.
 - Global extension roles under `~/.bf/extensions/roles` override selected
   pack-private roles.
-- Project extension roles under `<project-root>/.bf/extensions/roles` override
+- Project extension roles under `<state-home>/extensions/roles` override
   global extension roles.
 - The selected pack may use its private roles in brainstorm, spec, and execute phases.
 
 Global extension packs live under `~/.bf/extensions/packs`. Project extension
-packs live under `<project-root>/.bf/extensions/packs`. Same-id packs merge into
-one effective pack. `bf list-packs` returns every `pack.md` path in layer order:
-Core, global extension, then project extension. The LLM reads all paths in order;
-later paths have higher priority when guidance conflicts.
+packs live under `<state-home>/extensions/packs`; in normal Git work, that is
+the primary worktree `.bf/extensions/packs`. Same-id packs merge into one
+effective pack. `bf list-packs` returns every `pack.md` path in layer order:
+Core, global extension, then project extension. The LLM reads all paths in
+order; later paths have higher priority when guidance conflicts.
 
 ## Pack Pipelines
 
@@ -129,8 +130,8 @@ outside the locked task boundary.
 
 ## BF-WO Local Pipelines
 
-A bf-wo may define local pipelines under `<bf-wo>/pipelines/*.yml`. Tasks in
-that bf-wo reference them with the normal `Pipeline:` frontmatter.
+A bf-wo may define local pipelines under `<work-object>/pipelines/*.yml`. Tasks
+in that bf-wo reference them with the normal `Pipeline:` frontmatter.
 
 Rules:
 

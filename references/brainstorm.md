@@ -10,7 +10,7 @@ Goal: produce `discussion.md` capturing the user's intent, decisions, and trade-
 | LLM | Pick the pack whose `Desc` / `When to Use` matches the request. Read every `Path:` for the selected pack in output order; later paths have higher priority when guidance conflicts. |
 | LLM | Follow [project-docs.md](project-docs.md) to discover the project design-doc root before spec authoring. Record the discovery result in `discussion.md`. |
 | LLM | Drive an interactive discussion with the user, shaped by the chosen pack's `Brainstorm Guidance`. |
-| LLM | Append to `<project-root>/.bf/<bf-wo>/discussion.md` as the discussion happens. |
+| LLM | Append to the work object's `discussion.md` as the discussion happens. In Git project work, use the primary worktree `.bf/works/<bf-wo>/discussion.md`, even when the command runs from a linked worktree. Legacy `.bf/<bf-wo>/discussion.md` remains readable. In non-Git directories, use `<cwd>/.bf/works/<bf-wo>/discussion.md`. |
 
 `discussion.md` is never locked; you can append to it at any phase.
 

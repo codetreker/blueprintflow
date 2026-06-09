@@ -69,15 +69,26 @@ if [ "$1" != "pr" ] || [ "$2" != "view" ]; then
   echo "unexpected gh invocation" >&2
   exit 2
 fi
+if [ "$4" != "--json" ]; then
+  echo "expected gh pr view --json" >&2
+  exit 2
+fi
+IFS=',' read -r -a fields <<< "$5"
+for field in "${fields[@]}"; do
+  if [ "$field" = "merged" ]; then
+    echo 'Unknown JSON field: "merged"' >&2
+    exit 1
+  fi
+done
 case "${GH_FAKE_MODE:-merged}" in
   merged)
-    printf '{"merged":true,"headRefName":"bf/wo-1/task-a","url":"%s"}\n' "$3"
+    printf '{"mergedAt":"2026-06-09T19:00:00Z","state":"MERGED","headRefName":"bf/wo-1/task-a","url":"%s"}\n' "$3"
     ;;
   unmerged)
-    printf '{"merged":false,"headRefName":"bf/wo-1/task-a","url":"%s"}\n' "$3"
+    printf '{"mergedAt":null,"state":"OPEN","headRefName":"bf/wo-1/task-a","url":"%s"}\n' "$3"
     ;;
   branch-mismatch)
-    printf '{"merged":true,"headRefName":"other-branch","url":"%s"}\n' "$3"
+    printf '{"mergedAt":"2026-06-09T19:00:00Z","state":"MERGED","headRefName":"other-branch","url":"%s"}\n' "$3"
     ;;
   error)
     echo "gh auth failed" >&2

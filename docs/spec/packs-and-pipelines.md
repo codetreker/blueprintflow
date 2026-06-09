@@ -64,6 +64,8 @@ The first pipeline version is instruction-only:
 
 - The LLM reads the top-level pipeline `instruction`.
 - The LLM follows stage `instruction` values in order.
+- During execute, the coordinator assigns every claimed task and verification
+  fix to a host-compatible task driver.
 - Pipeline or stage instructions decide when task drivers, leaf workers, or
   reviewers are preferred or required.
 - Pipeline state and stage gates may later move into the harness.

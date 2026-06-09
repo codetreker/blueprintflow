@@ -35,9 +35,10 @@ flowchart LR
   bfcli --> registries[Role/Pack/Pipeline Registries]
   harness --> registries
   harness --> wo[(.bf Work Object State)]
-  orchestrator --> actors[Task Drivers + Reviewers]
-  actors --> project[Target Project Code + Evidence]
-  actors --> reviewResults[Review Results]
+  orchestrator --> drivers[Task Drivers]
+  orchestrator --> reviewers[Reviewers]
+  drivers --> project[Target Project Code + Evidence]
+  reviewers --> reviewResults[Review Results]
   reviewResults --> wo
 ```
 
@@ -96,12 +97,15 @@ sequenceDiagram
   O->>H: accept
   loop Each task
     O->>H: next
-    O->>D: Execute pipeline
+    O->>D: Assign task driver for claimed task
     D->>W: task-local evidence and review-ready handoff
     O->>H: start-review task
     O->>R: Task Verification
     R->>W: result_role_idx.md
     O->>H: verify task
+    opt verify FAIL
+      O->>D: Dispatch same or new task driver for fixes
+    end
   end
   O->>H: start-review work object
   O->>R: Final Acceptance
@@ -125,10 +129,18 @@ The harness verifies:
 
 The orchestrator verifies:
 
+- every claimed task and verification fix is assigned to a host-compatible task
+  driver;
 - the actor whose work is reviewed and the reviewer are different actor instances;
 - reviewers receive the correct scope and evidence;
 - fixes are dispatched after failed review;
 - user approval happens before `accept`.
+
+The main execute session coordinates. It runs harness commands, routes claimed
+tasks, dispatches task drivers and reviewers, reads outputs, and stops on
+ambiguity or blocked setup. It does not perform claimed task leaf work itself.
+The harness does not track actor identity, enforce task-driver delegation, or
+add a task-driver identity artifact.
 
 ## Extension Boundary
 

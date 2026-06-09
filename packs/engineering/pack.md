@@ -18,7 +18,7 @@ Not for: pure research write-ups, content production, incident response runbooks
 - **Pipeline** — a named execution flow selected by task `Pipeline:` frontmatter and defined under `pipelines/*.yml`.
 - **Capability** — a string declared in a role's `Capabilities:` list; pipeline stages use it to pick stage owners, and AC use it to pick reviewers.
 - **coordinator** — the main session that owns BF harness commands, acceptance review setup, verification, final acceptance, and host actor lifecycle accounting.
-- **task driver** — the actor that executes one concrete task by following its selected pipeline and producing a review-ready handoff.
+- **task driver** — the actor that executes one concrete task by following its selected pipeline and producing a review-ready handoff. In Codex, this is a Codex subagent assigned to the claimed task.
 - **leaf worker** — a bounded helper for one stage or artifact, used only when the host runtime supports delegation from the current actor.
 - **reviewer** — an independent actor that reviews a task, artifact, or spec and writes review results.
 - **IV (Independent Verification)** — the same actor instance must not both produce work and review that work for the same task.
@@ -79,6 +79,13 @@ owner. Do not block only because repository investigation or implementation
 strategy remains for the task pipeline's architecture/design stages.
 
 ## Execute Guidance
+
+The coordinator assigns each claimed engineering task to a host-compatible task
+driver before implementation, refactor, test-fix, validation, or task-scoped
+docs work starts. If task-driver capacity or tooling is unavailable, stop
+instead of doing the leaf work in the coordinator unless the user explicitly
+overrides the delegation rule. Verification-fix work goes to the same task
+driver or a new task driver.
 
 For each task the task driver picks up:
 

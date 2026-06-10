@@ -162,11 +162,12 @@ Eligibility:
 
 - task is `Ready` or already `Tasking`;
 - dependencies are complete;
+- returned tasks do not depend on each other;
 - dependency graph is valid.
 
 Behavior:
 
-- Returns every eligible task in bf.md task-list order.
+- Returns up to five eligible tasks in bf.md task-list order.
 - Marks returned `Ready` tasks `Tasking`.
 - Validates returned `Tasking` worktree metadata.
 - Moves bf.md from `Accepted` to `Implementing` on the first returned `Ready`

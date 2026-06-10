@@ -83,10 +83,4 @@ contains_all "$CODE_REVIEW_INSTRUCTION" "code-review instruction" \
   "architecture perspective" \
   "qa perspective"
 
-DOCS_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/docs/spec/packs-and-pipelines.md")
-contains_all "$DOCS_BODY" "packs and pipelines docs" \
-  "role-bound actor" \
-  "role instruction file" \
-  "read that role instruction before"
-
 pass

@@ -131,7 +131,9 @@ Verification, and Final Acceptance. Task drivers do not advance locked BF state.
    - After accept, `bf.md` and task `spec.md` content is locked for the LLM. The harness cascades tasks to `Ready`.
 
 3. Execute tasks.
-   - Run `bf-harness next <bf-wo>` to return the eligible task batch.
+   - Run `bf-harness next <bf-wo>` to return eligible task blocks. Each returned
+     task has completed prerequisites, and no returned task depends on another
+     returned task.
    - Read only the returned task specs, packs, and pipeline paths.
    - Give each returned task block to one host-compatible task driver.
    - For `Requires-Worktree: true` tasks in managed Git mode, `next` also

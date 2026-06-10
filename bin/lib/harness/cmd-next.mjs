@@ -5,6 +5,8 @@ import { loadWo } from "./load-wo.mjs";
 import { buildPipelineRegistry, findPipeline } from "../shared/pipeline-registry.mjs";
 import { prepareTaskWorktree, validateTaskWorktree } from "./managed-git.mjs";
 
+const MAX_NEXT_TASKS = 5;
+
 export async function cmdNext({ baseHome, woId, installDir, now = new Date(), cwd = process.cwd() }) {
   const bundle = await loadWo({ baseHome, woId, installDir });
   if (!bundle.bf) return { ok: false, error: "load failed", details: bundle.errors };
@@ -21,7 +23,16 @@ export async function cmdNext({ baseHome, woId, installDir, now = new Date(), cw
     if (!["Ready", "Tasking"].includes(t.spec.frontmatter.State)) return false;
     return t.deps.every((d) => stateOf(d) === "Completed");
   });
-  if (eligible.length === 0) return { ok: false, error: "no eligible task" };
+  const batch = [];
+  for (const task of eligible) {
+    if (batch.length >= MAX_NEXT_TASKS) break;
+    const conflicts = batch.some((selected) => (
+      task.deps.includes(selected.id) || selected.deps.includes(task.id)
+    ));
+    if (conflicts) continue;
+    batch.push(task);
+  }
+  if (batch.length === 0) return { ok: false, error: "no eligible task" };
 
   const pipelineReg = buildPipelineRegistry({
     packReg: bundle.packReg,
@@ -30,7 +41,7 @@ export async function cmdNext({ baseHome, woId, installDir, now = new Date(), cw
   });
 
   const plans = [];
-  for (const task of eligible) {
+  for (const task of batch) {
     const pipeline = task.spec.frontmatter.Pipeline;
     const pipelineEntry = findPipeline(pipelineReg, bundle.bf.frontmatter.Pack, pipeline);
     if (!pipelineEntry) return { ok: false, error: `pipeline not found: ${pipeline}` };

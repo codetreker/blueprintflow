@@ -29,7 +29,7 @@ run the next legal BF command.
   returns that task block.
 - Do not inspect all task specs to choose work. The harness selects the task
   batch.
-- Read a task spec only after `next` returns that task block.
+- A task driver reads only the spec and pipeline for its returned task block.
 - If the task has `Requires-Worktree: true`, work only in the returned or
   recorded `Worktree`.
 - Assign claimed task work and verification fixes to a host-compatible task
@@ -55,21 +55,22 @@ Repeat until no task remains:
 2. If `next` returns no eligible task, run `bf-harness status <bf-wo>`. Enter
    Final Acceptance only when status says all tasks are completed. Do not
    manually pick a task.
-3. If `next` returns task blocks, read only the returned task specs and
-   pipelines.
+3. If `next` returns task blocks, do not read task specs or pipelines locally.
 4. Each returned task gets one task driver. The coordinator decides whether that
    block starts a new driver or resumes an existing one.
-5. Give each task driver its returned task, spec, pipeline, and worktree.
+5. Give each task driver the returned task block, the BF work-object id, the
+   requirement to read its own task spec and pipeline, the returned worktree if
+   any, and the instruction to follow the task pipeline and produce required
+   evidence.
 6. Each task driver follows the pipeline and produces required evidence.
 7. If a task has a PR, run
    `bf-harness attach-pr <bf-wo>/<task> <github-pr-url>`.
-8. Check task-local terminal-state closure before BF acceptance review. Do not
-   clean BF-owned task worktrees or task branches before verification.
+8. Check task-local terminal-state closure before BF acceptance review.
 9. Run `bf-harness start-review <bf-wo>/<task>`.
 10. Dispatch independent BF acceptance reviewers for the task AC capabilities.
 11. Run `bf-harness verify <bf-wo>/<task>`.
-12. On FAIL, read the verify result, dispatch fixes to a task driver, open a new
-   review round, and verify again.
+12. On FAIL, read the verify result, prefer dispatching fixes to the original
+   task driver when available, open a new review round, and verify again.
 13. On SUCCESS, confirm the task PR is merged when the task produced a PR.
 14. Run `bf-harness cleanup <bf-wo>/<task>` immediately after the task is
    verified and any task PR is merged. It removes only the recorded task

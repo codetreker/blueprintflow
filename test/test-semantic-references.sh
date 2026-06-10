@@ -65,6 +65,8 @@ assert_match "$EXECUTION_BODY" "any task pr is merged" "execution runs cleanup a
 assert_match "$EXECUTION_BODY" "do not defer task worktree cleanup to final" "execution forbids final-acceptance cleanup deferral"
 assert_match "$EXECUTION_BODY" "task blocks" "execution treats next output as task blocks"
 assert_match "$EXECUTION_BODY" "each returned task gets one task driver" "execution dispatches one task driver per returned task"
+assert_match "$EXECUTION_BODY" "until the task driver completes" "execution waits for task driver completion"
+assert_match "$EXECUTION_BODY" "terminate it lightly" "execution avoids killing task drivers prematurely"
 assert_match "$EXECUTION_BODY" "prefer dispatching fixes to the original" "execution prefers original task driver for verify fixes"
 assert_match "$EXECUTION_BODY" "if \`next\` returns no eligible task, enter final acceptance" "execution enters Final Acceptance when next is empty"
 assert_match "$EXECUTION_BODY" "start final acceptance by running \`bf-harness status <bf-wo>\`" "Final Acceptance starts with status"

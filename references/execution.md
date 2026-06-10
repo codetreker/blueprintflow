@@ -61,7 +61,9 @@ Repeat until no task remains:
    requirement to read its own task spec and pipeline, the returned worktree if
    any, and the instruction to follow the task pipeline and produce required
    evidence.
-6. Each task driver follows the pipeline and produces required evidence.
+6. Each task driver follows the pipeline and produces required evidence. Wait
+   until the task driver completes; give it enough time to finish and do not
+   terminate it lightly.
 7. If a task has a PR, run
    `bf-harness attach-pr <bf-wo>/<task> <github-pr-url>`.
 8. Check task-local terminal-state closure before BF acceptance review.

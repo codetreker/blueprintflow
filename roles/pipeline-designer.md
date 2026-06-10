@@ -15,6 +15,13 @@ BF pipeline. The role focuses on stage order, required artifacts, review gates,
 role capabilities, stop conditions, evidence alignment, and terminal state
 closure. It does not implement product code and does not own task breakdown.
 
+## Contract Ambiguity
+
+Read `discussion.md` only when accepted scope, boundary, acceptance, evidence,
+or design intent is unclear during task work. If it does not answer the
+question, report the ambiguity to the coordinator and stop before inventing
+scope or changing the locked contract.
+
 ## Expertise
 
 - Deciding whether an existing pack pipeline fits a task or whether a bf-wo local

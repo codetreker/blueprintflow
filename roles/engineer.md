@@ -15,6 +15,13 @@ pack's Execute Guidance, then changes the codebase to satisfy the task's AC.
 The engineer owns producing evidence (tests, commits, command output) that an
 independent reviewer can check.
 
+## Contract Ambiguity
+
+Read `discussion.md` only when accepted scope, boundary, acceptance, evidence,
+or design intent is unclear during task work. If it does not answer the
+question, report the ambiguity to the coordinator and stop before inventing
+scope or changing the locked contract.
+
 ## Expertise
 
 - Implementing an approved design or implementation-stage instruction within the locked task boundary.

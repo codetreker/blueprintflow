@@ -55,8 +55,10 @@ assert_match "$EXECUTION_BODY" "phase gate" "execution has directive phase gate"
 assert_match "$EXECUTION_BODY" "select eligible task blocks" "execution lets the harness select work batches"
 assert_match "$EXECUTION_BODY" "do not inspect all task specs" "execution forbids task selection by spec inspection"
 assert_match "$EXECUTION_BODY" "do not read task specs or pipelines locally" "execution keeps task spec reads out of coordinator"
-assert_match "$EXECUTION_BODY" "task driver reads only the spec and pipeline for its returned task block" "execution delegates task spec reads to task driver"
+assert_match "$EXECUTION_BODY" "at task entry, a task driver reads only" "execution delegates task entry reads to task driver"
+assert_match "$EXECUTION_BODY" "spec and pipeline for its returned" "execution scopes task driver entry reads to returned task"
 assert_match "$EXECUTION_BODY" "discussion.md" "execution uses discussion only for ambiguity recovery"
+assert_not_match "$EXECUTION_BODY" "tell the task driver to read \`discussion.md\` only when" "execution should not duplicate role ambiguity handling in handoff"
 assert_not_match "$EXECUTION_BODY" "read discussion.md first" "execution must not read discussion at entry"
 assert_match "$EXECUTION_BODY" "scope, boundary, acceptance, or design intent" "execution stops for clarification on contract-affecting ambiguity"
 assert_match "$EXECUTION_BODY" "explicit authorization" "execution records BF trigger as actor authorization"
@@ -85,6 +87,12 @@ assert_not_match "$REVIEW_TEMPLATE_BODY" "all required reviewer" "review templat
 ENGINEERING_PACK_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/packs/engineering/pack.md")
 assert_match "$ENGINEERING_PACK_BODY" "small enough that one host-compatible task driver can finish it" "engineering breakdown avoids engineer subagent task ownership"
 assert_not_match "$ENGINEERING_PACK_BODY" "pick doers" "engineering pack avoids stale doer vocabulary"
+
+for role in engineer architect tester pipeline-designer; do
+  ROLE_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/roles/$role.md")
+  assert_match "$ROLE_BODY" "read \`discussion.md\` only when" "$role role handles discussion ambiguity recovery"
+  assert_match "$ROLE_BODY" "report the ambiguity to the coordinator" "$role role returns unresolved ambiguity to coordinator"
+done
 
 if rg -n "phase-1|phase-2|phase-3" \
   "$REPO_ROOT/SKILL.md" "$REPO_ROOT/references" \

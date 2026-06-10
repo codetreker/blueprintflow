@@ -29,7 +29,8 @@ run the next legal BF command.
   returns that task block.
 - Do not inspect all task specs to choose work. The harness selects the task
   batch.
-- A task driver reads only the spec and pipeline for its returned task block.
+- At task entry, a task driver reads only the spec and pipeline for its returned
+  task block.
 - If the task has `Requires-Worktree: true`, work only in the returned or
   recorded `Worktree`.
 - Assign claimed task work and verification fixes to a host-compatible task

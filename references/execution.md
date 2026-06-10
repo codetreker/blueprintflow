@@ -52,9 +52,8 @@ run the next legal BF command.
 Repeat until no task remains:
 
 1. Run `bf-harness next <bf-wo>`.
-2. If `next` returns no eligible task, run `bf-harness status <bf-wo>`. Enter
-   Final Acceptance only when status says all tasks are completed. Do not
-   manually pick a task.
+2. If `next` returns no eligible task, enter Final Acceptance. Do not manually
+   pick a task.
 3. If `next` returns task blocks, do not read task specs or pipelines locally.
 4. Each returned task gets one task driver. The coordinator decides whether that
    block starts a new driver or resumes an existing one.
@@ -80,8 +79,8 @@ Repeat until no task remains:
 
 ## Final Acceptance
 
-Before Final Acceptance, run `bf-harness status <bf-wo>`. Enter Final
-Acceptance only when status says all tasks are completed.
+Start Final Acceptance by running `bf-harness status <bf-wo>`. Continue only
+when status says all tasks are completed.
 
 1. Check whole-work-object terminal-state closure.
 2. Run `bf-harness start-review <bf-wo>`.
@@ -118,8 +117,7 @@ Stop instead of continuing when:
 
 - `bf.md.State` is `Draft` and the request is to execute, fix, commit, push, PR,
   or cleanup.
-- `next` returns no eligible task and `status` does not say all tasks are
-  completed.
+- Final Acceptance status does not say all tasks are completed.
 - You are about to choose a task by reading task specs instead of using `next`.
 - Current directory is not the recorded task worktree for a worktree-required
   task.

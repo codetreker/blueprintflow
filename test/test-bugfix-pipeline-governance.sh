@@ -34,6 +34,17 @@ PIPELINE_JSON=$(node --input-type=module -e "
   const text = fs.readFileSync('$FILE', 'utf8');
   process.stdout.write(JSON.stringify(parsePipeline(text)));
 ")
+MISSING_OUTPUTS=$(node -e "
+  const p = JSON.parse(process.argv[1]);
+  const ids = ['expected-failure-review', 'code-review', 'terminal-state-closure'];
+  const missing = ids.filter(id => {
+    const stage = p.stages.find(s => s.id === id);
+    return !stage || !String(stage.output || '').trim();
+  });
+  process.stdout.write(missing.join(','));
+" "$PIPELINE_JSON")
+assert_eq "$MISSING_OUTPUTS" "" "bugfix review/closure stages must have durable outputs"
+
 STAGE_COUNT=$(node -e "const p = JSON.parse(process.argv[1]); process.stdout.write(String(p.stages.length));" "$PIPELINE_JSON")
 LAST_INDEX=$((STAGE_COUNT - 1))
 PREV_INDEX=$((STAGE_COUNT - 2))

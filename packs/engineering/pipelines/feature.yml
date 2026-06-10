@@ -40,11 +40,13 @@ stages:
   - id: architecture-review
     capability: design-review
     reviews: artifacts/architecture.md
+    output: artifacts/architecture-review.md
     instruction: |
       Review the architecture artifact against the task spec, bf.md Goal/Boundary,
       existing system shape, and likely downstream implementation cost. Record
-      Blocker or High findings for unclear boundaries, unsafe coupling, missing
-      contracts, or scope drift. The pipeline stops until those findings are fixed.
+      findings and signoff in artifacts/architecture-review.md. Use Blocker or
+      High findings for unclear boundaries, unsafe coupling, missing contracts,
+      or scope drift. The pipeline stops until those findings are fixed.
 
   - id: implementation-design
     capability: system-architecture
@@ -58,11 +60,13 @@ stages:
   - id: design-review
     capability: design-review
     reviews: artifacts/design.md
+    output: artifacts/design-review.md
     instruction: |
       Review the implementation design before code changes. Check that it follows
       the approved architecture, fits the task Boundary, has an executable test
-      and evidence plan, and does not hide extra work. Blocker or High findings
-      stop implementation until the design is revised and reviewed again.
+      and evidence plan, and does not hide extra work. Record findings and
+      signoff in artifacts/design-review.md. Blocker or High findings stop
+      implementation until the design is revised and reviewed again.
 
   - id: implementation
     capability: software-implementation
@@ -93,17 +97,20 @@ stages:
 
   - id: code-review
     capability: quality-assurance
+    output: artifacts/code-review.md
     instruction: |
       Run a multi-perspective review of the code, Evidence artifacts,
       design-doc-sync evidence, validation evidence, and task AC from outside
       the implementation. Gather implementation perspective checks, architecture
       perspective checks, and QA perspective checks while keeping
       quality-assurance as the stage owner. Confirm each AC has matching
-      evidence and no Blocker or High findings. Sign off only the AC ids that
-      the review independently verifies.
+      evidence and no Blocker or High findings. Record findings, perspective
+      checks, and signoff in artifacts/code-review.md. Sign off only the AC ids
+      that the review independently verifies.
 
   - id: terminal-state-closure
     capability: quality-assurance
+    output: artifacts/terminal-state-closure.md
     instruction: |
       Produce task-local terminal-state closure evidence after code review. Inspect
       the task spec, Evidence artifacts, review results, and implementation
@@ -113,5 +120,6 @@ stages:
       handoff owner, or is blocked by an explicit stop condition, so no
       dangling user-perspective work is treated as done. Record any
       whole-work-object side effect that must be checked again at Final
-      Acceptance. The coordinator decides whether this evidence is sufficient
-      before opening task-level BF acceptance review.
+      Acceptance in artifacts/terminal-state-closure.md. The coordinator decides
+      whether this evidence is sufficient before opening task-level BF acceptance
+      review.

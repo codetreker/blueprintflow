@@ -24,6 +24,13 @@ Host-specific names map onto these actors without becoming BF core concepts.
 For example, Claude Code `teammate` and Codex subagent can be task drivers when
 the coordinator records a compatible host-runtime strategy.
 
+Using `$bf` or `/bf` is explicit authorization for the coordinator to dispatch
+host-compatible actor instances required by BF workflow execution, including
+task drivers, allowed leaf workers, and reviewers. This authorization is scoped
+to BF work and remains bounded by the recorded host-runtime strategy,
+Independent Verification, lifecycle or closure accounting, and user confirmation
+gates.
+
 Actor identity, nested-delegation support, and closure state are
 instruction-level constraints. The harness does not observe them, so the
 coordinator enforces them when selecting task drivers, dispatching reviewers,
@@ -50,6 +57,20 @@ Harness responsibilities:
 - `next` returns `Pipeline` and `Pipeline path`, so the LLM can follow pipeline stages.
 - `start-review` and `verify` use AC capabilities to identify reviewer roles.
 - `lint` verifies that each AC capability is declared by at least one role.
+
+## Provider-Role Signoff
+
+The harness records review files by role id, not by actor identity. For Task
+Verification and Final Acceptance, an AC is signed when at least one provider role
+for that AC's capability has a review file that accepts the AC id and the round
+has no Blocker or High finding.
+
+Multiple roles may provide the same capability. The coordinator selects the
+provider role or roles before review according to the accepted design and host
+runtime strategy; the harness does not require every provider role to sign.
+Instruction-level rules may require multiple independent reviewer actor
+instances for a round, but actor-instance independence is enforced by the
+coordinator rather than the harness.
 
 ## State Machine
 

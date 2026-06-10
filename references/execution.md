@@ -8,6 +8,12 @@ Before task execution, read `discussion.md` and record or confirm the
 host-runtime strategy: host runtime, task driver type, nested-delegation limit,
 lifecycle or closure rule, and reviewer spawning owner.
 
+Using `$bf` or `/bf` is explicit authorization for the coordinator to dispatch
+host-compatible actor instances required by the accepted BF workflow, including
+task drivers, allowed leaf workers, and independent reviewers. This remains
+bounded by the recorded host-runtime strategy, Independent Verification,
+lifecycle or closure accounting, and user confirmation gates.
+
 Use these actor boundaries:
 
 - The **coordinator** is the main session. The coordinator runs `next`,

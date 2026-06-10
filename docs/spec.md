@@ -46,6 +46,13 @@ Requirement, Acceptance Criteria, Boundary, and Task List rationale. `bf.md`
 stays concise: it distills the recorded discussion into a contract without
 quoting or citing `discussion.md` by default.
 
+New BF work starts by bootstrapping `<state-home>/works/<bf-wo>/`: choose a
+readable id, create the directory, copy `templates/discussion.md`, and append
+the first accepted discussion entry before task breakdown. Read-only BF
+requests such as explanation, audit, status, or advisory discussion do not
+create or mutate a work object unless the user asks to turn them into
+implementation work.
+
 ```mermaid
 flowchart TB
   request[User Request] --> brainstorm[Brainstorm]
@@ -67,7 +74,9 @@ routes claimed tasks, dispatches task drivers and reviewers, reads outputs, and
 stops on ambiguity or blocked setup. Every claimed task and verification fix is
 assigned to a host-compatible task driver; in Codex, that actor is a Codex
 subagent. Reviewers remain different actor instances from the actor whose
-work they review.
+work they review. Harness signoff is provider-role based: for Task Verification
+and Final Acceptance, an AC is signed when at least one provider role accepts
+the AC id in a clean review round.
 
 ## Reading Map
 

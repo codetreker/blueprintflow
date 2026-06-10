@@ -37,10 +37,12 @@ stages:
   - id: expected-failure-review
     capability: quality-assurance
     reviews: artifacts/regression-reproduction.md
+    output: artifacts/expected-failure-review.md
     instruction: |
       Confirm the focused failing regression test or reproduction fails for the
       expected failure. Reject failures caused by setup mistakes, unrelated
-      breakage, or assertions that do not prove the reported defect.
+      breakage, or assertions that do not prove the reported defect. Record
+      findings and signoff in artifacts/expected-failure-review.md.
 
   - id: implementation
     capability: software-implementation
@@ -77,14 +79,17 @@ stages:
 
   - id: code-review
     capability: quality-assurance
+    output: artifacts/code-review.md
     instruction: |
       Review the fix, regression evidence, focused passing test, design-doc-sync
       evidence, validation evidence, and task AC from outside the implementation.
-      Confirm each AC has matching evidence and no Blocker or High findings. Sign
-      off only the AC ids that the review independently verifies.
+      Confirm each AC has matching evidence and no Blocker or High findings.
+      Record findings and signoff in artifacts/code-review.md. Sign off only the
+      AC ids that the review independently verifies.
 
   - id: terminal-state-closure
     capability: quality-assurance
+    output: artifacts/terminal-state-closure.md
     instruction: |
       Produce task-local terminal-state closure evidence after code review. Inspect
       the task spec, Evidence artifacts, review results, and implementation
@@ -93,5 +98,6 @@ stages:
       document. Confirm each item has reached its terminal state, has an explicit
       handoff owner, or is blocked by an explicit stop condition. Record any
       whole-work-object side effect that must be checked again at Final
-      Acceptance. The coordinator decides whether this evidence is sufficient
-      before opening task-level BF acceptance review.
+      Acceptance in artifacts/terminal-state-closure.md. The coordinator decides
+      whether this evidence is sufficient before opening task-level BF acceptance
+      review.

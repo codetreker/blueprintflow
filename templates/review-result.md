@@ -28,7 +28,11 @@
 
 规则：
 - 必须用 bf.md 或者 task spec.md 里原始的验收标准 id（比如 AC-1、AC-2）。
-- 每条 AC 需要所有 required reviewer 都签到，才算 signed，bf-harness verify 才会翻 checkbox。
+- Task Verification / Final Acceptance 中，如果本轮没有 Blocker 或 High，
+  at least one provider-role review file 接受某条 AC id，bf-harness verify
+  就会把这条 AC 视为 signed。
+- Spec Review 和某些流程可能要求多个独立 reviewer actor instances；这是
+  coordinator 执行的 actor 独立性规则，不是 harness 从文件名机械判断的规则。
 - 一份 reviewer 的 result 文件里如果出现了 Blocker 或 High，bf-harness 不会去看这一节的签到 —— 因为整轮已经 FAIL 了。
 
 - {id1}: 一句话说明 reviewer 怎么验证通过的（怎么得出"这条满足了"的判断）

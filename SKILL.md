@@ -1,6 +1,6 @@
 ---
 name: bf
-description: "Use when the user types /bf, asks to brainstorm a software change, decompose a feature into tasks, draft a spec, ship work behind an explicit review-and-verify gate, or explicitly asks to prepare, file, or comment on BF GitHub issue feedback. Applies to software tasks and BF feedback intake."
+description: "Use when the user types $bf or /bf; asks to brainstorm, scope, spec, review, execute, verify, or resume a software BF work object; or explicitly asks to prepare, file, or comment on BF GitHub issue feedback."
 ---
 
 # BF — Blueprintflow
@@ -49,6 +49,53 @@ Use these generic actor names in BF core guidance:
 Claude Code `teammate` and Codex subagent are host-specific task driver
 implementations, not BF core roles. If a task driver cannot spawn nested
 workers or reviewers, it hands the need back to the coordinator.
+
+## BF Actor Authorization
+
+Using `$bf` or `/bf` is explicit authorization for the coordinator to dispatch
+host-compatible actor instances required by the BF workflow: task drivers, leaf
+workers, and reviewers. In Codex, this includes Codex subagent actors. In Claude
+Code, this includes `teammate` actors.
+
+This authorization is BF-scoped. It does not authorize unrelated background
+work, non-BF automation, or bypassing the recorded host-runtime strategy,
+Independent Verification, lifecycle/closure accounting, or user confirmation
+gates.
+
+## When Not To Use
+
+Do not start or mutate a BF work object for read-only questions, explanations,
+audits, status checks, or advice unless the user asks to turn the result into
+implementation work. In read-only mode, answer from the current repo context and
+name any BF follow-up separately.
+
+Do not use BF for non-software work, casual conversation, simple one-command
+answers, or user requests that explicitly ask to avoid workflow overhead.
+
+## Entry Protocol
+
+On every `$bf` or `/bf` turn, classify the request before loading deeper
+references:
+
+1. **Feedback issue** — if the user explicitly asks to prepare, file, or comment
+   on BF GitHub issue feedback, read `references/feedback.md`.
+2. **Read-only / advisory** — if the user asks to explain, audit, inspect,
+   compare, or discuss without asking for changes, do not create a work object.
+   Load only the references needed to answer.
+3. **Resume existing work** — if the user says continue/resume or names a
+   bf-wo, locate `.bf/works/<bf-wo>` first; legacy `.bf/<bf-wo>` remains
+   readable. Read `bf.md`, `discussion.md`, task specs, and latest review or
+   verify results, then route by state to spec authoring or execution.
+4. **New software change / bootstrap** — choose a readable bf-wo id, create the
+   work object under the resolved BF state home, copy
+   `templates/discussion.md`, append the first accepted discussion entry, then
+   read `references/brainstorm.md`.
+5. **Spec / accept / execute request** — load the existing work object first,
+   then read `references/spec-authoring.md` or `references/execution.md` based
+   on `bf.md` state. Do not skip unresolved brainstorm source coverage.
+
+If the route is ambiguous and the choice changes state, scope, or external side
+effects, ask the user before mutating BF state.
 
 ## Pointers
 

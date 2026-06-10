@@ -14,6 +14,24 @@ Goal: produce `discussion.md` capturing the user's intent, decisions, and trade-
 
 `discussion.md` is never locked; you can append to it at any phase.
 
+## Bootstrap
+
+When starting a new BF workflow, bootstrap the work object before task
+breakdown:
+
+1. Choose a bf-wo id that is readable, stable, and kebab-case.
+2. Resolve the BF state home: Git projects use the primary worktree `.bf`; non-Git
+   directories use `<cwd>/.bf`.
+3. Create `<state-home>/works/<bf-wo>/`.
+4. Copy `templates/discussion.md` to
+   `<state-home>/works/<bf-wo>/discussion.md`.
+5. Fill `Pack`, `Creation`, and `Updated`, then append the first accepted
+   discussion entry immediately.
+
+Do not overwrite an existing work object. If the requested id already exists,
+read it first and treat the request as resume unless the user explicitly asks to
+abandon and recreate it.
+
 ## Crash-safety
 
 Write each Q&A or decision to `discussion.md` **as it happens**. Do not buffer in memory and dump at the end — if the session crashes mid-discussion, only what is on disk survives. Use the `templates/discussion.md` shape.

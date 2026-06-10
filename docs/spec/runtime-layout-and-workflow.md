@@ -89,6 +89,9 @@ Verification, and Final Acceptance. Task drivers do not advance locked BF state.
    - Record the doc-root discovery result in `discussion.md`. If a single root
      is inferred rather than explicit, ask the user to confirm it before
      treating it as authoritative.
+   - Choose a readable kebab-case bf-wo id, create
+     `<state-home>/works/<bf-wo>/`, copy `templates/discussion.md`, and append
+     the first accepted discussion entry immediately.
    - Write `discussion.md` directly under `<state-home>/works/<bf-wo>/` so the discussion is crash-safe and restartable.
    - Confirm source coverage before spec authoring: recorded discussion must
      support the future `bf.md` Goal, Requirement, Acceptance Criteria,
@@ -173,12 +176,13 @@ Verification, and Final Acceptance. Task drivers do not advance locked BF state.
 
 1. Run `bf-harness start-review <bf-wo>`.
 2. The command returns a review directory: `<work-object>/runs/reviews/round_N/`.
-3. For each matching reviewer role, spawn exactly three reviewer subagents. Every reviewer in the same Spec Review round must be a distinct subagent instance.
-4. If the bf-wo has local pipelines, include three independent reviewer subagents with the `pipeline-review` capability. Each must be distinct from the pipeline designer and from every other reviewer in the same Spec Review round.
-5. Each reviewer writes `result_<role>_<idx>.md`; `<idx>` starts at 1 for each role.
-6. Run `bf-harness verify <bf-wo>`.
-7. On `FAIL`, read the verify result, update the draft specs/local pipelines, and start a new review round.
-8. On `SUCCESS`, wait for user approval before `accept`.
+3. For each review capability used in the spec, select one matching provider role unless the accepted design explicitly needs multiple provider roles for distinct perspectives.
+4. For each selected review role, dispatch exactly three independent reviewer actor instances. Every reviewer in the same Spec Review round must be a distinct actor instance.
+5. If the bf-wo has local pipelines, include three independent reviewer actor instances with the `pipeline-review` capability. Each must be distinct from the pipeline designer and from every other reviewer in the same Spec Review round.
+6. Each reviewer writes `result_<role>_<idx>.md`; `<idx>` starts at 1 for each selected role.
+7. Run `bf-harness verify <bf-wo>`.
+8. On `FAIL`, read the verify result, update the draft specs/local pipelines, and start a new review round.
+9. On `SUCCESS`, wait for user approval before `accept`.
 
 ## Task Review Flow
 

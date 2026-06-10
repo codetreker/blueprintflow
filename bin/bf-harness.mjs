@@ -11,6 +11,7 @@ import { cmdLint, formatLint } from "./lib/harness/cmd-lint.mjs";
 import { cmdStartReview, formatStartReview } from "./lib/harness/cmd-start-review.mjs";
 import { cmdAccept, formatAccept } from "./lib/harness/cmd-accept.mjs";
 import { cmdNext, formatNext } from "./lib/harness/cmd-next.mjs";
+import { cmdStatus, formatStatus } from "./lib/harness/cmd-status.mjs";
 import { cmdAttachPr, formatAttachPr } from "./lib/harness/cmd-attach-pr.mjs";
 import { cmdVerify, formatVerifyResult, formatVerifySetupError } from "./lib/harness/cmd-verify.mjs";
 import { cmdDiscard, formatDiscard } from "./lib/harness/cmd-discard.mjs";
@@ -23,9 +24,10 @@ const USAGE = `Usage:
   bf-harness start-review <bf-wo>[/<task>]
   bf-harness accept <bf-wo>
   bf-harness next <bf-wo>
+  bf-harness status <bf-wo>
   bf-harness attach-pr <bf-wo>/<task> <github-pr-url>
   bf-harness verify <bf-wo>[/<task>]
-  bf-harness cleanup <bf-wo>
+  bf-harness cleanup <bf-wo>/<task>
   bf-harness discard <bf-wo>
 
 State directory: Git primary worktree .bf, else <cwd>/.bf.`;
@@ -55,8 +57,9 @@ const ARITY = {
   lint:           { wo: "required",  task: "forbidden" },
   accept:         { wo: "required",  task: "forbidden" },
   next:           { wo: "required",  task: "forbidden" },
+  status:         { wo: "required",  task: "forbidden" },
   "attach-pr":    { wo: "required",  task: "required" },
-  cleanup:        { wo: "required",  task: "forbidden" },
+  cleanup:        { wo: "required",  task: "required" },
   discard:        { wo: "required",  task: "forbidden" },
   "start-review": { wo: "required",  task: "optional" },
   verify:         { wo: "required",  task: "optional" },
@@ -121,12 +124,15 @@ async function main() {
     case "next":
       r = await cmdNext({ baseHome, woId: t.woId, installDir });
       text = formatNext(r); break;
+    case "status":
+      r = await cmdStatus({ baseHome, woId: t.woId, installDir });
+      text = formatStatus(r); break;
     case "attach-pr":
       if (extraArgs.length !== 1) fail(`attach-pr requires <github-pr-url>\n${USAGE}`, 2);
       r = await cmdAttachPr({ baseHome, woId: t.woId, taskId: t.taskId, prUrl: extraArgs[0], installDir });
       text = formatAttachPr(r); break;
     case "cleanup":
-      r = await cmdCleanup({ baseHome, woId: t.woId, installDir });
+      r = await cmdCleanup({ baseHome, woId: t.woId, taskId: t.taskId, installDir });
       text = formatCleanup(r); break;
     case "discard":
       r = await cmdDiscard({ baseHome, woId: t.woId });

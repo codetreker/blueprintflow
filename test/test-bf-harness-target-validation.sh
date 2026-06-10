@@ -50,6 +50,14 @@ assert_eq "$RC" "2" "discard with taskId rejected"
 run_bfh next
 assert_eq "$RC" "2" "next without woId rejected"
 
+# Arity: status requires woId and rejects taskId
+run_bfh status
+assert_eq "$RC" "2" "status without woId rejected"
+assert_match "$STDERR" "status requires" "status arity error"
+run_bfh status "wo-x/task-1"
+assert_eq "$RC" "2" "status with taskId rejected"
+assert_match "$STDERR" "status does not accept a task id" "status task arity error"
+
 # baseHome defaults to <cwd>/.bf when BF_HOME unset
 unset BF_HOME
 CWD_DIR=$(mktemp -d -t bf-cwd-XXXXXX)

@@ -18,7 +18,8 @@ for term in \
   "not-applicable evidence" \
   "independent review" \
   "do not clean bf-owned task worktrees" \
-  "bf-harness cleanup after final acceptance" \
+  "bf-harness cleanup after task verification succeeds" \
+  "any task pr is merged" \
   "does not require red-first tdd"; do
   case "$body" in
     *"$term"*) ;;

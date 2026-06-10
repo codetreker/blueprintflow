@@ -104,9 +104,10 @@ stopped before BF acceptance review starts. BF acceptance is the coordinator-run
 `start-review` plus reviewer sign-off plus `verify` gate that can advance
 locked task or bf state. BF-owned task worktrees and task branches are harness
 lifecycle artifacts, not task-local side effects. Pipelines must not clean them
-during task closure. After Final Acceptance marks `bf.md` Completed, the
-coordinator runs `bf-harness cleanup <bf-wo>` to remove harness-owned task
-worktrees and safely delete merged local task branches.
+during task closure. After Task Verification marks a task Completed and, when
+the task has a PR, that PR is merged, the coordinator runs
+`bf-harness cleanup <bf-wo>/<task>` to remove that task's harness-owned
+worktree and safely delete its merged local branch.
 
 ## Built-In Engineering Pipelines
 

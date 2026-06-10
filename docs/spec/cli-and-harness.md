@@ -108,6 +108,23 @@ Output includes:
 - state;
 - updated timestamp.
 
+### `status <bf-wo>`
+
+Reports one work object's current state and task states without mutation.
+
+Applies when:
+
+- scope is `<bf-wo>`.
+
+Behavior:
+
+- Loads the work object from the resolved state home.
+- Prints the work-object id and `bf.md.State`.
+- Prints task totals by state.
+- Prints one task id and state line per task.
+- Does not inspect Git, create worktrees, advance state, write timestamps, or
+  suggest the next command.
+
 ### `lint`
 
 Validates a draft work object.
@@ -180,24 +197,25 @@ Behavior:
   the recorded task branch.
 - Writes task-level `Pull-Request` metadata and synchronizes `Updated`.
 
-### `cleanup <bf-wo>`
+### `cleanup <bf-wo>/<task>`
 
-Cleans harness-owned task Git worktrees after Final Acceptance.
+Cleans one completed task's harness-owned Git worktree.
 
 Applies when:
 
-- scope is `<bf-wo>`;
-- `bf.md.State` is `Completed`.
+- scope is `<bf-wo>/<task>`;
+- task `spec.md` state is `Completed`.
 
 Behavior:
 
-- Refuses to run before `bf.md.State: Completed`.
-- Looks only at tasks with `Requires-Worktree: true`.
-- Requires managed Git mode and the primary-worktree `.bf` state home when
-  there are worktree-required tasks.
+- Refuses work-object scope; cleanup is task-scoped.
+- Refuses to run before task `State: Completed`.
+- For `Requires-Worktree: false`, returns success with no cleanup action.
+- For `Requires-Worktree: true`, requires managed Git mode and the
+  primary-worktree `.bf` state home.
 - Treats only branch `bf/<bf-wo>/<task-id>` and worktree
   `<primary-worktree>/.worktrees/works/<bf-wo>/<task-id>` as harness-owned.
-- Skips task metadata that does not exactly match those harness-owned values.
+- Skips metadata that does not exactly match those harness-owned values.
 - Removes registered clean task worktrees with `git worktree remove`.
 - Deletes local task branches with `git branch -d` only after the worktree is no
   longer checked out.
@@ -263,7 +281,7 @@ Applies when:
 
 - scope is `<bf-wo>`;
 - `bf.md.State` is `Implementing`;
-- every task is `Completed`.
+- status shows all tasks are completed.
 
 Behavior:
 

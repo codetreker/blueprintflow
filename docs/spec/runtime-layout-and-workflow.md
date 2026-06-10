@@ -166,13 +166,14 @@ Verification, and Final Acceptance. Task drivers do not advance locked BF state.
    - If task verification fails, verification-fix work goes to the same task
      driver or a new task driver. The coordinator opens a new review round and
      reruns verification after the fix and independent review.
-   - After all tasks complete, run bf-level final acceptance.
+   - After task verification succeeds, run
+     `bf-harness cleanup <bf-wo>/<task>` for that task after any task PR is
+     merged. Retained dirty worktrees, unmerged branches, and path conflicts
+     are reported, not force-deleted.
+   - Before bf-level final acceptance, run `bf-harness status <bf-wo>`.
+     Enter Final Acceptance only when status says all tasks are completed.
      Final Acceptance uses bf-level reviewers and existing harness verification;
      it does not add cross-task tracking of every task driver.
-   - After Final Acceptance succeeds and `bf.md.State` is `Completed`, run
-     `bf-harness cleanup <bf-wo>` to remove harness-owned task worktrees and
-     safely delete merged local task branches. Retained dirty worktrees,
-     unmerged branches, and path conflicts are reported, not force-deleted.
    - After Final Acceptance, the orchestrator may make an advisory note when a
      bf-wo local pipeline appears reusable. This is advisory only.
    - Execution completion must not promote local pipelines, edit extension packs,

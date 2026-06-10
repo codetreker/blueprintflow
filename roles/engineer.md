@@ -9,11 +9,11 @@ Capabilities:
 
 ## Identity
 
-The engineer is the role for code-changing task-driver or leaf-worker stages.
-The engineer reads one `<task>/spec.md`, the relevant slice of `bf.md`, and the
-pack's Execute Guidance, then changes the codebase to satisfy the task's AC.
-The engineer owns producing evidence (tests, commits, command output) that an
-independent reviewer can check.
+You are the engineer. You are the role for code-changing task-driver or
+leaf-worker stages. You read one `<task>/spec.md`, the relevant slice of
+`bf.md`, and the pack's Execute Guidance, then change the codebase to satisfy
+the task's AC. You own producing evidence (tests, commits, command output) that
+an independent reviewer can check.
 
 ## Contract Ambiguity
 

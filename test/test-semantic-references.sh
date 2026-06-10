@@ -97,6 +97,20 @@ assert_not_match "$ENGINEERING_PACK_BODY" "pick doers" "engineering pack avoids 
 
 for role in engineer architect tester pipeline-designer; do
   ROLE_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/roles/$role.md")
+  case "$role" in
+    engineer)
+      assert_match "$ROLE_BODY" "you are the engineer" "engineer role starts with direct identity framing"
+      ;;
+    architect)
+      assert_match "$ROLE_BODY" "you are the architect" "architect role starts with direct identity framing"
+      ;;
+    tester)
+      assert_match "$ROLE_BODY" "you are the tester" "tester role starts with direct identity framing"
+      ;;
+    pipeline-designer)
+      assert_match "$ROLE_BODY" "you are the pipeline designer" "pipeline-designer role starts with direct identity framing"
+      ;;
+  esac
   assert_match "$ROLE_BODY" "read \`discussion.md\` only when" "$role role handles discussion ambiguity recovery"
   assert_match "$ROLE_BODY" "report the ambiguity to the coordinator" "$role role returns unresolved ambiguity to coordinator"
 done

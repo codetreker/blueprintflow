@@ -79,6 +79,10 @@ are already accepted user-facing contract or required Evidence.
 - Multiple same-role reviewers in one round use different `idx` values starting at 1.
 - `## Results` must group findings by severity: Blocker, High, Minor, Nit.
 - `## Accepted Criteria` may only reference AC ids that exist in the reviewed scope.
+- For Task Verification and Final Acceptance, an AC is signed when at least one
+  provider-role review file accepts that AC id and the round has no Blocker or
+  High finding. Actor-instance independence is an orchestrator rule, not a
+  filename field.
 
 ## Role
 

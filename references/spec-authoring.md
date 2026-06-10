@@ -47,14 +47,15 @@ This traceability does not belong in the contract text. bf.md must not cite or q
 9. Record the **host-runtime strategy** in `discussion.md` before Spec Review:
    host runtime, task driver type, nested-delegation limit, lifecycle or
    closure rule, and reviewer spawning owner. Use generic BF actor names in the
-   contract; map host-specific names such as Claude Code `teammate` or Codex
-   subagent only as runtime guidance.
+   contract; map host-specific names such as Claude Code `teammate` or
+   `Codex subagent` only as runtime guidance.
 10. **Spec Review loop:**
    1. `bf-harness start-review <bf-wo>` — returns the round directory `<work-object>/runs/reviews/round_N/`.
-   2. For each role returned by `bf list-roles --pack <id>` that provides a review capability used in the spec, spawn exactly three reviewer subagents. Every reviewer in the same Spec Review round must be a distinct subagent instance. Each subagent writes `result_<role>_<idx>.md` into the round dir using `templates/review-result.md`; `<idx>` starts at 1 for each role.
-   3. If the bf-wo has local pipelines, include three independent reviewer subagents with the `pipeline-review` capability. Each `pipeline-review` reviewer must be a different subagent instance from the pipeline designer and from every other reviewer in the same Spec Review round. The reviewers must reject any bf-wo local pipeline that creates external artifacts or side effects without a terminal-state closure path, handoff, or explicit stop condition for dangling work.
-   4. Tell reviewers to reject contract gaps, not missing implementation-design detail. A reviewer may reject a detail that is already locked and wrong, but must not require file-level investigation before `accept` when the selected pipeline owns that design work.
-   5. `bf-harness verify <bf-wo>` (Spec Review) — `SUCCESS <path>` or `FAIL <path>`. On FAIL, read the verify-result file, fix `bf.md` / `spec.md` / local pipelines, then start a new round.
+   2. For each review capability used in the spec, select one provider role from `bf list-roles --pack <id>` unless the accepted design explicitly needs multiple provider roles for distinct perspectives.
+   3. For each selected review role, dispatch exactly three independent reviewer actor instances. Every reviewer in the same spec review round must be a distinct actor instance. Each reviewer writes `result_<role>_<idx>.md` into the round dir using `templates/review-result.md`; `<idx>` starts at 1 for each selected role.
+   4. If the bf-wo has local pipelines, include three independent reviewer actor instances with the `pipeline-review` capability. Each `pipeline-review` reviewer must be a different actor instance from the pipeline designer and from every other reviewer in the same Spec Review round. The reviewers must reject any bf-wo local pipeline that creates external artifacts or side effects without a terminal-state closure path, handoff, or explicit stop condition for dangling work.
+   5. Tell reviewers to reject contract gaps, not missing implementation-design detail. A reviewer may reject a detail that is already locked and wrong, but must not require file-level investigation before `accept` when the selected pipeline owns that design work.
+   6. `bf-harness verify <bf-wo>` (Spec Review) — `SUCCESS <path>` or `FAIL <path>`. On FAIL, read the verify-result file, fix `bf.md` / `spec.md` / local pipelines, then start a new round.
 11. When verify returns SUCCESS and the user agrees with the plan, `bf-harness accept <bf-wo>`. `bf.md` → `Accepted`; all tasks cascade `Draft` → `Ready`. **Contract is now locked.**
 
 ## Mutation whitelist after accept

@@ -14,6 +14,7 @@ import { cmdNext, formatNext } from "./lib/harness/cmd-next.mjs";
 import { cmdAttachPr, formatAttachPr } from "./lib/harness/cmd-attach-pr.mjs";
 import { cmdVerify, formatVerifyResult, formatVerifySetupError } from "./lib/harness/cmd-verify.mjs";
 import { cmdDiscard, formatDiscard } from "./lib/harness/cmd-discard.mjs";
+import { cmdCleanup, formatCleanup } from "./lib/harness/cmd-cleanup.mjs";
 import { resolveDefaultStateHome } from "./lib/shared/state-home.mjs";
 
 const USAGE = `Usage:
@@ -24,6 +25,7 @@ const USAGE = `Usage:
   bf-harness next <bf-wo>
   bf-harness attach-pr <bf-wo>/<task> <github-pr-url>
   bf-harness verify <bf-wo>[/<task>]
+  bf-harness cleanup <bf-wo>
   bf-harness discard <bf-wo>
 
 State directory: Git primary worktree .bf, else <cwd>/.bf.`;
@@ -54,6 +56,7 @@ const ARITY = {
   accept:         { wo: "required",  task: "forbidden" },
   next:           { wo: "required",  task: "forbidden" },
   "attach-pr":    { wo: "required",  task: "required" },
+  cleanup:        { wo: "required",  task: "forbidden" },
   discard:        { wo: "required",  task: "forbidden" },
   "start-review": { wo: "required",  task: "optional" },
   verify:         { wo: "required",  task: "optional" },
@@ -122,6 +125,9 @@ async function main() {
       if (extraArgs.length !== 1) fail(`attach-pr requires <github-pr-url>\n${USAGE}`, 2);
       r = await cmdAttachPr({ baseHome, woId: t.woId, taskId: t.taskId, prUrl: extraArgs[0], installDir });
       text = formatAttachPr(r); break;
+    case "cleanup":
+      r = await cmdCleanup({ baseHome, woId: t.woId, installDir });
+      text = formatCleanup(r); break;
     case "discard":
       r = await cmdDiscard({ baseHome, woId: t.woId });
       text = formatDiscard(r); break;

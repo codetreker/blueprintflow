@@ -1,12 +1,19 @@
 # Execution
 
-Goal: loop until `bf-harness verify <bf-wo>` returns Final Acceptance SUCCESS.
+Goal: loop until `bf-harness verify <bf-wo>` returns Final Acceptance SUCCESS,
+then close harness-owned task worktrees.
 
 ## Host-runtime strategy
 
 Before task execution, read `discussion.md` and record or confirm the
 host-runtime strategy: host runtime, task driver type, nested-delegation limit,
 lifecycle or closure rule, and reviewer spawning owner.
+
+Using `$bf` or `/bf` is explicit authorization for the coordinator to dispatch
+host-compatible actor instances required by the accepted BF workflow, including
+task drivers, allowed leaf workers, and independent reviewers. This remains
+bounded by the recorded host-runtime strategy, Independent Verification,
+lifecycle or closure accounting, and user confirmation gates.
 
 Use these actor boundaries:
 
@@ -44,7 +51,7 @@ user explicitly overrides the delegation rule.
 5. The implementation stage reads the pack's `Execute Guidance`, the task spec, and every `Evidence` entry, makes the changes, and produces evidence artifacts that satisfy the locked evidence requirements (commits, command output, screenshots, reviewer notes, or named files).
 6. If a worktree-required task has a GitHub PR, run `bf-harness attach-pr <bf-wo>/<task> <github-pr-url>` after the task is claimed. The harness records task-level `Pull-Request:` only for a `Tasking` task with `Requires-Worktree: true`, matching `Branch:` / `Worktree:` metadata, and a PR from the same GitHub repository.
 7. The task driver gives the coordinator a review-ready handoff: task summary, changed artifacts, Evidence outputs, pipeline review outputs, and any closure evidence or side-effect list.
-8. Run acceptance-readiness terminal-state closure before BF acceptance review. The coordinator confirms every task-local external artifact or side effect has a terminal state, handoff owner, or explicit stop condition. If the side effect spans tasks or the whole work object, record it for bf-level Final Acceptance closure too.
+8. Run acceptance-readiness terminal-state closure before BF acceptance review. The coordinator confirms every task-local external artifact or side effect has a terminal state, handoff owner, or explicit stop condition. If the side effect spans tasks or the whole work object, record it for bf-level Final Acceptance closure too. Do not clean BF-owned task worktrees or task branches here; Task Verification and the PR gate may still need task execution metadata and the worktree.
 9. `bf-harness start-review <bf-wo>/<task>` — coordinator command. It returns the task-level round dir.
 10. Coordinator dispatches BF acceptance reviewers for each AC's review capability. Each reviewer must be a different actor instance than the actor whose work is reviewed (IV — see SKILL.md). Each writes `result_<role>_<idx>.md` into the round dir. If a task driver cannot spawn a needed independent reviewer, the coordinator dispatches that reviewer.
 11. `bf-harness verify <bf-wo>/<task>` (Task Verification) — coordinator command. On FAIL, read the verify-result file. Verification-fix work is claimed task work: dispatch fixes to the same task driver or a new task driver, open a new review round, and re-verify. Do not patch the fix directly in the coordinator. For GitHub repositories, worktree-required task verification also requires recorded same-repository `Pull-Request:` metadata and confirms the PR is merged. Non-GitHub providers remain pipeline/process gated; the harness does not mechanically check provider completion there. The task stays in `Tasking` until verify SUCCESS, at which point the harness flips its AC and sets `State: Completed`.
@@ -55,6 +62,7 @@ user explicitly overrides the delegation rule.
    1. The coordinator confirms whole-work-object terminal-state closure for external artifacts or side effects that span tasks.
    2. `bf-harness start-review <bf-wo>` — coordinator command. Spawn reviewers against the `bf.md` AC.
    3. `bf-harness verify <bf-wo>` (Final Acceptance) — coordinator command. On SUCCESS the harness flips all `bf.md` AC and sets `State: Completed`.
+   4. After Final Acceptance succeeds, run `bf-harness cleanup <bf-wo>` — coordinator command. It removes only harness-owned task worktrees and uses safe local branch deletion. If Git retains a dirty worktree, path conflict, checked-out branch, or unmerged branch, report the retained item instead of forcing deletion.
 
 Final Acceptance remains an integrative bf-level review. This runtime guidance
 does not add a requirement to track every task driver across bf-level Final
@@ -87,6 +95,11 @@ an explicit user request.
   task in another directory. Repair the Git environment only when the intended
   state is clear; otherwise ask the user. Rerun `next` only after the
   branch/worktree/metadata match the expected task.
+- **Post-acceptance cleanup retains items:** after Final Acceptance,
+  `bf-harness cleanup <bf-wo>` may retain dirty worktrees, path conflicts,
+  checked-out branches, or unmerged branches. Report the retained item and
+  reason. Do not force-delete; the retained branch or worktree needs a human
+  decision or a normal Git merge/delete path.
 - **Evidence mismatch:** if the locked Evidence section is wrong or insufficient, stop and consult the user. Do not edit `spec.md` after accept to fit the implementation.
 - **Stuck task:** if Task Verification keeps failing on the same AC across 3+ rounds, stop and consult the user. Do not silently rewrite the AC — the spec is locked content; only the harness flips checkboxes.
 - **Dep blocking:** if `next` exits non-zero with a "no eligible task" message but no task is `Tasking`, run `bf-harness verify <bf-wo>` first — there may be a completed task whose state transition has not been picked up.

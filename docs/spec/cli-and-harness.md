@@ -180,6 +180,40 @@ Behavior:
   the recorded task branch.
 - Writes task-level `Pull-Request` metadata and synchronizes `Updated`.
 
+### `cleanup <bf-wo>`
+
+Cleans harness-owned task Git worktrees after Final Acceptance.
+
+Applies when:
+
+- scope is `<bf-wo>`;
+- `bf.md.State` is `Completed`.
+
+Behavior:
+
+- Refuses to run before `bf.md.State: Completed`.
+- Looks only at tasks with `Requires-Worktree: true`.
+- Requires managed Git mode and the primary-worktree `.bf` state home when
+  there are worktree-required tasks.
+- Treats only branch `bf/<bf-wo>/<task-id>` and worktree
+  `<primary-worktree>/.worktrees/works/<bf-wo>/<task-id>` as harness-owned.
+- Skips task metadata that does not exactly match those harness-owned values.
+- Removes registered clean task worktrees with `git worktree remove`.
+- Deletes local task branches with `git branch -d` only after the worktree is no
+  longer checked out.
+- Retains and reports dirty worktrees, unregistered path conflicts, checked-out
+  branches, and unmerged branches instead of forcing deletion.
+- Does not delete `.bf` work-object state. Use `discard` only when intentionally
+  abandoning or removing local BF state.
+
+Output includes one line per cleanup action, such as:
+
+```text
+Removed worktree: <absolute-worktree-path>
+Deleted branch: bf/<bf-wo>/<task-id>
+Retained branch: bf/<bf-wo>/<task-id> (<git reason>)
+```
+
 ### `verify <bf-wo>` / `verify <bf-wo>/<task>`
 
 Verifies review results. Scope and `bf.md.State` select one of three modes.

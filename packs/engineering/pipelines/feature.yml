@@ -2,12 +2,12 @@ id: feature
 desc: Feature task with design-first architecture, implementation, validation, docs sync, and review gates
 instruction: |
   Use this design-first pipeline for feature tasks whose execution needs design before code.
-  It requires architecture/design, an evidence plan, task-appropriate validation, design-doc-sync when accepted design changes, and independent review.
+  It requires architecture/design, an evidence plan, task-appropriate validation, design-doc-sync when accepted design changes, independent review, security-review, and terminal-state closure.
   It does not require red-first TDD for every feature task; use the bugfix pipeline when the task is a defect fix that needs strict regression red-green work.
   Run the stages in order.
   Read the task spec, bf.md Goal/Boundary, any relevant discussion, and confirmed project design docs before the first stage, along with the host-runtime strategy.
   Each stage must produce its named artifact or review result before the next stage starts.
-  When design-doc sync or full validation is not required, record explicit not-applicable evidence.
+  When design-doc sync, full validation, or security review is not required, record explicit not-applicable evidence.
   For claimed task work, the coordinator assigns non-review task work and verification fixes to a host-compatible task driver; in Codex, that actor is a Codex subagent.
   If task-driver capacity or tooling is unavailable, stop unless the user explicitly overrides the delegation rule.
   Prefer separate leaf workers for stage work when isolation improves review quality or context focus and the host-runtime strategy allows nested delegation; review stages must remain independent from the actor whose work they review.
@@ -84,11 +84,21 @@ stages:
       Record findings, perspective checks, and signoff in artifacts/code-review.md.
       Sign off only the AC ids that the review independently verifies.
 
+  - id: security-review
+    capability: security-review
+    output: artifacts/security-review.md
+    instruction: |
+      Review the feature change after code review and before terminal-state closure for security baseline risk.
+      Check authentication, authorization, privilege boundaries, secrets, dependency/package exposure, command or shell execution, input handling, data handling, logging, and release integrity as applicable to the locked task scope.
+      Stop on any Blocker or High finding; send fixes to the task driver before continuing.
+      If the task has no security-relevant change, record not-applicable evidence with rationale and cite the reviewed files, commands, and Evidence artifacts.
+      Record findings and signoff in artifacts/security-review.md.
+
   - id: terminal-state-closure
     capability: quality-assurance
     output: artifacts/terminal-state-closure.md
     instruction: |
-      Produce task-local terminal-state closure evidence after code review.
+      Produce task-local terminal-state closure evidence after code review and security review.
       Inspect the task spec, Evidence artifacts, review results, and implementation output.
       List every external artifact or side effect created by the task, such as a PR, deploy, release, ticket, published package, or handoff document.
       Confirm each item has reached its terminal state, has an explicit handoff owner, or is blocked by an explicit stop condition, so no dangling user-perspective work is treated as done.

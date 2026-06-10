@@ -111,29 +111,59 @@ worktree and safely delete its merged local branch.
 
 ## Built-In Engineering Pipelines
 
-The engineering pack ships separate pipelines for feature work and defect fixes.
+The engineering pack ships separate pipelines for feature work, defect fixes,
+and review-only deep codebase audit work.
 
 `feature.yml` is design-first. It requires architecture/design artifacts,
 pre-implementation review, implementation, design-doc sync when accepted system
 design changes, task-appropriate validation, multi-perspective independent
-review, and terminal-state closure. It does not require red-first TDD for every
-feature task; the task contract chooses the evidence and validation boundary.
-The accepted task spec supplies the scope contract. The pipeline's
+review, security review, and terminal-state closure. The security role owns the
+`security-review` stage after code review and before terminal-state closure.
+That stage stops on Blocker or High findings and records not-applicable evidence
+when the task has no security-relevant change. It does not require red-first TDD
+for every feature task; the task contract chooses the evidence and validation
+boundary. The accepted task spec supplies the scope contract. The pipeline's
 architecture-design and implementation-design stages own file-level
-investigation, exact commands, API shapes, migration strategy, and implementation
-sequence unless those details were already accepted as user-facing contract or
-required Evidence.
+investigation, exact commands, API shapes, migration strategy, and
+implementation sequence unless those details were already accepted as
+user-facing contract or required Evidence.
 
 `bugfix.yml` is regression red-green. It requires a focused failing regression
 test or reproduction before implementation, expected-failure review, the
 smallest fix, a focused passing test, design-doc sync when the clarified path or
 locked task scope changes accepted behavior contracts, validation, independent
-review, and terminal-state closure. If the bug exposes design drift, the
-pipeline stops for user clarification before changing docs.
+review, security review, and terminal-state closure. The security role owns the
+`security-review` stage after code review and before terminal-state closure.
+That stage uses the same stop-on-Blocker-or-High and not-applicable evidence
+rules as feature security review. If the bug exposes design drift, the pipeline
+stops for user clarification before changing docs.
 
 Both pipelines read confirmed project design docs as external design authority.
 Both require not-applicable evidence when design-doc sync or full validation is
 outside the locked task boundary.
+
+`code-deep-audit.yml` defines the built-in `code-deep-audit` pipeline. It is a
+review-only deep codebase audit. It covers codebase health dimensions 1-9 and
+11: codebase architecture, correctness, test quality, security baseline,
+maintainability, developer experience, release/package governance, runtime
+reliability, documentation consistency, and inventory-derived
+repository-specific checks. It excludes compliance/ownership and
+process/collaboration governance unless a future accepted contract adds that
+scope.
+
+The audit pipeline starts with `repository-inventory`, derives a
+`repository-specific-plan`, records centralized `command-evidence`, performs
+dimension-specific review stages, consolidates `audit-findings`, runs findings
+triage, and ends with terminal-state closure. Command safety is explicit:
+unsafe, destructive, unavailable, too expensive, or out-of-scope commands are
+skipped with skipped-command evidence and substitute evidence. Finding severity
+uses Blocker, High, Medium, and Low. Blocker and High findings stop acceptance;
+Medium and Low findings are recorded for follow-up according to the locked task
+scope.
+
+The audit pipeline has no pipeline-internal `audit-review` stage. Independent
+review remains BF Task Verification and Final Acceptance. The pipeline reports
+findings and closure evidence; it does not fix findings in the audited code.
 
 ## BF-WO Local Pipelines
 

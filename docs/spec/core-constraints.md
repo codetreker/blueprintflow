@@ -66,6 +66,12 @@ Harness responsibilities:
 - `start-review` and `verify` use AC capabilities to identify reviewer roles.
 - `lint` verifies that each AC capability is declared by at least one role.
 
+Core roles may own specialized review capabilities. The Core security role owns
+`security-review`, which is used for security AC signoff and for built-in
+pipeline stages that need a security baseline review. This remains the same
+provider-role signoff model: the harness checks that a capability has at least
+one provider role and that a clean review round accepts the relevant AC ids.
+
 ## Provider-Role Signoff
 
 The harness records review files by role id, not by actor identity. For Task

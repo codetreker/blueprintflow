@@ -48,7 +48,7 @@ flowchart LR
 |---|---|---|
 | Runtime instructions | Tell the orchestrator how to run BF phases. | Instruction authority only; no state mutation. |
 | Templates | Define durable Markdown file shapes. | File contract authority. |
-| Roles | Declare review and execution capabilities. | Capability registry authority. |
+| Roles | Declare review and execution capabilities, including the Core security role for `security-review`. | Capability registry authority. |
 | Packs | Define domain guidance and available pipelines. | Domain workflow authority. |
 | `bf` CLI | Lists roles, packs, pipelines, manages host discovery snapshots, and updates the global BF npm package. | Read-only metadata and install-management authority. |
 | `bf-harness` CLI | Lints, accepts, claims tasks, starts reviews, verifies sign-off, completes terminal transitions, and mutates allowed state. | State transition authority. |

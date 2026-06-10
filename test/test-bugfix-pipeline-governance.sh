@@ -18,6 +18,9 @@ for term in \
   "design-doc-sync" \
   "validation" \
   "independent review" \
+  "security-review" \
+  "security baseline" \
+  "security-relevant change" \
   "terminal-state closure" \
   "terminal state" \
   "handoff owner" \
@@ -45,7 +48,7 @@ PIPELINE_JSON=$(node --input-type=module -e "
 ")
 MISSING_OUTPUTS=$(node -e "
   const p = JSON.parse(process.argv[1]);
-  const ids = ['expected-failure-review', 'code-review', 'terminal-state-closure'];
+  const ids = ['expected-failure-review', 'code-review', 'security-review', 'terminal-state-closure'];
   const missing = ids.filter(id => {
     const stage = p.stages.find(s => s.id === id);
     return !stage || !String(stage.output || '').trim();
@@ -59,8 +62,27 @@ LAST_INDEX=$((STAGE_COUNT - 1))
 PREV_INDEX=$((STAGE_COUNT - 2))
 LAST_ID=$(node -e "const p = JSON.parse(process.argv[1]); process.stdout.write(p.stages[$LAST_INDEX]?.id || '');" "$PIPELINE_JSON")
 PREV_ID=$(node -e "const p = JSON.parse(process.argv[1]); process.stdout.write(p.stages[$PREV_INDEX]?.id || '');" "$PIPELINE_JSON")
-assert_eq "$PREV_ID" "code-review" "code-review should remain immediately before terminal-state closure"
+assert_eq "$PREV_ID" "security-review" "security-review should be immediately before terminal-state closure"
 assert_eq "$LAST_ID" "terminal-state-closure" "bugfix pipeline final stage"
+
+SECURITY_STAGE_CHECKS=$(node -e "
+  const p = JSON.parse(process.argv[1]);
+  const code = p.stages.findIndex((stage) => stage.id === 'code-review');
+  const security = p.stages.findIndex((stage) => stage.id === 'security-review');
+  const closure = p.stages.findIndex((stage) => stage.id === 'terminal-state-closure');
+  const stage = p.stages[security] || {};
+  const instruction = String(stage.instruction || '').toLowerCase();
+  process.stdout.write(JSON.stringify({
+    ordered: code >= 0 && security > code && closure > security,
+    capability: stage.capability || '',
+    stopGuidance: instruction.includes('blocker') && instruction.includes('high'),
+    naGuidance: instruction.includes('not-applicable evidence') && instruction.includes('security-relevant change'),
+  }));
+" "$PIPELINE_JSON")
+assert_json_field "$SECURITY_STAGE_CHECKS" .ordered true
+assert_json_field "$SECURITY_STAGE_CHECKS" .capability "security-review"
+assert_json_field "$SECURITY_STAGE_CHECKS" .stopGuidance true
+assert_json_field "$SECURITY_STAGE_CHECKS" .naGuidance true
 
 PIPELINES=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/bf/cmd-list-pipelines.mjs').then(async (m) => {

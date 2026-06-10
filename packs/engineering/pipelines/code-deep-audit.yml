@@ -1,0 +1,135 @@
+id: code-deep-audit
+desc: Review-only deep codebase audit with command evidence, repo-specific checks, findings triage, and closure
+instruction: |
+  Use this review-only deep codebase audit pipeline when the task is to inspect a codebase and produce audit evidence, not to implement fixes.
+  The audit is bounded to codebase health dimensions 1-9 and 11: codebase architecture, correctness, test quality, security baseline, maintainability, developer experience, release/package governance, runtime reliability, documentation consistency, and inventory-derived repository-specific checks.
+  Do not add compliance/ownership or process/collaboration governance scope unless the locked task contract explicitly requires it.
+
+  Run stages in order.
+  Produce every named output artifact before moving to the next stage.
+  Do not modify production code, tests, package metadata, runtime contracts, or generated outputs except for audit evidence requested by the task.
+  If a command is unsafe, destructive, unavailable, too expensive, or outside the locked boundary, skip it and record skipped-command evidence with the reason and the lower-risk evidence used instead.
+
+  Severity guidance: use Blocker for findings that prevent accepting the audit contract or show immediate unsafe state; High for likely correctness, security, release, or data-loss risk that should stop acceptance; Medium for material maintainability, coverage, or reliability gaps that need scheduled follow-up; Low for localized cleanup or hardening observations.
+  The findings triage stage must separate accepted findings from non-findings, duplicates, deferred scope, and evidence gaps.
+  Stop on Blocker or High review findings.
+stages:
+  - id: repository-inventory
+    capability: quality-assurance
+    output: artifacts/repository-inventory.md
+    instruction: |
+      Inventory the repository before judging it.
+      Identify languages, package managers, test runners, build/release scripts, entry points, runtime surfaces, generated assets, configuration, security-sensitive files, and likely ownership boundaries.
+      Record the evidence paths and any inventory gaps.
+
+  - id: repository-specific-plan
+    capability: quality-assurance
+    output: artifacts/repository-specific-plan.md
+    instruction: |
+      Derive repo-specific checks from the inventory.
+      Name the commands, file inspections, parser checks, and manual review passes that fit this repository.
+      Include command safety notes and the expected evidence for skipped commands.
+
+  - id: command-evidence
+    capability: quality-assurance
+    output: artifacts/command-evidence.md
+    instruction: |
+      Run the safe, relevant commands from the repository-specific plan.
+      Record command, working directory, exit code, and concise output.
+      For each skipped command, record skipped-command evidence with why it was skipped and what substitute evidence was used.
+
+  - id: codebase-architecture-audit
+    capability: design-review
+    output: artifacts/codebase-architecture-audit.md
+    instruction: |
+      Review module boundaries, state authority, control flow, public contracts, extension points, and coupling.
+      Record architecture findings with severity and evidence.
+
+  - id: correctness-audit
+    capability: quality-assurance
+    output: artifacts/correctness-audit.md
+    instruction: |
+      Review core behavior, parser and writer boundaries, state transitions, error handling, edge cases, and data validation.
+      Record correctness findings with severity and evidence.
+
+  - id: test-quality-audit
+    capability: quality-assurance
+    output: artifacts/test-quality-audit.md
+    instruction: |
+      Review whether tests cover the important contracts, negative paths, regression boundaries, fixtures, and release-facing behavior.
+      Record test quality findings with severity and evidence.
+
+  - id: security-baseline
+    capability: security-review
+    output: artifacts/security-baseline.md
+    instruction: |
+      Review the security baseline for authentication, authorization, secrets, dependency exposure, supply-chain risk, command execution, input handling, data handling, logging, and release integrity as applicable to this repository.
+      Record not-applicable evidence for surfaces that do not exist.
+      Stop on Blocker or High findings.
+
+  - id: maintainability-audit
+    capability: quality-assurance
+    output: artifacts/maintainability-audit.md
+    instruction: |
+      Review code organization, duplication, naming, abstraction weight, dependency boundaries, fixture health, and ease of local reasoning.
+      Record maintainability findings with severity and evidence.
+
+  - id: developer-experience-audit
+    capability: quality-assurance
+    output: artifacts/developer-experience-audit.md
+    instruction: |
+      Review setup, command discoverability, error messages, local feedback loops, generated-file clarity, and contributor ergonomics.
+      Record developer-experience findings with severity and evidence.
+
+  - id: release-package-governance-audit
+    capability: quality-assurance
+    output: artifacts/release-package-governance-audit.md
+    instruction: |
+      Review release-facing package metadata, install hooks, package contents, version gates, changelog or release notes where in scope, and publish safety checks.
+      Record release/package findings with severity and evidence.
+
+  - id: runtime-reliability-audit
+    capability: quality-assurance
+    output: artifacts/runtime-reliability-audit.md
+    instruction: |
+      Review runtime reliability risks, filesystem and process boundaries, concurrency assumptions, recoverability, idempotence, and failure modes.
+      Record runtime reliability findings with severity and evidence.
+
+  - id: documentation-consistency-audit
+    capability: design-review
+    output: artifacts/documentation-consistency-audit.md
+    instruction: |
+      Review whether runtime guidance, user-facing docs, and accepted design records describe the same behavior and boundaries.
+      Record documentation consistency findings with severity and evidence.
+
+  - id: repository-specific-checks
+    capability: quality-assurance
+    output: artifacts/repository-specific-checks.md
+    instruction: |
+      Execute the inventory-derived repository-specific checks that do not fit a standard dimension.
+      Record each check, why it matters for this repository, and the resulting finding or non-finding.
+
+  - id: audit-findings
+    capability: quality-assurance
+    output: artifacts/audit-findings.md
+    instruction: |
+      Consolidate findings from all audit dimensions.
+      Each finding must include severity, evidence, affected files or commands, impact, and the bounded follow-up needed.
+      Keep non-findings and deferred scope separate.
+
+  - id: findings-triage
+    capability: quality-assurance
+    output: artifacts/findings-triage.md
+    instruction: |
+      Triage the consolidated findings.
+      Deduplicate, separate Blocker, High, Medium, and Low findings, identify evidence gaps, and mark deferred findings that are outside the locked boundary.
+      Do not fix findings in this stage.
+
+  - id: terminal-state-closure
+    capability: quality-assurance
+    output: artifacts/terminal-state-closure.md
+    instruction: |
+      Produce terminal-state closure evidence for the audit task.
+      List every external artifact or side effect created by the audit, such as a report, issue list, PR, release note, ticket, or handoff document.
+      Confirm each item has reached its terminal state, has an explicit handoff owner, or is blocked by an explicit stop condition.
+      Do not clean BF-owned task worktrees or task branches in this stage; the coordinator runs bf-harness cleanup after Final Acceptance.

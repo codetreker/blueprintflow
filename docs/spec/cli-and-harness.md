@@ -156,7 +156,7 @@ Behavior:
 
 ### `next`
 
-Claims the next eligible task.
+Returns the next eligible task batch.
 
 Eligibility:
 
@@ -166,15 +166,22 @@ Eligibility:
 
 Behavior:
 
-- Marks the task `Tasking`.
-- Moves bf.md from `Accepted` to `Implementing` on first returned task.
-- Returns task directory, spec path, task description, `Pipeline`, resolved `Pipeline path`, and pack id.
+- Returns every eligible task in bf.md task-list order.
+- Marks returned `Ready` tasks `Tasking`.
+- Validates returned `Tasking` worktree metadata.
+- Moves bf.md from `Accepted` to `Implementing` on the first returned `Ready`
+  task.
+- Internal structured data includes task directory, spec path, task description,
+  `Pipeline`, resolved `Pipeline path`, and pack id.
+- CLI output is one text block per task with `Task`, `Pipeline`,
+  `Pipeline path`, `Pack`, `Spec`, `Dir`, and optional `Branch`, `Worktree`,
+  and `Pull-Request`.
 - For `Requires-Worktree: false`, does not create branch/worktree execution
   metadata.
-- For `Requires-Worktree: true` in managed Git mode, fetches `origin`, creates
-  branch `bf/<bf-wo>/<task-id>` from `origin/HEAD`, creates worktree
-  `<primary-worktree>/.worktrees/works/<bf-wo>/<task-id>`, records `Branch` and
-  `Worktree`, and returns both values.
+- For returned `Ready` tasks with `Requires-Worktree: true` in managed Git mode,
+  fetches `origin`, creates branch `bf/<bf-wo>/<task-id>` from `origin/HEAD`,
+  creates worktree `<primary-worktree>/.worktrees/works/<bf-wo>/<task-id>`,
+  records `Branch` and `Worktree`, and returns both values.
 - Retry safety requires any existing branch, worktree, and task metadata to
   match exactly. Conflicts fail before contract mutation and do not clean up
   user files.

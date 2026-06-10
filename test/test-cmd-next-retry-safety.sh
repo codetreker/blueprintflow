@@ -95,9 +95,10 @@ precreate_expected_worktree
 write_task_metadata "$EXPECTED_BRANCH" "$EXPECTED_WORKTREE"
 STDOUT=$(cmd_next_json "$PRIMARY")
 assert_json_field "$STDOUT" .ok true
-assert_json_field "$STDOUT" .task.taskId task-a
-assert_json_field "$STDOUT" .task.branch "$EXPECTED_BRANCH"
-assert_json_field "$STDOUT" .task.worktree "$EXPECTED_WORKTREE"
+assert_json_field "$STDOUT" .tasks.length 1
+assert_json_field "$STDOUT" .tasks.0.taskId task-a
+assert_json_field "$STDOUT" .tasks.0.branch "$EXPECTED_BRANCH"
+assert_json_field "$STDOUT" .tasks.0.worktree "$EXPECTED_WORKTREE"
 grep -q "^State: Tasking" "$BASE/works/wo-1/task-a/spec.md" || fail "recovery did not claim task"
 assert_expected_metadata "recovery"
 rm -rf "$ROOT"
@@ -183,8 +184,8 @@ FIRST=$(cmd_next_json "$PRIMARY")
 assert_json_field "$FIRST" .ok true
 SECOND=$(cmd_next_json "$PRIMARY")
 assert_json_field "$SECOND" .ok true
-assert_json_field "$SECOND" .task.branch "$EXPECTED_BRANCH"
-assert_json_field "$SECOND" .task.worktree "$EXPECTED_WORKTREE"
+assert_json_field "$SECOND" .tasks.0.branch "$EXPECTED_BRANCH"
+assert_json_field "$SECOND" .tasks.0.worktree "$EXPECTED_WORKTREE"
 assert_expected_metadata "repeated next"
 COUNT=$(git -C "$PRIMARY" worktree list --porcelain | grep -c "^worktree $EXPECTED_WORKTREE$" || true)
 assert_eq "$COUNT" "1" "repeated next worktree count"

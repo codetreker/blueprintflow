@@ -54,7 +54,8 @@ so the coordinator enforces this rule when it dispatches reviewers.
 
 Harness responsibilities:
 
-- `next` returns `Pipeline` and `Pipeline path`, so the LLM can follow pipeline stages.
+- `next` returns `Pipeline` and `Pipeline path` in each task block, so the LLM can
+  follow pipeline stages.
 - `start-review` and `verify` use AC capabilities to identify reviewer roles.
 - `lint` verifies that each AC capability is declared by at least one role.
 
@@ -86,7 +87,7 @@ Draft  ────►  Accepted  ────►  Implementing  ────►
 |---|---|
 | `Draft` | Brainstorm and breakdown exist; spec review may be iterating in `runs/reviews/round_N/`. |
 | `Accepted` | The user ran `bf-harness accept`; the contract is locked. |
-| `Implementing` | At least one task entered `Tasking`; the first successful `next` moves the bf state here. |
+| `Implementing` | At least one task entered `Tasking`; the first `next` batch with a `Ready` task moves the bf state here. |
 | `Completed` | All tasks are completed and bf-level final acceptance verified. |
 
 ### task spec.md
@@ -110,7 +111,7 @@ Draft  ────►  Ready  ────►  Tasking  ────►  Comple
 | Transition | Trigger | Writer |
 |---|---|---|
 | bf.md `Draft` --> `Accepted` | `bf-harness accept <bf-wo>` | harness |
-| bf.md `Accepted` --> `Implementing` | first `next` returns a task | harness |
+| bf.md `Accepted` --> `Implementing` | first `next` batch with a `Ready` task | harness |
 | bf.md `Implementing` --> `Completed` | Final Acceptance verify succeeds after all tasks complete | harness |
 | task `Draft` --> `Ready` | bf.md accepted | harness |
 | task `Ready` --> `Tasking` | `next` claim | harness |

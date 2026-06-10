@@ -131,17 +131,18 @@ Verification, and Final Acceptance. Task drivers do not advance locked BF state.
    - After accept, `bf.md` and task `spec.md` content is locked for the LLM. The harness cascades tasks to `Ready`.
 
 3. Execute tasks.
-   - Run `bf-harness next <bf-wo>` to claim the next eligible task.
-   - Read the returned task spec, pack, and pipeline path.
+   - Run `bf-harness next <bf-wo>` to return the eligible task batch.
+   - Read only the returned task specs, packs, and pipeline paths.
+   - Give each returned task block to one host-compatible task driver.
    - For `Requires-Worktree: true` tasks in managed Git mode, `next` also
-     creates and returns branch `bf/<bf-wo>/<task-id>` and worktree
+     creates or validates branch `bf/<bf-wo>/<task-id>` and worktree
      `<primary-worktree>/.worktrees/works/<bf-wo>/<task-id>`.
-   - Assign a host-compatible task driver before claimed task leaf work starts.
-     In Codex, that actor is a Codex subagent. The task driver follows
-     the pipeline instruction and stage instructions and hands evidence back to
-     the coordinator before BF acceptance review. If task-driver capacity or
-     tooling is unavailable, the coordinator stops instead of doing leaf work
-     unless the user explicitly overrides the delegation rule.
+   - Each host-compatible task driver must be assigned before claimed task leaf
+     work starts. In Codex, that actor is a Codex subagent. The task driver
+     follows the pipeline instruction and stage instructions and hands evidence
+     back to the coordinator before BF acceptance review. If task-driver
+     capacity or tooling is unavailable, the coordinator stops instead of doing
+     leaf work unless the user explicitly overrides the delegation rule.
    - When accepted contract intent is unclear, read `discussion.md` before
      inventing scope. If it does not answer an ambiguity that affects scope,
      boundary, acceptance, or design intent, stop for clarification.

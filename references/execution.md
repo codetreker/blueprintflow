@@ -11,7 +11,7 @@ Before any implementation, fix, commit, push, PR, or cleanup:
 3. If `bf.md.State` is `Draft`, stop. Execution is illegal before Spec Review
    succeeds and `bf-harness accept <bf-wo>` runs.
 4. If `bf.md.State` is `Accepted` or `Implementing`, run the task loop. Let
-   `bf-harness next <bf-wo>` select the task.
+   `bf-harness next <bf-wo>` select eligible task blocks.
 5. If `bf.md.State` is `Completed`, do not implement. Report status. Task
    cleanup should already have run at task closure.
 
@@ -26,9 +26,10 @@ run the next legal BF command.
   host-compatible task drivers, leaf workers, and independent reviewers. It
   does not authorize skipping harness gates.
 - Do not edit project files for a BF task until `bf-harness next <bf-wo>`
-  returns that task.
-- Do not inspect all task specs to choose work. The harness selects the task.
-- Read a task spec only after `next` returns that task.
+  returns that task block.
+- Do not inspect all task specs to choose work. The harness selects the task
+  batch.
+- Read a task spec only after `next` returns that task block.
 - If the task has `Requires-Worktree: true`, work only in the returned or
   recorded `Worktree`.
 - Assign claimed task work and verification fixes to a host-compatible task
@@ -51,27 +52,30 @@ run the next legal BF command.
 Repeat until no task remains:
 
 1. Run `bf-harness next <bf-wo>`.
-2. If `next` returns no eligible task, stop and run Final Acceptance only when
-   `bf-harness status <bf-wo>` says all tasks are completed. Do not manually
-   pick a task.
-3. Read only the returned task `spec.md` and pipeline.
-4. Give the returned task, spec, pipeline, and worktree to a task driver.
-5. The task driver follows the pipeline and produces required evidence.
-6. If the task has a PR, run
+2. If `next` returns no eligible task, run `bf-harness status <bf-wo>`. Enter
+   Final Acceptance only when status says all tasks are completed. Do not
+   manually pick a task.
+3. If `next` returns task blocks, read only the returned task specs and
+   pipelines.
+4. Each returned task gets one task driver. The coordinator decides whether that
+   block starts a new driver or resumes an existing one.
+5. Give each task driver its returned task, spec, pipeline, and worktree.
+6. Each task driver follows the pipeline and produces required evidence.
+7. If a task has a PR, run
    `bf-harness attach-pr <bf-wo>/<task> <github-pr-url>`.
-7. Check task-local terminal-state closure before BF acceptance review. Do not
+8. Check task-local terminal-state closure before BF acceptance review. Do not
    clean BF-owned task worktrees or task branches before verification.
-8. Run `bf-harness start-review <bf-wo>/<task>`.
-9. Dispatch independent BF acceptance reviewers for the task AC capabilities.
-10. Run `bf-harness verify <bf-wo>/<task>`.
-11. On FAIL, read the verify result, dispatch fixes to a task driver, open a new
+9. Run `bf-harness start-review <bf-wo>/<task>`.
+10. Dispatch independent BF acceptance reviewers for the task AC capabilities.
+11. Run `bf-harness verify <bf-wo>/<task>`.
+12. On FAIL, read the verify result, dispatch fixes to a task driver, open a new
    review round, and verify again.
-12. On SUCCESS, confirm the task PR is merged when the task produced a PR.
-13. Run `bf-harness cleanup <bf-wo>/<task>` immediately after the task is
+13. On SUCCESS, confirm the task PR is merged when the task produced a PR.
+14. Run `bf-harness cleanup <bf-wo>/<task>` immediately after the task is
    verified and any task PR is merged. It removes only the recorded task
    worktree and uses safe local branch deletion.
-14. Report retained task worktrees or branches. Do not force-delete them.
-15. Return to step 1.
+15. Report retained task worktrees or branches. Do not force-delete them.
+16. Return to step 1.
 
 ## Final Acceptance
 
@@ -113,7 +117,8 @@ Stop instead of continuing when:
 
 - `bf.md.State` is `Draft` and the request is to execute, fix, commit, push, PR,
   or cleanup.
-- No task has been claimed by `bf-harness next`.
+- `next` returns no eligible task and `status` does not say all tasks are
+  completed.
 - You are about to choose a task by reading task specs instead of using `next`.
 - Current directory is not the recorded task worktree for a worktree-required
   task.

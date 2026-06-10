@@ -20,6 +20,7 @@ assert_match "$README_BODY" "bf-harness cleanup" "README should list cleanup com
 assert_match "$README_BODY" "when it has a pr" "README should place cleanup after task verification and optional PR merge"
 assert_match "$README_BODY" "bf-harness cleanup <bf-wo>/<task>" "README should document task-scoped cleanup target"
 assert_match "$README_BODY" "safe local branch deletion" "README should document safe cleanup semantics"
+assert_match "$README_BODY" "eligible task batch" "README should document batch next semantics"
 assert_match "$SKILL_TEXT" '$bf' "skill description should cover dollar-prefixed BF trigger"
 assert_match "$SKILL_TEXT" "/bf" "skill description should keep slash-prefixed BF trigger"
 assert_match "$SKILL_BODY" "entry protocol" "root skill should define entry protocol"
@@ -76,9 +77,9 @@ assert_match "$SPEC_BODY" "task cleanup" "top-level spec includes task cleanup"
 assert_match "$SPEC_BODY" "\`verify\`, \`cleanup\`, \`discard\`" "top-level spec lists cleanup harness command"
 EXECUTION_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/references/execution.md")
 assert_match "$EXECUTION_BODY" "phase gate" "execution has directive phase gate"
-assert_match "$EXECUTION_BODY" "select the task" "execution lets the harness select work"
+assert_match "$EXECUTION_BODY" "select eligible task blocks" "execution lets the harness select work batches"
 assert_match "$EXECUTION_BODY" "do not inspect all task specs" "execution forbids task selection by spec inspection"
-assert_match "$EXECUTION_BODY" "read a task spec only after \`next\` returns that task" "execution delays task spec reads until after next"
+assert_match "$EXECUTION_BODY" "read a task spec only after \`next\` returns that task block" "execution delays task spec reads until after next"
 assert_match "$EXECUTION_BODY" "discussion.md" "execution uses discussion only for ambiguity recovery"
 assert_not_match "$EXECUTION_BODY" "read discussion.md first" "execution must not read discussion at entry"
 assert_match "$EXECUTION_BODY" "scope, boundary, acceptance, or design intent" "execution stops for clarification on contract-affecting ambiguity"
@@ -86,8 +87,11 @@ assert_match "$EXECUTION_BODY" "explicit authorization" "execution records BF tr
 assert_match "$EXECUTION_BODY" "bf-harness cleanup <bf-wo>/<task>" "execution runs task-scoped cleanup"
 assert_match "$EXECUTION_BODY" "any task pr is merged" "execution runs cleanup after optional task PR merge"
 assert_match "$EXECUTION_BODY" "do not defer task worktree cleanup to final" "execution forbids final-acceptance cleanup deferral"
+assert_match "$EXECUTION_BODY" "task blocks" "execution treats next output as task blocks"
+assert_match "$EXECUTION_BODY" "each returned task gets one task driver" "execution dispatches one task driver per returned task"
 assert_match "$EXECUTION_BODY" "bf-harness status <bf-wo>" "execution checks status before Final Acceptance"
 assert_match "$EXECUTION_BODY" "status says all tasks are completed" "execution uses status fact for Final Acceptance readiness"
+assert_not_match "$EXECUTION_BODY" "no task block has been returned by" "execution should not stop before status when next is empty"
 assert_not_match "$EXECUTION_BODY" "tasking=0" "execution should not encode task state counters in prompt"
 assert_not_match "$EXECUTION_BODY" "ready=0" "execution should not encode task state counters in prompt"
 assert_not_match "$EXECUTION_BODY" "draft=0" "execution should not encode task state counters in prompt"
@@ -102,6 +106,8 @@ assert_match "$CORE_CONSTRAINTS_BODY" "bf.md does not need direct citations" "co
 assert_match "$CORE_CONSTRAINTS_BODY" "at least one provider role" "core constraints document provider-role signoff"
 assert_match "$CORE_CONSTRAINTS_BODY" "explicit authorization" "core constraints document BF actor authorization"
 assert_match "$CORE_CONSTRAINTS_BODY" "task lifecycle command" "core constraints document task cleanup lifecycle"
+assert_match "$CORE_CONSTRAINTS_BODY" "first \`next\` batch with a \`ready\` task" "core constraints document batch next state transition"
+assert_not_match "$CORE_CONSTRAINTS_BODY" "first \`next\` returns a task" "core constraints should not preserve single-task next wording"
 
 REVIEW_TEMPLATE_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/templates/review-result.md")
 assert_match "$REVIEW_TEMPLATE_BODY" "at least one provider-role review file" "review template matches provider-role signoff semantics"
@@ -180,7 +186,7 @@ rm -f /tmp/bf-semantic-stale-repo-update.$$
 
 PKG_VERSION=$(node -e "process.stdout.write(JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8')).version)" "$REPO_ROOT/package.json")
 LOCK_VERSION=$(node -e "const p=JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8')); process.stdout.write(p.version + ' ' + p.packages[''].version)" "$REPO_ROOT/package-lock.json")
-assert_eq "$PKG_VERSION" "0.7.5" "package.json version should be bumped"
-assert_eq "$LOCK_VERSION" "0.7.5 0.7.5" "package-lock root versions should be bumped"
+assert_eq "$PKG_VERSION" "0.7.6" "package.json version should be bumped"
+assert_eq "$LOCK_VERSION" "0.7.6 0.7.6" "package-lock root versions should be bumped"
 
 pass

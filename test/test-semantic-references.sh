@@ -15,6 +15,10 @@ assert_eq "$FIRST" "# Execution" "execution H1"
 
 SKILL_TEXT=$(cat "$REPO_ROOT/SKILL.md")
 SKILL_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/SKILL.md")
+README_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/README.md")
+assert_match "$README_BODY" "bf-harness cleanup" "README should list cleanup command"
+assert_match "$README_BODY" "after completion" "README should place cleanup after completion"
+assert_match "$README_BODY" "safe local branch deletion" "README should document safe cleanup semantics"
 assert_match "$SKILL_TEXT" '$bf' "skill description should cover dollar-prefixed BF trigger"
 assert_match "$SKILL_TEXT" "/bf" "skill description should keep slash-prefixed BF trigger"
 assert_match "$SKILL_BODY" "entry protocol" "root skill should define entry protocol"
@@ -59,11 +63,15 @@ assert_match "$RUNTIME_WORKFLOW_BODY" "claude code \`teammate\`" "workflow docs 
 assert_match "$RUNTIME_WORKFLOW_BODY" "codex subagent" "workflow docs map Codex subagent"
 assert_match "$RUNTIME_WORKFLOW_BODY" "coordinator runs \`start-review\`" "workflow docs keep start-review coordinator-owned"
 assert_match "$RUNTIME_WORKFLOW_BODY" "coordinator runs \`verify\`" "workflow docs keep verify coordinator-owned"
+assert_match "$RUNTIME_WORKFLOW_BODY" "bf-harness cleanup <bf-wo>" "workflow docs place cleanup after Final Acceptance"
+assert_match "$RUNTIME_WORKFLOW_BODY" "task-level closure does not clean bf-owned task" "workflow docs keep task closure from cleaning task worktrees"
 
 SPEC_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/docs/spec.md")
 assert_match "$SPEC_BODY" "task driver executes pipeline" "top-level spec diagram uses task driver"
 assert_match "$SPEC_BODY" "coordinator-owned task verification" "top-level spec diagram keeps acceptance coordinator-owned"
 assert_match "$SPEC_BODY" "discussion.md source coverage" "top-level spec documents discussion source coverage"
+assert_match "$SPEC_BODY" "harness cleanup" "top-level spec includes post-completed cleanup"
+assert_match "$SPEC_BODY" "\`verify\`, \`cleanup\`, \`discard\`" "top-level spec lists cleanup harness command"
 
 EXECUTION_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/references/execution.md")
 assert_match "$EXECUTION_BODY" "host-runtime strategy" "execution requires host-runtime strategy"
@@ -73,6 +81,9 @@ assert_match "$EXECUTION_BODY" "acceptance-readiness terminal-state closure" "ex
 assert_match "$EXECUTION_BODY" "read discussion.md first" "execution recovers unclear intent from discussion"
 assert_match "$EXECUTION_BODY" "scope, boundary, acceptance, or design intent" "execution stops for clarification on contract-affecting ambiguity"
 assert_match "$EXECUTION_BODY" "explicit authorization" "execution records BF trigger as actor authorization"
+assert_match "$EXECUTION_BODY" "bf-harness cleanup <bf-wo>" "execution runs cleanup after Final Acceptance"
+assert_match "$EXECUTION_BODY" "do not clean bf-owned task worktrees" "execution keeps cleanup out of task closure"
+assert_match "$EXECUTION_BODY" "unmerged branch" "execution documents retained cleanup items"
 
 CORE_CONSTRAINTS_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/docs/spec/core-constraints.md")
 assert_match "$CORE_CONSTRAINTS_BODY" "coordinator" "core constraints define coordinator"
@@ -82,6 +93,7 @@ assert_match "$CORE_CONSTRAINTS_BODY" "discussion.md is durable source material"
 assert_match "$CORE_CONSTRAINTS_BODY" "bf.md does not need direct citations" "core constraints avoid redundant bf.md citations"
 assert_match "$CORE_CONSTRAINTS_BODY" "at least one provider role" "core constraints document provider-role signoff"
 assert_match "$CORE_CONSTRAINTS_BODY" "explicit authorization" "core constraints document BF actor authorization"
+assert_match "$CORE_CONSTRAINTS_BODY" "post-completed lifecycle command" "core constraints document cleanup lifecycle"
 
 REVIEW_TEMPLATE_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/templates/review-result.md")
 assert_match "$REVIEW_TEMPLATE_BODY" "at least one provider-role review file" "review template matches provider-role signoff semantics"
@@ -96,6 +108,8 @@ assert_match "$PACKS_PIPELINES_BODY" "three independent reviewer actor instances
 assert_match "$PACKS_PIPELINES_BODY" "\`pipeline-review\` capability" "pipeline docs name pipeline-review as capability"
 assert_match "$PACKS_PIPELINES_BODY" "pipeline review" "pipeline docs distinguish pipeline review"
 assert_match "$PACKS_PIPELINES_BODY" "bf acceptance" "pipeline docs distinguish BF acceptance"
+assert_match "$PACKS_PIPELINES_BODY" "not task-local side effects" "pipeline docs keep worktree cleanup outside task closure"
+assert_match "$PACKS_PIPELINES_BODY" "bf-harness cleanup <bf-wo>" "pipeline docs assign cleanup to coordinator after Final Acceptance"
 
 ENGINEERING_PACK_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/packs/engineering/pack.md")
 assert_match "$ENGINEERING_PACK_BODY" "small enough that one host-compatible task driver can finish it" "engineering breakdown avoids engineer subagent task ownership"
@@ -148,7 +162,7 @@ if rg -n "repo-update|repo update|repo maintenance entry|repository update workf
   "$REPO_ROOT/README.md" "$REPO_ROOT/SKILL.md" "$REPO_ROOT/docs/spec.md" \
   "$REPO_ROOT/docs/architecture.md" "$REPO_ROOT/references" "$REPO_ROOT/packs" \
   "$REPO_ROOT/roles" "$REPO_ROOT/templates" "$REPO_ROOT/.agents" "$REPO_ROOT/.claude" \
-  >/tmp/bf-semantic-stale-repo-update.$$; then
+  >/tmp/bf-semantic-stale-repo-update.$$ 2>/dev/null; then
   cat /tmp/bf-semantic-stale-repo-update.$$ >&2
   rm -f /tmp/bf-semantic-stale-repo-update.$$
   fail "active runtime/docs still advertise repo-update as repository workflow driver"

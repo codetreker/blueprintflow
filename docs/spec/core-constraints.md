@@ -116,8 +116,11 @@ Draft  ────►  Ready  ────►  Tasking  ────►  Comple
 | task `Ready` --> `Tasking` | `next` claim | harness |
 | task `Tasking` --> `Completed` | Task Verification succeeds | harness |
 
-Cancel and abandon do not add states. `bf-harness discard <bf-wo>` deletes the
-whole work object.
+Cancel, abandon, and cleanup do not add states. `bf-harness cleanup <bf-wo>` is
+a post-Completed lifecycle command that removes only harness-owned task
+worktrees and safely deletes merged local task branches. It must not run before
+Final Acceptance sets `bf.md.State: Completed`. `bf-harness discard <bf-wo>`
+deletes the whole work object.
 
 ## discussion.md vs bf.md
 

@@ -67,6 +67,7 @@ flowchart TB
   taskReview --> next
   taskReview --> finalReview[Final Acceptance]
   finalReview --> completed[Completed]
+  completed --> cleanup[Harness cleanup]
 ```
 
 During execute, the main session is the coordinator. It runs harness commands,
@@ -76,7 +77,9 @@ assigned to a host-compatible task driver; in Codex, that actor is a Codex
 subagent. Reviewers remain different actor instances from the actor whose
 work they review. Harness signoff is provider-role based: for Task Verification
 and Final Acceptance, an AC is signed when at least one provider role accepts
-the AC id in a clean review round.
+the AC id in a clean review round. After Final Acceptance marks the work object
+Completed, the coordinator runs harness cleanup for BF-owned task worktrees and
+safe local branch deletion.
 
 ## Reading Map
 
@@ -98,7 +101,7 @@ the AC id in a clean review round.
 | Project design docs | Discovered external design authority for target-project work | Confirmed project doc root, recorded in `.bf/works/<bf-wo>/discussion.md`; runtime anchor `references/project-docs.md` |
 | Repository maintenance authority | Blueprintflow maintenance rules | `AGENTS.md`, root BF runtime, accepted docs, validation scripts, and PR gate evidence |
 | `bf` CLI | Read-only metadata and install management | `list-packs`, `list-pipelines`, `list-roles`, `install`, `update`, `uninstall`, `version` |
-| `bf-harness` CLI | State mutation and verification loop | `lint`, `start-review`, `accept`, `next`, `attach-pr`, `verify`, `discard`, `list` |
+| `bf-harness` CLI | State mutation and verification loop | `lint`, `start-review`, `accept`, `next`, `attach-pr`, `verify`, `cleanup`, `discard`, `list` |
 | Work object state | Per-project BF work state | Git default `<primary-worktree>/.bf/works/<bf-wo>/`; non-Git default `<cwd>/.bf/works/<bf-wo>/` |
 | Extension registry | User and project roles/packs | `~/.bf/extensions`, `<state-home>/extensions` |
 

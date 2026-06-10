@@ -152,7 +152,9 @@ Verification, and Final Acceptance. Task drivers do not advance locked BF state.
      `spec.md`, stop implementation and return to design discussion instead of
      silently expanding locked scope.
    - Run acceptance-readiness terminal-state closure before task-level BF
-     acceptance review.
+     acceptance review. This task-level closure does not clean BF-owned task
+     worktrees or task branches because Task Verification and the PR gate may
+     still need them.
    - If the task has a GitHub PR, record it with
      `bf-harness attach-pr <bf-wo>/<task> <github-pr-url>`.
    - The coordinator runs `bf-harness start-review <bf-wo>/<task>`.
@@ -167,6 +169,10 @@ Verification, and Final Acceptance. Task drivers do not advance locked BF state.
    - After all tasks complete, run bf-level final acceptance.
      Final Acceptance uses bf-level reviewers and existing harness verification;
      it does not add cross-task tracking of every task driver.
+   - After Final Acceptance succeeds and `bf.md.State` is `Completed`, run
+     `bf-harness cleanup <bf-wo>` to remove harness-owned task worktrees and
+     safely delete merged local task branches. Retained dirty worktrees,
+     unmerged branches, and path conflicts are reported, not force-deleted.
    - After Final Acceptance, the orchestrator may make an advisory note when a
      bf-wo local pipeline appears reusable. This is advisory only.
    - Execution completion must not promote local pipelines, edit extension packs,

@@ -98,6 +98,7 @@ stages:
       document. Confirm each item has reached its terminal state, has an explicit
       handoff owner, or is blocked by an explicit stop condition. Record any
       whole-work-object side effect that must be checked again at Final
-      Acceptance in artifacts/terminal-state-closure.md. The coordinator decides
-      whether this evidence is sufficient before opening task-level BF acceptance
-      review.
+      Acceptance in artifacts/terminal-state-closure.md. Do not clean BF-owned
+      task worktrees or task branches in this stage; the coordinator runs
+      bf-harness cleanup after Final Acceptance. The coordinator decides whether
+      this evidence is sufficient before opening task-level BF acceptance review.

@@ -5,7 +5,7 @@ source "$(dirname "$0")/test-helpers.sh"
 FILE="$REPO_ROOT/packs/engineering/pipelines/feature.yml"
 [ -f "$FILE" ] || fail "missing feature pipeline"
 
-body=$(tr '[:upper:]' '[:lower:]' < "$FILE")
+body=$(tr '[:upper:]' '[:lower:]' < "$FILE" | tr '\n\t' '  ' | tr -s ' ')
 
 for term in \
   "id: feature" \
@@ -17,6 +17,8 @@ for term in \
   "validation" \
   "not-applicable evidence" \
   "independent review" \
+  "do not clean bf-owned task worktrees" \
+  "bf-harness cleanup after final acceptance" \
   "does not require red-first tdd"; do
   case "$body" in
     *"$term"*) ;;

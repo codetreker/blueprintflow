@@ -21,6 +21,8 @@ for term in \
   "terminal-state closure" \
   "terminal state" \
   "handoff owner" \
+  "do not clean bf-owned task worktrees" \
+  "bf-harness cleanup after final acceptance" \
   "stop condition"; do
   case "$body" in
     *"$term"*) ;;

@@ -61,7 +61,7 @@ Repeat until no task remains:
 5. Give each task driver the returned task block, the BF work-object id, the
    requirement to read its own task spec and pipeline, the returned worktree if
    any, and the instruction to follow the task pipeline and produce required
-   evidence.
+   evidence. Use the Task Driver Prompt Template.
 6. Each task driver follows the pipeline and produces required evidence. Wait
    until the task driver completes; give it enough time to finish and do not
    terminate it lightly.
@@ -79,6 +79,36 @@ Repeat until no task remains:
    worktree and uses safe local branch deletion.
 15. Report retained task worktrees or branches. Do not force-delete them.
 16. Return to step 1.
+
+## Task Driver Prompt Template
+
+Use this template when starting or resuming a task driver. Replace placeholders
+from `bf-harness next <bf-wo>` and the current BF context. Paste the complete
+task block returned by `bf-harness next`; do not summarize it.
+
+```text
+You are the BF task driver for <bf-wo>/<task-id>.
+
+BF work object: <bf-wo>
+Task block:
+<paste the complete task block returned by `bf-harness next`>
+Worktree: <worktree from the task block, or none>
+Resume context: <existing driver context, or new task>
+
+Instructions:
+1. Work only on this returned task.
+2. If a Worktree is provided, run commands from that Worktree.
+3. Read this task's `spec.md` and selected pipeline.
+4. Read the required role instruction before following stage instructions.
+5. Follow the pipeline stages in order and produce every required Evidence
+   artifact.
+6. Do not edit locked `bf.md` or task `spec.md` fields.
+7. If blocked, stop and report the blocker, evidence already produced, and the
+   exact coordinator action needed.
+8. When complete, report changed files, evidence artifacts, validation output,
+   commit or branch, PR URL if any, retained risks, and whether task-local
+   terminal-state closure evidence is ready.
+```
 
 ## Final Acceptance
 

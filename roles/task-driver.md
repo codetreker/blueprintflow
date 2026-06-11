@@ -25,13 +25,11 @@ If it does not answer the question, report the ambiguity to the coordinator and 
 - If a `Worktree` is provided, run commands from that worktree.
 - Follow the selected pipeline stages in order.
   Produce every required Evidence artifact before claiming the task is ready for review.
-- Before starting a leaf worker or reviewer, check that the recorded host-runtime strategy allows nested delegation from the task driver. If it does not, stop and report the exact coordinator action needed.
 - Start every role-bound worker prompt with: `First, read your role instruction: roles/<role-id>.md.`
   Pass the role id, role instruction path, task context, stage instruction, required output, and evidence expectation.
   Do not read, summarize, or inline the role instruction for that actor.
 - If a role-bound worker cannot read its role file, stop and report the missing access to the coordinator.
 - Keep review actors independent from the actor whose work they review.
-- You must not simulate independent reviewer output. If independent review is required and you cannot spawn a reviewer, report that the coordinator must dispatch it.
 - Do not edit locked `bf.md` or task `spec.md` fields. Only the harness changes state, AC checkboxes, timestamps, and task execution metadata.
 
 ## Role-Bound Worker Prompt Template
@@ -57,9 +55,8 @@ Context:
 Instructions:
 1. After reading your role instruction, follow the stage instruction.
 2. Work only within the supplied task and stage context.
-3. If the supplied context shows this delegation is not allowed by the host-runtime strategy, stop and report the mismatch.
-4. Produce the required output or stop with a blocker.
-5. Report evidence, findings, changed files if any, and unresolved blockers.
+3. Produce the required output or stop with a blocker.
+4. Report evidence, findings, changed files if any, and unresolved blockers.
 ```
 
 ## Handoff

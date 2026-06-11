@@ -27,8 +27,6 @@ assert_match "$SKILL_BODY" "explicit authorization" "root skill should treat BF 
 assert_match "$SKILL_BODY" "host-compatible actor" "root skill should scope actor authorization to host-compatible BF actors"
 assert_match "$SKILL_BODY" "read \`references/brainstorm.md\` first" "root skill should route new work through brainstorm before bootstrap details"
 assert_match "$SKILL_BODY" "brainstorm owns pack selection, bootstrap, and the first accepted discussion entry" "root skill should keep new-work bootstrap inside brainstorm"
-assert_match "$SKILL_BODY" "if \`bf.md\` is missing" "root skill should handle discussion-only work-object resume"
-assert_match "$SKILL_BODY" "\`references/brainstorm.md\` and resume brainstorm" "root skill should resume brainstorm when no bf.md exists"
 
 SPEC_AUTHORING_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/references/spec-authoring.md")
 assert_match "$SPEC_AUTHORING_BODY" "scope contract" "spec authoring defines task specs as scope contracts"
@@ -72,7 +70,7 @@ assert_match "$EXECUTION_BODY" "select eligible task blocks" "execution lets the
 assert_match "$EXECUTION_BODY" "do not inspect all task specs" "execution forbids task selection by spec inspection"
 assert_match "$EXECUTION_BODY" "do not read task specs or pipelines locally" "execution keeps task spec reads out of coordinator"
 assert_match "$EXECUTION_BODY" "at task entry, a task driver first reads \`roles/task-driver.md\`" "execution makes task driver read its role first"
-assert_match "$EXECUTION_BODY" "must not inspect unrelated task specs" "execution scopes task driver reads to returned task context"
+assert_match "$EXECUTION_BODY" "spec and pipeline for its returned" "execution scopes task driver entry reads to returned task"
 assert_match "$EXECUTION_BODY" "discussion.md" "execution uses discussion only for ambiguity recovery"
 assert_not_match "$EXECUTION_BODY" "tell the task driver to read \`discussion.md\` only when" "execution should not duplicate role ambiguity handling in handoff"
 assert_not_match "$EXECUTION_BODY" "read discussion.md first" "execution must not read discussion at entry"
@@ -89,19 +87,13 @@ assert_match "$EXECUTION_BODY" "first, read your role instruction: \`roles/task-
 assert_match "$EXECUTION_BODY" "you are task-driver, working on" "task driver prompt identifies the task driver target"
 assert_match "$EXECUTION_BODY" "paste the complete task block returned by \`bf-harness next\`" "task driver prompt passes through next output"
 assert_match "$EXECUTION_BODY" "read this task's \`spec.md\` and selected pipeline" "task driver prompt requires own task spec and pipeline"
-assert_match "$EXECUTION_BODY" "\`bf.md\` goal and boundary" "task driver prompt includes bf.md contract context"
-assert_match "$EXECUTION_BODY" "host-runtime strategy" "task driver prompt includes host-runtime strategy context"
-assert_match "$EXECUTION_BODY" "\`references/project-docs.md\`" "task driver prompt points to runtime project-doc guidance when needed"
 assert_match "$EXECUTION_BODY" "report changed files, evidence artifacts" "task driver prompt requires completion handoff evidence"
 assert_not_match "$EXECUTION_BODY" "## role-bound worker prompt template" "execution should not carry task-driver worker prompt template"
 assert_not_match "$EXECUTION_BODY" "use this template when the coordinator or a task driver starts" "execution should not define shared worker template"
 assert_match "$EXECUTION_BODY" "do not read, summarize, or inline the role instruction" "parent actors do not proxy child role prompts"
 assert_match "$EXECUTION_BODY" "until the task driver completes" "execution waits for task driver completion"
-assert_match "$EXECUTION_BODY" "explicit timeout" "execution avoids killing task drivers prematurely"
+assert_match "$EXECUTION_BODY" "terminate it lightly" "execution avoids killing task drivers prematurely"
 assert_match "$EXECUTION_BODY" "prefer dispatching fixes to the original" "execution prefers original task driver for verify fixes"
-assert_match "$EXECUTION_BODY" "dispatch fresh independent reviewers" "execution retry loop reruns independent review after fixes"
-assert_match "$EXECUTION_BODY" "do not send pr merge gate failures to a task driver" "execution treats PR merge failures as coordinator gates"
-assert_match "$EXECUTION_BODY" "before \`bf-harness verify <bf-wo>/<task>\`, confirm any task pr is merged" "execution orders PR merge gate before task verify"
 assert_match "$EXECUTION_BODY" "if \`next\` returns no eligible task, enter final acceptance" "execution enters Final Acceptance when next is empty"
 assert_match "$EXECUTION_BODY" "start final acceptance by running \`bf-harness status <bf-wo>\`" "Final Acceptance starts with status"
 assert_match "$EXECUTION_BODY" "status says all tasks are completed" "execution uses status fact for Final Acceptance readiness"
@@ -110,7 +102,6 @@ assert_not_match "$EXECUTION_BODY" "no task block has been returned by" "executi
 assert_not_match "$EXECUTION_BODY" "tasking=0" "execution should not encode task state counters in prompt"
 assert_not_match "$EXECUTION_BODY" "ready=0" "execution should not encode task state counters in prompt"
 assert_not_match "$EXECUTION_BODY" "draft=0" "execution should not encode task state counters in prompt"
-assert_not_match "$EXECUTION_BODY" "review or verify returns fail" "execution stop conditions should not contradict retry loops"
 assert_match "$EXECUTION_BODY" "unmerged branch" "execution documents retained cleanup items"
 
 REVIEW_TEMPLATE_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/templates/review-result.md")
@@ -141,8 +132,6 @@ for role in engineer architect tester pipeline-designer task-driver; do
       assert_match "$ROLE_BODY" "capabilities:" "task-driver role has capabilities frontmatter"
       assert_match "$ROLE_BODY" "task-driving" "task-driver role declares task-driving capability"
       assert_match "$ROLE_BODY" "start every role-bound worker prompt with" "task-driver role starts workers with role-read instruction"
-      assert_match "$ROLE_BODY" "host-runtime strategy allows" "task-driver role respects nested-delegation limits"
-      assert_match "$ROLE_BODY" "must not simulate independent reviewer" "task-driver role forbids simulated independent review"
       assert_match "$ROLE_BODY" "## role-bound worker prompt template" "task-driver role owns worker prompt template"
       assert_match "$ROLE_BODY" "first, read your role instruction: \`roles/<role-id>.md\`" "task-driver worker prompt starts by reading own role"
       assert_match "$ROLE_BODY" "you are <role-id>, working on" "task-driver worker prompt identifies the role and stage target"
@@ -204,5 +193,10 @@ if rg -n "repo-update|repo update|repo maintenance entry|repository update workf
   fail "active runtime/docs still advertise repo-update as repository workflow driver"
 fi
 rm -f /tmp/bf-semantic-stale-repo-update.$$
+
+PKG_VERSION=$(node -e "process.stdout.write(JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8')).version)" "$REPO_ROOT/package.json")
+LOCK_VERSION=$(node -e "const p=JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8')); process.stdout.write(p.version + ' ' + p.packages[''].version)" "$REPO_ROOT/package-lock.json")
+assert_eq "$PKG_VERSION" "0.7.6" "package.json version should be bumped"
+assert_eq "$LOCK_VERSION" "0.7.6 0.7.6" "package-lock root versions should be bumped"
 
 pass

@@ -72,10 +72,9 @@ The first pipeline version is instruction-only:
 
 When a coordinator or task driver starts a role-bound actor, the prompt includes
 the role id and role instruction file path. The actor must read that role
-instruction before following the stage instruction. If the actor cannot read the
-role instruction file, the coordinator or task driver stops and defines the
-missing file access as a runtime blocker instead of inlining role instruction
-content.
+instruction before following the stage instruction. If the runtime cannot
+guarantee local file access, the coordinator or task driver inlines the role
+instruction content in the prompt.
 
 Stage `capability` remains a single owner or coordinator capability. When a
 review stage needs multiple perspectives, the pipeline records those

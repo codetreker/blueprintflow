@@ -112,7 +112,7 @@ export function resolveManagedGit({ baseHome, cwd = process.cwd() }) {
   return { ok: true, primaryWorktree };
 }
 
-export function preflightTaskWorktree({ baseHome, cwd = process.cwd(), woId, taskId, metadata = {} }) {
+export function prepareTaskWorktree({ baseHome, cwd = process.cwd(), woId, taskId, metadata = {} }) {
   const managed = resolveManagedGit({ baseHome, cwd });
   if (!managed.ok) return managed;
 
@@ -144,21 +144,8 @@ export function preflightTaskWorktree({ baseHome, cwd = process.cwd(), woId, tas
     };
   }
 
-  return { ok: true, branch: expected.branch, worktree: expected.worktree, originHead: originHead.stdout, needsCreate: true };
-}
-
-export function prepareTaskWorktree({ baseHome, cwd = process.cwd(), woId, taskId, metadata = {}, preflightResult = null }) {
-  const preflight = preflightResult || preflightTaskWorktree({ baseHome, cwd, woId, taskId, metadata });
-  if (!preflight.ok) return preflight;
-  if (!preflight.needsCreate) return preflight;
-
-  const managed = resolveManagedGit({ baseHome, cwd });
-  if (!managed.ok) return managed;
-
-  const { primaryWorktree } = managed;
-  const expected = expectedTaskGit(primaryWorktree, woId, taskId);
   fs.mkdirSync(path.dirname(expected.worktree), { recursive: true });
-  const added = runGit(primaryWorktree, ["worktree", "add", "-b", expected.branch, expected.worktree, preflight.originHead]);
+  const added = runGit(primaryWorktree, ["worktree", "add", "-b", expected.branch, expected.worktree, originHead.stdout]);
   if (!added.ok) {
     if (fs.existsSync(expected.worktree)) {
       const recovered = validateExistingWorktree(primaryWorktree, expected);
@@ -167,43 +154,7 @@ export function prepareTaskWorktree({ baseHome, cwd = process.cwd(), woId, taskI
     return { ok: false, error: `git worktree add failed: ${added.stderr || added.stdout || "unknown error"}` };
   }
 
-  return { ok: true, branch: expected.branch, worktree: expected.worktree, created: true };
-}
-
-export function rollbackCreatedTaskWorktree({ baseHome, cwd = process.cwd(), woId, taskId, removeRegistered = true }) {
-  const managed = resolveManagedGit({ baseHome, cwd });
-  if (!managed.ok) return managed;
-
-  const { primaryWorktree } = managed;
-  const expected = expectedTaskGit(primaryWorktree, woId, taskId);
-  const registered = registeredWorktree(primaryWorktree, expected.worktree);
-  let retainedPathConflict = null;
-
-  if (!removeRegistered) return { ok: true };
-
-  if (registered) {
-    if (registered.branch !== expected.branch) {
-      return {
-        ok: false,
-        error: `rollback refused worktree ${expected.worktree}: expected branch ${expected.branch}, found ${registered.branch || "detached HEAD"}`,
-      };
-    }
-    const removed = runGit(primaryWorktree, ["worktree", "remove", expected.worktree]);
-    if (!removed.ok) {
-      return { ok: false, error: `rollback worktree remove failed: ${removed.stderr || removed.stdout || "unknown error"}` };
-    }
-  } else if (fs.existsSync(expected.worktree)) {
-    retainedPathConflict = expected.worktree;
-  }
-
-  if (localBranchExists(primaryWorktree, expected.branch)) {
-    const deleted = runGit(primaryWorktree, ["branch", "-d", expected.branch]);
-    if (!deleted.ok) {
-      return { ok: false, error: `rollback branch delete failed: ${deleted.stderr || deleted.stdout || "unknown error"}` };
-    }
-  }
-
-  return { ok: true, retainedPathConflict };
+  return { ok: true, branch: expected.branch, worktree: expected.worktree };
 }
 
 export function validateTaskWorktree({ baseHome, cwd = process.cwd(), woId, taskId, metadata = {} }) {

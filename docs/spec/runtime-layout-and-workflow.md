@@ -134,10 +134,8 @@ Verification, and Final Acceptance. Task drivers do not advance locked BF state.
    - Run `bf-harness next <bf-wo>` to return eligible task blocks. Each returned
      task has completed prerequisites, and no returned task depends on another
      returned task.
-   - Give each returned task block to one host-compatible task driver. The
-     coordinator does not read task specs or pipelines locally to choose work.
-     The task driver reads its own returned task spec, selected pipeline, and
-     required task context.
+   - Read only the returned task specs, packs, and pipeline paths.
+   - Give each returned task block to one host-compatible task driver.
    - For `Requires-Worktree: true` tasks in managed Git mode, `next` also
      creates or validates branch `bf/<bf-wo>/<task-id>` and worktree
      `<primary-worktree>/.worktrees/works/<bf-wo>/<task-id>`.
@@ -164,8 +162,6 @@ Verification, and Final Acceptance. Task drivers do not advance locked BF state.
      `bf-harness attach-pr <bf-wo>/<task> <github-pr-url>`.
    - The coordinator runs `bf-harness start-review <bf-wo>/<task>`.
    - The coordinator dispatches independent reviewer actors to write review results.
-   - Before task verification, any recorded task PR must be merged. An unmerged
-     PR is a coordinator-owned PR gate, not a task-driver fix request.
    - The coordinator runs `bf-harness verify <bf-wo>/<task>` until the task verifies. For
      GitHub repositories, worktree-required task verification also checks that
      the recorded same-repository PR is merged. Non-GitHub providers remain
@@ -174,9 +170,9 @@ Verification, and Final Acceptance. Task drivers do not advance locked BF state.
      driver or a new task driver. The coordinator opens a new review round and
      reruns verification after the fix and independent review.
    - After task verification succeeds, run
-     `bf-harness cleanup <bf-wo>/<task>` for that task. Retained dirty
-     worktrees, unmerged branches, and path conflicts are reported, not
-     force-deleted.
+     `bf-harness cleanup <bf-wo>/<task>` for that task after any task PR is
+     merged. Retained dirty worktrees, unmerged branches, and path conflicts
+     are reported, not force-deleted.
    - Before bf-level final acceptance, run `bf-harness status <bf-wo>`.
      Enter Final Acceptance only when status says all tasks are completed.
      Final Acceptance uses bf-level reviewers and existing harness verification;

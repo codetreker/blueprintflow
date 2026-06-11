@@ -20,13 +20,13 @@ User approval to continue does not replace harness transitions. Continue means: 
 - Using `$bf` or `/bf` is explicit authorization for BF-scoped host-compatible task drivers, leaf workers, and independent reviewers. It does not authorize skipping harness gates.
 - Do not edit project files for a BF task until `bf-harness next <bf-wo>` returns that task block.
 - Do not inspect all task specs to choose work. The harness selects the task batch.
-- At task entry, a task driver first reads `roles/task-driver.md`, then reads the returned task context required by its pipeline. It must not inspect unrelated task specs or pipelines.
+- At task entry, a task driver first reads `roles/task-driver.md`, then reads only the spec and pipeline for its returned task block.
 - If the task has `Requires-Worktree: true`, work only in the returned or recorded `Worktree`.
 - Assign claimed task work and verification fixes to a host-compatible task driver. The coordinator does not do task leaf work unless the user explicitly overrides this gate.
 - When starting a task driver, leaf worker, or reviewer, pass the role instruction path and require that actor to read its own role instruction first. Do not read, summarize, or inline the role instruction for that actor.
 - Reviewers must be different actor instances from the actor whose work is reviewed.
 - If accepted scope, boundary, acceptance, or design intent is unclear, read `discussion.md`. If the answer is still missing, append the ambiguity and stop for clarification.
-- For project design-doc discovery, authority, or drift handling, follow `references/project-docs.md`.
+- For project design-doc discovery, authority, or drift handling, follow `project-docs.md`.
 - If accepted design authority conflicts with implementation reality, record the drift and stop for clarification.
 - Do not edit locked `bf.md` or task `spec.md` fields. Only the harness changes state, AC checkboxes, timestamps, and task execution metadata.
 
@@ -39,14 +39,14 @@ Repeat until no task remains:
 3. If `next` returns task blocks, do not read task specs or pipelines locally.
 4. Each returned task gets one task driver. The coordinator decides whether that block starts a new driver or resumes an existing one.
 5. Give each task driver the returned task block, the BF work-object id, the requirement to read its own task spec and pipeline, the returned worktree if any, and the instruction to follow the task pipeline and produce required evidence. Use the Task Driver Prompt Template.
-6. Each task driver follows the pipeline and produces required evidence. Wait until the task driver completes; give it enough time to finish and stop it only after it reports completion, a blocker, an explicit timeout, or a host failure.
+6. Each task driver follows the pipeline and produces required evidence. Wait until the task driver completes; give it enough time to finish and do not terminate it lightly.
 7. If a task has a PR, run `bf-harness attach-pr <bf-wo>/<task> <github-pr-url>`.
 8. Check task-local terminal-state closure before BF acceptance review.
 9. Run `bf-harness start-review <bf-wo>/<task>`.
 10. Dispatch independent BF acceptance reviewers for the task AC capabilities.
-11. Before `bf-harness verify <bf-wo>/<task>`, confirm any task PR is merged. If it is not merged, stop at the coordinator PR gate; do not send PR merge gate failures to a task driver.
-12. Run `bf-harness verify <bf-wo>/<task>`.
-13. On FAIL, read the verify result and classify it. For task implementation, evidence, or AC failures, prefer dispatching fixes to the original task driver when available; after fixes land, run `bf-harness start-review <bf-wo>/<task>`, dispatch fresh independent reviewers, and verify again. For coordinator-owned gates such as PR merge or cleanup state, complete the coordinator action and rerun verify. Stop on unclassified failures.
+11. Run `bf-harness verify <bf-wo>/<task>`.
+12. On FAIL, read the verify result, prefer dispatching fixes to the original task driver when available, open a new review round, and verify again.
+13. On SUCCESS, confirm the task PR is merged when the task produced a PR.
 14. Run `bf-harness cleanup <bf-wo>/<task>` immediately after the task is verified and any task PR is merged. It removes only the recorded task worktree and uses safe local branch deletion.
 15. Report retained task worktrees or branches. Do not force-delete them.
 16. Return to step 1.
@@ -69,7 +69,7 @@ Resume context: <existing driver context, or new task>
 Instructions:
 1. After reading `roles/task-driver.md`, work only on this returned task.
 2. If a Worktree is provided, run commands from that Worktree.
-3. Read this task's `spec.md` and selected pipeline, `bf.md` Goal and Boundary, the host-runtime strategy from `discussion.md` if it is not already supplied, and `references/project-docs.md` when the task involves project design-doc discovery, authority, or drift.
+3. Read this task's `spec.md` and selected pipeline.
 4. Follow the pipeline stages in order and produce every required Evidence artifact.
 5. Do not edit locked `bf.md` or task `spec.md` fields.
 6. If blocked, stop and report the blocker, evidence already produced, and the exact coordinator action needed.
@@ -116,7 +116,7 @@ Stop instead of continuing when:
 - Current directory is not the recorded task worktree for a worktree-required task.
 - A verified task with a merged PR still has its recorded worktree or branch.
 - `next` reports Git, worktree, metadata, dependency, or phase conflict.
-- Review or verify FAIL cannot be classified into a task-driver fix, coordinator-owned gate, or clarification need.
+- Review or verify returns FAIL.
 - Required evidence is missing or mismatched.
 - The accepted contract is ambiguous and `discussion.md` does not answer it.
 - A task remains blocked on the same AC across 3 or more verification rounds.

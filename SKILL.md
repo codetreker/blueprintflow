@@ -84,11 +84,8 @@ references:
    Load only the references needed to answer.
 3. **Resume existing work** — if the user says continue/resume or names a
    bf-wo, locate `.bf/works/<bf-wo>` first; legacy `.bf/<bf-wo>` remains
-   readable. Read `discussion.md` first. If `bf.md` is missing, route to
-   `references/brainstorm.md` and resume brainstorm from the recorded
-   discussion. If `bf.md` exists, read it and the latest review or verify
-   results needed for its current state; read task specs only when spec
-   authoring or execution needs a targeted or returned task.
+   readable. Read `bf.md`, `discussion.md`, task specs, and latest review or
+   verify results, then route by state to spec authoring or execution.
 4. **New software change / brainstorm** — read `references/brainstorm.md` first.
    Brainstorm owns pack selection, bootstrap, and the first accepted discussion entry.
    Do not create a work object or write `discussion.md` before following the brainstorm reference unless you are resuming existing work.

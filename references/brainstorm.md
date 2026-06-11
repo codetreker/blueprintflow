@@ -80,11 +80,7 @@ Brainstorm ends only when:
 2. No open question affects the contract.
 3. The user explicitly agrees to enter spec authoring.
 
-When asking for this agreement, state that an affirmative answer is approval for
-the pending brainstorm -> spec transition. If the next user reply affirmatively
-answers that prompt without adding new scope or objections, immediately move to
-[spec-authoring.md](spec-authoring.md). Do not ask the user to restate the phase
-or issue another `/bf spec` request.
+When asking for this agreement, state that an affirmative answer is approval for the pending brainstorm -> spec transition. If the next user reply affirmatively answers that prompt without adding new scope or objections, immediately move to [spec-authoring.md](spec-authoring.md). Do not ask the user to restate the phase or issue another `/bf spec` request.
 
 ## Stop Conditions
 

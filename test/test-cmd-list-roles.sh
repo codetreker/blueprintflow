@@ -36,6 +36,26 @@ assert_json_field "$STDOUT" .pipelineDesigner.capabilities '["pipeline-design","
 assert_json_field "$STDOUT" .taskDriver.id "task-driver"
 assert_json_field "$STDOUT" .taskDriver.capabilities '["task-driving"]'
 
+# Root runtime includes the interaction designer role, and role references are
+# not listed as roles.
+STDOUT=$(node --input-type=module -e "
+  import('$REPO_ROOT/bin/lib/bf/cmd-list-roles.mjs').then(async (m) => {
+    const r = await m.cmdListRoles({ cwd: '$REPO_ROOT', pack: 'engineering' });
+    const interactionDesigner = r.roles.find((x) => x.id === 'interaction-designer')
+      || { id: null, source: null, capabilities: null };
+    const referenceIds = r.roles
+      .filter((x) => x.id === 'ui-testing' || x.id === 'api-testing')
+      .map((x) => x.id)
+      .sort();
+    process.stdout.write(JSON.stringify({ ok: r.ok, interactionDesigner, referenceIds }));
+  });
+")
+assert_json_field "$STDOUT" .ok true
+assert_json_field "$STDOUT" .interactionDesigner.id "interaction-designer"
+assert_json_field "$STDOUT" .interactionDesigner.source "core"
+assert_json_field "$STDOUT" .interactionDesigner.capabilities '["interaction-design"]'
+assert_json_field "$STDOUT" .referenceIds '[]'
+
 # With pack（pack 覆盖 core engineer）
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/bf/cmd-list-roles.mjs').then(async (m) => {

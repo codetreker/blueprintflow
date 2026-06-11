@@ -43,6 +43,29 @@ STDOUT=$(node --input-type=module -e "
 ")
 assert_json_field "$STDOUT" .count "0"
 
+# Root runtime registers interaction-designer and keeps role references out of
+# the Core role registry.
+STDOUT=$(node --input-type=module -e "
+  import('$REPO_ROOT/bin/lib/shared/role-registry.mjs').then(m => {
+    const r = m.buildRoleRegistry({ coreRolesDir: '$REPO_ROOT/roles' });
+    const interactionDesigner = r.roles.get('interaction-designer');
+    process.stdout.write(JSON.stringify({
+      id: interactionDesigner?.id || null,
+      source: interactionDesigner?.source || null,
+      caps: interactionDesigner?.capabilities || null,
+      interactionDesignRoles: (r.byCapability.get('interaction-design') || []).map(x=>x.id).sort(),
+      hasUiTesting: r.roles.has('ui-testing'),
+      hasApiTesting: r.roles.has('api-testing'),
+    }));
+  });
+")
+assert_json_field "$STDOUT" .id "interaction-designer"
+assert_json_field "$STDOUT" .source "core"
+assert_json_field "$STDOUT" .caps '["interaction-design"]'
+assert_json_field "$STDOUT" .interactionDesignRoles '["interaction-designer"]'
+assert_json_field "$STDOUT" .hasUiTesting false
+assert_json_field "$STDOUT" .hasApiTesting false
+
 # extension 覆盖 core；多个 extension dir 后者覆盖前者（project > global）
 EXT_DIR=$(make_temp_home)
 mkdir -p "$EXT_DIR/global" "$EXT_DIR/project"

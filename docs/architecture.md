@@ -48,7 +48,7 @@ flowchart LR
 |---|---|---|
 | Runtime instructions | Tell the orchestrator how to run BF phases. | Instruction authority only; no state mutation. |
 | Templates | Define durable Markdown file shapes. | File contract authority. |
-| Roles | Declare review and execution capabilities, including the Core security role for `security-review`. | Capability registry authority. |
+| Roles | Declare review and execution capabilities, including the Core security role for `security-review` and the Core interaction designer role for `interaction-design`. | Capability registry authority. |
 | Packs | Define domain guidance and available pipelines. | Domain workflow authority. |
 | `bf` CLI | Lists roles, packs, pipelines, manages host discovery snapshots, and updates the global BF npm package. | Read-only metadata and install-management authority. |
 | `bf-harness` CLI | Lints, accepts, claims tasks, starts reviews, verifies sign-off, completes terminal transitions, and mutates allowed state. | State transition authority. |
@@ -73,6 +73,12 @@ The LLM continues to write non-locked artifacts:
 
 This split keeps human-readable contracts editable during design while making
 execution progress mechanically auditable after acceptance.
+
+## Role Registry And References
+
+Core roles are direct Markdown files under `roles/`. The role registry parses those direct files and maps each declared capability to provider roles. The Core `interaction-designer` role declares `interaction-design` for UI interaction design and review work.
+
+Role reference files under `roles/references/` are runtime guidance that role instructions can ask actors to load for a reviewed scope. They are not role declarations, do not provide capabilities, and do not appear in `bf list-roles`; the registry boundary remains direct role files only.
 
 ## Core Flow
 

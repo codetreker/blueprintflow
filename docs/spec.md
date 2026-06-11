@@ -114,7 +114,7 @@ bf-level `verify` signs ACs, and bf-level `complete` marks the work object
 
 | Module | Role | Durable Interfaces |
 |---|---|---|
-| Runtime docs | Tell the orchestrating LLM how to run BF | `SKILL.md`, `references/`, `packs/`, `roles/`, `templates/` |
+| Runtime docs | Tell the orchestrating LLM how to run BF | `SKILL.md`, `references/`, `packs/`, `roles/`, `roles/references/`, `templates/` |
 | Project design docs | Discovered external design authority for target-project work | Confirmed project doc root, recorded in `.bf/works/<bf-wo>/discussion.md`; runtime anchor `references/project-docs.md` |
 | Repository maintenance authority | Blueprintflow maintenance rules | `AGENTS.md`, root BF runtime, accepted docs, validation scripts, and PR gate evidence |
 | `bf` CLI | Read-only metadata and install management | `list-packs`, `list-pipelines`, `list-roles`, `install`, `update`, `uninstall`, `version` |
@@ -128,7 +128,7 @@ bf-level `verify` signs ACs, and bf-level `complete` marks the work object
 - CLIs: [`bin/bf.mjs`](../bin/bf.mjs), [`bin/bf-harness.mjs`](../bin/bf-harness.mjs)
 - Harness internals: [`bin/lib/harness/`](../bin/lib/harness/)
 - Shared registries/parsers: [`bin/lib/shared/`](../bin/lib/shared/)
-- Core roles: [`roles/`](../roles/)
+- Core roles and role references: [`roles/`](../roles/)
 - Core packs: [`packs/`](../packs/)
 - File templates: [`templates/`](../templates/)
 - Runtime phase references: [`references/`](../references/)

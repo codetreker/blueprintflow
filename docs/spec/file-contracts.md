@@ -1,7 +1,9 @@
 # File Contracts
 
 This page records the durable BF file contracts. Exact frontmatter fields,
-section shapes, and comment rules live in `templates/`.
+section shapes, and comment rules live in `templates/`. Shipped runtime
+templates are English-language file shapes. They remain self-contained runtime
+artifacts and do not depend on the `docs/` design record.
 
 ## Task Shape
 

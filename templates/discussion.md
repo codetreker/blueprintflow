@@ -4,26 +4,30 @@ Creation: <yyyy-mm-dd hh:MM>
 Updated: <yyyy-mm-dd hh:MM>
 ---
 
-# 讨论档
+# Discussion Log
 
-这个文件记录了蓝图从模糊想法变成 bf.md 的整个讨论过程，是第一手原始资料。
+This file records the full discussion that turns a rough idea into `bf.md`.
+It is the first-hand source material for the work object.
 
-主要包含：
-- brainstorm 阶段的讨论内容
-- 关键决策和取舍
-- 被否决的方案以及为什么被否决
-- 重要的 trade-offs
+It usually includes:
+- brainstorm-stage discussion
+- key decisions and tradeoffs
+- rejected options and why they were rejected
+- important trade-offs
 
-## 什么时候写
+## When to Write
 
-- brainstorm 和 spec 阶段是它的主要写入期。
-- Accept 之后仍然可以追加内容；如果执行过程中发现 bf.md 或者 spec.md 没说清楚的地方，LLM 可以回这里找答案，或者补充澄清说明。
-- 这个文件从不锁，LLM 全程都可以 append。
+- Brainstorm and spec are the main writing phases.
+- After Accept, this file remains appendable. If execution exposes an unclear point in `bf.md` or `spec.md`, the LLM may return here for context or append a clarification.
+- This file is never locked. The LLM may append to it throughout the work object.
 
-## 跟 bf.md 的关系
+## Relationship To bf.md
 
-bf.md 是 contract，它派生自 discussion.md。原则上两者不应该矛盾。如果发现矛盾，停下来跟用户讨论 —— 不要机械裁决谁对谁错，因为这通常意味着 bf.md 在 Accept 当下偏离了实际讨论。
+`bf.md` is the contract; bf.md is derived from discussion.md. In principle,
+they should not conflict. If they do conflict, stop and discuss the issue with
+the user instead of mechanically choosing one file over the other, because the
+accepted `bf.md` may have drifted from the actual discussion.
 
-# 讨论记录
+# Discussion Entries
 
-<!-- 在这里追加每次讨论的内容；按时间顺序，每段加一个时间戳和参与者注记 -->
+<!-- Append each discussion entry here in chronological order. Include a timestamp and participant note for each entry. -->

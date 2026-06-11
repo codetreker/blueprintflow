@@ -1,39 +1,40 @@
 # Desc
 
-本次 review 的范围。比如：在 review 哪个 task、哪一轮、针对的具体 contract 文件路径等。
+Scope for this review, such as the task being reviewed, the review round, and
+the specific contract file paths under review.
 
 ## Results
 
-按 severity 分组。Blocker 和 High 任意出现一条都会让 verify 直接 FAIL；Minor 和 Nit 不阻塞。
+Group findings by severity. Any Blocker or High finding makes verify fail.
+Minor and Nit findings do not block.
 
 ### Blocker
 
-阻塞性问题。出现就 verify FAIL。每条带具体的 file:line 和描述。
+Blocking issues. Any item here makes verify fail. Include a specific file:line
+and description for each finding.
 
 ### High
 
-高严重问题。出现就 verify FAIL。
+High-severity issues. Any item here makes verify fail.
 
 ### Minor
 
-中度问题。不阻塞，但建议负责的 actor 处理。
+Medium-severity issues. These do not block, but the responsible actor should
+consider addressing them.
 
 ### Nit
 
-建议性问题。不阻塞。
+Suggestions. These do not block.
 
 ## Accepted Criteria
 
-本 reviewer 签到通过的验收标准列表。
+Acceptance criteria this reviewer signs off.
 
-规则：
-- 必须用 bf.md 或者 task spec.md 里原始的验收标准 id（比如 AC-1、AC-2）。
-- Task Verification / Final Acceptance 中，如果本轮没有 Blocker 或 High，
-  at least one provider-role review file 接受某条 AC id，bf-harness verify
-  就会把这条 AC 视为 signed。
-- Spec Review 和某些流程可能要求多个独立 reviewer actor instances；这是
-  coordinator 执行的 actor 独立性规则，不是 harness 从文件名机械判断的规则。
-- 一份 reviewer 的 result 文件里如果出现了 Blocker 或 High，bf-harness 不会去看这一节的签到 —— 因为整轮已经 FAIL 了。
+Rules:
+- Use the original acceptance criterion ids from `bf.md` or the task `spec.md`, such as AC-1 or AC-2.
+- During Task Verification / Final Acceptance, if the round has no Blocker or High findings and at least one provider-role review file accepts an AC id, `bf-harness verify` treats that AC as signed.
+- Spec Review and some flows may require multiple independent reviewer actor instances. That is a coordinator-enforced actor-independence rule, not something the harness infers mechanically from filenames.
+- If a reviewer result file contains any Blocker or High finding, bf-harness does not use this section for signoff because the whole round has already failed.
 
-- {id1}: 一句话说明 reviewer 怎么验证通过的（怎么得出"这条满足了"的判断）
+- {id1}: One sentence explaining how the reviewer verified this criterion
 - {id2}: ...

@@ -65,7 +65,7 @@ This traceability does not belong in the contract text. bf.md must not cite or q
    4. If the bf-wo has local pipelines, include three independent reviewer actor instances with the `pipeline-review` capability. Each `pipeline-review` reviewer must be a different actor instance from the pipeline designer and from every other reviewer in the same Spec Review round. The reviewers must reject any bf-wo local pipeline that creates external artifacts or side effects without a terminal-state closure path, handoff, or explicit stop condition for dangling work.
    5. Tell reviewers to reject contract gaps, not missing implementation-design detail. A reviewer may reject a detail that is already locked and wrong, but must not require file-level investigation before `accept` when the selected pipeline owns that design work.
    6. `bf-harness verify <bf-wo>` (Spec Review) — `SUCCESS <path>` or `FAIL <path>`. On FAIL, read the verify-result file, fix `bf.md` / `spec.md` / local pipelines, then start a new round.
-11. When verify returns SUCCESS, ask the user to approve accepting the reviewed spec and entering execution. State that an affirmative answer is approval for this pending spec -> execute transition. If the next user reply affirmatively answers that prompt without adding new scope or objections, immediately run `bf-harness accept <bf-wo>` and then move to [execution.md](execution.md). `bf.md` -> `Accepted`; all tasks cascade `Draft` -> `Ready`. **Contract is now locked.** If the reply is negative or changes scope, append the answer to `discussion.md` and do not run `accept`.
+11. When verify returns SUCCESS and the user agrees with the plan, `bf-harness accept <bf-wo>`. `bf.md` → `Accepted`; all tasks cascade `Draft` → `Ready`. **Contract is now locked.**
 
 ## Mutation whitelist after accept
 
@@ -95,4 +95,4 @@ Once `accept` runs, the LLM no longer edits `State`, AC checkboxes, `Updated`, o
 
 ## Exit
 
-Spec Authoring ends after `accept` returns success. Move to [execution.md](execution.md) immediately; do not ask the user to issue another execute request.
+Spec Authoring ends after `accept` returns success. Move to [execution.md](execution.md).

@@ -80,7 +80,7 @@ Brainstorm ends only when:
 2. No open question affects the contract.
 3. The user explicitly agrees to enter spec authoring.
 
-When asking for this agreement, state that an affirmative answer is approval for the pending brainstorm -> spec transition. If the next user reply affirmatively answers that prompt without adding new scope or objections, immediately move to [spec-authoring.md](spec-authoring.md). Do not ask the user to restate the phase or issue another `/bf spec` request.
+When all three are true, move to [spec-authoring.md](spec-authoring.md).
 
 ## Stop Conditions
 
@@ -90,6 +90,5 @@ Stop instead of moving forward when:
 - Source coverage is missing and you are about to leave brainstorm.
 - The user has not explicitly agreed to enter spec authoring.
 - You are about to author `bf.md`, create task specs, or do task breakdown from brainstorm.
-- The user answered the pending phase confirmation with a negative or scope-changing reply.
 - An assistant-led proposal is unconfirmed.
 - Project design-doc discovery finds conflicting authority that changes the contract.

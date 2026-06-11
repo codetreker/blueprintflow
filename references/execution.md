@@ -12,7 +12,7 @@ Before any implementation, fix, commit, push, PR, or cleanup:
 4. If `bf.md.State` is `Accepted` or `Implementing`, run the task loop. Let `bf-harness next <bf-wo>` select eligible task blocks.
 5. If `bf.md.State` is `Completed`, do not implement. Report status. Task cleanup should already have run at task closure.
 
-User approval to continue does not replace harness transitions. If the immediately previous BF response asked whether to continue execution and the next user reply is affirmative without adding new scope or objections, continue means: run the next legal BF command.
+User approval to continue does not replace harness transitions. Continue means: run the next legal BF command.
 
 ## Hard Gates
 

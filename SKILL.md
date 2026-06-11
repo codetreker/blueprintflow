@@ -59,11 +59,7 @@ Do not use BF for non-software work, casual conversation, simple one-command ans
 
 On every `$bf` or `/bf` turn, classify the request before loading deeper references:
 
-1. **Pending phase confirmation** — if the immediately previous BF response asked the user to approve entering spec authoring, accepting a reviewed spec, or continuing execution, and the current user reply is affirmative without adding new scope or objections, treat it as approval for that pending transition only. Load the work object and immediately perform the next legal BF action:
-   - brainstorm exit approval -> read `references/spec-authoring.md` and start spec authoring.
-   - reviewed-spec approval -> run `bf-harness accept <bf-wo>` and then read `references/execution.md`.
-   - execution continue approval -> run the next legal BF command from `references/execution.md`.
-   If the reply is negative or changes scope, append the answer to `discussion.md` and do not advance.
+1. **Pending phase confirmation** — if the previous BF response asked for approval to enter the next phase, an affirmative reply means: immediately run the next legal BF action and continue to that phase; do not ask for another phase command. If the reply changes scope or objects, append it to `discussion.md` and do not advance.
 2. **Feedback issue** — if the user explicitly asks to prepare, file, or comment on BF GitHub issue feedback, read `references/feedback.md`.
 3. **Read-only / advisory** — if the user asks to explain, audit, inspect, compare, or discuss without asking for changes, do not create a work object. Load only the references needed to answer.
 4. **Resume existing work** — if the user says continue/resume or names a bf-wo, locate `.bf/works/<bf-wo>` first; legacy `.bf/<bf-wo>` remains readable. Read `bf.md`, `discussion.md`, task specs, and latest review or verify results, then route by state to spec authoring or execution.

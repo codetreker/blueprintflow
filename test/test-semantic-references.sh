@@ -24,8 +24,8 @@ assert_match "$SKILL_BODY" "bootstrap" "root skill should route new work bootstr
 assert_match "$SKILL_BODY" "resume" "root skill should route existing work resume"
 assert_match "$SKILL_BODY" "feedback" "root skill should route feedback flow"
 assert_match "$SKILL_BODY" "pending phase confirmation" "root skill should route affirmative answers to pending BF phase confirmations"
-assert_match "$SKILL_BODY" "approval for that pending transition only" "root skill should scope confirmation answers to the pending transition"
-assert_match "$SKILL_BODY" "run the next legal bf command" "root skill should continue execution by running the next legal command"
+assert_match "$SKILL_BODY" "immediately run the next legal bf action and continue to that phase" "root skill should advance after phase approval"
+assert_match "$SKILL_BODY" "do not ask for another phase command" "root skill should not ask for duplicate phase commands after approval"
 assert_match "$SKILL_BODY" "explicit authorization" "root skill should treat BF trigger as actor authorization"
 assert_match "$SKILL_BODY" "host-compatible actor" "root skill should scope actor authorization to host-compatible BF actors"
 assert_match "$SKILL_BODY" "codex uses subagent actors for task drivers, leaf workers, and reviewers" "root skill should map Codex BF actors to subagents"
@@ -58,8 +58,6 @@ assert_match "$SPEC_AUTHORING_BODY" "three independent reviewer actor instances"
 assert_match "$SPEC_AUTHORING_BODY" "same spec review round must be a distinct actor instance" "spec authoring requires same-round reviewer independence"
 assert_match "$SPEC_AUTHORING_BODY" "three independent reviewer actor instances with the \`pipeline-review\` capability" "spec authoring fixes local pipeline review count"
 assert_match "$SPEC_AUTHORING_BODY" "select one provider role" "spec authoring records provider-role selection"
-assert_match "$SPEC_AUTHORING_BODY" "pending spec -> execute transition" "spec authoring should make spec-to-execute confirmation resumable"
-assert_match "$SPEC_AUTHORING_BODY" "do not ask the user to issue another execute request" "spec authoring should continue after accept without another execute request"
 
 BRAINSTORM_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/references/brainstorm.md")
 assert_match "$BRAINSTORM_BODY" "phase gate" "brainstorm has directive phase gate"
@@ -78,8 +76,6 @@ assert_match "$BRAINSTORM_BODY" "do not author \`bf.md\`" "brainstorm forbids bf
 assert_match "$BRAINSTORM_BODY" "do not create task specs" "brainstorm forbids task spec creation"
 assert_match "$BRAINSTORM_BODY" "do not start task breakdown" "brainstorm blocks premature task breakdown"
 assert_match "$BRAINSTORM_BODY" "user explicitly agrees to enter spec authoring" "brainstorm requires explicit transition approval"
-assert_match "$BRAINSTORM_BODY" "pending brainstorm -> spec transition" "brainstorm should make brainstorm-to-spec confirmation resumable"
-assert_match "$BRAINSTORM_BODY" "do not ask the user to restate the phase" "brainstorm should not require another spec request after approval"
 assert_match "$BRAINSTORM_BODY" "one unresolved coverage gap" "brainstorm loop focuses one coverage gap at a time"
 
 EXECUTION_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/references/execution.md")
@@ -89,7 +85,6 @@ EXECUTION_TASK_DRIVER_TEMPLATE=$(awk '/^## Task Driver Prompt Template/{flag=1;n
 EXECUTION_TASK_DRIVER_TEMPLATE_INSTRUCTIONS=$(awk '/^instructions:/{flag=1;next}/^boundaries:/{flag=0}flag' <<< "$EXECUTION_TASK_DRIVER_TEMPLATE")
 EXECUTION_TASK_DRIVER_TEMPLATE_BOUNDARIES=$(awk '/^boundaries:/{flag=1;next}/^```/{flag=0}flag' <<< "$EXECUTION_TASK_DRIVER_TEMPLATE")
 assert_match "$EXECUTION_BODY" "phase gate" "execution has directive phase gate"
-assert_match "$EXECUTION_BODY" "immediately previous bf response asked whether to continue execution" "execution should treat affirmative continuation replies as next-command approval"
 assert_match "$EXECUTION_BODY" "select eligible task blocks" "execution lets the harness select work batches"
 assert_match "$EXECUTION_BODY" "do not inspect all task specs" "execution forbids task selection by spec inspection"
 assert_match "$EXECUTION_BODY" "do not read task specs or pipelines locally" "execution keeps task spec reads out of coordinator"

@@ -12,6 +12,7 @@ packs/
   |    +- pipelines/        # optional: task execution pipelines
   |    |    +- bugfix.yml
   |    |    +- feature.yml
+  |    |    +- feature-light.yml
   |    +- roles/            # optional: pack-private roles
   |        +- designer.md
   +- research/
@@ -86,14 +87,14 @@ Schema-level reviewer arrays are deferred until a pattern is stable and needs a
 harness-enforced mechanical gate.
 
 Built-in pack pipelines may include terminal-state closure stages. The built-in
-engineering `feature` pipeline ends with `terminal-state-closure`, a
-`quality-assurance` stage after `code-review`. That stage checks external
-artifacts and side effects from the user's perspective and stops on dangling
-work unless every item has reached a terminal state, has an explicit handoff
-owner, or is blocked by an explicit stop condition. This remains an
-instruction-level contract: BF does not add harness stage enforcement, infer side
-effects, require a schema field, add new capabilities, or hard-code
-merge/deploy/publish behavior.
+engineering `feature` and `feature-light` pipelines end with
+`terminal-state-closure`, a `quality-assurance` stage after review and security
+gates. That stage checks external artifacts and side effects from the user's
+perspective and stops on dangling work unless every item has reached a terminal
+state, has an explicit handoff owner, or is blocked by an explicit stop
+condition. This remains an instruction-level contract: BF does not add harness
+stage enforcement, infer side effects, require a schema field, add new
+capabilities, or hard-code merge/deploy/publish behavior.
 
 Pipeline review, acceptance-readiness closure, and BF acceptance are separate
 layers. Pipeline review checks task-driver artifacts such as architecture,
@@ -111,8 +112,21 @@ worktree and safely delete its merged local branch.
 
 ## Built-In Engineering Pipelines
 
-The engineering pack ships separate pipelines for feature work, defect fixes,
-and review-only deep codebase audit work.
+The engineering pack ships separate pipelines for lightweight feature work,
+design-first feature work, defect fixes, and review-only deep codebase audit
+work.
+
+`feature-light.yml` is the lightweight feature pipeline for small, clear,
+low-risk feature tasks. It uses a compact `scope-plan` stage before
+implementation, then proceeds through `implementation`, `validation`,
+`code-review`, `security-review`, and `terminal-state-closure`. The scope plan
+records why the task fits the lightweight path, the intended change scope, the
+validation approach, and escalation triggers that should move the task to the
+full `feature` pipeline before implementation. It is appropriate when the task
+scope, acceptance evidence, and validation path are already concrete, and when
+the change does not need design-first architecture review, migration planning,
+new public contract design, broad dependency/package exposure review, or
+security-sensitive behavior design before code.
 
 `feature.yml` is design-first. It requires architecture/design artifacts,
 pre-implementation review, implementation, design-doc sync when accepted system
@@ -128,6 +142,15 @@ investigation, exact commands, API shapes, migration strategy, and
 implementation sequence unless those details were already accepted as
 user-facing contract or required Evidence.
 
+Choose `feature-light` when a small feature can be planned with a compact
+scope-plan and the reviewer can validate the diff, evidence, security posture,
+and terminal-state closure directly. Choose `feature` when feature work is
+larger, unclear, higher risk, or likely to change accepted design boundaries,
+public contracts, data/control flow, compatibility guarantees, package exposure,
+or validation strategy. If a `feature-light` task discovers those escalation
+conditions during scope planning or implementation, the pipeline stops before
+treating the task as ready.
+
 `bugfix.yml` is regression red-green. It requires a focused failing regression
 test or reproduction before implementation, expected-failure review, the
 smallest fix, a focused passing test, design-doc sync when the clarified path or
@@ -138,9 +161,13 @@ That stage uses the same stop-on-Blocker-or-High and not-applicable evidence
 rules as feature security review. If the bug exposes design drift, the pipeline
 stops for user clarification before changing docs.
 
-Both pipelines read confirmed project design docs as external design authority.
-Both require not-applicable evidence when design-doc sync or full validation is
-outside the locked task boundary.
+The `feature`, `feature-light`, and `bugfix` pipelines read confirmed project
+design docs as external design authority. The `feature` and `bugfix` pipelines
+require not-applicable evidence when design-doc sync or full validation is
+outside the locked task boundary. The `feature-light` pipeline requires
+not-applicable evidence when full validation or security review is outside the
+locked task boundary, and it escalates before implementation when accepted
+design changes need design-first review.
 
 `code-deep-audit.yml` defines the built-in `code-deep-audit` pipeline. It is a
 review-only deep codebase audit. It covers codebase health dimensions 1-9 and

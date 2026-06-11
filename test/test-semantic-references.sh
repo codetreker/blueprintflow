@@ -301,7 +301,7 @@ rm -f /tmp/bf-semantic-stale-repo-update.$$
 
 PKG_VERSION=$(node -e "process.stdout.write(JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8')).version)" "$REPO_ROOT/package.json")
 LOCK_VERSION=$(node -e "const p=JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8')); process.stdout.write(p.version + ' ' + p.packages[''].version)" "$REPO_ROOT/package-lock.json")
-assert_eq "$PKG_VERSION" "0.7.10" "package.json version should be bumped"
-assert_eq "$LOCK_VERSION" "0.7.10 0.7.10" "package-lock root versions should be bumped"
+assert_eq "$PKG_VERSION" "0.7.11" "package.json version should be bumped"
+assert_eq "$LOCK_VERSION" "0.7.11 0.7.11" "package-lock root versions should be bumped"
 
 pass

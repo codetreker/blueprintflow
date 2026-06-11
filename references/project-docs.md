@@ -3,6 +3,12 @@
 Goal: find and use the target project's design documentation as the system
 design authority for BF work.
 
+## User Decision Briefs
+
+Before asking the user to choose between materially different project-doc paths, present a concise decision brief. Name the decision, relevant context and current evidence, realistic options, tradeoffs or consequences, and a recommendation when evidence supports one.
+
+Use the decision brief for material user decision gates such as choosing among multiple candidate doc roots, resolving conflicting instructions, deciding whether to persist an inferred root, choosing how to handle design drift, or returning to design because execution exposed a gap. Lightweight prompts remain valid for simple factual clarifications, status updates, and obvious yes/no confirmations where the context is already clear.
+
 ## Doc Root Discovery
 
 Before treating project docs as authoritative, locate the project's design-doc

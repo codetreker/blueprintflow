@@ -45,6 +45,14 @@ the main session. In Codex, that actor is a Codex subagent. The harness
 does not track task-driver identity or mechanically enforce this delegation
 rule.
 
+Material user decisions are coordinator-owned interaction gates. Before asking
+the user to choose between materially different paths, the coordinator presents
+a decision brief covering the decision, relevant context and current evidence,
+realistic options, tradeoffs or consequences, and a recommendation when evidence
+supports one. Delegated actors return decision-brief input to the coordinator
+instead of asking the user directly. This is an instruction-level rule; the
+harness does not parse or enforce prompt text.
+
 ## Independent Verification
 
 For each task, the actor whose work is reviewed must not be reused as the

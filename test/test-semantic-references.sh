@@ -41,6 +41,16 @@ assert_match "$SKILL_BODY" "cleanup" "root skill should assign coordinator clean
 assert_not_match "$SKILL_BODY" "review-ready handoff" "root skill should not keep old task-driver handoff wording"
 assert_match "$SKILL_BODY" "security" "root skill should name the Core security role"
 assert_match "$SKILL_BODY" "code-deep-audit" "root skill should mention the built-in deep audit pipeline"
+assert_match "$SKILL_BODY" "decision brief" "root skill should require decision briefs at material user decision gates"
+assert_match "$SKILL_BODY" "material user decision gates" "root skill should name material user decision gates"
+assert_match "$SKILL_BODY" "name the decision" "root skill should define decision-brief decision content"
+assert_match "$SKILL_BODY" "relevant context and current evidence" "root skill should define decision-brief context and evidence content"
+assert_match "$SKILL_BODY" "realistic options" "root skill should define decision-brief options content"
+assert_match "$SKILL_BODY" "tradeoffs or consequences" "root skill should define decision-brief tradeoff content"
+assert_match "$SKILL_BODY" "recommendation when evidence supports one" "root skill should define supported recommendation content"
+assert_match "$SKILL_BODY" "simple factual clarifications" "root skill should preserve lightweight factual clarification prompts"
+assert_match "$SKILL_BODY" "status updates" "root skill should preserve lightweight status prompts"
+assert_match "$SKILL_BODY" "obvious yes/no confirmations" "root skill should preserve lightweight yes/no prompts"
 
 SPEC_AUTHORING_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/references/spec-authoring.md")
 assert_match "$SPEC_AUTHORING_BODY" "scope contract" "spec authoring defines task specs as scope contracts"
@@ -77,6 +87,7 @@ assert_match "$BRAINSTORM_BODY" "do not create task specs" "brainstorm forbids t
 assert_match "$BRAINSTORM_BODY" "do not start task breakdown" "brainstorm blocks premature task breakdown"
 assert_match "$BRAINSTORM_BODY" "user explicitly agrees to enter spec authoring" "brainstorm requires explicit transition approval"
 assert_match "$BRAINSTORM_BODY" "one unresolved coverage gap" "brainstorm loop focuses one coverage gap at a time"
+assert_match "$BRAINSTORM_BODY" "decision brief" "brainstorm applies decision briefs to material user decision gates"
 
 EXECUTION_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/references/execution.md")
 EXECUTION_HARD_GATES=$(awk '/^## Hard Gates/{flag=1;next}/^## /{flag=0}flag' "$REPO_ROOT/references/execution.md" | tr '[:upper:]' '[:lower:]')
@@ -163,6 +174,14 @@ assert_not_match "$EXECUTION_BODY" "tasking=0" "execution should not encode task
 assert_not_match "$EXECUTION_BODY" "ready=0" "execution should not encode task state counters in prompt"
 assert_not_match "$EXECUTION_BODY" "draft=0" "execution should not encode task state counters in prompt"
 assert_match "$EXECUTION_BODY" "unmerged branch" "execution documents retained cleanup items"
+assert_match "$EXECUTION_BODY" "decision brief" "execution applies decision briefs to material user decision gates"
+assert_match "$EXECUTION_BODY" "decision-brief input to the coordinator" "execution routes delegated actor decision briefs through coordinator"
+
+PROJECT_DOCS_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/references/project-docs.md")
+assert_match "$PROJECT_DOCS_BODY" "decision brief" "project-docs applies decision briefs to material design-doc decisions"
+
+FEEDBACK_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/references/feedback.md")
+assert_match "$FEEDBACK_BODY" "decision brief" "feedback applies decision briefs before material filing decisions"
 
 REVIEW_TEMPLATE_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/templates/review-result.md")
 assert_match "$REVIEW_TEMPLATE_BODY" "at least one provider-role review file" "review template matches provider-role signoff semantics"
@@ -246,6 +265,11 @@ for role in engineer architect tester pipeline-designer task-driver; do
   assert_match "$ROLE_BODY" "report the ambiguity to the coordinator" "$role role returns unresolved ambiguity to coordinator"
 done
 
+for role in architect engineer pipeline-designer security task-driver tester; do
+  ROLE_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/roles/$role.md")
+  assert_match "$ROLE_BODY" "decision-brief input to the coordinator" "$role role routes material user decisions through the coordinator"
+done
+
 if rg -n "phase-1|phase-2|phase-3" \
   "$REPO_ROOT/SKILL.md" "$REPO_ROOT/references" \
   >/tmp/bf-semantic-refs.$$; then
@@ -301,7 +325,7 @@ rm -f /tmp/bf-semantic-stale-repo-update.$$
 
 PKG_VERSION=$(node -e "process.stdout.write(JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8')).version)" "$REPO_ROOT/package.json")
 LOCK_VERSION=$(node -e "const p=JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8')); process.stdout.write(p.version + ' ' + p.packages[''].version)" "$REPO_ROOT/package-lock.json")
-assert_eq "$PKG_VERSION" "0.7.11" "package.json version should be bumped"
-assert_eq "$LOCK_VERSION" "0.7.11 0.7.11" "package-lock root versions should be bumped"
+assert_eq "$PKG_VERSION" "0.7.12" "package.json version should be bumped"
+assert_eq "$LOCK_VERSION" "0.7.12 0.7.12" "package-lock root versions should be bumped"
 
 pass

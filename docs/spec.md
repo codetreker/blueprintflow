@@ -13,7 +13,11 @@ BF is the npm package `@codetreker/bf`. It provides:
 - `bf-harness` state and verification commands.
 
 The runtime source lives at the repository root. Runtime artifacts must be
-self-contained and must not depend on this `docs/` design record.
+self-contained and must not depend on this `docs/` design record. Shipped
+runtime templates under `templates/` are English-language file shapes; their
+prose, placeholders, and comments are part of the runtime surface while their
+frontmatter keys, section headings, and parser-facing markers remain stable
+contracts.
 
 ## Project Design Authority
 

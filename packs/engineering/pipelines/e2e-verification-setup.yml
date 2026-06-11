@@ -1,0 +1,98 @@
+id: e2e-verification-setup
+desc: Set up reusable E2E verification for repositories without a local protocol
+instruction: |
+  Use this pipeline when runtime-facing feature work needs local E2E verification but the target repository lacks a reusable E2E protocol.
+  Run the stages in order.
+  Each stage must produce its named artifact before the next stage starts.
+  Prefer one stable command or one stable script that owns the local E2E lifecycle: start the environment, wait until ready, run verification, and clean up processes, ports, temporary data, and other local resources.
+  Do not add dependencies, scripts, orchestration, persistent project instructions, credentials, services, or broader setup scope before the user-confirmation stage records explicit confirmation.
+  Keep runtime guidance repository-owned. Do not encode project-specific commands, ports, credentials, services, or startup scripts into BF reusable runtime artifacts.
+  Review stages must remain independent from the actor whose work they review.
+  Stop on any Blocker or High review finding and rerun the affected review stage after fixes.
+  Do not edit locked bf.md or task spec.md content after accept; only the harness may flip checkboxes, advance State, sync Updated, and write task execution metadata.
+stages:
+  - id: protocol-inventory
+    capability: system-architecture
+    output: artifacts/e2e-protocol-inventory.md
+    instruction: |
+      Inventory the target repository's current E2E protocol state.
+      Inspect project instructions, docs, package scripts, E2E configs, Makefiles, docker compose files, CI workflows, and comparable local orchestration files.
+      Record existing, partial, or missing E2E signals and classify the current protocol state.
+      Handoff to setup-proposal with the existing, partial, or missing E2E protocol state.
+      Stop if repository access is insufficient or the current protocol state cannot be classified.
+
+  - id: setup-proposal
+    capability: system-architecture
+    output: artifacts/e2e-setup-proposal.md
+    instruction: |
+      Propose a reusable local E2E setup for the target repository.
+      Record the tool choice, startup path, readiness check, verification command, cleanup path, env or credential needs, data or fixture approach, and stable lifecycle entrypoint.
+      Prefer a stable lifecycle entrypoint that starts required local services, waits for readiness, runs verification, and performs cleanup.
+      Handoff to user-confirmation with the proposed stable lifecycle entrypoint and setup scope.
+      Stop if the proposal omits tool choice, startup, readiness, verification command, cleanup, env or credential needs, data or fixture approach, or stable lifecycle entrypoint.
+
+  - id: user-confirmation
+    capability: system-architecture
+    output: artifacts/e2e-setup-confirmation.md
+    instruction: |
+      Record whether the user confirms the proposed persistent setup changes.
+      This is the gate to setup-implementation only after the user confirms persistent setup changes.
+      Stop before adding dependencies, scripts, orchestration, persistent project instructions, or otherwise expanding setup scope without user confirmation.
+      If the user rejects or narrows the proposal, record the decision and stop or return to setup-proposal as directed by the coordinator.
+
+  - id: setup-implementation
+    capability: software-implementation
+    output: artifacts/e2e-setup-implementation.md
+    instruction: |
+      Implement only the confirmed setup.
+      Record changed files and command evidence for the implementation.
+      Handoff to local-lifecycle-validation with changed files and command evidence.
+      Stop if implementation needs unconfirmed dependencies, services, credentials, persistent instructions, or scope beyond the confirmed setup.
+
+  - id: local-lifecycle-validation
+    capability: software-implementation
+    output: artifacts/e2e-local-validation.md
+    instruction: |
+      Run the stable local lifecycle entrypoint and record command output.
+      Exercise start, readiness, verification, and cleanup in the current environment.
+      Handoff to instruction-persistence only after start, readiness, verification, and cleanup have been exercised.
+      Failure to clean up means the task is not complete.
+      Stop if the lifecycle command fails, if cleanup fails, or if processes, ports, temporary data, or other local resources remain dangling.
+
+  - id: instruction-persistence
+    capability: system-architecture
+    output: artifacts/e2e-instruction-persistence.md
+    instruction: |
+      Persist the confirmed E2E setup in the governing project instruction file, such as AGENTS.md.
+      Record the stable E2E entrypoint, prerequisites, env or credential requirements, fixture or data setup, readiness expectations, verification command, and cleanup behavior.
+      Ensure the instruction is sufficient for a future agent to run the local E2E lifecycle without guessing.
+      Handoff to code-review after the governing project instruction file records the stable entrypoint and prerequisites.
+      Stop if the governing project instruction file is ambiguous, persistence was not confirmed, or the written instruction is not sufficient for a future agent to run E2E.
+
+  - id: code-review
+    capability: quality-assurance
+    output: artifacts/code-review.md
+    instruction: |
+      Run independent review of the setup implementation, lifecycle evidence, instruction persistence, task evidence, and accepted criteria.
+      Check setup correctness, instruction usability, durable tests, stable lifecycle entrypoint behavior, and absence of unsupported setup scope.
+      Handoff to security-review after independent review accepts setup implementation, lifecycle evidence, and instruction persistence.
+      Stop on any Blocker or High finding, missing evidence, unusable instructions, or unsupported accepted criteria signoff.
+
+  - id: security-review
+    capability: security-review
+    output: artifacts/security-review.md
+    instruction: |
+      Review scripts, shell execution, secrets, ports, dependency exposure, logging, cleanup risk, command safety, local services, credential handling, and release integrity as applicable to the confirmed setup.
+      Record not-applicable evidence for security dimensions that do not apply.
+      Handoff to terminal-state-closure after security baseline review signs off or records not-applicable evidence.
+      Stop on any Blocker or High finding for scripts, shell execution, secrets, ports, dependency exposure, logging, cleanup risk, or related security baseline risk.
+
+  - id: terminal-state-closure
+    capability: quality-assurance
+    output: artifacts/terminal-state-closure.md
+    instruction: |
+      Produce task-local terminal-state closure evidence after code-review and security-review.
+      Inspect processes, ports, temporary data, external artifacts, handoffs, local services, generated files, credentials, and other side effects created by setup or validation.
+      Confirm each item is terminal, has an explicit handoff owner, or is blocked by an explicit stop condition.
+      Handoff to task-level BF acceptance review only after local and external side effects are terminal, handed off, or explicitly blocked.
+      Stop if processes, ports, temporary data, external artifacts, or handoffs remain dangling.

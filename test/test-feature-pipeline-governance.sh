@@ -72,4 +72,34 @@ assert_json_field "$SECURITY_STAGE_CHECKS" .capability "security-review"
 assert_json_field "$SECURITY_STAGE_CHECKS" .stopGuidance true
 assert_json_field "$SECURITY_STAGE_CHECKS" .naGuidance true
 
+E2E_STAGE_CHECKS=$(node -e "
+  const p = JSON.parse(process.argv[1]);
+  const validation = p.stages.findIndex((stage) => stage.id === 'validation');
+  const e2e = p.stages.findIndex((stage) => stage.id === 'e2e-protocol-discovery');
+  const code = p.stages.findIndex((stage) => stage.id === 'code-review');
+  const security = p.stages.findIndex((stage) => stage.id === 'security-review');
+  const closure = p.stages.findIndex((stage) => stage.id === 'terminal-state-closure');
+  const stage = p.stages[e2e] || {};
+  const instruction = String(stage.instruction || '').toLowerCase();
+  const hasEvery = (terms) => terms.every((term) => instruction.includes(term));
+  process.stdout.write(JSON.stringify({
+    ordered: validation >= 0 && e2e > validation && code > e2e && security > e2e && closure > e2e,
+    capability: stage.capability || '',
+    output: stage.output || '',
+    sourceInspection: hasEvery(['project instructions', 'docs', 'package scripts', 'e2e', 'makefile', 'docker compose', 'orchestration']),
+    lifecycle: hasEvery(['start', 'readiness', 'verification', 'cleanup']),
+    frontendEvidence: instruction.includes('playwright') && instruction.includes('equivalent'),
+    missingProtocolRoute: hasEvery(['runtime-facing', 'stop', 'e2e-verification-setup', 'coordinator']),
+    skipEvidence: instruction.includes('not-applicable') && instruction.includes('skipped evidence') && instruction.includes('substitute validation'),
+  }));
+" "$PIPELINE_JSON")
+assert_json_field "$E2E_STAGE_CHECKS" .ordered true
+assert_json_field "$E2E_STAGE_CHECKS" .capability "software-implementation"
+assert_json_field "$E2E_STAGE_CHECKS" .output "artifacts/e2e-protocol-discovery.md"
+assert_json_field "$E2E_STAGE_CHECKS" .sourceInspection true
+assert_json_field "$E2E_STAGE_CHECKS" .lifecycle true
+assert_json_field "$E2E_STAGE_CHECKS" .frontendEvidence true
+assert_json_field "$E2E_STAGE_CHECKS" .missingProtocolRoute true
+assert_json_field "$E2E_STAGE_CHECKS" .skipEvidence true
+
 pass

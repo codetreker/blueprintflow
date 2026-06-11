@@ -2,7 +2,7 @@ id: feature
 desc: Feature task with design-first architecture, implementation, validation, docs sync, and review gates
 instruction: |
   Use this design-first pipeline for feature tasks whose execution needs design before code.
-  It requires architecture/design, an evidence plan, task-appropriate validation, design-doc-sync when accepted design changes, independent review, security-review, and terminal-state closure.
+  It requires architecture/design, an evidence plan, task-appropriate validation, E2E protocol discovery for runtime-facing work, design-doc-sync when accepted design changes, independent review, security-review, and terminal-state closure.
   It does not require red-first TDD for every feature task; use the bugfix pipeline when the task is a defect fix that needs strict regression red-green work.
   Run the stages in order.
   Read the task spec, bf.md Goal/Boundary, any relevant discussion, and confirmed project design docs before the first stage, along with the host-runtime strategy.
@@ -73,6 +73,18 @@ stages:
       Run task-appropriate validation and record the command output.
       For runtime or release-facing changes, run full validation unless the locked task contract defines a narrower validation boundary.
       If full validation is not required, write not-applicable evidence explaining the boundary.
+
+  - id: e2e-protocol-discovery
+    capability: software-implementation
+    output: artifacts/e2e-protocol-discovery.md
+    instruction: |
+      Discover and use the target repository's E2E protocol after generic validation and before review.
+      Inspect project instructions, docs, package scripts, E2E test configs, Makefiles, docker compose files, CI workflows, and comparable local orchestration signals.
+      When a protocol exists, use the repository-owned path to start required local services, wait for readiness, run project-appropriate E2E verification, and cleanup processes, ports, temporary data, and other local resources.
+      For frontend runtime work, record Playwright output or output from the equivalent project E2E tool as the expected evidence shape.
+      When runtime-facing work lacks a repository-owned E2E protocol, stop before code-review instead of guessing commands. Write the missing-protocol finding, inspected sources, and exact coordinator action needed: route or create a separate accepted setup task using the built-in e2e-verification-setup pipeline, or return to DDD if the current task contract must change.
+      Do not treat missing runtime-facing E2E as skipped evidence.
+      When E2E is not applicable to the task or cannot run in the current environment, record explicit not-applicable or skipped evidence with the reason and substitute validation.
 
   - id: code-review
     capability: quality-assurance

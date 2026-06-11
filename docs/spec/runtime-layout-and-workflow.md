@@ -62,9 +62,11 @@ BF core uses generic actor names:
 
 - `coordinator`: the main session. The coordinator runs `next`, manages task
   assignment, records host-runtime strategy, accounts for actor lifecycle,
-  dispatches BF acceptance reviewers, and owns Final Acceptance.
+  dispatches BF acceptance reviewers, reruns final task verify, coordinates PR
+  merge, runs `complete` and task cleanup, and owns Final Acceptance.
 - `task driver`: an actor that executes one concrete task by following the
-  selected task pipeline and producing a review-ready handoff.
+  selected task pipeline, running task review and readiness verify when the
+  host runtime allows, and producing an acceptance-ready handoff.
 - `leaf worker`: a bounded helper for one stage or artifact, used only when the
   current host runtime supports nested delegation from the current actor.
 - `reviewer`: an independent actor that writes review results.
@@ -73,9 +75,12 @@ Claude Code `teammate` can be a task driver. Codex subagent can be a task
 driver when the coordinator can track closure and capacity. Host-specific actor
 names do not become BF core roles.
 
-The coordinator runs `start-review` for Spec Review, Task Verification, and
-Final Acceptance. The coordinator runs `verify` for Spec Review, Task
-Verification, and Final Acceptance. Task drivers do not advance locked BF state.
+The coordinator runs `start-review` and `verify` for Spec Review and Final
+Acceptance. For Task Verification, a task driver may start task review and run
+readiness verify when the host-runtime strategy allows that delegation. The
+coordinator reruns task verify before merge and completion. `verify` may flip
+ACs, but `complete` performs terminal state transitions. Task drivers do not
+run `complete`, PR merge, or task cleanup.
 
 ## End-To-End Workflow
 
@@ -156,27 +161,36 @@ Verification, and Final Acceptance. Task drivers do not advance locked BF state.
      silently expanding locked scope.
    - Run acceptance-readiness terminal-state closure before task-level BF
      acceptance review. This task-level closure does not clean BF-owned task
-     worktrees or task branches because Task Verification and the PR gate may
-     still need them.
+     worktrees or task branches because final coordinator verify, PR merge, and
+     `complete` may still need them.
+   - When the host-runtime strategy allows it, the task driver may start the
+     task review round, dispatch independent reviewer actors, and run
+     `bf-harness verify <bf-wo>/<task>` as a readiness check. Otherwise the
+     coordinator performs those task review steps.
    - If the task has a GitHub PR, record it with
      `bf-harness attach-pr <bf-wo>/<task> <github-pr-url>`.
-   - The coordinator runs `bf-harness start-review <bf-wo>/<task>`.
-   - The coordinator dispatches independent reviewer actors to write review results.
-   - The coordinator runs `bf-harness verify <bf-wo>/<task>` until the task verifies. For
-     GitHub repositories, worktree-required task verification also checks that
-     the recorded same-repository PR is merged. Non-GitHub providers remain
-     process-gated by pipeline and review evidence.
+   - The task driver hands task evidence, review results, readiness verify
+     output, and PR metadata back to the coordinator.
+   - The coordinator reruns `bf-harness verify <bf-wo>/<task>` on the latest
+     task review round until the task verifies.
    - If task verification fails, verification-fix work goes to the same task
      driver or a new task driver. The coordinator opens a new review round and
      reruns verification after the fix and independent review.
-   - After task verification succeeds, run
-     `bf-harness cleanup <bf-wo>/<task>` for that task after any task PR is
-     merged. Retained dirty worktrees, unmerged branches, and path conflicts
-     are reported, not force-deleted.
+   - After task verification succeeds, the coordinator merges the recorded PR
+     when one is present.
+   - The coordinator runs `bf-harness complete <bf-wo>/<task>`.
+   - After task `complete` succeeds, run `bf-harness cleanup <bf-wo>/<task>`
+     for that task. Retained dirty worktrees, unmerged branches, and path
+     conflicts are reported, not force-deleted.
    - Before bf-level final acceptance, run `bf-harness status <bf-wo>`.
      Enter Final Acceptance only when status says all tasks are completed.
-     Final Acceptance uses bf-level reviewers and existing harness verification;
-     it does not add cross-task tracking of every task driver.
+   - The coordinator runs `bf-harness start-review <bf-wo>`, dispatches
+     bf-level reviewers, and runs `bf-harness verify <bf-wo>` until Final
+     Acceptance succeeds. Final Acceptance uses bf-level reviewers and existing
+     harness verification; it does not add cross-task tracking of every task
+     driver.
+   - After Final Acceptance verify succeeds, the coordinator runs
+     `bf-harness complete <bf-wo>`.
    - After Final Acceptance, the orchestrator may make an advisory note when a
      bf-wo local pipeline appears reusable. This is advisory only.
    - Execution completion must not promote local pipelines, edit extension packs,

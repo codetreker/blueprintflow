@@ -1,0 +1,2 @@
+id: e2e-verification-setup
+desc: Set up reusable E2E verification for repositories without a local protocol

@@ -113,8 +113,8 @@ worktree and safely delete its merged local branch.
 ## Built-In Engineering Pipelines
 
 The engineering pack ships separate pipelines for lightweight feature work,
-design-first feature work, defect fixes, and review-only deep codebase audit
-work.
+design-first feature work, reusable E2E verification setup, defect fixes, and
+review-only deep codebase audit work.
 
 `feature-light.yml` is the lightweight feature pipeline for small, clear,
 low-risk feature tasks. It uses a compact `scope-plan` stage before
@@ -130,17 +130,58 @@ security-sensitive behavior design before code.
 
 `feature.yml` is design-first. It requires architecture/design artifacts,
 pre-implementation review, implementation, design-doc sync when accepted system
-design changes, task-appropriate validation, multi-perspective independent
-review, security review, and terminal-state closure. The security role owns the
-`security-review` stage after code review and before terminal-state closure.
-That stage stops on Blocker or High findings and records not-applicable evidence
-when the task has no security-relevant change. It does not require red-first TDD
-for every feature task; the task contract chooses the evidence and validation
-boundary. The accepted task spec supplies the scope contract. The pipeline's
-architecture-design and implementation-design stages own file-level
-investigation, exact commands, API shapes, migration strategy, and
-implementation sequence unless those details were already accepted as
+design changes, task-appropriate validation, E2E protocol discovery for
+runtime-facing work, multi-perspective independent review, security review, and
+terminal-state closure. The `e2e-protocol-discovery` stage runs after generic
+`validation` and before `code-review`, `security-review`, and
+`terminal-state-closure`. It discovers the target repository's E2E protocol
+from project instructions, docs, package scripts, E2E configs, Makefiles,
+docker compose files, CI workflows, and comparable local orchestration signals.
+When a protocol exists, the feature pipeline uses the repository-owned path to
+start required local services, wait for readiness, run project-appropriate E2E
+verification, and clean up resources. Frontend runtime work uses Playwright
+output or output from the equivalent project E2E tool as the expected evidence
+shape.
+
+When runtime-facing feature work lacks a repository-owned E2E protocol,
+`feature.yml` stops before review instead of guessing commands. The missing
+mechanism is routed by the coordinator and user through a separate accepted task
+using the built-in `e2e-verification-setup` pipeline, or through DDD if the
+current contract must change. This is an instruction-level handoff, not a
+dynamic harness transition. If E2E is not applicable or cannot run in the
+current environment, the feature pipeline records explicit not-applicable or
+skipped evidence with the reason and substitute validation.
+
+The security role owns the `security-review` stage after code review and before
+terminal-state closure. That stage stops on Blocker or High findings and records
+not-applicable evidence when the task has no security-relevant change. It does
+not require red-first TDD for every feature task; the task contract chooses the
+evidence and validation boundary. The accepted task spec supplies the scope
+contract. The pipeline's architecture-design and implementation-design stages
+own file-level investigation, exact commands, API shapes, migration strategy,
+and implementation sequence unless those details were already accepted as
 user-facing contract or required Evidence.
+
+`e2e-verification-setup.yml` is the built-in setup pipeline for repositories
+that need a reusable local E2E mechanism before runtime-facing feature work can
+be locally E2E-verified. Its stage order is exactly `protocol-inventory`,
+`setup-proposal`, `user-confirmation`, `setup-implementation`,
+`local-lifecycle-validation`, `instruction-persistence`, `code-review`,
+`security-review`, and `terminal-state-closure`. The pipeline inventories
+existing or partial E2E signals, proposes the tool and lifecycle shape, gates
+persistent setup changes on user confirmation, implements only the confirmed
+scope, validates the start-readiness-verify-cleanup lifecycle, persists the
+stable entrypoint and prerequisites in the governing project instruction file
+such as `AGENTS.md`, then runs independent code, security, and closure review.
+The setup guidance prefers one stable command or script that owns the local E2E
+lifecycle and cleans up processes, ports, temporary data, and other resources.
+Failure to clean up is a stop condition.
+
+Built-in runtime artifacts remain self-contained. Pipeline files include the
+instructions task drivers need at execution time and must not depend on this
+design document for operational details. Durable rationale and accepted design
+history live here; runtime commands and gates live in the shipped pipeline
+files.
 
 Choose `feature-light` when a small feature can be planned with a compact
 scope-plan and the reviewer can validate the diff, evidence, security posture,

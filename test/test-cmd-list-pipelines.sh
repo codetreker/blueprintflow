@@ -12,11 +12,14 @@ STDOUT=$(node --input-type=module -e "
   });
 ")
 assert_json_field "$STDOUT" .ok true
-assert_json_field "$STDOUT" .pipelines.0.id "feature"
-assert_json_field "$STDOUT" .pipelines.0.desc "Feature task pipeline"
+assert_match "$STDOUT" '"id":"e2e-verification-setup"' "e2e setup pipeline included"
+assert_match "$STDOUT" '"desc":"Set up reusable E2E verification for repositories without a local protocol"' "e2e setup pipeline description"
+assert_match "$STDOUT" '"id":"feature"' "feature pipeline included"
+assert_match "$STDOUT" '"desc":"Feature task pipeline"' "feature pipeline description"
 assert_json_field "$STDOUT" .pipelines.0.pack "engineering"
 assert_json_field "$STDOUT" .pipelines.0.source "core"
 assert_match "$STDOUT" "packs/engineering/pipelines/feature.yml" "pipeline path"
+assert_match "$STDOUT" "packs/engineering/pipelines/e2e-verification-setup.yml" "e2e pipeline path"
 
 # --pack filters to the effective pack registry entry.
 STDOUT=$(node --input-type=module -e "
@@ -25,7 +28,8 @@ STDOUT=$(node --input-type=module -e "
   });
 ")
 assert_json_field "$STDOUT" .ok true
-assert_json_field "$STDOUT" .pipelines.0.id "feature"
+assert_match "$STDOUT" '"id":"e2e-verification-setup"' "pack filter includes e2e setup pipeline"
+assert_match "$STDOUT" '"id":"feature"' "pack filter includes feature pipeline"
 
 # Missing pack matches list-roles --pack behavior.
 STDOUT=$(node --input-type=module -e "
@@ -101,8 +105,10 @@ run_bf list-pipelines --pack engineering
 assert_eq "$RC" "0" "list-pipelines exit 0"
 for label in "Id:" "Desc:" "Path:"; do
   count=$(printf "%s\n" "$STDOUT" | grep -c "^${label}")
-  assert_eq "$count" "1" "list-pipelines stdout has exactly one '^${label}' line"
+  assert_eq "$count" "2" "list-pipelines stdout has exactly two '^${label}' lines"
 done
+assert_match "$STDOUT" "Id: e2e-verification-setup" "E2E setup Id line value"
+assert_match "$STDOUT" "Desc: Set up reusable E2E verification for repositories without a local protocol" "E2E setup Desc line value"
 assert_match "$STDOUT" "Id: feature" "Id line value"
 assert_not_match "$STDOUT" "Pack:" "list-pipelines omits pack details"
 assert_not_match "$STDOUT" "Source:" "list-pipelines omits source details"

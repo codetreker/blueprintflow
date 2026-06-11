@@ -25,6 +25,10 @@ assert_match "$SKILL_BODY" "resume" "root skill should route existing work resum
 assert_match "$SKILL_BODY" "feedback" "root skill should route feedback flow"
 assert_match "$SKILL_BODY" "explicit authorization" "root skill should treat BF trigger as actor authorization"
 assert_match "$SKILL_BODY" "host-compatible actor" "root skill should scope actor authorization to host-compatible BF actors"
+assert_match "$SKILL_BODY" "codex uses subagent actors for task drivers, leaf workers, and reviewers" "root skill should map Codex BF actors to subagents"
+assert_match "$SKILL_BODY" "claude code uses \`teammate\` for task drivers" "root skill should map Claude Code task drivers to teammates"
+assert_match "$SKILL_BODY" "claude code uses subagents for leaf workers and reviewers" "root skill should map Claude Code non-driver actors to subagents"
+assert_not_match "$SKILL_BODY" "in claude code, this includes \`teammate\` actors" "root skill must not imply every Claude Code BF actor is a teammate"
 assert_match "$SKILL_BODY" "read \`references/brainstorm.md\` first" "root skill should route new work through brainstorm before bootstrap details"
 assert_match "$SKILL_BODY" "brainstorm owns pack selection, bootstrap, and the first accepted discussion entry" "root skill should keep new-work bootstrap inside brainstorm"
 assert_match "$SKILL_BODY" "bf-harness complete" "root skill should include complete as terminal state command"
@@ -70,6 +74,11 @@ assert_match "$BRAINSTORM_BODY" "user explicitly agrees to enter spec authoring"
 assert_match "$BRAINSTORM_BODY" "one unresolved coverage gap" "brainstorm loop focuses one coverage gap at a time"
 
 EXECUTION_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/references/execution.md")
+EXECUTION_HARD_GATES=$(awk '/^## Hard Gates/{flag=1;next}/^## /{flag=0}flag' "$REPO_ROOT/references/execution.md" | tr '[:upper:]' '[:lower:]')
+EXECUTION_TASK_LOOP=$(awk '/^## Task Loop/{flag=1;next}/^## /{flag=0}flag' "$REPO_ROOT/references/execution.md" | tr '[:upper:]' '[:lower:]')
+EXECUTION_TASK_DRIVER_TEMPLATE=$(awk '/^## Task Driver Prompt Template/{flag=1;next}/^## /{flag=0}flag' "$REPO_ROOT/references/execution.md" | tr '[:upper:]' '[:lower:]')
+EXECUTION_TASK_DRIVER_TEMPLATE_INSTRUCTIONS=$(awk '/^instructions:/{flag=1;next}/^boundaries:/{flag=0}flag' <<< "$EXECUTION_TASK_DRIVER_TEMPLATE")
+EXECUTION_TASK_DRIVER_TEMPLATE_BOUNDARIES=$(awk '/^boundaries:/{flag=1;next}/^```/{flag=0}flag' <<< "$EXECUTION_TASK_DRIVER_TEMPLATE")
 assert_match "$EXECUTION_BODY" "phase gate" "execution has directive phase gate"
 assert_match "$EXECUTION_BODY" "select eligible task blocks" "execution lets the harness select work batches"
 assert_match "$EXECUTION_BODY" "do not inspect all task specs" "execution forbids task selection by spec inspection"
@@ -86,16 +95,48 @@ assert_match "$EXECUTION_BODY" "bf-harness complete <bf-wo>/<task>" "execution c
 assert_match "$EXECUTION_BODY" "bf-harness complete <bf-wo>" "execution completes final acceptance through harness"
 assert_match "$EXECUTION_BODY" "any task pr is merged" "execution runs cleanup after optional task PR merge"
 assert_match "$EXECUTION_BODY" "do not defer task worktree cleanup to final" "execution forbids final-acceptance cleanup deferral"
+assert_not_match "$EXECUTION_HARD_GATES" "a task driver may run task review and readiness verification" "execution hard gates should not contain task-driver capability notes"
+assert_not_match "$EXECUTION_HARD_GATES" "reruns task \`verify\` after task-driver handoff" "execution hard gates should not duplicate task loop verify steps"
+assert_not_match "$EXECUTION_HARD_GATES" "merges task prs, runs task \`complete\`, runs task-scoped \`cleanup\`" "execution hard gates should not duplicate task loop closure steps"
+assert_match "$EXECUTION_HARD_GATES" "task-driver proxy mode" "execution hard gates allow explicit task-driver proxy mode"
+assert_match "$EXECUTION_HARD_GATES" "missing subagent tool" "execution hard gates scope task-driver proxy mode to missing subagent capability"
 assert_match "$EXECUTION_BODY" "task blocks" "execution treats next output as task blocks"
 assert_match "$EXECUTION_BODY" "task driver" "execution delegates returned task blocks to task drivers"
-assert_match "$EXECUTION_BODY" "each returned task gets one task driver" "execution dispatches one task driver per returned task"
+assert_match "$EXECUTION_TASK_LOOP" "if \`next\` returns task blocks" "task loop branches on returned task blocks"
+assert_match "$EXECUTION_TASK_LOOP" "assign one task driver" "task loop assigns task drivers"
+assert_match "$EXECUTION_TASK_LOOP" "each returned task" "task loop scopes assignment to returned tasks"
+assert_match "$EXECUTION_TASK_LOOP" "missing subagent tool" "task loop handles task-driver missing subagent tool reports"
+assert_match "$EXECUTION_TASK_LOOP" "task-driver proxy mode" "task loop enters task-driver proxy mode when delegation is unavailable"
+assert_match "$EXECUTION_TASK_LOOP" "serially" "task loop serializes work in task-driver proxy mode"
+assert_match "$EXECUTION_TASK_LOOP" "other returned task blocks" "task loop defers sibling task blocks during coordinator proxy"
+assert_not_match "$EXECUTION_TASK_LOOP" "if \`next\` returns task blocks, do not read task specs or pipelines locally" "task loop should not keep an empty no-op branch before assignment"
+assert_match "$EXECUTION_TASK_LOOP" "on fail" "task loop handles verify failures"
+assert_match "$EXECUTION_TASK_LOOP" "verify result" "task loop reads verify failure results"
+assert_match "$EXECUTION_TASK_LOOP" "original task driver" "task loop returns verify failures to the original task driver"
+assert_match "$EXECUTION_TASK_LOOP" "when available" "task loop tolerates missing original task driver"
+assert_match "$EXECUTION_TASK_LOOP" "wait for completion" "task loop waits for task-driver completion before retry"
+assert_match "$EXECUTION_TASK_LOOP" "before rerunning verify" "task loop verifies only after the next handoff"
+assert_not_match "$EXECUTION_TASK_LOOP" "require a fresh review round with fresh independent reviewers after fixes" "task loop should not instruct invisible task-driver internals"
 assert_match "$EXECUTION_BODY" "## task driver prompt template" "execution provides a task driver prompt template"
 assert_match "$EXECUTION_BODY" "use this template when starting or resuming a task driver" "execution scopes the task driver prompt template"
-assert_match "$EXECUTION_BODY" "first, read your role instruction: \`roles/task-driver.md\`" "task driver prompt starts by reading task-driver role"
-assert_match "$EXECUTION_BODY" "you are task-driver, working on" "task driver prompt identifies the task driver target"
-assert_match "$EXECUTION_BODY" "paste the complete task block returned by \`bf-harness next\`" "task driver prompt passes through next output"
-assert_match "$EXECUTION_BODY" "read this task's \`spec.md\` and selected pipeline" "task driver prompt requires own task spec and pipeline"
-assert_match "$EXECUTION_BODY" "report changed files, evidence artifacts" "task driver prompt requires completion handoff evidence"
+assert_match "$EXECUTION_TASK_DRIVER_TEMPLATE" "first, read your role instruction: \`roles/task-driver.md\`" "task driver prompt starts by reading task-driver role"
+assert_match "$EXECUTION_TASK_DRIVER_TEMPLATE" "you are task-driver, working on" "task driver prompt identifies the task driver target"
+assert_match "$EXECUTION_TASK_DRIVER_TEMPLATE" "paste the complete task block returned by \`bf-harness next\`" "task driver prompt passes through next output"
+assert_match "$EXECUTION_TASK_DRIVER_TEMPLATE_INSTRUCTIONS" "follow \`roles/task-driver.md\`" "task driver prompt delegates detailed instructions to the role"
+assert_match "$EXECUTION_TASK_DRIVER_TEMPLATE_INSTRUCTIONS" "task execution" "task driver prompt delegates task execution to the role"
+assert_match "$EXECUTION_TASK_DRIVER_TEMPLATE_INSTRUCTIONS" "review" "task driver prompt delegates review to the role"
+assert_match "$EXECUTION_TASK_DRIVER_TEMPLATE_INSTRUCTIONS" "readiness verification" "task driver prompt delegates readiness verification to the role"
+assert_match "$EXECUTION_TASK_DRIVER_TEMPLATE_INSTRUCTIONS" "handoff" "task driver prompt delegates handoff to the role"
+assert_match "$EXECUTION_TASK_DRIVER_TEMPLATE_INSTRUCTIONS" "report changed files, evidence artifacts" "task driver prompt requires completion handoff evidence"
+assert_match "$EXECUTION_TASK_DRIVER_TEMPLATE" "boundaries:" "task driver prompt separates prohibited actions from instructions"
+assert_match "$EXECUTION_TASK_DRIVER_TEMPLATE_BOUNDARIES" "do not work outside the returned task" "task driver prompt keeps scope boundary under Boundaries"
+assert_match "$EXECUTION_TASK_DRIVER_TEMPLATE_BOUNDARIES" "do not merge prs" "task driver prompt keeps PR merge boundary under Boundaries"
+assert_match "$EXECUTION_TASK_DRIVER_TEMPLATE_BOUNDARIES" "run \`bf-harness complete\`" "task driver prompt keeps complete boundary under Boundaries"
+assert_match "$EXECUTION_TASK_DRIVER_TEMPLATE_BOUNDARIES" "run cleanup" "task driver prompt keeps cleanup boundary under Boundaries"
+assert_match "$EXECUTION_TASK_DRIVER_TEMPLATE_BOUNDARIES" "perform final acceptance" "task driver prompt keeps Final Acceptance boundary under Boundaries"
+assert_match "$EXECUTION_TASK_DRIVER_TEMPLATE_BOUNDARIES" "do not edit locked \`bf.md\` or task \`spec.md\` fields" "task driver prompt keeps locked-field boundary under Boundaries"
+assert_not_match "$EXECUTION_TASK_DRIVER_TEMPLATE" "run or coordinate task review" "task driver prompt should not duplicate task-driver role execution details"
+assert_not_match "$EXECUTION_TASK_DRIVER_TEMPLATE" "if fixes are required after review or verify" "task driver prompt should not duplicate task-driver role retry details"
 assert_not_match "$EXECUTION_BODY" "## role-bound worker prompt template" "execution should not carry task-driver worker prompt template"
 assert_not_match "$EXECUTION_BODY" "use this template when the coordinator or a task driver starts" "execution should not define shared worker template"
 assert_match "$EXECUTION_BODY" "do not read, summarize, or inline the role instruction" "parent actors do not proxy child role prompts"
@@ -125,6 +166,29 @@ assert_not_match "$REVIEW_TEMPLATE_BODY" "all required reviewer" "review templat
 ENGINEERING_PACK_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/packs/engineering/pack.md")
 assert_match "$ENGINEERING_PACK_BODY" "small enough that one host-compatible task driver can finish it" "engineering breakdown avoids engineer subagent task ownership"
 assert_not_match "$ENGINEERING_PACK_BODY" "pick doers" "engineering pack avoids stale doer vocabulary"
+
+TASK_DRIVER_OPERATING_RULES=$(awk '/^## Operating Rules/{flag=1;next}/^## /{flag=0}flag' "$REPO_ROOT/roles/task-driver.md" | tr '[:upper:]' '[:lower:]')
+assert_match "$TASK_DRIVER_OPERATING_RULES" "immediately check" "task-driver startup checks runtime capability immediately"
+assert_match "$TASK_DRIVER_OPERATING_RULES" "subagent tool" "task-driver startup checks for subagent tool availability"
+assert_match "$TASK_DRIVER_OPERATING_RULES" "missing subagent tool" "task-driver reports missing subagent tool distinctly"
+assert_match "$TASK_DRIVER_OPERATING_RULES" "coordinator proxy" "task-driver hands task-driver work to coordinator proxy when subagent tool is missing"
+assert_match "$TASK_DRIVER_OPERATING_RULES" "before reading the task spec" "task-driver performs subagent capability check before task work"
+
+TASK_DRIVER_REVIEW_RULE=$(awk '
+  /^- Run or coordinate task review and readiness verification/ { flag=1 }
+  /^- Start every role-bound worker prompt/ { flag=0 }
+  flag { print }
+' "$REPO_ROOT/roles/task-driver.md" | tr '[:upper:]' '[:lower:]')
+assert_match "$TASK_DRIVER_REVIEW_RULE" "fresh independent reviewers" "task-driver retry requires fresh independent reviewers"
+assert_not_match "$TASK_DRIVER_REVIEW_RULE" "fresh independent reviewers when possible" "task-driver retry must not make fresh reviewers optional"
+assert_not_match "$TASK_DRIVER_REVIEW_RULE" "when possible before retrying readiness verification" "task-driver retry must not use permissive readiness-verification wording"
+assert_match "$TASK_DRIVER_REVIEW_RULE" "host runtime cannot provide reviewers or readiness verification" "task-driver handles unsupported review/readiness capability"
+assert_match "$TASK_DRIVER_REVIEW_RULE" "stop" "task-driver unsupported review/readiness capability stops"
+assert_match "$TASK_DRIVER_REVIEW_RULE" "report" "task-driver unsupported review/readiness capability reports"
+assert_match "$TASK_DRIVER_REVIEW_RULE" "coordinator" "task-driver unsupported review/readiness capability hands off to coordinator"
+assert_match "$TASK_DRIVER_REVIEW_RULE" "do not retry verification" "task-driver missing review/readiness gate blocks verification retry"
+assert_match "$TASK_DRIVER_REVIEW_RULE" "claim readiness" "task-driver missing review/readiness gate blocks readiness claim"
+assert_match "$TASK_DRIVER_REVIEW_RULE" "missing gate" "task-driver missing review/readiness gate must be resolved before proceeding"
 
 for role in engineer architect tester pipeline-designer task-driver; do
   ROLE_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/roles/$role.md")
@@ -186,7 +250,7 @@ rm -f /tmp/bf-semantic-stale-doer.$$
 if rg -n "subagent|subagents|Subagent|Subagents" \
   "$REPO_ROOT/SKILL.md" "$REPO_ROOT/references" "$REPO_ROOT/packs/engineering" \
   "$REPO_ROOT/roles" "$REPO_ROOT/templates" \
-  | grep -v -E "Codex subagent|Codex, that actor is a Codex subagent|Codex subagent can be" \
+  | grep -v -E "Codex subagent|Codex, that actor is a Codex subagent|Codex subagent can be|Codex uses subagent actors for task drivers, leaf workers, and reviewers|Claude Code uses subagents for leaf workers and reviewers|subagent tool" \
   >/tmp/bf-semantic-stale-subagent.$$; then
   cat /tmp/bf-semantic-stale-subagent.$$ >&2
   rm -f /tmp/bf-semantic-stale-subagent.$$

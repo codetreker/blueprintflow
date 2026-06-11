@@ -16,14 +16,14 @@ User approval to continue does not replace harness transitions. Continue means: 
 
 ## Hard Gates
 
-- The coordinator is the main session. It runs `next`, assigns or resumes task drivers, reruns task `verify` after task-driver handoff, merges task PRs, runs task `complete`, runs task-scoped `cleanup`, runs Final Acceptance review, runs Final Acceptance `verify`, runs Final Acceptance `complete`, and owns actor lifecycle accounting.
+- The coordinator is the main session. It owns harness command sequencing, task-driver assignment or resume, coordinator-only closure gates, Final Acceptance gates, and actor lifecycle accounting.
 - Using `$bf` or `/bf` is explicit authorization for BF-scoped host-compatible task drivers, leaf workers, and independent reviewers. It does not authorize skipping harness gates.
 - Do not edit project files for a BF task until `bf-harness next <bf-wo>` returns that task block.
 - Do not inspect all task specs to choose work. The harness selects the task batch.
-- At task entry, a task driver first reads `roles/task-driver.md`, then reads only the spec and pipeline for its returned task block.
+- At task entry, a task driver first reads `roles/task-driver.md`, runs the startup capability check, then reads only the spec and pipeline for its returned task block.
+- Do not read task specs or pipelines locally as coordinator for returned task blocks.
 - If the task has `Requires-Worktree: true`, work only in the returned or recorded `Worktree`.
-- Assign claimed task work and verification fixes to a host-compatible task driver. The coordinator does not do task leaf work unless the user explicitly overrides this gate.
-- A task driver may run task review and readiness verification when the host runtime supports it. The coordinator still reruns task `verify` before merge, `complete`, and `cleanup`.
+- Assign claimed task work and verification fixes to a host-compatible task driver. The coordinator does not do task leaf work unless the user explicitly overrides this gate or task-driver proxy mode is active after a missing subagent tool report.
 - When starting a task driver, leaf worker, or reviewer, pass the role instruction path and require that actor to read its own role instruction first. Do not read, summarize, or inline the role instruction for that actor.
 - Reviewers must be different actor instances from the actor whose work is reviewed.
 - If accepted scope, boundary, acceptance, or design intent is unclear, read `discussion.md`. If the answer is still missing, append the ambiguity and stop for clarification.
@@ -37,18 +37,20 @@ Repeat until no task remains:
 
 1. Run `bf-harness next <bf-wo>`.
 2. If `next` returns no eligible task, enter Final Acceptance. Do not manually pick a task.
-3. If `next` returns task blocks, do not read task specs or pipelines locally.
-4. Each returned task gets one task driver. The coordinator decides whether that block starts a new driver or resumes an existing one.
-5. Give each task driver the returned task block, the BF work-object id, the returned worktree if any, and the instruction to read its own role, spec, and pipeline. Use the Task Driver Prompt Template.
-6. Wait until each task driver reports completion. Give it enough time to finish and do not terminate it lightly.
-7. If the task driver reports a blocker, read the blocker and take the coordinator action it requested, or stop for user clarification.
-8. Rerun `bf-harness verify <bf-wo>/<task>` after task-driver handoff.
-9. On FAIL, read the verify result, prefer the original task driver for task implementation, evidence, or AC fixes, require a fresh review round with fresh independent reviewers after fixes, and verify again.
-10. On SUCCESS, merge the task PR when the task produced a PR.
-11. Run `bf-harness complete <bf-wo>/<task>`.
-12. Run `bf-harness cleanup <bf-wo>/<task>` after `complete` succeeds and any task PR is merged.
-13. Report retained task worktrees or branches. Do not force-delete them.
-14. Return to step 1.
+3. If `next` returns task blocks, assign one task driver to each returned task while normal delegation is available. Each returned task gets one task driver, either new or resumed by coordinator decision.
+4. Give each task driver the returned task block, the BF work-object id, the returned worktree if any, and the instruction to read its own role, spec, and pipeline. Use the Task Driver Prompt Template.
+5. Wait for each newly started task driver to report its startup capability check before starting other returned task blocks.
+6. If a task driver reports missing subagent tool, enter task-driver proxy mode for that task. Defer other returned task blocks and serially perform the task-driver responsibilities for the proxied task before returning to `next`.
+7. Wait until each task driver reports completion. Give it enough time to finish and do not terminate it lightly.
+8. If the task driver reports a blocker, read the blocker and take the coordinator action it requested, or stop for user clarification.
+9. Rerun `bf-harness verify <bf-wo>/<task>` after task-driver handoff.
+10. On FAIL, read the verify result and return it to the original task driver when available. Prefer the original task driver for task implementation, evidence, or AC fixes.
+11. Return to task-driver handoff and wait for completion before rerunning verify.
+12. On SUCCESS, merge the task PR when the task produced a PR.
+13. Run `bf-harness complete <bf-wo>/<task>`.
+14. Run `bf-harness cleanup <bf-wo>/<task>` after `complete` succeeds and any task PR is merged.
+15. Report retained task worktrees or branches. Do not force-delete them.
+16. Return to step 1.
 
 ## Task Driver Prompt Template
 
@@ -68,15 +70,17 @@ Resume context: <existing driver context, or new task>
 Instructions:
 1. After reading `roles/task-driver.md`, work only on this returned task.
 2. If a Worktree is provided, run commands from that Worktree.
-3. Read this task's `spec.md` and selected pipeline.
-4. Follow the pipeline stages in order and produce every required Evidence artifact.
-5. Open and record the task PR when the task requires one.
-6. Run or coordinate task review and readiness verify when the host runtime allows it. Use independent reviewers.
-7. If fixes are required after review or verify, complete the fixes, start a fresh review round with fresh independent reviewers, and verify again.
-8. Do not merge PRs, run `bf-harness complete`, run cleanup, or perform Final Acceptance.
-9. Do not edit locked `bf.md` or task `spec.md` fields.
-10. If blocked, stop and report the blocker, evidence already produced, and the exact coordinator action needed.
-11. When complete, report changed files, evidence artifacts, validation output, review round, verify output, commit or branch, PR URL if any, retained risks, and whether task-local terminal-state closure evidence is ready.
+3. Run the startup capability check from `roles/task-driver.md` before reading the task spec or selected pipeline.
+4. If the startup check reports missing subagent tool, stop and request coordinator proxy.
+5. Read this task's `spec.md` and selected pipeline only after the startup check passes.
+6. Follow `roles/task-driver.md` for task execution, review, readiness verification, and handoff.
+7. When blocked, report the blocker, evidence already produced, and the exact coordinator action needed.
+8. When complete, report changed files, evidence artifacts, validation output, review round, verify output, commit or branch, PR URL if any, retained risks, and whether task-local terminal-state closure evidence is ready.
+
+Boundaries:
+- Do not work outside the returned task.
+- Do not merge PRs, run `bf-harness complete`, run cleanup, or perform Final Acceptance.
+- Do not edit locked `bf.md` or task `spec.md` fields.
 ```
 
 ## Final Acceptance

@@ -11,8 +11,9 @@ Capabilities:
 
 You are the task driver.
 You own execution of one BF task block returned by the coordinator.
-You do not choose tasks, merge PRs, run `bf-harness complete`, run cleanup, or perform Final Acceptance; the coordinator owns those gates.
-You read the task's `spec.md` and selected pipeline, drive the pipeline stages in order, open and record the task PR when needed, run task review and readiness verification when possible, and return an acceptance-ready handoff with evidence.
+You own task execution, task review/readiness verification, fix loops, and the acceptance-ready handoff.
+The coordinator owns task selection, PR merge, `bf-harness complete`, cleanup, and Final Acceptance gates.
+You read the task's `spec.md` and selected pipeline, drive the pipeline stages in order, produce evidence, open and record the task PR when needed, run task review and readiness verification when possible, and return an acceptance-ready handoff.
 
 ## Contract Ambiguity
 
@@ -21,13 +22,18 @@ If it does not answer the question, report the ambiguity to the coordinator and 
 
 ## Operating Rules
 
+- Immediately check whether the host runtime exposes the subagent tool needed for leaf workers and reviewers before reading the task spec or selected pipeline.
+  If the subagent tool is missing, report `missing subagent tool` to the coordinator and request coordinator proxy for this task-driver work.
+  Stop task work until the coordinator takes over or returns a new instruction.
 - Work only on the returned task block.
 - If a `Worktree` is provided, run commands from that worktree.
 - Follow the selected pipeline stages in order.
   Produce every required Evidence artifact before claiming the task is ready for review.
 - Open and record the task PR when the task requires one.
 - Run or coordinate task review and readiness verification when host runtime support allows it.
-  If fixes are required after review or verify, use a fresh review round with fresh independent reviewers after the fixes.
+  If review or readiness verification fails, fix the implementation, evidence, or task artifacts, then start a fresh review round with fresh independent reviewers before retrying readiness verification.
+  If the host runtime cannot provide reviewers or readiness verification, stop and report the needed coordinator action.
+  Do not retry verification or claim readiness until that coordinator action resolves the missing gate.
 - Start every role-bound worker prompt with: `First, read your role instruction: roles/<role-id>.md.`
   Pass the role id, role instruction path, task context, stage instruction, required output, and evidence expectation.
   Do not read, summarize, or inline the role instruction for that actor.

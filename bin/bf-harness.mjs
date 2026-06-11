@@ -14,6 +14,7 @@ import { cmdNext, formatNext } from "./lib/harness/cmd-next.mjs";
 import { cmdStatus, formatStatus } from "./lib/harness/cmd-status.mjs";
 import { cmdAttachPr, formatAttachPr } from "./lib/harness/cmd-attach-pr.mjs";
 import { cmdVerify, formatVerifyResult, formatVerifySetupError } from "./lib/harness/cmd-verify.mjs";
+import { cmdComplete, formatComplete } from "./lib/harness/cmd-complete.mjs";
 import { cmdDiscard, formatDiscard } from "./lib/harness/cmd-discard.mjs";
 import { cmdCleanup, formatCleanup } from "./lib/harness/cmd-cleanup.mjs";
 import { resolveDefaultStateHome } from "./lib/shared/state-home.mjs";
@@ -27,6 +28,7 @@ const USAGE = `Usage:
   bf-harness status <bf-wo>
   bf-harness attach-pr <bf-wo>/<task> <github-pr-url>
   bf-harness verify <bf-wo>[/<task>]
+  bf-harness complete <bf-wo>/<task>
   bf-harness cleanup <bf-wo>/<task>
   bf-harness discard <bf-wo>
 
@@ -60,6 +62,7 @@ const ARITY = {
   status:         { wo: "required",  task: "forbidden" },
   "attach-pr":    { wo: "required",  task: "required" },
   cleanup:        { wo: "required",  task: "required" },
+  complete:       { wo: "required",  task: "required" },
   discard:        { wo: "required",  task: "forbidden" },
   "start-review": { wo: "required",  task: "optional" },
   verify:         { wo: "required",  task: "optional" },
@@ -134,6 +137,10 @@ async function main() {
     case "cleanup":
       r = await cmdCleanup({ baseHome, woId: t.woId, taskId: t.taskId, installDir });
       text = formatCleanup(r); break;
+    case "complete":
+      if (extraArgs.length !== 0) fail(`complete takes no extra arguments\n${USAGE}`, 2);
+      r = await cmdComplete({ baseHome, woId: t.woId, taskId: t.taskId, installDir });
+      text = formatComplete(r); break;
     case "discard":
       r = await cmdDiscard({ baseHome, woId: t.woId });
       text = formatDiscard(r); break;

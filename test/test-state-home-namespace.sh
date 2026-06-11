@@ -25,15 +25,14 @@ assert_list_has_once() {
   assert_eq "$count" "1" "$msg"
 }
 
-# Module-level namespace behavior: new work objects live under works/, legacy
-# direct work objects remain readable, duplicate ids prefer works/, and reserved
-# directories are not treated as work objects.
+# Module-level namespace behavior: work objects live under works/, direct
+# work objects are ignored, and reserved directories are not treated as work objects.
 BASE=$(make_temp_home)
 mkdir -p "$BASE/works" "$BASE/extensions"
 make_wo "$BASE/works/clean-wo" "clean-wo" "works clean"
-make_wo "$BASE/legacy-wo" "legacy-wo" "legacy direct"
+make_wo "$BASE/direct-wo" "direct-wo" "direct ignored"
 make_wo "$BASE/works/dupe-wo" "dupe-wo" "works wins"
-make_wo "$BASE/dupe-wo" "dupe-wo" "legacy loses"
+make_wo "$BASE/dupe-wo" "dupe-wo" "direct loses"
 
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/load-wo.mjs').then(async (m) => {
@@ -51,17 +50,17 @@ assert_json_field "$STDOUT" .desc "works clean"
 
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/load-wo.mjs').then(async (m) => {
-    const r = await m.loadWo({ baseHome: '$BASE', woId: 'legacy-wo', installDir: '$REPO_ROOT' });
+    const r = await m.loadWo({ baseHome: '$BASE', woId: 'direct-wo', installDir: '$REPO_ROOT' });
     process.stdout.write(JSON.stringify({
       ok: r.ok,
       woPath: r.woPath,
-      desc: r.bf?.frontmatter?.Desc,
+      errors: r.errors,
     }));
   });
 ")
-assert_json_field "$STDOUT" .ok true
-assert_json_field "$STDOUT" .woPath "$BASE/legacy-wo"
-assert_json_field "$STDOUT" .desc "legacy direct"
+assert_json_field "$STDOUT" .ok false
+assert_json_field "$STDOUT" .woPath "$BASE/works/direct-wo"
+assert_match "$STDOUT" "$BASE/works/direct-wo/bf.md" "direct work object is ignored"
 
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/load-wo.mjs').then(async (m) => {
@@ -84,7 +83,7 @@ STDOUT=$(node --input-type=module -e "
 ")
 assert_json_field "$STDOUT" .ok true
 assert_match "$STDOUT" "clean-wo" "works object listed"
-assert_match "$STDOUT" "legacy-wo" "legacy direct object listed"
+assert_not_match "$STDOUT" "direct-wo" "direct object not listed"
 DUPE_COUNT=$(node -e "
   const j=JSON.parse(process.argv[1]);
   process.stdout.write(String(j.woList.filter(w => w.id === 'dupe-wo').length));

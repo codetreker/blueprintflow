@@ -4,7 +4,7 @@ source "$(dirname "$0")/test-helpers.sh"
 
 BASE=$(make_temp_home)
 mkdir -p "$BASE"
-cp -R "$FIXTURES/clean-wo" "$BASE/wo-1"
+copy_fixture clean-wo "$BASE/works/wo-1"
 
 # wo level round 1
 STDOUT=$(node --input-type=module -e "
@@ -14,7 +14,7 @@ STDOUT=$(node --input-type=module -e "
 ")
 assert_json_field "$STDOUT" .round "1"
 assert_match "$STDOUT" "runs/reviews/round_1" "wo-level round path"
-[ -d "$BASE/wo-1/runs/reviews/round_1" ] || fail "round_1 dir not created"
+[ -d "$BASE/works/wo-1/runs/reviews/round_1" ] || fail "round_1 dir not created"
 
 # wo level round 2
 STDOUT=$(node --input-type=module -e "
@@ -47,7 +47,7 @@ rm -rf "$BASE"
 # path on its own line (no JSON wrapping). No trailing whitespace.
 BASE=$(make_temp_home)
 mkdir -p "$BASE"
-cp -R "$FIXTURES/clean-wo" "$BASE/wo-1"
+copy_fixture clean-wo "$BASE/works/wo-1"
 export BF_HOME="$BASE"
 run_bfh start-review "wo-1"
 assert_eq "$RC" "0" "start-review exit 0"

@@ -110,9 +110,7 @@ In Git repositories, the default state home is the primary worktree `.bf`, even
 when commands run from linked worktrees. Outside Git, the default state home is
 `<cwd>/.bf`.
 
-New work objects live under `<state-home>/works/<bf-wo>`. Legacy direct
-`<state-home>/<bf-wo>` work objects remain readable; when both layouts contain
-the same id, `works/<bf-wo>` wins.
+Work objects live under `<state-home>/works/<bf-wo>`.
 
 ### `list`
 

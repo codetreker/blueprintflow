@@ -16,7 +16,7 @@ setup_base() {
 
 # Happy path
 setup_repo; setup_base
-cp -R "$FIXTURES/clean-wo" "$BASE/clean-wo"
+copy_fixture clean-wo "$BASE/works/clean-wo"
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/cmd-lint.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdLint({
@@ -29,7 +29,7 @@ rm -rf "$REPO" "$BASE"
 
 # missing capability
 setup_repo; setup_base
-cp -R "$FIXTURES/missing-capability-wo" "$BASE/wo-1"
+copy_fixture missing-capability-wo "$BASE/works/wo-1"
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/cmd-lint.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdLint({
@@ -44,8 +44,8 @@ rm -rf "$REPO" "$BASE"
 
 # State != Draft → BAD_STATE
 setup_repo; setup_base
-cp -R "$FIXTURES/clean-wo" "$BASE/clean-wo"
-sed -i.bak 's/^State: Draft/State: Accepted/' "$BASE/clean-wo/bf.md"
+copy_fixture clean-wo "$BASE/works/clean-wo"
+sed -i.bak 's/^State: Draft/State: Accepted/' "$BASE/works/clean-wo/bf.md"
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/cmd-lint.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdLint({
@@ -59,8 +59,8 @@ rm -rf "$REPO" "$BASE"
 
 # Pack 不存在
 setup_repo; setup_base
-cp -R "$FIXTURES/clean-wo" "$BASE/clean-wo"
-sed -i.bak 's/^Pack: engineering/Pack: nonexistent/' "$BASE/clean-wo/bf.md"
+copy_fixture clean-wo "$BASE/works/clean-wo"
+sed -i.bak 's/^Pack: engineering/Pack: nonexistent/' "$BASE/works/clean-wo/bf.md"
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/cmd-lint.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdLint({
@@ -74,7 +74,7 @@ rm -rf "$REPO" "$BASE"
 
 # OUT-4: CLI text output — `bf-harness lint` leads stdout with SUCCESS or FAIL.
 setup_repo; setup_base
-cp -R "$FIXTURES/clean-wo" "$BASE/clean-wo"
+copy_fixture clean-wo "$BASE/works/clean-wo"
 export BF_HOME="$BASE"
 export BF_INSTALL_DIR="$REPO"
 run_bfh lint "clean-wo"
@@ -85,7 +85,7 @@ printf "%s\n" "$STDOUT" | grep -E ' +$' >/dev/null && fail "trailing whitespace 
 rm -rf "$REPO" "$BASE"
 
 setup_repo; setup_base
-cp -R "$FIXTURES/missing-capability-wo" "$BASE/wo-1"
+copy_fixture missing-capability-wo "$BASE/works/wo-1"
 export BF_HOME="$BASE"
 export BF_INSTALL_DIR="$REPO"
 run_bfh lint "wo-1"

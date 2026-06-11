@@ -8,10 +8,10 @@ cp -R "$FIXTURES/roles-core/." "$REPO/roles/"
 cp -R "$FIXTURES/packs-engineering" "$REPO/packs/engineering"
 BASE=$(make_temp_home)
 mkdir -p "$BASE"
-cp -R "$FIXTURES/clean-wo" "$BASE/wo-1"
+copy_fixture clean-wo "$BASE/works/wo-1"
 
 # Create a result "file" that is actually a directory → fs.readFileSync throws EISDIR.
-ROUND="$BASE/wo-1/runs/reviews/round_1"
+ROUND="$BASE/works/wo-1/runs/reviews/round_1"
 mkdir -p "$ROUND/result_tester_1.md"
 
 STDOUT=$(node --input-type=module -e "

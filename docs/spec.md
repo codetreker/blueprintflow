@@ -41,8 +41,7 @@ BF does not define `.tasks/` as a runtime or draft-work directory. Draft
 discussion, contracts, task specs, review results, and execution artifacts are
 BF work-object state under `.bf/works/<bf-wo>/` in normal project work;
 project-specific draft locations only exist when that project separately
-defines them. Legacy `.bf/<bf-wo>/` work objects remain readable for
-compatibility.
+defines them.
 
 BF requires discussion.md source coverage before `bf.md` authoring. The
 recorded discussion must contain source material for the future Goal,

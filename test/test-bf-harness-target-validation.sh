@@ -61,10 +61,10 @@ assert_match "$STDERR" "status does not accept a task id" "status task arity err
 # baseHome defaults to <cwd>/.bf when BF_HOME unset
 unset BF_HOME
 CWD_DIR=$(mktemp -d -t bf-cwd-XXXXXX)
-mkdir -p "$CWD_DIR/.bf/wo-marker"
+mkdir -p "$CWD_DIR/.bf/works/wo-marker"
 STDOUT=$(cd "$CWD_DIR" && node "$BFH" list 2>/tmp/bfh-cwd-err.$$); RC=$?
 STDERR=$(cat /tmp/bfh-cwd-err.$$ 2>/dev/null || true); rm -f /tmp/bfh-cwd-err.$$
-# cmdList walks baseHome/; we planted wo-marker/ (no bf.md) → expect a warning mentioning wo-marker
+# cmdList walks baseHome/works; wo-marker has no bf.md, so the warning should name it.
 assert_match "$STDOUT" "wo-marker" "default baseHome is <cwd>/.bf"
 assert_not_match "$STDERR" "Usage" "no usage error with default baseHome"
 rm -rf "$CWD_DIR"

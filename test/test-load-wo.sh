@@ -9,7 +9,7 @@ setup() {
   cp -R "$FIXTURES/packs-engineering" "$REPO/packs/engineering"
   BASE=$(make_temp_home)
   mkdir -p "$BASE"
-  cp -R "$FIXTURES/clean-wo" "$BASE/clean-wo"
+  copy_fixture clean-wo "$BASE/works/clean-wo"
 }
 cleanup() { rm -rf "$REPO" "$BASE"; }
 
@@ -37,7 +37,7 @@ cleanup
 
 # Task spec 缺失
 setup
-rm "$BASE/clean-wo/task-b/spec.md"
+rm "$BASE/works/clean-wo/task-b/spec.md"
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/load-wo.mjs').then(async (m) => {
     const r = await m.loadWo({ baseHome: '$BASE', woId: 'clean-wo', installDir: '$REPO' });
@@ -49,7 +49,7 @@ cleanup
 
 # bf.md 坏掉
 setup
-echo "not a real bf.md" > "$BASE/clean-wo/bf.md"
+echo "not a real bf.md" > "$BASE/works/clean-wo/bf.md"
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/load-wo.mjs').then(async (m) => {
     const r = await m.loadWo({ baseHome: '$BASE', woId: 'clean-wo', installDir: '$REPO' });

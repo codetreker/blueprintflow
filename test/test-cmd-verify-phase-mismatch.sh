@@ -9,7 +9,7 @@ setup() {
   cp -R "$FIXTURES/packs-engineering" "$REPO/packs/engineering"
   BASE=$(make_temp_home)
   mkdir -p "$BASE"
-  cp -R "$FIXTURES/clean-wo" "$BASE/wo-1"
+  copy_fixture clean-wo "$BASE/works/wo-1"
 }
 cleanup() { rm -rf "$REPO" "$BASE"; }
 
@@ -43,7 +43,7 @@ cleanup
 
 # Accepted + no task → mismatch
 setup
-sed -i.bak 's/^State: Draft/State: Accepted/' "$BASE/wo-1/bf.md"
+sed -i.bak 's/^State: Draft/State: Accepted/' "$BASE/works/wo-1/bf.md"
 run_verify ""
 assert_json_field "$STDOUT" .ok false
 assert_match "$STDOUT" "phase mismatch" "accepted+nowo"
@@ -51,7 +51,7 @@ cleanup
 
 # Completed + 任何 → mismatch
 setup
-sed -i.bak 's/^State: Draft/State: Completed/' "$BASE/wo-1/bf.md"
+sed -i.bak 's/^State: Draft/State: Completed/' "$BASE/works/wo-1/bf.md"
 run_verify ""
 assert_json_field "$STDOUT" .ok false
 run_verify "task-a"

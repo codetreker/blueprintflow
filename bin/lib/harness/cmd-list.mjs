@@ -3,9 +3,6 @@ import path from "node:path";
 import { parseBfMd } from "./parse-bf-md.mjs";
 import { worksDir } from "./wo-paths.mjs";
 
-// Reserved dir names under baseHome that are not bf-wos.
-const RESERVED = new Set(["extensions", "works"]);
-
 function readWoEntry({ name, woPath, warnings }) {
   if (!fs.statSync(woPath).isDirectory()) return null;
   const bfMd = path.join(woPath, "bf.md");
@@ -31,7 +28,6 @@ export async function cmdList({ baseHome }) {
   const warnings = [];
   if (!fs.existsSync(baseHome)) return { ok: true, woList: [], warnings };
   const woList = [];
-  const seen = new Set();
 
   const works = worksDir(baseHome);
   if (fs.existsSync(works) && fs.statSync(works).isDirectory()) {
@@ -39,16 +35,7 @@ export async function cmdList({ baseHome }) {
       const entry = readWoEntry({ name: `works/${name}`, woPath: path.join(works, name), warnings });
       if (!entry) continue;
       woList.push(entry);
-      seen.add(entry.id);
     }
-  }
-
-  for (const name of fs.readdirSync(baseHome).sort()) {
-    if (RESERVED.has(name)) continue;
-    const entry = readWoEntry({ name, woPath: path.join(baseHome, name), warnings });
-    if (!entry || seen.has(entry.id)) continue;
-    woList.push(entry);
-    seen.add(entry.id);
   }
   return { ok: true, woList, warnings };
 }

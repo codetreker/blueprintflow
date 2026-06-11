@@ -3,11 +3,11 @@ set -u
 source "$(dirname "$0")/test-helpers.sh"
 
 BASE=$(make_temp_home)
-cp -R "$FIXTURES/clean-wo" "$BASE/clean-wo"
+copy_fixture clean-wo "$BASE/works/clean-wo"
 
 # add a broken wo
-mkdir -p "$BASE/broken-wo"
-echo "not yaml" > "$BASE/broken-wo/bf.md"
+mkdir -p "$BASE/works/broken-wo"
+echo "not yaml" > "$BASE/works/broken-wo/bf.md"
 
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/cmd-list.mjs').then(async (m) => {
@@ -33,14 +33,14 @@ rm -rf "$BASE"
 # (Id/State/Updated/Desc), blocks separated by `---` on its own line.
 # Empty desc renders as `-`. No trailing whitespace. No pipe separator.
 BASE=$(make_temp_home)
-cp -R "$FIXTURES/clean-wo" "$BASE/clean-wo"
+copy_fixture clean-wo "$BASE/works/clean-wo"
 # Add a second wo so we can assert the `---` separator appears between blocks.
-mkdir -p "$BASE/second-wo"
-cp "$FIXTURES/clean-wo/bf.md" "$BASE/second-wo/bf.md"
+mkdir -p "$BASE/works/second-wo"
+cp "$FIXTURES/clean-wo/bf.md" "$BASE/works/second-wo/bf.md"
 # Patch Id field inside bf.md so it matches the dir name.
 node -e "
   const fs=require('fs');
-  const p='$BASE/second-wo/bf.md';
+  const p='$BASE/works/second-wo/bf.md';
   fs.writeFileSync(p, fs.readFileSync(p,'utf8').replace(/Id: clean-wo/, 'Id: second-wo'));
 "
 export BF_HOME="$BASE"

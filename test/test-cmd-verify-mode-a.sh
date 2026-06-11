@@ -9,7 +9,7 @@ setup() {
   cp -R "$FIXTURES/packs-engineering" "$REPO/packs/engineering"
   BASE=$(make_temp_home)
   mkdir -p "$BASE"
-  cp -R "$FIXTURES/clean-wo" "$BASE/wo-1"
+  copy_fixture clean-wo "$BASE/works/wo-1"
 }
 cleanup() { rm -rf "$REPO" "$BASE"; }
 
@@ -66,37 +66,37 @@ run_verify() {
 
 # Spec Review SUCCESS（state=Draft + clean review）
 setup
-write_clean_review "$BASE/wo-1/runs/reviews/round_1" tester 1
+write_clean_review "$BASE/works/wo-1/runs/reviews/round_1" tester 1
 run_verify
 assert_json_field "$STDOUT" .ok true
 assert_json_field "$STDOUT" .status "SUCCESS"
 assert_json_field "$STDOUT" .mode "Spec Review"
-RESULT_FILE="$BASE/wo-1/runs/reviews/round_1/verify-result.md"
+RESULT_FILE="$BASE/works/wo-1/runs/reviews/round_1/verify-result.md"
 [ -f "$RESULT_FILE" ] || fail "verify-result.md missing"
 grep -q "^Result: SUCCESS" "$RESULT_FILE" || fail "Result field"
 grep -q "^Mode: Spec Review" "$RESULT_FILE" || fail "Mode field"
 if grep -q "## Issues" "$RESULT_FILE"; then fail "SUCCESS should NOT have Issues section"; fi
-grep -q "^State: Draft" "$BASE/wo-1/bf.md" || fail "bf.md State changed (should not)"
+grep -q "^State: Draft" "$BASE/works/wo-1/bf.md" || fail "bf.md State changed (should not)"
 cleanup
 
 # Spec Review FAIL（Blocker）
 setup
-write_blocker_review "$BASE/wo-1/runs/reviews/round_1" tester 1
+write_blocker_review "$BASE/works/wo-1/runs/reviews/round_1" tester 1
 run_verify
 assert_json_field "$STDOUT" .status "FAIL"
-RESULT_FILE="$BASE/wo-1/runs/reviews/round_1/verify-result.md"
+RESULT_FILE="$BASE/works/wo-1/runs/reviews/round_1/verify-result.md"
 grep -q "^Result: FAIL" "$RESULT_FILE" || fail "FAIL not recorded"
 grep -q "范围越界" "$RESULT_FILE" || fail "blocker not propagated"
 cleanup
 
 # Spec Review with an empty round must FAIL and produce a verify-result.
 setup
-mkdir -p "$BASE/wo-1/runs/reviews/round_1"
+mkdir -p "$BASE/works/wo-1/runs/reviews/round_1"
 run_verify
 assert_json_field "$STDOUT" .ok true
 assert_json_field "$STDOUT" .status "FAIL"
 assert_json_field "$STDOUT" .mode "Spec Review"
-RESULT_FILE="$BASE/wo-1/runs/reviews/round_1/verify-result.md"
+RESULT_FILE="$BASE/works/wo-1/runs/reviews/round_1/verify-result.md"
 [ -f "$RESULT_FILE" ] || fail "empty-round verify-result.md missing"
 grep -q "no result files in round" "$RESULT_FILE" || fail "empty round issue not recorded"
 cleanup
@@ -106,7 +106,7 @@ setup
 run_verify
 assert_json_field "$STDOUT" .ok false
 assert_match "$STDOUT" "no review round" "no-round error message"
-if [ -d "$BASE/wo-1/runs/reviews/round_1" ]; then
+if [ -d "$BASE/works/wo-1/runs/reviews/round_1" ]; then
   fail "phantom round_1 was created"
 fi
 cleanup
@@ -116,7 +116,7 @@ cleanup
 # extracted the SUCCESS/FAIL prefix into the formatter; this assertion
 # catches a mutation that strips it.
 setup
-write_clean_review "$BASE/wo-1/runs/reviews/round_1" tester 1
+write_clean_review "$BASE/works/wo-1/runs/reviews/round_1" tester 1
 export BF_HOME="$BASE"
 export BF_INSTALL_DIR="$REPO"
 run_bfh verify "wo-1"
@@ -138,7 +138,7 @@ cleanup
 # CLI-level: bf-harness verify FAIL path emits `FAIL <abs-path>` on stdout
 # line 1 with exit 1.
 setup
-write_blocker_review "$BASE/wo-1/runs/reviews/round_1" tester 1
+write_blocker_review "$BASE/works/wo-1/runs/reviews/round_1" tester 1
 export BF_HOME="$BASE"
 export BF_INSTALL_DIR="$REPO"
 run_bfh verify "wo-1"

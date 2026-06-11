@@ -7,9 +7,8 @@ artifacts and do not depend on the `docs/` design record.
 
 ## Task Shape
 
-Each task is a child directory of a BF work object. New work objects live under
-`<state-home>/works/<bf-wo>/`; legacy direct `<state-home>/<bf-wo>/` work
-objects remain readable.
+Each task is a child directory of a BF work object under
+`<state-home>/works/<bf-wo>/`.
 
 ```text
 <state-home>/works/<bf-wo>/<task-id>/

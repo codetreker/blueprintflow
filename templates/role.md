@@ -1,31 +1,34 @@
 ---
 Id: <role-id>
-Desc: <一句话描述这个 role 的身份>
+Desc: <one sentence describing this role's identity>
 Capabilities:
   - <capability-1>
   - <capability-2>
 ---
 
 <!--
-frontmatter 字段说明：
+frontmatter field notes:
 
-- Id：唯一标识；list-roles 输出里显示。
-- Desc：一句话描述，帮 LLM 一眼判断这个 role 适合做什么。
-- Capabilities：这个 role 提供的能力清单。bf.md 和 task spec.md 里 AC 标的 capability 会被反查到这里。
-  这是一个 BF Core 没有集中注册表的隐式 registry：凡是任何 roles/*.md 里出现的 capability 字符串，都是合法 capability。
-  bf-harness lint 会扫所有 bf-wo 引用的 capability，必须能在某个 role 文件里找到声明，否则报错（防 typo）。
+- Id: Unique identifier shown in `list-roles` output.
+- Desc: One-sentence description that helps the LLM quickly decide when this role fits.
+- Capabilities: The capabilities this role provides. Capabilities named by AC lines in `bf.md` and task `spec.md` are resolved against this list.
+  BF Core has no centralized capability registry. Any capability string declared in any `roles/*.md` file is a valid capability.
+  `bf-harness lint` scans capabilities referenced by each bf-wo and requires every one to be declared by a role, which catches typos.
 -->
 
-# {角色名}
+# {Role Name}
 
 ## Identity
 
-这个 role 的身份和视角。它从什么角度看问题、关心什么、不关心什么。
+This role's identity and perspective: how it approaches the work, what it cares
+about, and what it does not care about.
 
 ## Expertise
 
-这个 role 能做什么、解决什么类型的问题、有什么特定的偏好或者方法论。
+What this role can do, what kinds of problems it solves, and any specific
+preferences or methods it applies.
 
 ## When to Include
 
-什么场景下应该把这个 role 拉进来。可以是 brainstorm / spec / execute / review 任意阶段。
+When this role should be included. This can apply to brainstorm, spec, execute,
+review, or any other stage.

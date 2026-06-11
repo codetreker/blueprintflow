@@ -1,31 +1,39 @@
 ---
 Id: <pack-id>
-Desc: <一句话描述这个 pack 适用什么样的工作>
+Desc: <one sentence describing what kind of work this pack is for>
 ---
 
 <!--
-frontmatter 字段说明：
+frontmatter field notes:
 
-- Id：必须跟 packs/<pack-id>/ 目录名一致。
-- Desc：list-packs 输出里会显示这一句，LLM 在 brainstorm 阶段用它判断是否选这个 pack。
+- Id: Must match the `packs/<pack-id>/` directory name.
+- Desc: Shown in `list-packs` output. The LLM uses it during brainstorm to decide whether to select this pack.
 -->
 
 ## When to Use
 
-一到三句话，说清楚什么样的工作适合用这个 pack。LLM 在 brainstorm 阶段拿到用户输入后，会读这一节决定选哪个 pack。这一节是必填。
+Use one to three sentences to describe what kind of work fits this pack. The LLM
+reads this section during brainstorm after receiving the user request and uses
+it to decide which pack to select. This section is required.
 
 ## Domain Vocabulary
 
-这个领域的关键术语和概念。可选，但写出来能帮 LLM 在跟用户对话时用对的语言。
+Key terms and concepts for this domain. This section is optional, but it helps
+the LLM use the right language when talking with the user.
 
 ## Brainstorm Guidance
 
-brainstorm 阶段应该问什么样的问题，blueprint 应该长什么形状，什么算是"好的"blueprint。也可以写常见的反 pattern，提醒 LLM 别踩。
+Questions to ask during brainstorm, what shape the blueprint should take, and
+what counts as a good blueprint. This section can also name common anti-patterns
+the LLM should avoid.
 
 ## Breakdown Guidance
 
-在这个领域里，一个 task 应该是什么形状：粒度多大、边界怎么划、典型产物是什么、常见的依赖关系等等。
+What a task should look like in this domain: expected granularity, boundary
+rules, typical deliverables, common dependency patterns, and similar guidance.
 
 ## Execute Guidance
 
-在这个领域里做一个 task 时的通用指导：常见 pattern、反 pattern、典型的 evidence 应该长什么样。task driver 在执行任务前会读这一节。
+General guidance for executing a task in this domain: common patterns,
+anti-patterns, and what typical evidence should look like. The task driver reads
+this section before executing the task.

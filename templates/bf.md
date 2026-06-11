@@ -1,7 +1,7 @@
 ---
-Id: <可读的工作对象 id；跟 bf-wo 目录名一致，建议 kebab-case>
-Desc: <一句话描述这次工作想完成什么>
-Pack: <pack id；必须能在 bf list-packs 输出里找到>
+Id: <readable work-object id; match the bf-wo directory name, kebab-case recommended>
+Desc: <one sentence describing what this work should accomplish>
+Pack: <pack id; must appear in bf list-packs output>
 State: Draft|Accepted|Implementing|Completed
 Creation: <yyyy-mm-dd hh:MM>
 Updated: <yyyy-mm-dd hh:MM>
@@ -9,33 +9,38 @@ Updated: <yyyy-mm-dd hh:MM>
 
 # Goal
 
-这次工作的整体目标。一两句话讲清楚要实现什么。
+The overall goal for this work. Use one or two sentences to state what must be
+achieved.
 
 ## Requirement
 
-必须达成的目标，每条都是用户可以观察到的成果，不是实现细节。
+Required outcomes. Each item should be observable by the user, not an
+implementation detail.
 
 ## Acceptance Criteria
 
-整个蓝图的验收标准。
+Acceptance criteria for the whole blueprint.
 
-格式规则：
-- 必须是 markdown checkbox 列表；未通过是 `[ ]`，通过是 `[x]`。
-- checkbox 状态由 bf-harness 在 verify 过程中翻动，LLM 不能直接改。
-- 每条带一个稳定的 id（推荐 AC-1、AC-2 这种形式）和验收这条标准所需的能力（capability）。
-- bf-harness 会用 capability 反查 roles 目录里谁有此能力，把对应的 role 拉起来做 review。
+Format rules:
+- Use a markdown checkbox list. Pending items use `[ ]`; accepted items use `[x]`.
+- Checkbox state is changed by bf-harness during verify. The LLM must not edit it directly.
+- Each item includes a stable id, such as AC-1 or AC-2, and the capability needed to review that criterion.
+- bf-harness uses the capability to find roles that declare it and route review to the matching role.
 
-- [ ] {id1}|{capability}: 一条独立可验证的验收标准
-- [ ] {id2}|{capability}: 另一条验收标准
+- [ ] {id1}|{capability}: One independently verifiable acceptance criterion
+- [ ] {id2}|{capability}: Another acceptance criterion
 
 ## Boundary
 
-明确不在本次工作范围内的事情。这一节是为了防止 breakdown 跑偏，也让 reviewer 能用它判断某个 task 是否越界。
+State what is explicitly out of scope for this work. This section keeps task
+breakdown focused and lets reviewers judge whether a task has crossed the
+accepted boundary.
 
 ## Task List
 
-任务列表。按执行顺序排列；依赖关系写在冒号后面，多个依赖用逗号分开。
+Task list. Order tasks by execution sequence. Put dependencies after a colon;
+separate multiple dependencies with commas.
 
 - task-id-1
 - task-id-2
-- task-id-3: task-id-1, task-id-2   // task-id-3 依赖 task-id-1 和 task-id-2 都完成
+- task-id-3: task-id-1, task-id-2   // task-id-3 depends on both task-id-1 and task-id-2

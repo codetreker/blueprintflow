@@ -35,10 +35,8 @@ The architect facilitates this phase. Before any breakdown, drive the discussion
 - **Evidence shape**: what tests / runs / screenshots will count as "done"? (Pushes the user to write falsifiable AC.)
 - **Constraints from the existing codebase**: language, framework, lint/test toolchain, conventions to follow.
 
-Before writing `bf.md`, confirm `discussion.md` has source coverage for the
-Goal, Requirement, Acceptance Criteria, Boundary, and Task List rationale. You
-may propose missing material and append it to `discussion.md`, but only user
-answers or accepted proposals become source material for the contract.
+Before writing `bf.md`, confirm `discussion.md` has source coverage for the Goal, Requirement, Acceptance Criteria, Boundary, and Task List rationale.
+You may propose missing material and append it to `discussion.md`, but only user answers or accepted proposals become source material for the contract.
 
 The bf.md that comes out should have a tight Goal (one or two sentences), a Requirements list that a user could observe, AC that are checkable from the outside, and a Boundary that names at least one tempting-but-deferred adjacent thing.
 
@@ -57,11 +55,8 @@ The architect decomposes the accepted Goal/Boundary into a task DAG. A good engi
 - Has explicit `depends` edges in `bf.md`'s Task List — no implicit ordering.
 - Has AC that are observable from outside the task (a file exists, a command exits 0, a test passes, an endpoint returns X).
 - Names what it does not do in its own `Boundary`.
-- Defines a scope contract, not implementation design. Lock what the task must
-  accomplish, who owns it, what it hands off, and how it will be accepted; leave
-  exact file paths, command flags, internal API shapes, and implementation
-  sequence to the selected pipeline's design stages unless the user already made
-  those details part of the accepted contract.
+- Defines a scope contract, not implementation design.
+  Lock what the task must accomplish, who owns it, what it hands off, and how it will be accepted; leave exact file paths, command flags, internal API shapes, and implementation sequence to the selected pipeline's design stages unless the user already made those details part of the accepted contract.
 
 Typical patterns:
 
@@ -72,21 +67,16 @@ Typical patterns:
 
 ## Spec Review Guidance
 
-Review the task DAG and specs as contracts. Block unclear ownership, missing
-handoffs, broken dependencies, overlapping tasks, vague boundaries,
-unobservable AC, missing Evidence, and user-visible requirements with no task
-owner. Do not block only because repository investigation or implementation
-strategy remains for the task pipeline's architecture/design stages.
+Review the task DAG and specs as contracts.
+Block unclear ownership, missing handoffs, broken dependencies, overlapping tasks, vague boundaries, unobservable AC, missing Evidence, and user-visible requirements with no task owner.
+Do not block only because repository investigation or implementation strategy remains for the task pipeline's architecture/design stages.
 
 ## Execute Guidance
 
-The coordinator assigns each claimed engineering task to a host-compatible task
-driver before implementation, refactor, test-fix, validation, or task-scoped
-docs work starts. Start the actor with `roles/task-driver.md`; the task driver
-reads that role file itself. If task-driver capacity or tooling is unavailable,
-stop instead of doing the leaf work in the coordinator unless the user
-explicitly overrides the delegation rule. Verification-fix work goes to the
-same task driver or a new task driver.
+The coordinator assigns each claimed engineering task to a host-compatible task driver before implementation, refactor, test-fix, validation, or task-scoped docs work starts.
+Start the actor with `roles/task-driver.md`; the task driver reads that role file itself.
+If task-driver capacity or tooling is unavailable, stop instead of doing the leaf work in the coordinator unless the user explicitly overrides the delegation rule.
+Verification-fix work goes to the same task driver or a new task driver.
 
 For each task the task driver picks up:
 

@@ -1,0 +1,83 @@
+id: feature-light
+desc: Lightweight feature task pipeline for small, clear, low-risk feature tasks with compact planning, validation, review, security, and closure gates
+instruction: |
+  Use this lightweight pipeline for small, clear, low-risk feature tasks whose scope, evidence, and validation approach are already clear enough that the full design-first feature pipeline is not needed.
+  It requires scope-plan, implementation, validation, independent code-review, security-review, and terminal-state closure.
+  Run the stages in order.
+  Read the task spec, bf.md Goal/Boundary, relevant discussion when the task contract is ambiguous, confirmed project design docs, and host-runtime strategy before the first stage.
+  Each stage must produce its named artifact or review result before the next stage starts.
+  The scope-plan stage must confirm the task fits this lightweight pipeline before implementation starts.
+  Escalate to the full feature pipeline before implementation when scope, risk, design impact, validation evidence, dependency exposure, security exposure, migration concerns, or acceptance criteria need design-first review.
+  When full validation or security review is not required, record explicit not-applicable evidence.
+  For claimed task work, the coordinator assigns non-review task work and verification fixes to a host-compatible task driver; in Codex, that actor is a Codex subagent.
+  If task-driver capacity or tooling is unavailable, stop unless the user explicitly overrides the delegation rule.
+  Review stages must remain independent from the actor whose work they review.
+  When starting a role-bound actor, pass the role id and role instruction path, then require the actor to read its own role instruction before the stage instruction.
+  Do not inline role instruction content; stop when the actor cannot read the role file.
+  Stop on Blocker or High review findings and send fixes to the same task driver or a new task driver before rerunning the affected stage.
+  Stop before task verification if any external artifact or side effect lacks a terminal state, handoff owner, or explicit stop condition.
+  Do not edit locked bf.md or task spec.md content after accept; only the harness may flip checkboxes, advance State, sync Updated, and write task execution metadata.
+  The task driver produces closure evidence before task-level BF acceptance review and readiness verification; the coordinator reruns final verify before merge, complete, and cleanup.
+stages:
+  - id: scope-plan
+    capability: system-architecture
+    output: artifacts/scope-plan.md
+    instruction: |
+      Produce a compact scope plan before implementation.
+      Record why the task fit is small, clear, low-risk feature work that can use feature-light instead of the full feature pipeline.
+      Record the intended change scope, including affected runtime artifacts, docs, tests, and what remains out of scope.
+      Record the validation approach and the evidence expected for each acceptance criterion.
+      Record escalation triggers that would stop this pipeline and move the task to the full feature pipeline, including unclear scope, design boundary changes, new public contracts, migrations, broad dependency or package exposure, security-sensitive behavior, weak validation evidence, or acceptance criteria that need design-first review.
+      Stop before implementation if any escalation trigger is already present or if the fit cannot be justified from the locked task contract.
+
+  - id: implementation
+    capability: software-implementation
+    instruction: |
+      Implement only the locked task scope confirmed by artifacts/scope-plan.md.
+      Use TDD when durable behavior, parser, command, or runtime contract changes can be protected by an automated test.
+      Produce the required evidence requested by the task spec as files, command output, screenshots, reviewer notes, or validation artifacts.
+      Stop before broadening scope, changing pipeline schema, changing harness lifecycle behavior, weakening review identity, or making changes that should escalate to the full feature pipeline.
+      If an implementation discovery invalidates the scope-plan, stop and return to planning or coordinator clarification before continuing.
+
+  - id: validation
+    capability: software-implementation
+    output: artifacts/validation.md
+    instruction: |
+      Run task-appropriate validation after implementation and record the command output.
+      For runtime, package, parser, CLI, or release-facing changes, run full validation unless the locked task contract defines a narrower boundary.
+      If full validation is not required, record not-applicable evidence that explains the validation boundary.
+      Stop on failed validation unless the failure is unrelated and documented with evidence the reviewer can check.
+      Record focused tests, full tests, package or layout checks, whitespace checks, manual checks, and skipped-command rationale as applicable to the locked task scope.
+
+  - id: code-review
+    capability: quality-assurance
+    output: artifacts/code-review.md
+    instruction: |
+      Run an independent review of the diff, scope-plan, implementation evidence, validation evidence, and task acceptance criteria.
+      Confirm the implementation stays within the locked task scope and that each acceptance criterion has matching evidence.
+      Check that durable tests protect stable behavior and that no tests only enforce short-lived wording preferences.
+      Record findings and sign off only the acceptance criteria independently verified by the review.
+      Use Blocker or High findings for missing evidence, contract drift, broken behavior, unsafe validation gaps, or changes that should have used the full feature pipeline.
+      Stop on any Blocker or High finding; fixes must be reviewed in a fresh review round before readiness verification.
+
+  - id: security-review
+    capability: security-review
+    output: artifacts/security-review.md
+    instruction: |
+      Review the change after code review and before terminal-state closure for security baseline risk.
+      Check authentication, authorization, privilege boundaries, secrets, dependency or package exposure, command or shell execution, input handling, data handling, logging, and release integrity as applicable to the locked task scope.
+      Stop on any Blocker or High finding; send fixes to the task driver before continuing.
+      If the task has no security-relevant change, record not-applicable evidence with rationale and cite the reviewed files, commands, and Evidence artifacts.
+      Record findings and signoff in artifacts/security-review.md.
+
+  - id: terminal-state-closure
+    capability: quality-assurance
+    output: artifacts/terminal-state-closure.md
+    instruction: |
+      Produce task-local terminal-state closure evidence after code review and security review.
+      Inspect the task spec, Evidence artifacts, review results, validation output, and implementation output.
+      List every external artifact or side effect created by the task, such as a PR, deploy, release, ticket, published package, or handoff document.
+      Confirm each external artifact or side effect has reached its terminal state, has an explicit handoff owner, or is blocked by an explicit stop condition before user-perspective completion.
+      Record any whole-work-object side effect that must be checked again at Final Acceptance.
+      Do not clean BF-owned task worktrees or task branches in this stage; the coordinator runs bf-harness cleanup after bf-harness complete succeeds.
+      Use this evidence before task-level BF acceptance review and readiness verification; the coordinator reruns final verify before merge, complete, and cleanup.

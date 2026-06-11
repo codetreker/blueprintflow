@@ -52,6 +52,8 @@ The architect decomposes the accepted Goal/Boundary into a task DAG. A good engi
 
 - Is roughly 1 PR in size — small enough that one host-compatible task driver can finish it and produce evidence in a single session.
 - Has a `Pipeline` in its frontmatter. Use `bf list-pipelines --pack engineering` and pick the narrowest matching execution flow.
+- Uses `feature-light` for small, clear, low-risk feature tasks when the intended scope, validation evidence, and acceptance path are already concrete.
+- Uses the full `feature` pipeline when feature work needs design-first review because scope, public contracts, architecture boundaries, migration or compatibility strategy, dependency/package exposure, security exposure, or validation evidence is not yet settled.
 - Uses `code-deep-audit` only for review-only deep codebase audits. That pipeline reports evidence and findings; it does not fix findings or replace BF Task Verification.
 - Has `Requires-Worktree: true|false`. Use `true` for tasks that change repository code or docs in a Git project; use `false` for planning, review-only, or non-repository work.
 - Has explicit `depends` edges in `bf.md`'s Task List — no implicit ordering.
@@ -62,6 +64,8 @@ The architect decomposes the accepted Goal/Boundary into a task DAG. A good engi
 
 Typical patterns:
 
+- **Small feature**: use `feature-light` when a compact pre-implementation scope plan can name why the task fits the lightweight path, the intended change scope, the validation approach, and the conditions that would escalate to the full `feature` pipeline.
+- **Design-first feature**: use `feature` when the task needs architecture/design artifacts, pre-implementation review, design-doc sync decisions, or broader evidence planning before code.
 - **Parser → writer → command**: when adding a new CLI subcommand, separate parsing the input format, writing the output, and wiring it into the command surface.
 - **Tests live with the code**: each task includes its own tests; do not create a "write all tests" task at the end.
 - **One module per task** is a reasonable default; split if a single module has two unrelated AC.

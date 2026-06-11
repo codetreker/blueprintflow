@@ -93,5 +93,5 @@ stages:
       List every external artifact or side effect created by the task, such as a PR, deploy, release, ticket, published package, or handoff document.
       Confirm each item has reached its terminal state, has an explicit handoff owner, or is blocked by an explicit stop condition, so no dangling user-perspective work is treated as done.
       Record any whole-work-object side effect that must be checked again at Final Acceptance in artifacts/terminal-state-closure.md.
-      Do not clean BF-owned task worktrees or task branches in this stage; the coordinator runs bf-harness cleanup after task verification succeeds and any task PR is merged.
-      The coordinator decides whether this evidence is sufficient before opening task-level BF acceptance review.
+      Do not clean BF-owned task worktrees or task branches in this stage; the coordinator runs bf-harness cleanup after bf-harness complete succeeds.
+      Use this evidence before task-level BF acceptance review and readiness verification; the coordinator reruns final verify before merge, complete, and cleanup.

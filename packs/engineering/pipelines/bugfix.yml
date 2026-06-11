@@ -15,7 +15,7 @@ instruction: |
   Stop on Blocker or High review findings and send fixes to the same task driver or a new task driver before rerunning the affected stage.
   Stop before task verification if any external artifact or side effect lacks a terminal state, handoff owner, or explicit stop condition.
   Do not edit locked bf.md or task spec.md content after accept; only the harness may flip AC checkboxes, advance State, sync Updated, and write task execution metadata.
-  The task driver produces closure evidence, but the coordinator owns the acceptance-readiness terminal-state closure decision before task-level BF acceptance review.
+  The task driver produces closure evidence before task-level BF acceptance review and readiness verification; the coordinator reruns final verify before merge, complete, and cleanup.
 stages:
   - id: regression-reproduction
     capability: software-implementation
@@ -82,5 +82,5 @@ stages:
       List every external artifact or side effect created by the fix, such as a PR, release, deploy, ticket, published package, or handoff document.
       Confirm each item has reached its terminal state, has an explicit handoff owner, or is blocked by an explicit stop condition.
       Record any whole-work-object side effect that must be checked again at Final Acceptance in artifacts/terminal-state-closure.md.
-      Do not clean BF-owned task worktrees or task branches in this stage; the coordinator runs bf-harness cleanup after task verification succeeds and any task PR is merged.
-      The coordinator decides whether this evidence is sufficient before opening task-level BF acceptance review.
+      Do not clean BF-owned task worktrees or task branches in this stage; the coordinator runs bf-harness cleanup after bf-harness complete succeeds.
+      Use this evidence before task-level BF acceptance review and readiness verification; the coordinator reruns final verify before merge, complete, and cleanup.

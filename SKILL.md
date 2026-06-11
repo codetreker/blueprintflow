@@ -5,7 +5,7 @@ description: "Use when the user types $bf or /bf; asks to brainstorm, scope, spe
 
 # BF — Blueprintflow
 
-Evidence-gated work loop for LLM orchestrators. BF turns a fuzzy user request into a locked contract (`bf.md` + per-task `spec.md`), then drives execution through a `next → do → review → verify` loop until every Acceptance Criterion is signed off by an independent reviewer.
+Evidence-gated work loop for LLM orchestrators. BF turns a fuzzy user request into a locked contract (`bf.md` + per-task `spec.md`), then drives execution through a `next -> do -> review/verify -> complete` loop until every Acceptance Criterion is signed off by an independent reviewer and harness completion succeeds.
 
 ## Core idea
 
@@ -15,9 +15,9 @@ Evidence-gated work loop for LLM orchestrators. BF turns a fuzzy user request in
 - **Three phases, gated:** brainstorm → spec → execute.
 
 ```
-brainstorm  →  spec  ──accept──▶  execute  ──verify──▶  Completed
-                  ▲                    │
-                  └──── lint / verify FAIL ───┘
+brainstorm -> spec --accept--> execute --verify/complete--> Completed
+                 ^                  |
+                 +---- lint / verify FAIL ----+
 ```
 
 ## IV — non-negotiable
@@ -33,14 +33,15 @@ Re-check this every time you spawn a reviewer. It is the one rule the system can
 
 Use these generic actor names in BF core guidance:
 
-- **coordinator** — the main session. It owns `next`, `start-review`, `verify`,
-  Final Acceptance, BF state transitions, reviewer dispatch for BF acceptance,
-  and actor lifecycle accounting.
-- **task driver** — the actor assigned one concrete task. It follows the task
-  pipeline and produces artifacts, evidence, pipeline review outputs, closure
-  evidence, and a review-ready handoff. The coordinator assigns claimed task
-  work and verification fixes to a task driver instead of doing that leaf work
-  in the main session.
+- **coordinator** — the main session. It owns `next`, task-driver assignment or
+  resume, final task verification rerun, PR merge, `bf-harness complete`,
+  cleanup, Final Acceptance, and actor lifecycle accounting.
+- **task driver** — the actor assigned one concrete task. It owns that task to
+  acceptance-ready: follows the task pipeline; produces artifacts, evidence,
+  pipeline review outputs, and closure evidence; opens and records the PR when
+  needed; starts task review and readiness verification when the host runtime
+  allows; handles feedback; and hands off evidence, review output, and verify
+  output. The coordinator owns merge, complete, and cleanup.
 - **leaf worker** — a bounded helper for one stage or artifact, used only when
   the current host runtime supports that delegation from the current actor.
 - **reviewer** — an independent actor that writes review results. IV applies to
@@ -101,7 +102,7 @@ effects, ask the user before mutating BF state.
 - `references/brainstorm.md` — drive the discussion, pick a pack, append `discussion.md`.
 - `references/project-docs.md` — discover project design docs, use them as design authority, and stop on design drift.
 - `references/spec-authoring.md` — author `bf.md` + per-task `spec.md`, lint, Spec Review loop, `accept`.
-- `references/execution.md` — `next → do → review → verify` loop, Task Verification and Final Acceptance.
+- `references/execution.md` — `next -> do -> review/verify -> complete` loop, Task Verification and Final Acceptance.
 - `references/feedback.md` — prepare user-requested GitHub issue feedback with duplicate checks, filing boundaries, redaction, and final user confirmation.
 - `templates/` — frozen file shapes (`bf.md`, `task-spec.md`, `discussion.md`, `review-result.md`, `role.md`, `pack.md`). Copy these when authoring; do not improvise.
 - `roles/` — Core roles (`architect`, `engineer`, `tester`, …). Each pack's `pack.md` declares which role plays which phase. Packs may add private roles under `packs/<id>/roles/`.

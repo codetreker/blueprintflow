@@ -17,8 +17,8 @@ Not for: pure research write-ups, content production, incident response runbooks
 - **AC (Acceptance Criterion)** — one checkbox on bf.md or a task spec; carries a stable id and a `capability` marker.
 - **Pipeline** — a named execution flow selected by task `Pipeline:` frontmatter and defined under `pipelines/*.yml`.
 - **Capability** — a string declared in a role's `Capabilities:` list; pipeline stages use it to pick stage owners, and AC use it to pick reviewers.
-- **coordinator** — the main session that owns BF harness commands, acceptance review setup, verification, final acceptance, and host actor lifecycle accounting.
-- **task driver** — the role-bound actor that executes one concrete task by following its selected pipeline and producing a review-ready handoff. In Codex, this is a Codex subagent assigned to the claimed task.
+- **coordinator** — the main session that owns task assignment, final task verification, PR merge, harness completion, task cleanup, Final Acceptance, and host actor lifecycle accounting.
+- **task driver** — the role-bound actor that executes one concrete task by following its selected pipeline and producing an acceptance-ready handoff. In Codex, this is a Codex subagent assigned to the claimed task.
 - **leaf worker** — a bounded helper for one stage or artifact, used only when the host runtime supports delegation from the current actor.
 - **reviewer** — an independent actor that reviews a task, artifact, or spec and writes review results.
 - **IV (Independent Verification)** — the same actor instance must not both produce work and review that work for the same task.
@@ -76,7 +76,9 @@ Do not block only because repository investigation or implementation strategy re
 The coordinator assigns each claimed engineering task to a host-compatible task driver before implementation, refactor, test-fix, validation, or task-scoped docs work starts.
 Start the actor with `roles/task-driver.md`; the task driver reads that role file itself.
 If task-driver capacity or tooling is unavailable, stop instead of doing the leaf work in the coordinator unless the user explicitly overrides the delegation rule.
-Verification-fix work goes to the same task driver or a new task driver.
+Verification-fix work goes to the same task driver or a new task driver. Prefer the original task driver when available.
+The task driver runs task review and readiness verification when the host runtime supports it. After fixes, use a fresh review round with fresh independent reviewers.
+The coordinator reruns task `verify` before merge, `complete`, and task-scoped cleanup.
 
 For each task the task driver picks up:
 
@@ -91,7 +93,7 @@ For each task the task driver picks up:
    - For UI work, a screenshot or an HTML snapshot.
 7. Never bypass the mutation whitelist: locked `bf.md` and `spec.md` bodies are off-limits. Only the harness flips checkboxes, State, Updated, and task execution metadata.
 8. When the spec is ambiguous and `discussion.md` does not answer it, append a clarifying entry to `discussion.md` and stop to ask the user — do not invent contract.
-9. When done, hand a review-ready package back to the coordinator: summary, changed artifacts, Evidence outputs, pipeline review outputs, and closure evidence. The coordinator runs `start-review`, dispatches BF acceptance reviewers, and runs `verify`.
+9. When done, hand an acceptance-ready package back to the coordinator: summary, changed artifacts, Evidence outputs, pipeline review outputs, task review round, verify output, PR URL if any, and closure evidence. The coordinator reruns `verify`, merges the task PR when present, runs `complete`, then runs task-scoped cleanup.
 
 ## Phase Roles
 

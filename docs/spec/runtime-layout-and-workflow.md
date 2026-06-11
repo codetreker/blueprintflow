@@ -6,6 +6,23 @@ primary worktree `.bf`, linked worktrees included, and non-Git directories use
 `<cwd>/.bf`. BF does not define `.tasks/` as a runtime directory for drafts,
 design notes, or execution artifacts.
 
+## Phase Confirmation Continuation
+
+BF phase gates may require explicit user confirmation before entering spec
+authoring, accepting a reviewed spec, or continuing execution. An affirmative
+answer to the immediately preceding BF confirmation prompt approves that pending
+transition only. The coordinator then loads the work object and immediately runs
+the next legal BF action for that phase:
+
+- brainstorm exit approval continues to spec authoring;
+- reviewed-spec approval runs `bf-harness accept <bf-wo>` and then enters execution;
+- execution continue approval runs the next legal execution command.
+
+Negative or scope-changing answers are recorded in `discussion.md` and do not
+advance the state machine. Confirmation continuation does not bypass source
+coverage, Spec Review, `accept`, harness transitions, Independent Verification,
+or execution gates.
+
 ## Skill Directory Structure
 
 ```text

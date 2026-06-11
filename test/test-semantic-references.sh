@@ -74,9 +74,8 @@ assert_match "$EXECUTION_BODY" "you are task-driver, working on" "task driver pr
 assert_match "$EXECUTION_BODY" "paste the complete task block returned by \`bf-harness next\`" "task driver prompt passes through next output"
 assert_match "$EXECUTION_BODY" "read this task's \`spec.md\` and selected pipeline" "task driver prompt requires own task spec and pipeline"
 assert_match "$EXECUTION_BODY" "report changed files, evidence artifacts" "task driver prompt requires completion handoff evidence"
-assert_match "$EXECUTION_BODY" "## role-bound worker prompt template" "execution provides a role-bound worker prompt template"
-assert_match "$EXECUTION_BODY" "use this template when the coordinator or a task driver starts" "worker prompt template is shared by coordinator and task driver"
-assert_match "$EXECUTION_BODY" "first, read your role instruction: \`roles/<role-id>.md\`" "worker prompt starts by reading own role"
+assert_not_match "$EXECUTION_BODY" "## role-bound worker prompt template" "execution should not carry task-driver worker prompt template"
+assert_not_match "$EXECUTION_BODY" "use this template when the coordinator or a task driver starts" "execution should not define shared worker template"
 assert_match "$EXECUTION_BODY" "do not read, summarize, or inline the role instruction" "parent actors do not proxy child role prompts"
 assert_match "$EXECUTION_BODY" "until the task driver completes" "execution waits for task driver completion"
 assert_match "$EXECUTION_BODY" "terminate it lightly" "execution avoids killing task drivers prematurely"
@@ -119,6 +118,9 @@ for role in engineer architect tester pipeline-designer task-driver; do
       assert_match "$ROLE_BODY" "capabilities:" "task-driver role has capabilities frontmatter"
       assert_match "$ROLE_BODY" "task-driving" "task-driver role declares task-driving capability"
       assert_match "$ROLE_BODY" "start every role-bound worker prompt with" "task-driver role starts workers with role-read instruction"
+      assert_match "$ROLE_BODY" "## role-bound worker prompt template" "task-driver role owns worker prompt template"
+      assert_match "$ROLE_BODY" "first, read your role instruction: \`roles/<role-id>.md\`" "task-driver worker prompt starts by reading own role"
+      assert_match "$ROLE_BODY" "you are <role-id>, working on" "task-driver worker prompt identifies the role and stage target"
       ;;
   esac
   assert_match "$ROLE_BODY" "read \`discussion.md\` only when" "$role role handles discussion ambiguity recovery"

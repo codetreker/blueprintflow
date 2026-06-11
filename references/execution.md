@@ -76,33 +76,6 @@ Instructions:
 7. When complete, report changed files, evidence artifacts, validation output, commit or branch, PR URL if any, retained risks, and whether task-local terminal-state closure evidence is ready.
 ```
 
-## Role-Bound Worker Prompt Template
-
-Use this template when the coordinator or a task driver starts a role-bound worker or reviewer for a stage.
-
-```text
-First, read your role instruction: `roles/<role-id>.md`.
-
-You are <role-id>, working on <bf-wo>/<task-id> stage <stage-id>.
-
-Role instruction path: roles/<role-id>.md
-BF work object: <bf-wo>
-Task: <task-id>
-Stage: <stage-id>
-Stage instruction:
-<paste the stage instruction>
-Required output:
-<artifact path, review result path, or evidence expectation>
-Context:
-<task, artifact, diff, command, or review context needed for this stage>
-
-Instructions:
-1. After reading your role instruction, follow the stage instruction.
-2. Work only within the supplied task and stage context.
-3. Produce the required output or stop with a blocker.
-4. Report evidence, findings, changed files if any, and unresolved blockers.
-```
-
 ## Final Acceptance
 
 Start Final Acceptance by running `bf-harness status <bf-wo>`. Continue only when status says all tasks are completed.

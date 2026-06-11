@@ -36,6 +36,8 @@ assert_match "$SKILL_BODY" "acceptance-ready" "root skill should describe task d
 assert_match "$SKILL_BODY" "merge" "root skill should assign coordinator merge responsibility"
 assert_match "$SKILL_BODY" "cleanup" "root skill should assign coordinator cleanup responsibility"
 assert_not_match "$SKILL_BODY" "review-ready handoff" "root skill should not keep old task-driver handoff wording"
+assert_match "$SKILL_BODY" "security" "root skill should name the Core security role"
+assert_match "$SKILL_BODY" "code-deep-audit" "root skill should mention the built-in deep audit pipeline"
 
 SPEC_AUTHORING_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/references/spec-authoring.md")
 assert_match "$SPEC_AUTHORING_BODY" "scope contract" "spec authoring defines task specs as scope contracts"
@@ -163,6 +165,28 @@ REVIEW_TEMPLATE_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/templates/review
 assert_match "$REVIEW_TEMPLATE_BODY" "at least one provider-role review file" "review template matches provider-role signoff semantics"
 assert_not_match "$REVIEW_TEMPLATE_BODY" "all required reviewer" "review template must not imply all provider roles must sign"
 
+CORE_CONSTRAINTS_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/docs/spec/core-constraints.md")
+assert_match "$CORE_CONSTRAINTS_BODY" "core security role owns" "core constraints record security role ownership"
+assert_match "$CORE_CONSTRAINTS_BODY" "security-review" "core constraints record security-review capability"
+
+ARCHITECTURE_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/docs/architecture.md")
+assert_match "$ARCHITECTURE_BODY" "repository maintenance is governed by \`agents.md\`" "architecture keeps repository maintenance authority in AGENTS.md"
+assert_match "$ARCHITECTURE_BODY" "not a repo-maintenance skill or pack" "architecture does not introduce a repo-maintenance replacement"
+assert_match "$ARCHITECTURE_BODY" "security-review" "architecture records security-review capability authority"
+
+PACKS_PIPELINES_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/docs/spec/packs-and-pipelines.md")
+assert_match "$PACKS_PIPELINES_BODY" "three independent reviewer actor instances with the" "pipeline docs fix local pipeline review count"
+assert_match "$PACKS_PIPELINES_BODY" "\`pipeline-review\` capability" "pipeline docs name pipeline-review as capability"
+assert_match "$PACKS_PIPELINES_BODY" "pipeline review" "pipeline docs distinguish pipeline review"
+assert_match "$PACKS_PIPELINES_BODY" "bf acceptance" "pipeline docs distinguish BF acceptance"
+assert_match "$PACKS_PIPELINES_BODY" "not task-local side effects" "pipeline docs keep worktree cleanup outside task closure"
+assert_match "$PACKS_PIPELINES_BODY" "bf-harness cleanup <bf-wo>" "pipeline docs assign cleanup to coordinator after Final Acceptance"
+assert_match "$PACKS_PIPELINES_BODY" "\`code-deep-audit\`" "pipeline docs record built-in code-deep-audit pipeline"
+assert_match "$PACKS_PIPELINES_BODY" "review-only deep codebase audit" "pipeline docs record audit boundary"
+assert_match "$PACKS_PIPELINES_BODY" "command safety" "pipeline docs record command safety guidance"
+assert_match "$PACKS_PIPELINES_BODY" "severity" "pipeline docs record finding severity guidance"
+assert_match "$PACKS_PIPELINES_BODY" "security role" "pipeline docs record security role ownership"
+
 ENGINEERING_PACK_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/packs/engineering/pack.md")
 assert_match "$ENGINEERING_PACK_BODY" "small enough that one host-compatible task driver can finish it" "engineering breakdown avoids engineer subagent task ownership"
 assert_not_match "$ENGINEERING_PACK_BODY" "pick doers" "engineering pack avoids stale doer vocabulary"
@@ -274,7 +298,7 @@ rm -f /tmp/bf-semantic-stale-repo-update.$$
 
 PKG_VERSION=$(node -e "process.stdout.write(JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8')).version)" "$REPO_ROOT/package.json")
 LOCK_VERSION=$(node -e "const p=JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8')); process.stdout.write(p.version + ' ' + p.packages[''].version)" "$REPO_ROOT/package-lock.json")
-assert_eq "$PKG_VERSION" "0.7.6" "package.json version should be bumped"
-assert_eq "$LOCK_VERSION" "0.7.6 0.7.6" "package-lock root versions should be bumped"
+assert_eq "$PKG_VERSION" "0.7.7" "package.json version should be bumped"
+assert_eq "$LOCK_VERSION" "0.7.7 0.7.7" "package-lock root versions should be bumped"
 
 pass

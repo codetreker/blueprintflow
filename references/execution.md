@@ -39,18 +39,19 @@ Repeat until no task remains:
 2. If `next` returns no eligible task, enter Final Acceptance. Do not manually pick a task.
 3. If `next` returns task blocks, assign one task driver to each returned task while normal delegation is available. Each returned task gets one task driver, either new or resumed by coordinator decision.
 4. Give each task driver the returned task block, the BF work-object id, the returned worktree if any, and the instruction to read its own role, spec, and pipeline. Use the Task Driver Prompt Template.
-5. Wait for each newly started task driver to report its startup capability check before starting other returned task blocks.
-6. If a task driver reports missing subagent tool, enter task-driver proxy mode for that task. Defer other returned task blocks and serially perform the task-driver responsibilities for the proxied task before returning to `next`.
-7. Wait until each task driver reports completion. Give it enough time to finish and do not terminate it lightly.
-8. If the task driver reports a blocker, read the blocker and take the coordinator action it requested, or stop for user clarification.
-9. Rerun `bf-harness verify <bf-wo>/<task>` after task-driver handoff.
-10. On FAIL, read the verify result and return it to the original task driver when available. Prefer the original task driver for task implementation, evidence, or AC fixes.
-11. Return to task-driver handoff and wait for completion before rerunning verify.
-12. On SUCCESS, merge the task PR when the task produced a PR.
-13. Run `bf-harness complete <bf-wo>/<task>`.
-14. Run `bf-harness cleanup <bf-wo>/<task>` after `complete` succeeds and any task PR is merged.
-15. Report retained task worktrees or branches. Do not force-delete them.
-16. Return to step 1.
+5. For review-only pipelines such as engineering `code-deep-audit`, the task driver produces the audit evidence, command evidence, findings triage, and closure artifacts named by the pipeline and task spec without changing the audited code.
+6. Wait for each newly started task driver to report its startup capability check before starting other returned task blocks.
+7. If a task driver reports missing subagent tool, enter task-driver proxy mode for that task. Defer other returned task blocks and serially perform the task-driver responsibilities for the proxied task before returning to `next`.
+8. Wait until each task driver reports completion. Give it enough time to finish and do not terminate it lightly.
+9. If the task driver reports a blocker, read the blocker and take the coordinator action it requested, or stop for user clarification.
+10. Rerun `bf-harness verify <bf-wo>/<task>` after task-driver handoff.
+11. On FAIL, read the verify result and return it to the original task driver when available. Prefer the original task driver for task implementation, evidence, or AC fixes.
+12. Return to task-driver handoff and wait for completion before rerunning verify.
+13. On SUCCESS, merge the task PR when the task produced a PR.
+14. Run `bf-harness complete <bf-wo>/<task>`.
+15. Run `bf-harness cleanup <bf-wo>/<task>` after `complete` succeeds and any task PR is merged.
+16. Report retained task worktrees or branches. Do not force-delete them.
+17. Return to step 1.
 
 ## Task Driver Prompt Template
 

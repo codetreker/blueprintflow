@@ -2,11 +2,11 @@ id: bugfix
 desc: Bugfix task with focused regression red-green, validation, docs sync, review, and closure gates
 instruction: |
   Use this pipeline for defect fixes.
-  It requires a focused failing regression test or reproduction before implementation, expected failure confirmation, the smallest fix, a focused passing test, validation, design-doc-sync when the fix changes accepted behavior contracts, independent review, and a terminal-state closure stage.
+  It requires a focused failing regression test or reproduction before implementation, expected failure confirmation, the smallest fix, a focused passing test, validation, design-doc-sync when the fix changes accepted behavior contracts, independent review, security-review, and a terminal-state closure stage.
   Run the stages in order.
   Read the task spec, bf.md Goal/Boundary, relevant discussion, confirmed project design docs, and host-runtime strategy before the first stage.
   Each stage must produce its named artifact or review result before the next stage starts.
-  When design-doc sync or full validation is not required, record explicit not-applicable evidence.
+  When design-doc sync, full validation, or security review is not required, record explicit not-applicable evidence.
   For claimed task work, the coordinator assigns regression reproduction, implementation, focused passing-test, validation, design-doc sync, and verification fixes to a host-compatible task driver; in Codex, that actor is a Codex subagent.
   If task-driver capacity or tooling is unavailable, stop unless the user explicitly overrides the delegation rule.
   Review stages must remain independent from the actor whose work they review.
@@ -73,11 +73,21 @@ stages:
       Record findings and signoff in artifacts/code-review.md.
       Sign off only the AC ids that the review independently verifies.
 
+  - id: security-review
+    capability: security-review
+    output: artifacts/security-review.md
+    instruction: |
+      Review the fix after code review and before terminal-state closure for security baseline risk.
+      Check authentication, authorization, privilege boundaries, secrets, dependency/package exposure, command or shell execution, input handling, data handling, logging, and release integrity as applicable to the locked task scope and regression.
+      Stop on any Blocker or High finding; send fixes to the task driver before continuing.
+      If the task has no security-relevant change, record not-applicable evidence with rationale and cite the reviewed files, commands, and Evidence artifacts.
+      Record findings and signoff in artifacts/security-review.md.
+
   - id: terminal-state-closure
     capability: quality-assurance
     output: artifacts/terminal-state-closure.md
     instruction: |
-      Produce task-local terminal-state closure evidence after code review.
+      Produce task-local terminal-state closure evidence after code review and security review.
       Inspect the task spec, Evidence artifacts, review results, and implementation output.
       List every external artifact or side effect created by the fix, such as a PR, release, deploy, ticket, published package, or handoff document.
       Confirm each item has reached its terminal state, has an explicit handoff owner, or is blocked by an explicit stop condition.

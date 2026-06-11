@@ -77,8 +77,8 @@ If the route is ambiguous and the choice changes state, scope, or external side 
 - `references/execution.md` — `next -> do -> review/verify -> complete` loop, Task Verification and Final Acceptance.
 - `references/feedback.md` — prepare user-requested GitHub issue feedback with duplicate checks, filing boundaries, redaction, and final user confirmation.
 - `templates/` — frozen file shapes (`bf.md`, `task-spec.md`, `discussion.md`, `review-result.md`, `role.md`, `pack.md`). Copy these when authoring; do not improvise.
-- `roles/` — Core roles (`architect`, `engineer`, `tester`, …). Each pack's `pack.md` declares which role plays which phase. Packs may add private roles under `packs/<id>/roles/`.
-- `packs/` — installed packs. Each `pack.md` has `When to Use` + the three phase guidances. Pack pipelines live under `packs/<id>/pipelines/*.yml` and are discoverable with `bf list-pipelines --pack <id>`.
+- `roles/` — Core roles (`architect`, `engineer`, `tester`, `security`, …). Each pack's `pack.md` declares which role plays which phase. Packs may add private roles under `packs/<id>/roles/`.
+- `packs/` — installed packs. Each `pack.md` has `When to Use` + the three phase guidances. Pack pipelines live under `packs/<id>/pipelines/*.yml` and are discoverable with `bf list-pipelines --pack <id>`. The engineering pack includes `feature`, `bugfix`, and review-only `code-deep-audit`.
 - `extensions/` (optional) — user-supplied roles and packs. Global extensions live at `~/.bf/extensions/`; project extensions live under the normal project BF state home at `.bf/extensions/`. Project beats global beats selected pack-private roles and Core roles; same id wins by precedence.
 - BF state — Git projects store BF state under the primary worktree `.bf`, even when commands run from linked worktrees. New work objects live under `.bf/works/<bf-wo>`; legacy `.bf/<bf-wo>` work objects remain readable. Non-Git directories fall back to `<cwd>/.bf`.
 - Run `bf --help` and `bf-harness --help` for the authoritative command reference.

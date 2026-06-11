@@ -17,6 +17,7 @@ Not for: pure research write-ups, content production, incident response runbooks
 - **AC (Acceptance Criterion)** — one checkbox on bf.md or a task spec; carries a stable id and a `capability` marker.
 - **Pipeline** — a named execution flow selected by task `Pipeline:` frontmatter and defined under `pipelines/*.yml`.
 - **Capability** — a string declared in a role's `Capabilities:` list; pipeline stages use it to pick stage owners, and AC use it to pick reviewers.
+- **security-review** — Core security role capability for security baseline review, security-relevant task review, and security AC signoff.
 - **coordinator** — the main session that owns task assignment, final task verification, PR merge, harness completion, task cleanup, Final Acceptance, and host actor lifecycle accounting.
 - **task driver** — the role-bound actor that executes one concrete task by following its selected pipeline and producing an acceptance-ready handoff. In Codex, this is a Codex subagent assigned to the claimed task.
 - **leaf worker** — a bounded helper for one stage or artifact, used only when the host runtime supports delegation from the current actor.
@@ -51,6 +52,7 @@ The architect decomposes the accepted Goal/Boundary into a task DAG. A good engi
 
 - Is roughly 1 PR in size — small enough that one host-compatible task driver can finish it and produce evidence in a single session.
 - Has a `Pipeline` in its frontmatter. Use `bf list-pipelines --pack engineering` and pick the narrowest matching execution flow.
+- Uses `code-deep-audit` only for review-only deep codebase audits. That pipeline reports evidence and findings; it does not fix findings or replace BF Task Verification.
 - Has `Requires-Worktree: true|false`. Use `true` for tasks that change repository code or docs in a Git project; use `false` for planning, review-only, or non-repository work.
 - Has explicit `depends` edges in `bf.md`'s Task List — no implicit ordering.
 - Has AC that are observable from outside the task (a file exists, a command exits 0, a test passes, an endpoint returns X).
@@ -95,6 +97,10 @@ For each task the task driver picks up:
 8. When the spec is ambiguous and `discussion.md` does not answer it, append a clarifying entry to `discussion.md` and stop to ask the user — do not invent contract.
 9. When done, hand an acceptance-ready package back to the coordinator: summary, changed artifacts, Evidence outputs, pipeline review outputs, task review round, verify output, PR URL if any, and closure evidence. The coordinator reruns `verify`, merges the task PR when present, runs `complete`, then runs task-scoped cleanup.
 
+Built-in feature and bugfix pipelines include a `security-review` stage after code review and before terminal-state closure.
+The security role owns that stage.
+It stops on Blocker or High findings and records not-applicable evidence when the task has no security-relevant change.
+
 ## Phase Roles
 
 This pack maps BF's phases to specific Core roles. **Capabilities are skills, not activities** — a phase is the activity (planning, executing, reviewing), and the right role for that phase is the one whose *skills* (capabilities) fit the work. For engineering, the planning phase needs system-architecture skill, so the architect runs it.
@@ -104,8 +110,8 @@ This pack maps BF's phases to specific Core roles. **Capabilities are skills, no
 | Brainstorm | architect | system-architecture |
 | Spec / breakdown (write bf.md + task specs) | architect | system-architecture |
 | Spec Review | architect, tester | design-review, quality-assurance |
-| Execute (per task; pipeline stages) | architect, engineer, tester | stage capability from task Pipeline |
-| Task Verification (reviewer) | tester | quality-assurance (or AC's capability marker) |
-| Final Acceptance | architect, tester | design-review, quality-assurance |
+| Execute (per task; pipeline stages) | architect, engineer, tester, security | stage capability from task Pipeline |
+| Task Verification (reviewer) | tester, security | quality-assurance (or AC's capability marker) |
+| Final Acceptance | architect, tester, security | design-review, quality-assurance, security-review |
 
 Independent Verification still applies: the *actor instance* whose work is reviewed cannot be the reviewer for that work (different instances of the same role are OK).

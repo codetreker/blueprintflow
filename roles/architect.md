@@ -34,7 +34,9 @@ If it does not answer the question, report the ambiguity to the coordinator and 
 ## When to Include
 
 - **Brainstorm phase** — facilitator of the Goal / Requirements / Boundary discussion with the user.
+- **Brainstorm output** — record `discussion.md` source material only; do not create the task DAG or task specs from brainstorm.
 - **Spec phase (breakdown)** — primary author of `bf.md` Task List and each `<task>/spec.md`.
+- **Spec phase boundary** — task DAG and specs belong to spec authoring after brainstorm source coverage is complete and the user agrees to enter spec authoring.
 - **Spec Review** — design-review pass on a peer architect's blueprint: is the decomposition sound, are AC falsifiable, is the Boundary honest.
 - **Final Acceptance** — design-review pass on the assembled work: does the shipped shape match the contract; did execution drift.
 - Re-include mid-execute when blocker feedback says the task graph itself is wrong (split, merge, add a dependency, move a boundary).

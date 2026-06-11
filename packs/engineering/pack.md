@@ -38,7 +38,7 @@ The architect facilitates this phase. Before any breakdown, drive the discussion
 Before writing `bf.md`, confirm `discussion.md` has source coverage for the Goal, Requirement, Acceptance Criteria, Boundary, and Task List rationale.
 You may propose missing material and append it to `discussion.md`, but only user answers or accepted proposals become source material for the contract.
 
-The bf.md that comes out should have a tight Goal (one or two sentences), a Requirements list that a user could observe, AC that are checkable from the outside, and a Boundary that names at least one tempting-but-deferred adjacent thing.
+Record source material so spec authoring can later produce a tight Goal (one or two sentences), a Requirements list that a user could observe, AC that are checkable from the outside, and a Boundary that names at least one tempting-but-deferred adjacent thing.
 
 Anti-patterns to avoid:
 - AC that describe the implementation ("uses async/await") instead of the outcome.

@@ -25,6 +25,8 @@ assert_match "$SKILL_BODY" "resume" "root skill should route existing work resum
 assert_match "$SKILL_BODY" "feedback" "root skill should route feedback flow"
 assert_match "$SKILL_BODY" "explicit authorization" "root skill should treat BF trigger as actor authorization"
 assert_match "$SKILL_BODY" "host-compatible actor" "root skill should scope actor authorization to host-compatible BF actors"
+assert_match "$SKILL_BODY" "read \`references/brainstorm.md\` first" "root skill should route new work through brainstorm before bootstrap details"
+assert_match "$SKILL_BODY" "brainstorm owns pack selection, bootstrap, and the first accepted discussion entry" "root skill should keep new-work bootstrap inside brainstorm"
 
 SPEC_AUTHORING_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/references/spec-authoring.md")
 assert_match "$SPEC_AUTHORING_BODY" "scope contract" "spec authoring defines task specs as scope contracts"
@@ -32,6 +34,9 @@ assert_match "$SPEC_AUTHORING_BODY" "not implementation design" "spec authoring 
 assert_match "$SPEC_AUTHORING_BODY" "contract gaps" "spec review blocks contract gaps"
 assert_match "$SPEC_AUTHORING_BODY" "execution design" "spec authoring leaves details to execution design"
 assert_match "$SPEC_AUTHORING_BODY" "accepted user-facing contract" "spec authoring preserves accepted-detail exception"
+assert_match "$SPEC_AUTHORING_BODY" "phase gate" "spec authoring has directive phase gate"
+assert_match "$SPEC_AUTHORING_BODY" "report discussion source coverage" "spec authoring reports coverage before drafting"
+assert_match "$SPEC_AUTHORING_BODY" "do not write \`bf.md\` or task specs" "spec authoring blocks drafting before coverage"
 assert_match "$SPEC_AUTHORING_BODY" "discussion.md contains source material" "spec authoring requires discussion source coverage before bf.md"
 assert_match "$SPEC_AUTHORING_BODY" "stop before task breakdown" "spec authoring blocks premature task breakdown"
 assert_match "$SPEC_AUTHORING_BODY" "must not cite or quote discussion.md" "spec authoring keeps bf.md concise without redundant citations"
@@ -41,6 +46,10 @@ assert_match "$SPEC_AUTHORING_BODY" "three independent reviewer actor instances 
 assert_match "$SPEC_AUTHORING_BODY" "select one provider role" "spec authoring records provider-role selection"
 
 BRAINSTORM_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/references/brainstorm.md")
+assert_match "$BRAINSTORM_BODY" "phase gate" "brainstorm has directive phase gate"
+assert_match "$BRAINSTORM_BODY" "hard gates" "brainstorm has hard gates"
+assert_match "$BRAINSTORM_BODY" "brainstorm loop" "brainstorm has an explicit loop"
+assert_match "$BRAINSTORM_BODY" "source coverage checklist" "brainstorm has explicit coverage checklist"
 assert_match "$BRAINSTORM_BODY" "source coverage" "brainstorm defines source coverage"
 assert_match "$BRAINSTORM_BODY" "requirement, acceptance, out-of-scope boundary" "brainstorm readiness covers core contract answers"
 assert_match "$BRAINSTORM_BODY" "assistant-led proposal" "brainstorm supports assistant-led proposal entries"
@@ -49,6 +58,11 @@ assert_match "$BRAINSTORM_BODY" "every bf.md section" "brainstorm requires every
 assert_match "$BRAINSTORM_BODY" "bootstrap" "brainstorm defines work-object bootstrap"
 assert_match "$BRAINSTORM_BODY" "choose a bf-wo id" "brainstorm bootstrap chooses bf-wo id"
 assert_match "$BRAINSTORM_BODY" "copy \`templates/discussion.md\`" "brainstorm bootstrap copies discussion template"
+assert_match "$BRAINSTORM_BODY" "do not author \`bf.md\`" "brainstorm forbids bf.md authoring"
+assert_match "$BRAINSTORM_BODY" "do not create task specs" "brainstorm forbids task spec creation"
+assert_match "$BRAINSTORM_BODY" "do not start task breakdown" "brainstorm blocks premature task breakdown"
+assert_match "$BRAINSTORM_BODY" "user explicitly agrees to enter spec authoring" "brainstorm requires explicit transition approval"
+assert_match "$BRAINSTORM_BODY" "one unresolved coverage gap" "brainstorm loop focuses one coverage gap at a time"
 
 EXECUTION_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/references/execution.md")
 assert_match "$EXECUTION_BODY" "phase gate" "execution has directive phase gate"

@@ -86,10 +86,9 @@ references:
    bf-wo, locate `.bf/works/<bf-wo>` first; legacy `.bf/<bf-wo>` remains
    readable. Read `bf.md`, `discussion.md`, task specs, and latest review or
    verify results, then route by state to spec authoring or execution.
-4. **New software change / bootstrap** — choose a readable bf-wo id, create the
-   work object under the resolved BF state home, copy
-   `templates/discussion.md`, append the first accepted discussion entry, then
-   read `references/brainstorm.md`.
+4. **New software change / brainstorm** — read `references/brainstorm.md` first.
+   Brainstorm owns pack selection, bootstrap, and the first accepted discussion entry.
+   Do not create a work object or write `discussion.md` before following the brainstorm reference unless you are resuming existing work.
 5. **Spec / accept / execute request** — load the existing work object first,
    then read `references/spec-authoring.md` or `references/execution.md` based
    on `bf.md` state. Do not skip unresolved brainstorm source coverage.

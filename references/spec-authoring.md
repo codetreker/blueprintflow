@@ -2,6 +2,15 @@
 
 Goal: produce a locked `bf.md` + one `<task-id>/spec.md` per task, with every AC reviewed and accepted by the user.
 
+## Phase Gate
+
+Before role lookup, pipeline lookup, `bf.md` drafting, task spec drafting, local pipeline drafting, lint, Spec Review, or `accept`:
+
+1. Read `discussion.md`.
+2. Report discussion source coverage for Goal, Requirement, Acceptance Criteria, Boundary, and Task List rationale.
+3. If any source material is missing, do not write `bf.md` or task specs. Return to [brainstorm.md](brainstorm.md), append the missing question, decision, or proposal to `discussion.md`, and continue only after the gap is resolved.
+4. Continue only when source coverage is complete and the user explicitly agreed to enter spec authoring.
+
 ## Spec Granularity
 
 Write `bf.md` and task `spec.md` as a **scope contract**.

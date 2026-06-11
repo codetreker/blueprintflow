@@ -59,9 +59,9 @@ run_install_json() {
 
 make_src
 
-# Auto-detect both host roots.
+# Auto-detect all host roots.
 HOME_DIR=$(make_temp_home)
-mkdir -p "$HOME_DIR/.claude" "$HOME_DIR/.codex"
+mkdir -p "$HOME_DIR/.claude" "$HOME_DIR/.codex" "$HOME_DIR/.copilot"
 run_install_json "$HOME_DIR"
 assert_json_field "$STDOUT" .ok true
 assert_json_field "$STDOUT" .version "9.9.9"
@@ -70,10 +70,13 @@ assert_json_field "$STDOUT" .targets.0.status "installed"
 assert_match "$STDOUT" '"version":"9.9.9"' "install result records installed version"
 assert_match "$STDOUT" '"target":"codex"' "auto-detect should include Codex"
 assert_match "$STDOUT" '"status":"installed"' "auto-detected Codex should install"
+assert_match "$STDOUT" '"target":"copilot"' "auto-detect should include Copilot"
 assert_snapshot "$HOME_DIR/.claude/skills/bf"
 assert_snapshot "$HOME_DIR/.codex/skills/bf"
+assert_snapshot "$HOME_DIR/.copilot/skills/bf"
 assert_metadata "$HOME_DIR/.claude/skills/bf" "claude" "9.9.9"
 assert_metadata "$HOME_DIR/.codex/skills/bf" "codex" "9.9.9"
+assert_metadata "$HOME_DIR/.copilot/skills/bf" "copilot" "9.9.9"
 rm -rf "$HOME_DIR"
 
 # Auto-detect Claude only.
@@ -83,6 +86,30 @@ run_install_json "$HOME_DIR"
 assert_json_field "$STDOUT" .targets.0.target "claude"
 [ -f "$HOME_DIR/.claude/skills/bf/SKILL.md" ] || fail "Claude target should be installed"
 [ ! -e "$HOME_DIR/.codex/skills/bf" ] || fail "Codex target should not be installed"
+rm -rf "$HOME_DIR"
+
+# Auto-detect Copilot when only the host root exists.
+HOME_DIR=$(make_temp_home)
+mkdir -p "$HOME_DIR/.copilot"
+run_install_json "$HOME_DIR"
+assert_json_field "$STDOUT" .targets.0.target "copilot"
+assert_json_field "$STDOUT" .targets.0.status "installed"
+assert_snapshot "$HOME_DIR/.copilot/skills/bf"
+assert_metadata "$HOME_DIR/.copilot/skills/bf" "copilot" "9.9.9"
+[ ! -e "$HOME_DIR/.claude/skills/bf" ] || fail "Claude target should not be installed"
+[ ! -e "$HOME_DIR/.codex/skills/bf" ] || fail "Codex target should not be installed"
+rm -rf "$HOME_DIR"
+
+# Auto-detect Copilot when only an existing BF snapshot is present.
+HOME_DIR=$(make_temp_home)
+mkdir -p "$HOME_DIR/.copilot/skills/bf/roles"
+echo "# stale" > "$HOME_DIR/.copilot/skills/bf/roles/stale.md"
+run_install_json "$HOME_DIR"
+assert_json_field "$STDOUT" .targets.0.target "copilot"
+assert_json_field "$STDOUT" .targets.0.status "updated-from-unknown"
+assert_snapshot "$HOME_DIR/.copilot/skills/bf"
+assert_metadata "$HOME_DIR/.copilot/skills/bf" "copilot" "9.9.9"
+[ ! -e "$HOME_DIR/.copilot/skills/bf/roles/stale.md" ] || fail "stale Copilot role should be removed by snapshot refresh"
 rm -rf "$HOME_DIR"
 
 # Auto-detect none: no-op success.
@@ -102,6 +129,17 @@ assert_json_field "$STDOUT" .targets.0.status "installed"
 assert_snapshot "$HOME_DIR/.codex/skills/bf"
 assert_metadata "$HOME_DIR/.codex/skills/bf" "codex" "9.9.9"
 [ ! -e "$HOME_DIR/.claude/skills/bf" ] || fail "explicit codex target should not install Claude"
+rm -rf "$HOME_DIR"
+
+# Explicit Copilot target writes the standard discovery snapshot and metadata.
+HOME_DIR=$(make_temp_home)
+run_install_json "$HOME_DIR" "copilot"
+assert_json_field "$STDOUT" .targets.0.target "copilot"
+assert_json_field "$STDOUT" .targets.0.status "installed"
+assert_snapshot "$HOME_DIR/.copilot/skills/bf"
+assert_metadata "$HOME_DIR/.copilot/skills/bf" "copilot" "9.9.9"
+[ ! -e "$HOME_DIR/.claude/skills/bf" ] || fail "explicit copilot target should not install Claude"
+[ ! -e "$HOME_DIR/.codex/skills/bf" ] || fail "explicit copilot target should not install Codex"
 rm -rf "$HOME_DIR"
 
 # Reinstall with no metadata refreshes an existing snapshot from unknown version.
@@ -163,8 +201,10 @@ assert_eq "$RC" "0" "install no detected target exits 0"
 assert_match "$STDOUT" "BF v9.9.9 install" "install no-op prints version header"
 assert_match "$STDOUT" "Detected: none" "install no-op reports no detected targets"
 assert_match "$STDOUT" "--target" "install no-op suggests explicit target"
+assert_match "$STDOUT" "bf install --target copilot" "install no-op suggests explicit Copilot target"
 run_bf install --target nope
 assert_eq "$RC" "2" "invalid target exits 2"
+assert_match "$STDERR" "claude|codex|copilot" "invalid target usage lists supported targets"
 run_bf install --target
 assert_eq "$RC" "2" "missing target value exits 2"
 run_bf install --target claude --target codex
@@ -173,26 +213,28 @@ run_bf install --target Codex
 assert_eq "$RC" "2" "target is case-sensitive"
 [ ! -e "$HOME_DIR/.claude/skills/bf" ] || fail "invalid target should not mutate Claude"
 [ ! -e "$HOME_DIR/.codex/skills/bf" ] || fail "invalid target should not mutate Codex"
+[ ! -e "$HOME_DIR/.copilot/skills/bf" ] || fail "invalid target should not mutate Copilot"
 unset HOME BF_INSTALL_DIR
 rm -rf "$HOME_DIR" "$SRC"
 
 # CLI output summarizes auto-detected targets and explicit target installs.
 make_src
 HOME_DIR=$(make_temp_home)
-mkdir -p "$HOME_DIR/.claude" "$HOME_DIR/.codex"
+mkdir -p "$HOME_DIR/.claude" "$HOME_DIR/.codex" "$HOME_DIR/.copilot"
 export HOME="$HOME_DIR"
 export BF_INSTALL_DIR="$SRC"
 run_bf install
 assert_eq "$RC" "0" "install detected targets exits 0"
 assert_match "$STDOUT" "BF v9.9.9 install" "install prints version header"
-assert_match "$STDOUT" "Detected: claude, codex" "install prints detected targets"
+assert_match "$STDOUT" "Detected: claude, codex, copilot" "install prints detected targets"
 assert_match "$STDOUT" "claude: installed 9.9.9" "install summarizes Claude install"
 assert_match "$STDOUT" "codex: installed 9.9.9" "install summarizes Codex install"
+assert_match "$STDOUT" "copilot: installed 9.9.9" "install summarizes Copilot install"
 assert_match "$STDOUT" "Extensions: ~/.bf/extensions unchanged" "install reports extension location"
-run_bf install --target codex
+run_bf install --target copilot
 assert_eq "$RC" "0" "explicit install exits 0"
-assert_match "$STDOUT" "Target: codex" "explicit install prints target"
-assert_match "$STDOUT" "codex: refreshed 9.9.9" "explicit install summarizes refresh"
+assert_match "$STDOUT" "Target: copilot" "explicit install prints target"
+assert_match "$STDOUT" "copilot: refreshed 9.9.9" "explicit install summarizes refresh"
 unset HOME BF_INSTALL_DIR
 rm -rf "$HOME_DIR" "$SRC"
 

@@ -166,9 +166,12 @@ Packs and roles are extension points. Core definitions live in the npm package.
 Global user extensions live under `~/.bf/extensions/`. Project extensions live
 under the project BF state home at `extensions/`; in normal Git work this is the
 primary worktree `.bf/extensions/`, linked worktrees included. Host discovery
-snapshots under `~/.claude/skills/bf/` and `$CODEX_HOME/skills/bf/` are
-generated copies and are not extension roots. When `CODEX_HOME` is unset, Codex
-defaults to `~/.codex/skills/bf/`. Each snapshot carries `.bf-install.json` so
+snapshots under `~/.claude/skills/bf/`, `$CODEX_HOME/skills/bf/`, and
+`~/.copilot/skills/bf/` are generated copies and are not extension roots. When
+`CODEX_HOME` is unset, Codex defaults to `~/.codex/skills/bf/`. Copilot
+auto-discovery uses `~/.copilot` or an existing `~/.copilot/skills/bf/`; it does
+not use project-local `.github/skills/bf`, generic `.agents/skills/bf`, or
+GitHub CLI skill preview commands. Each snapshot carries `.bf-install.json` so
 `bf install` can report whether the snapshot was newly installed, refreshed,
 updated, or updated from an unknown older copy. `bf update` upgrades the global
 BF npm package with `npm install -g @codetreker/bf@latest`; snapshot refresh

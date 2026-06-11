@@ -12,15 +12,16 @@ import { cmdListPipelines, formatListPipelines } from "./lib/bf/cmd-list-pipelin
 import { cmdInstall } from "./lib/bf/cmd-install.mjs";
 import { cmdUninstall } from "./lib/bf/cmd-uninstall.mjs";
 import { cmdUpdate } from "./lib/bf/cmd-update.mjs";
-import { globalExtensionsDir, isDiscoveryTarget } from "./lib/shared/install-paths.mjs";
+import { DISCOVERY_TARGETS, globalExtensionsDir, isDiscoveryTarget } from "./lib/shared/install-paths.mjs";
 import { resolveDefaultStateHome } from "./lib/shared/state-home.mjs";
 
+const TARGET_USAGE = DISCOVERY_TARGETS.join("|");
 const USAGE = `Usage:
   bf list-roles [--pack <pack-id>]
   bf list-packs
   bf list-pipelines [--pack <pack-id>]
-  bf install [--target claude|codex]
-  bf uninstall [--target claude|codex]
+  bf install [--target ${TARGET_USAGE}]
+  bf uninstall [--target ${TARGET_USAGE}]
   bf update                   Update global BF package to latest
   bf version                  Show installed BF version`;
 
@@ -40,7 +41,7 @@ function parseTargetOption(rest) {
     if (target !== null) return { ok: false, error: "--target may be specified only once" };
     const value = rest[++i];
     if (!value || value.startsWith("--")) return { ok: false, error: "--target requires a value" };
-    if (!isDiscoveryTarget(value)) return { ok: false, error: `unknown target: ${value}` };
+    if (!isDiscoveryTarget(value)) return { ok: false, error: `unknown target: ${value} (supported: ${TARGET_USAGE})` };
     target = value;
   }
   return { ok: true, target };

@@ -14,13 +14,14 @@ npm install -g @codetreker/bf
 
 Requires Node.js ≥ 20. **Install globally** (`-g`) so the `bf` and `bf-harness` CLIs land on `$PATH` — that is the only supported install mode. Local installs (`--save-dev`) put the CLIs in `node_modules/.bin/` only and break shell invocations from delegated actor commands.
 
-`npm install` also runs a `postinstall` step that copies a host discovery snapshot (`SKILL.md`, `roles/`, `packs/`, `templates/`, `references/`) for detected LLM hosts. Claude Code uses `~/.claude/skills/bf/`; Codex uses `$CODEX_HOME/skills/bf/`, defaulting to `~/.codex/skills/bf/`. The install output lists detected targets and whether each snapshot was installed, updated, refreshed, or updated from an unknown older copy. Re-run manually anytime with `bf install`.
+`npm install` also runs a `postinstall` step that copies a host discovery snapshot (`SKILL.md`, `roles/`, `packs/`, `templates/`, `references/`) for detected LLM hosts. Claude Code uses `~/.claude/skills/bf/`; Codex uses `$CODEX_HOME/skills/bf/`, defaulting to `~/.codex/skills/bf/`; Copilot uses `~/.copilot/skills/bf/`. The install output lists detected targets and whether each snapshot was installed, updated, refreshed, or updated from an unknown older copy. Re-run manually anytime with `bf install`.
 
 `bf install` auto-detects supported targets. Use `--target` to install one explicitly:
 
 ```bash
 bf install --target claude
 bf install --target codex
+bf install --target copilot
 ```
 
 ### Updating
@@ -33,7 +34,7 @@ bf update
 ```
 
 The command runs `npm install -g @codetreker/bf@latest`. The updated package's
-`postinstall` step then runs `bf install`, so Claude/Codex discovery snapshots
+`postinstall` step then runs `bf install`, so Claude/Codex/Copilot discovery snapshots
 are refreshed by the same install path instead of by a second manual refresh.
 
 ### Uninstalling
@@ -45,7 +46,7 @@ bf uninstall                              # before npm uninstall, while the CLI 
 npm uninstall -g @codetreker/bf
 ```
 
-`bf uninstall` auto-detects supported targets. Use `bf uninstall --target claude` or `bf uninstall --target codex` for one target.
+`bf uninstall` auto-detects supported targets. Use `bf uninstall --target claude`, `bf uninstall --target codex`, or `bf uninstall --target copilot` for one target.
 
 ## Extending BF — `extensions/`
 
@@ -60,7 +61,7 @@ BF looks for additional roles and packs in host-neutral `extensions/` directorie
 
 **Precedence (highest wins):** project extension → global extension → selected pack-private role → Core role. So a project-local `engineer.md` overrides anything else with that id.
 
-Host discovery snapshots are generated copies. Do not put extensions under `~/.claude/skills/bf/` or `$CODEX_HOME/skills/bf/`; BF does not read those locations.
+Host discovery snapshots are generated copies. Do not put extensions under `~/.claude/skills/bf/`, `$CODEX_HOME/skills/bf/`, or `~/.copilot/skills/bf/`; BF does not read those locations.
 
 `bf list-packs` shows each effective pack with every `pack.md` path in read order. `bf list-roles [--pack <id>]` and `bf list-pipelines [--pack <id>]` show the final effective role and pipeline registries.
 

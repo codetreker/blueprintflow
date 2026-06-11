@@ -43,10 +43,13 @@ Output includes:
 
 Installs host discovery snapshots for supported LLM hosts. Without `--target`,
 the command auto-detects existing host roots and installs every detected target.
-With `--target claude|codex`, it installs only that target.
+With `--target claude|codex|copilot`, it installs only that target.
 
 Codex discovery uses `$CODEX_HOME/skills/bf` when `CODEX_HOME` is set. Otherwise
 it uses `<home>/.codex/skills/bf`.
+
+Copilot discovery uses `<home>/.copilot/skills/bf`. Automatic discovery includes
+Copilot when `<home>/.copilot` or `<home>/.copilot/skills/bf` exists.
 
 Output includes:
 
@@ -66,6 +69,20 @@ Each discovery snapshot includes `.bf-install.json` with schema, package name,
 package version, target, and install timestamp. This file is metadata for BF
 install status only; the discovery snapshot remains a generated host-readable
 copy, not an npm package mirror.
+
+The supported targets are concrete user-level host targets. BF install does not
+write project-local `.github/skills/bf`, does not write generic
+`.agents/skills/bf`, and does not invoke GitHub CLI skill preview commands.
+
+### `uninstall`
+
+Removes BF host discovery snapshots for supported LLM hosts. Without `--target`,
+the command auto-detects existing host roots or snapshots and removes every
+detected BF snapshot. With `--target claude|codex|copilot`, it removes only that
+target's BF snapshot.
+
+Copilot uninstall removes `<home>/.copilot/skills/bf`. It does not remove other
+Copilot files under `<home>/.copilot`.
 
 ### `update`
 

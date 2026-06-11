@@ -5,7 +5,7 @@ import { discoveryTargetDir, resolveDiscoveryTargets } from "../shared/install-p
 export async function cmdUninstall({ home = homedir(), target = null, log = console.log } = {}) {
   const selectedTargets = resolveDiscoveryTargets({ target, home });
   if (selectedTargets.length === 0) {
-    log("No supported BF discovery target detected. Use --target claude or --target codex to uninstall explicitly.");
+    log("No supported BF discovery target detected. Use --target claude, --target codex, or --target copilot to uninstall explicitly.");
     return { ok: true, mode: "noop", targets: [] };
   }
 

@@ -76,6 +76,7 @@ export async function cmdInstall({ srcDir, home = homedir(), target = null, log 
     log("No supported discovery target found.");
     log("Use: bf install --target claude");
     log("Or:  bf install --target codex");
+    log("Or:  bf install --target copilot");
     return { ok: true, mode: "noop", version: pkg.version, targets: [] };
   }
 

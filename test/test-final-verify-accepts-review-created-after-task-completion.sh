@@ -49,7 +49,7 @@ touch -d "2026-05-19 10:00:30" "$ROUND_DIR/result_tester_1.md"
 run_verify_c
 assert_json_field "$STDOUT" .status "SUCCESS"
 grep -qE "^- \[x\] AC-1\|" "$BASE/wo-1/bf.md" || fail "bf-level AC should flip for a final review created after task completion"
-grep -q "^State: Completed" "$BASE/wo-1/bf.md" || fail "bf.md should complete after final review signs all AC"
+grep -q "^State: Implementing" "$BASE/wo-1/bf.md" || fail "bf.md should remain Implementing after final verify"
 cleanup
 
 pass

@@ -99,7 +99,8 @@ make_git_repo_with_origin
 prepare_wo false
 STDOUT=$(cmd_next_json "$PRIMARY")
 assert_json_field "$STDOUT" .ok true
-assert_json_field "$STDOUT" .task.taskId task-a
+assert_json_field "$STDOUT" .tasks.length 1
+assert_json_field "$STDOUT" .tasks.0.taskId task-a
 [ ! -e "$PRIMARY/.worktrees" ] || fail "Requires-Worktree:false created .worktrees"
 grep -q "^State: Tasking" "$BASE/works/wo-1/task-a/spec.md" || fail "Requires-Worktree:false task not claimed"
 grep -q "^Branch:$" "$BASE/works/wo-1/task-a/spec.md" || fail "Requires-Worktree:false wrote Branch"
@@ -113,11 +114,12 @@ make_git_repo_with_origin
 prepare_wo true
 STDOUT=$(cmd_next_json "$PRIMARY")
 assert_json_field "$STDOUT" .ok true
-assert_json_field "$STDOUT" .task.taskId task-a
+assert_json_field "$STDOUT" .tasks.length 1
+assert_json_field "$STDOUT" .tasks.0.taskId task-a
 EXPECTED_BRANCH="bf/wo-1/task-a"
 EXPECTED_WORKTREE="$PRIMARY/.worktrees/works/wo-1/task-a"
-TASK_BRANCH=$(node -e "const j=JSON.parse(process.argv[1]); process.stdout.write(j.task?.branch || '');" "$STDOUT")
-TASK_WORKTREE=$(node -e "const j=JSON.parse(process.argv[1]); process.stdout.write(j.task?.worktree || '');" "$STDOUT")
+TASK_BRANCH=$(node -e "const j=JSON.parse(process.argv[1]); process.stdout.write(j.tasks?.[0]?.branch || '');" "$STDOUT")
+TASK_WORKTREE=$(node -e "const j=JSON.parse(process.argv[1]); process.stdout.write(j.tasks?.[0]?.worktree || '');" "$STDOUT")
 assert_eq "$TASK_BRANCH" "$EXPECTED_BRANCH" "returned Branch metadata"
 assert_eq "$TASK_WORKTREE" "$EXPECTED_WORKTREE" "returned Worktree metadata"
 grep -q "^Branch: $EXPECTED_BRANCH" "$BASE/works/wo-1/task-a/spec.md" || fail "Branch metadata not recorded"
@@ -127,6 +129,35 @@ git -C "$PRIMARY" show-ref --verify "refs/heads/$EXPECTED_BRANCH" >/dev/null 2>&
 [ -d "$EXPECTED_WORKTREE/.git" ] || [ -f "$EXPECTED_WORKTREE/.git" ] || fail "expected task worktree missing"
 CURRENT_BRANCH=$(git -C "$EXPECTED_WORKTREE" branch --show-current)
 assert_eq "$CURRENT_BRANCH" "$EXPECTED_BRANCH" "task worktree branch"
+rm -rf "$ROOT"
+
+# Batch next prepares every Ready worktree-required task and returns the
+# corresponding metadata in bf.md task-list order.
+make_git_repo_with_origin
+prepare_wo true
+sed -i.bak 's/^- task-b: task-a/- task-b/' "$BASE/works/wo-1/bf.md"
+sed -i.bak 's/^Requires-Worktree: .*/Requires-Worktree: true/' "$BASE/works/wo-1/task-b/spec.md"
+STDOUT=$(cmd_next_json "$PRIMARY")
+assert_json_field "$STDOUT" .ok true
+assert_json_field "$STDOUT" .tasks.length 2
+assert_json_field "$STDOUT" .tasks.0.taskId task-a
+assert_json_field "$STDOUT" .tasks.1.taskId task-b
+EXPECTED_BRANCH_A="bf/wo-1/task-a"
+EXPECTED_WORKTREE_A="$PRIMARY/.worktrees/works/wo-1/task-a"
+EXPECTED_BRANCH_B="bf/wo-1/task-b"
+EXPECTED_WORKTREE_B="$PRIMARY/.worktrees/works/wo-1/task-b"
+assert_json_field "$STDOUT" .tasks.0.branch "$EXPECTED_BRANCH_A"
+assert_json_field "$STDOUT" .tasks.0.worktree "$EXPECTED_WORKTREE_A"
+assert_json_field "$STDOUT" .tasks.1.branch "$EXPECTED_BRANCH_B"
+assert_json_field "$STDOUT" .tasks.1.worktree "$EXPECTED_WORKTREE_B"
+grep -q "^Branch: $EXPECTED_BRANCH_A" "$BASE/works/wo-1/task-a/spec.md" || fail "task-a Branch metadata not recorded"
+grep -q "^Worktree: $EXPECTED_WORKTREE_A" "$BASE/works/wo-1/task-a/spec.md" || fail "task-a Worktree metadata not recorded"
+grep -q "^Branch: $EXPECTED_BRANCH_B" "$BASE/works/wo-1/task-b/spec.md" || fail "task-b Branch metadata not recorded"
+grep -q "^Worktree: $EXPECTED_WORKTREE_B" "$BASE/works/wo-1/task-b/spec.md" || fail "task-b Worktree metadata not recorded"
+git -C "$PRIMARY" show-ref --verify "refs/heads/$EXPECTED_BRANCH_A" >/dev/null 2>&1 || fail "expected task-a branch missing"
+git -C "$PRIMARY" show-ref --verify "refs/heads/$EXPECTED_BRANCH_B" >/dev/null 2>&1 || fail "expected task-b branch missing"
+[ -d "$EXPECTED_WORKTREE_A/.git" ] || [ -f "$EXPECTED_WORKTREE_A/.git" ] || fail "expected task-a worktree missing"
+[ -d "$EXPECTED_WORKTREE_B/.git" ] || [ -f "$EXPECTED_WORKTREE_B/.git" ] || fail "expected task-b worktree missing"
 rm -rf "$ROOT"
 
 # A bf-wo may itself run from a linked worktree under .worktrees/<bf-wo>.
@@ -140,7 +171,7 @@ git -C "$PRIMARY" worktree add -b active-wo "$LINKED" refs/remotes/origin/HEAD >
 STDOUT=$(cmd_next_json "$LINKED")
 assert_json_field "$STDOUT" .ok true
 EXPECTED_WORKTREE="$PRIMARY/.worktrees/works/wo-1/task-a"
-TASK_WORKTREE=$(node -e "const j=JSON.parse(process.argv[1]); process.stdout.write(j.task?.worktree || '');" "$STDOUT")
+TASK_WORKTREE=$(node -e "const j=JSON.parse(process.argv[1]); process.stdout.write(j.tasks?.[0]?.worktree || '');" "$STDOUT")
 assert_eq "$TASK_WORKTREE" "$EXPECTED_WORKTREE" "task worktree must not nest under active linked worktree"
 LINKED_STATUS=$(git -C "$LINKED" status --porcelain --untracked-files=normal)
 [ -z "$LINKED_STATUS" ] || fail "task worktree appeared as untracked content in active linked worktree: $LINKED_STATUS"
@@ -158,6 +189,25 @@ STDOUT=$(cmd_next_json "$BASE")
 assert_json_field "$STDOUT" .ok false
 assert_match "$STDOUT" "managed Git" "non-managed failure message"
 assert_task_a_unmutated "non-managed"
+rm -rf "$BASE"
+
+# If a later task in the batch fails setup, earlier Ready tasks must not be
+# claimed before the batch returns the failure.
+BASE=$(make_temp_home)
+copy_fixture clean-wo "$BASE/works/wo-1"
+sed -i.bak 's/^Id: clean-wo/Id: wo-1/' "$BASE/works/wo-1/bf.md"
+sed -i.bak 's/^State: Draft/State: Accepted/' "$BASE/works/wo-1/bf.md"
+sed -i.bak 's/^State: Draft/State: Ready/' "$BASE/works/wo-1/task-a/spec.md"
+sed -i.bak 's/^State: Draft/State: Ready/' "$BASE/works/wo-1/task-b/spec.md"
+sed -i.bak 's/^- task-b: task-a/- task-b/' "$BASE/works/wo-1/bf.md"
+sed -i.bak 's/^Requires-Worktree: .*/Requires-Worktree: false/' "$BASE/works/wo-1/task-a/spec.md"
+sed -i.bak 's/^Requires-Worktree: .*/Requires-Worktree: true/' "$BASE/works/wo-1/task-b/spec.md"
+STDOUT=$(cmd_next_json "$BASE")
+assert_json_field "$STDOUT" .ok false
+assert_match "$STDOUT" "managed Git" "batch non-managed failure message"
+grep -q "^State: Ready" "$BASE/works/wo-1/task-a/spec.md" || fail "batch setup failure mutated task-a"
+grep -q "^State: Ready" "$BASE/works/wo-1/task-b/spec.md" || fail "batch setup failure mutated task-b"
+grep -q "^State: Accepted" "$BASE/works/wo-1/bf.md" || fail "batch setup failure mutated bf"
 rm -rf "$BASE"
 
 # Missing origin, missing origin/HEAD, and fetch/unreachable remote all fail

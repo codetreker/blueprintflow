@@ -60,18 +60,18 @@ run_verify_b() {
   ")
 }
 
-# Case 1: SUCCESS — clean-wo, tester signs AC-1 → flip + Tasking->Completed
+# Case 1: SUCCESS - clean-wo, tester signs AC-1 -> flip AC and leave task Tasking
 setup clean-wo
 write_signed_review "$BASE/wo-1/task-a/runs/reviews/round_1" tester 1 "AC-1"
 run_verify_b
 assert_json_field "$STDOUT" .status "SUCCESS"
 assert_json_field "$STDOUT" .mode "Task Verification"
 grep -qE "^- \[x\] AC-1\|" "$BASE/wo-1/task-a/spec.md" || fail "AC-1 not flipped"
-grep -q "^State: Completed" "$BASE/wo-1/task-a/spec.md" || fail "task-a not Completed"
+grep -q "^State: Tasking" "$BASE/wo-1/task-a/spec.md" || fail "verify should leave task-a Tasking"
 grep -q "^State: Implementing" "$BASE/wo-1/bf.md" || fail "bf.md state changed unexpectedly"
 RESULT_FILE="$BASE/wo-1/task-a/runs/reviews/round_1/verify-result.md"
 grep -q "AC-1: signed" "$RESULT_FILE" || fail "AC sign-off in result"
-grep -q "Tasking -> Completed" "$RESULT_FILE" || fail "state change recorded"
+grep -q "Tasking -> Completed" "$RESULT_FILE" && fail "verify should not record terminal state transition"
 cleanup
 
 # Case 2: FAIL on Blocker

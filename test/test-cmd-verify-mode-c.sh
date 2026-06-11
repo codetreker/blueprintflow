@@ -53,7 +53,7 @@ run_verify_c
 assert_json_field "$STDOUT" .status "SUCCESS"
 assert_json_field "$STDOUT" .mode "Final Acceptance"
 grep -qE "^- \[x\] AC-1\|" "$BASE/wo-1/bf.md" || fail "bf.md AC-1 not flipped"
-grep -q "^State: Completed" "$BASE/wo-1/bf.md" || fail "bf.md not Completed"
+grep -q "^State: Implementing" "$BASE/wo-1/bf.md" || fail "bf.md should remain Implementing after verify"
 cleanup
 
 # FAIL: 没人签到 → missing

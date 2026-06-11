@@ -51,7 +51,7 @@ flowchart LR
 | Roles | Declare review and execution capabilities. | Capability registry authority. |
 | Packs | Define domain guidance and available pipelines. | Domain workflow authority. |
 | `bf` CLI | Lists roles, packs, pipelines, manages host discovery snapshots, and updates the global BF npm package. | Read-only metadata and install-management authority. |
-| `bf-harness` CLI | Lints, accepts, claims tasks, starts reviews, verifies sign-off, and mutates allowed state. | State transition authority. |
+| `bf-harness` CLI | Lints, accepts, claims tasks, starts reviews, verifies sign-off, completes terminal transitions, and mutates allowed state. | State transition authority. |
 | Work object state | Stores contracts, discussion, review rounds, verify results, and task state. | Durable workflow state. |
 
 ## State Authority
@@ -98,26 +98,40 @@ sequenceDiagram
   loop Each task
     O->>H: next
     O->>D: Assign task driver for claimed task
-    D->>W: task-local evidence and review-ready handoff
-    O->>H: start-review task
-    O->>R: Task Verification
+    D->>W: task-local evidence and closure evidence
+    D->>H: start-review task when host strategy allows
+    D->>R: Task review when host strategy allows
     R->>W: result_role_idx.md
-    O->>H: verify task
-    opt verify FAIL
+    D->>H: readiness verify when host strategy allows
+    D->>O: acceptance-ready handoff
+    O->>H: rerun verify task
+    alt verify FAIL
       O->>D: Dispatch same or new task driver for fixes
+    else verify SUCCESS
+      opt task PR present
+        O->>O: Merge PR
+      end
+      O->>H: complete task
+      O->>H: cleanup task
     end
   end
   O->>H: start-review work object
   O->>R: Final Acceptance
   R->>W: result_role_idx.md
   O->>H: verify work object
+  opt Final Acceptance verify SUCCESS
+    O->>H: complete work object
+  end
 ```
+
+When the host runtime cannot delegate task review or readiness verification, the
+coordinator performs those steps before the final task verify rerun.
 
 ## Verification Boundary
 
-Review sign-off is content written by reviewers. Verification is the
-mechanical harness step that reads review results and decides whether the
-contract can advance.
+Review sign-off is content written by reviewers. Verification is the mechanical
+harness step that reads independent review results, evaluates AC sign-off, flips
+accepted AC checkboxes, and writes `verify-result.md`.
 
 The harness verifies:
 
@@ -125,7 +139,11 @@ The harness verifies:
 - presence of Blocker or High findings;
 - AC ids referenced by reviewers;
 - capability-to-role sign-off;
-- allowed checkbox and state transitions.
+- allowed AC checkbox flips.
+
+The harness completes terminal state transitions separately. `complete` advances
+task or work-object state after successful verification and required gates, such
+as a merged same-repository PR for GitHub worktree tasks.
 
 The orchestrator verifies:
 

@@ -22,13 +22,20 @@ for term in \
   "terminal state" \
   "handoff owner" \
   "do not clean bf-owned task worktrees" \
-  "bf-harness cleanup after final acceptance" \
+  "bf-harness cleanup after bf-harness complete succeeds" \
   "stop condition"; do
   case "$body" in
     *"$term"*) ;;
     *) fail "bugfix pipeline should mention '$term'" ;;
   esac
 done
+
+assert_match "$body" "coordinator" "bugfix pipeline should name coordinator final gate"
+assert_match "$body" "reruns final verify" "bugfix pipeline should require final verify rerun"
+assert_match "$body" "merge" "bugfix pipeline should keep merge before completion boundary"
+assert_match "$body" "complete" "bugfix pipeline should keep complete boundary"
+assert_match "$body" "cleanup" "bugfix pipeline should keep cleanup boundary"
+assert_not_match "$body" "coordinator decides whether this evidence is sufficient" "bugfix pipeline should not keep old coordinator closure sufficiency wording"
 
 PIPELINE_JSON=$(node --input-type=module -e "
   import fs from 'node:fs';

@@ -1,31 +1,23 @@
 id: <pipeline-id>
 desc: <one sentence describing when this pipeline should be used>
 instruction: |
-  Describe the whole execution flow. Include the stage order, required
-  artifacts, stop conditions, actor expectations, and how the pipeline
-  satisfies the task AC and Evidence requirements. List every external artifact
-  or side effect the pipeline creates, then name the closure stage or handoff
-  that moves each one to a terminal state. For any role-bound actor, pass the
-  role id and role instruction path, then require the actor to read that role
-  instruction before the stage instruction. Inline role instruction content only
-  when local file access is unavailable. Define the user-perspective done state
-  before the task may be considered complete.
+  Describe the whole execution flow.
+  Include the stage order, required artifacts, stop conditions, actor expectations, and how the pipeline satisfies the task AC and Evidence requirements.
+  List every external artifact or side effect the pipeline creates, then name the closure stage or handoff that moves each one to a terminal state.
+  For any role-bound actor, pass the role id and role instruction path, then require the actor to read its own role instruction before the stage instruction.
+  Do not inline role instruction content; define a stop condition when the actor cannot read the role file.
+  Define the user-perspective done state before the task may be considered complete.
 stages:
   - id: <stage-id>
     capability: <capability>
     output: <artifact-path>
     instruction: |
-      Tell the assigned actor exactly what this stage must produce, what
-      context to read, what evidence to record, which external artifacts or side
-      effects it creates, and when to stop.
+      Tell the assigned actor exactly what this stage must produce, what context to read, what evidence to record, which external artifacts or side effects it creates, and when to stop.
 
   - id: <review-stage-id>
     capability: <review-capability>
     reviews: <artifact-path>
     instruction: |
-      Tell the reviewer what artifact or change to review, what severity levels
-      block the pipeline, and which AC or Evidence requirements this review
-      signs off. Keep capability as the review stage owner, then name any
-      independent review perspectives the orchestrator should gather, such as
-      implementation perspective, architecture perspective, and QA perspective.
+      Tell the reviewer what artifact or change to review, what severity levels block the pipeline, and which AC or Evidence requirements this review signs off.
+      Keep capability as the review stage owner, then name any independent review perspectives the orchestrator should gather, such as implementation perspective, architecture perspective, and QA perspective.
       Include checks for closure stages, handoffs, and the user-perspective done state.

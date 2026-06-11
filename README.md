@@ -69,7 +69,7 @@ Host discovery snapshots are generated copies. Do not put extensions under `~/.c
 After install, two CLIs are on `$PATH`:
 
 - `bf` — read-only metadata + install management: `bf list-packs`, `bf list-pipelines [--pack <id>]`, `bf list-roles [--pack <id>]`, `bf install`, `bf update`, `bf uninstall`, `bf version`
-- `bf-harness` — state-mutating loop driver: `lint`, `start-review`, `accept`, `next`, `attach-pr`, `verify`, `cleanup`, `discard`, `list`
+- `bf-harness` — work-object loop driver: `list`, `status`, `lint`, `start-review`, `accept`, `next`, `attach-pr`, `verify`, `cleanup`, `discard`
 
 Run either with `--help` for full usage.
 
@@ -83,7 +83,7 @@ brainstorm  →  spec  ──accept──▶  execute  ──verify──▶  Co
 
 1. **Brainstorm** — drive a discussion with the user, pick a pack, write `discussion.md`.
 2. **Spec** — author `bf.md` + per-task `spec.md` in `Draft`, `lint`, run a Spec Review round, `verify`, then `accept`. Contract is locked.
-3. **Execute** — `next` claims one ready task and returns its pipeline. For `Requires-Worktree: true` tasks in managed Git mode, it also creates and returns the task branch/worktree. A host-compatible task driver follows the pipeline instructions; a **different** reviewer actor grades the final task AC. GitHub worktree tasks can record a PR with `attach-pr`, and verification checks that the recorded GitHub PR is merged. Non-GitHub providers remain process-gated by pipeline/reviewer evidence. Repeat. Final Acceptance flips the bf.md AC and marks the work Completed. After completion, `cleanup` removes harness-owned task worktrees and safely deletes merged local task branches.
+3. **Execute** — `next` returns eligible task blocks in task-list order. Each returned task has completed prerequisites, and no returned task depends on another returned task. For `Requires-Worktree: true` tasks in managed Git mode, it also creates or validates each task branch/worktree and returns that metadata. A host-compatible task driver follows each returned task's pipeline instructions; a **different** reviewer actor grades the final task AC. GitHub worktree tasks can record a PR with `attach-pr`, and verification checks that the recorded GitHub PR is merged. After a task verifies and, when it has a PR, that PR is merged, `cleanup` removes that task's harness-owned worktree and safely deletes its merged local task branch. Repeat. Before Final Acceptance, `status` reports the work-object state and task states so the coordinator does not inspect every task spec to decide readiness. Final Acceptance flips the bf.md AC and marks the work Completed.
 
 ## State layout
 
@@ -120,9 +120,10 @@ Add `.bf/` and `.worktrees/` to your `.gitignore` when using project-local BF st
 
 Each task spec declares `Requires-Worktree: true|false`. Worktree-required tasks
 use harness-owned `Branch:`, `Worktree:`, and `Pull-Request:` fields; do not
-edit those fields by hand. `bf-harness cleanup <bf-wo>` runs only after
-`bf.md.State: Completed`; it removes only harness-owned task worktrees and uses
-safe local branch deletion, retaining anything Git cannot delete safely.
+edit those fields by hand. `bf-harness cleanup <bf-wo>/<task>` runs only after
+that task reaches `State: Completed`; it removes only that task's harness-owned
+worktree and uses safe local branch deletion, retaining anything Git cannot
+delete safely.
 
 ## The Independent Verification rule
 

@@ -100,13 +100,14 @@ layers. Pipeline review checks task-driver artifacts such as architecture,
 implementation design, code, tests, and evidence before the task is handed back
 to the coordinator. Acceptance-readiness terminal-state closure checks whether
 external artifacts and side effects are terminal, handed off, or explicitly
-stopped before BF acceptance review starts. BF acceptance is the coordinator-run
-`start-review` plus reviewer sign-off plus `verify` gate that can advance
-locked task or bf state. BF-owned task worktrees and task branches are harness
+stopped before BF acceptance review starts. Task pipelines produce evidence and
+terminal-state closure evidence. Task review plus `verify` proves the task is
+acceptance-ready. The coordinator uses `complete` to advance task state, then
+runs task-scoped cleanup. BF-owned task worktrees and task branches are harness
 lifecycle artifacts, not task-local side effects. Pipelines must not clean them
-during task closure. After Final Acceptance marks `bf.md` Completed, the
-coordinator runs `bf-harness cleanup <bf-wo>` to remove harness-owned task
-worktrees and safely delete merged local task branches.
+during task closure. After `complete` marks a task `Completed`, the coordinator
+runs `bf-harness cleanup <bf-wo>/<task>` to remove that task's harness-owned
+worktree and safely delete its merged local branch.
 
 ## Built-In Engineering Pipelines
 

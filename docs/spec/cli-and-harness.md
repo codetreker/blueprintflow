@@ -108,6 +108,23 @@ Output includes:
 - state;
 - updated timestamp.
 
+### `status <bf-wo>`
+
+Reports one work object's current state and task states without mutation.
+
+Applies when:
+
+- scope is `<bf-wo>`.
+
+Behavior:
+
+- Loads the work object from the resolved state home.
+- Prints the work-object id and `bf.md.State`.
+- Prints task totals by state.
+- Prints one task id and state line per task.
+- Does not inspect Git, create worktrees, advance state, write timestamps, or
+  suggest the next command.
+
 ### `lint`
 
 Validates a draft work object.
@@ -139,25 +156,33 @@ Behavior:
 
 ### `next`
 
-Claims the next eligible task.
+Returns the next eligible task batch.
 
 Eligibility:
 
 - task is `Ready` or already `Tasking`;
 - dependencies are complete;
+- returned tasks do not depend on each other;
 - dependency graph is valid.
 
 Behavior:
 
-- Marks the task `Tasking`.
-- Moves bf.md from `Accepted` to `Implementing` on first returned task.
-- Returns task directory, spec path, task description, `Pipeline`, resolved `Pipeline path`, and pack id.
+- Returns up to five eligible tasks in bf.md task-list order.
+- Marks returned `Ready` tasks `Tasking`.
+- Validates returned `Tasking` worktree metadata.
+- Moves bf.md from `Accepted` to `Implementing` on the first returned `Ready`
+  task.
+- Internal structured data includes task directory, spec path, task description,
+  `Pipeline`, resolved `Pipeline path`, and pack id.
+- CLI output is one text block per task with `Task`, `Pipeline`,
+  `Pipeline path`, `Pack`, `Spec`, `Dir`, and optional `Branch`, `Worktree`,
+  and `Pull-Request`.
 - For `Requires-Worktree: false`, does not create branch/worktree execution
   metadata.
-- For `Requires-Worktree: true` in managed Git mode, fetches `origin`, creates
-  branch `bf/<bf-wo>/<task-id>` from `origin/HEAD`, creates worktree
-  `<primary-worktree>/.worktrees/works/<bf-wo>/<task-id>`, records `Branch` and
-  `Worktree`, and returns both values.
+- For returned `Ready` tasks with `Requires-Worktree: true` in managed Git mode,
+  fetches `origin`, creates branch `bf/<bf-wo>/<task-id>` from `origin/HEAD`,
+  creates worktree `<primary-worktree>/.worktrees/works/<bf-wo>/<task-id>`,
+  records `Branch` and `Worktree`, and returns both values.
 - Retry safety requires any existing branch, worktree, and task metadata to
   match exactly. Conflicts fail before contract mutation and do not clean up
   user files.
@@ -179,40 +204,6 @@ Behavior:
 - When GitHub PR metadata is available, requires the PR head branch to match
   the recorded task branch.
 - Writes task-level `Pull-Request` metadata and synchronizes `Updated`.
-
-### `cleanup <bf-wo>`
-
-Cleans harness-owned task Git worktrees after Final Acceptance.
-
-Applies when:
-
-- scope is `<bf-wo>`;
-- `bf.md.State` is `Completed`.
-
-Behavior:
-
-- Refuses to run before `bf.md.State: Completed`.
-- Looks only at tasks with `Requires-Worktree: true`.
-- Requires managed Git mode and the primary-worktree `.bf` state home when
-  there are worktree-required tasks.
-- Treats only branch `bf/<bf-wo>/<task-id>` and worktree
-  `<primary-worktree>/.worktrees/works/<bf-wo>/<task-id>` as harness-owned.
-- Skips task metadata that does not exactly match those harness-owned values.
-- Removes registered clean task worktrees with `git worktree remove`.
-- Deletes local task branches with `git branch -d` only after the worktree is no
-  longer checked out.
-- Retains and reports dirty worktrees, unregistered path conflicts, checked-out
-  branches, and unmerged branches instead of forcing deletion.
-- Does not delete `.bf` work-object state. Use `discard` only when intentionally
-  abandoning or removing local BF state.
-
-Output includes one line per cleanup action, such as:
-
-```text
-Removed worktree: <absolute-worktree-path>
-Deleted branch: bf/<bf-wo>/<task-id>
-Retained branch: bf/<bf-wo>/<task-id> (<git reason>)
-```
 
 ### `verify <bf-wo>` / `verify <bf-wo>/<task>`
 
@@ -250,12 +241,10 @@ Behavior:
 - An AC is signed when at least one provider role review file accepts that AC id.
 - Multiple provider roles do not all need to sign; the orchestrator chooses the relevant reviewer role before review.
 - Signed ACs flip from `[ ]` to `[x]`.
-- `Updated:` is synchronized.
-- For GitHub repositories, a worktree-required task must have a recorded
-  same-repository `Pull-Request`, and that PR must be merged.
-- For non-GitHub providers, PR completion is not mechanically checked by the
-  harness; pipeline and reviewer evidence remain the gate.
-- When all task ACs are checked, task state moves from `Tasking` to `Completed`.
+- `Updated:` is synchronized when ACs flip.
+- Writes `verify-result.md` to the active task review round.
+- Does not check PR merge status.
+- Does not move the task from `Tasking` to `Completed`.
 
 #### Final Acceptance
 
@@ -263,15 +252,16 @@ Applies when:
 
 - scope is `<bf-wo>`;
 - `bf.md.State` is `Implementing`;
-- every task is `Completed`.
+- status shows all tasks are completed.
 
 Behavior:
 
 - Reads the latest bf-level review round created after task completion.
 - Applies task verification-style block and sign-off logic to bf.md ACs.
 - On success, flips bf.md ACs to `[x]`.
-- Moves bf.md from `Implementing` to `Completed`.
-- Synchronizes `Updated:`.
+- Synchronizes `Updated:` when ACs flip.
+- Writes `verify-result.md` to the active bf-level review round.
+- Does not move bf.md from `Implementing` to `Completed`.
 
 BF-level final review does not currently enforce actor-instance identity across
 all task work. It is an integrative review; strict final-review IV can be added
@@ -279,10 +269,18 @@ later if needed.
 
 #### Phase Mismatch
 
-Any unsupported scope/state combination returns:
+Unsupported verify scope or state returns a setup error. Work-object phase
+mismatches use:
 
 ```text
 phase mismatch: cannot verify <scope> when bf.md.State = <X>
+```
+
+Task verification also checks the task state after the bf-level phase allows
+task verification. A non-`Tasking` task returns:
+
+```text
+phase mismatch: cannot verify <bf-wo>/<task> when task spec State = <X>
 ```
 
 #### Verify Output
@@ -325,7 +323,65 @@ Timestamp: <yyyy-mm-dd hh:MM>
 // Task Verification / Final Acceptance; newly flipped AC ids.
 
 ## State Changes
-// State transitions caused by this verify run.
-- task-3: Tasking --> Completed
-- bf.md: Implementing --> Completed
+// Empty for Spec Review, Task Verification, and Final Acceptance.
+// Terminal transitions are recorded by `complete`, not `verify`.
+```
+
+### `complete <bf-wo>` / `complete <bf-wo>/<task>`
+
+Advances terminal state after successful verification.
+
+Task scope applies when:
+
+- task `spec.md` state is `Tasking`;
+- all task ACs are checked;
+- latest task `verify-result.md` is `SUCCESS`, `Mode: Task Verification`, and matches the task scope;
+- the task spec has not changed after that verify result;
+- for GitHub worktree tasks, the recorded same-repository PR is merged.
+
+Task success moves the task from `Tasking` to `Completed` and synchronizes `Updated`.
+
+Work-object scope applies when:
+
+- `bf.md.State` is `Implementing`;
+- all tasks are `Completed`;
+- all bf-level ACs are checked;
+- latest work-object `verify-result.md` is `SUCCESS`, `Mode: Final Acceptance`, and matches the work-object scope;
+- `bf.md` and task specs have not changed after that verify result.
+
+Work-object success moves `bf.md` from `Implementing` to `Completed` and synchronizes `Updated`.
+
+### `cleanup <bf-wo>/<task>`
+
+Cleans one completed task's harness-owned Git worktree.
+
+Applies when:
+
+- scope is `<bf-wo>/<task>`;
+- task `spec.md` state is `Completed`.
+
+Behavior:
+
+- Refuses work-object scope; cleanup is task-scoped.
+- Refuses to run before task `State: Completed`.
+- For `Requires-Worktree: false`, returns success with no cleanup action.
+- For `Requires-Worktree: true`, requires managed Git mode and the
+  primary-worktree `.bf` state home.
+- Treats only branch `bf/<bf-wo>/<task-id>` and worktree
+  `<primary-worktree>/.worktrees/works/<bf-wo>/<task-id>` as harness-owned.
+- Skips metadata that does not exactly match those harness-owned values.
+- Removes registered clean task worktrees with `git worktree remove`.
+- Deletes local task branches with `git branch -d` only after the worktree is no
+  longer checked out.
+- Retains and reports dirty worktrees, unregistered path conflicts, checked-out
+  branches, and unmerged branches instead of forcing deletion.
+- Does not delete `.bf` work-object state. Use `discard` only when intentionally
+  abandoning or removing local BF state.
+
+Output includes one line per cleanup action, such as:
+
+```text
+Removed worktree: <absolute-worktree-path>
+Deleted branch: bf/<bf-wo>/<task-id>
+Retained branch: bf/<bf-wo>/<task-id> (<git reason>)
 ```

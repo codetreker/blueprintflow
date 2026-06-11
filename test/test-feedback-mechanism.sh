@@ -60,10 +60,6 @@ assert_contains .github/ISSUE_TEMPLATE/feedback.yml "Filing rationale"
 assert_contains .github/ISSUE_TEMPLATE/feedback.yml "Redaction confirmation"
 assert_contains .github/ISSUE_TEMPLATE/feedback.yml "Expected outcome"
 
-assert_file docs/spec/feedback.md
-assert_contains docs/spec.md "spec/feedback\\.md"
-assert_not_contains docs/spec/feedback.md "[Rr]eaction"
-
 pkg_version=$(jq -r '.version' "$ROOT/package.json")
 lock_top_version=$(jq -r '.version' "$ROOT/package-lock.json")
 lock_version=$(jq -r '.packages[""].version' "$ROOT/package-lock.json")

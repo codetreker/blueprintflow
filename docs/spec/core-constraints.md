@@ -10,12 +10,16 @@ from the target project's application runtime.
 
 BF core uses generic actor names:
 
-- **coordinator**: the main session. It owns BF state machine commands,
-  `next`, `start-review`, `verify`, Final Acceptance, reviewer dispatch for BF
-  acceptance, and actor lifecycle accounting.
+- **coordinator**: the main session. It owns BF state machine authority, `next`,
+  task-driver assignment or resume, final task verification reruns, PR merge
+  coordination, `complete`, cleanup, Final Acceptance, and actor lifecycle
+  accounting. Host-runtime strategy may let a task driver run task review and
+  readiness `verify`, but the coordinator keeps the final gate before merge,
+  completion, and cleanup.
 - **task driver**: an actor assigned one concrete task. It follows the task
   pipeline and produces artifacts, evidence, pipeline review outputs, closure
-  evidence, and a review-ready handoff.
+  evidence, task review/readiness verification output when the host runtime
+  allows it, and an acceptance-ready handoff.
 - **leaf worker**: a bounded helper for one stage or artifact, used only when
   the current host runtime supports that delegation from the current actor.
 - **reviewer**: an independent actor that writes review results.
@@ -44,8 +48,11 @@ rule.
 ## Independent Verification
 
 For each task, the actor whose work is reviewed must not be reused as the
-reviewer for that work. A task driver or leaf worker must not verify its own
-work.
+reviewer for that work. A task driver or leaf worker must not act as the
+reviewer or signoff actor for its own work. Running mechanical
+`bf-harness verify` over independently written review results is not the same as
+being the reviewer; the coordinator still reruns final task verification before
+merge, `complete`, and cleanup.
 
 This is an actor-instance constraint, not a role constraint. The same role can
 contribute both the work and the review as long as the instances are different.
@@ -54,7 +61,8 @@ so the coordinator enforces this rule when it dispatches reviewers.
 
 Harness responsibilities:
 
-- `next` returns `Pipeline` and `Pipeline path`, so the LLM can follow pipeline stages.
+- `next` returns `Pipeline` and `Pipeline path` in each task block, so the LLM can
+  follow pipeline stages.
 - `start-review` and `verify` use AC capabilities to identify reviewer roles.
 - `lint` verifies that each AC capability is declared by at least one role.
 
@@ -86,8 +94,8 @@ Draft  ────►  Accepted  ────►  Implementing  ────►
 |---|---|
 | `Draft` | Brainstorm and breakdown exist; spec review may be iterating in `runs/reviews/round_N/`. |
 | `Accepted` | The user ran `bf-harness accept`; the contract is locked. |
-| `Implementing` | At least one task entered `Tasking`; the first successful `next` moves the bf state here. |
-| `Completed` | All tasks are completed and bf-level final acceptance verified. |
+| `Implementing` | At least one task entered `Tasking`; the first `next` batch with a `Ready` task moves the bf state here. |
+| `Completed` | All tasks are completed, Final Acceptance verify succeeded, and the coordinator ran `complete`. |
 
 ### task spec.md
 
@@ -96,31 +104,32 @@ Draft  ────►  Ready  ────►  Tasking  ────►  Comple
                               ▲    │
                               └────┘
                           verify FAIL: stays Tasking
+                          verify SUCCESS: stays Tasking until complete
 ```
 
 | State | Meaning |
 |---|---|
 | `Draft` | The task is drafted while `bf.md` is not yet accepted. |
 | `Ready` | `bf.md` was accepted and the task is eligible for `next`. |
-| `Tasking` | `next` claimed the task. Verify failures leave it here until fixed. |
-| `Completed` | Task verification succeeded. |
+| `Tasking` | `next` claimed the task. Verify failures leave it here until fixed; verify successes leave it here until coordinator completion. |
+| `Completed` | Task verification succeeded and the coordinator ran `complete`. |
 
 ### Transitions
 
 | Transition | Trigger | Writer |
 |---|---|---|
 | bf.md `Draft` --> `Accepted` | `bf-harness accept <bf-wo>` | harness |
-| bf.md `Accepted` --> `Implementing` | first `next` returns a task | harness |
-| bf.md `Implementing` --> `Completed` | Final Acceptance verify succeeds after all tasks complete | harness |
+| bf.md `Accepted` --> `Implementing` | first `next` batch with a `Ready` task | harness |
+| bf.md `Implementing` --> `Completed` | `bf-harness complete <bf-wo>` after Final Acceptance verify succeeds | harness |
 | task `Draft` --> `Ready` | bf.md accepted | harness |
 | task `Ready` --> `Tasking` | `next` claim | harness |
-| task `Tasking` --> `Completed` | Task Verification succeeds | harness |
+| task `Tasking` --> `Completed` | `bf-harness complete <bf-wo>/<task>` after Task Verification verify succeeds | harness |
 
-Cancel, abandon, and cleanup do not add states. `bf-harness cleanup <bf-wo>` is
-a post-Completed lifecycle command that removes only harness-owned task
-worktrees and safely deletes merged local task branches. It must not run before
-Final Acceptance sets `bf.md.State: Completed`. `bf-harness discard <bf-wo>`
-deletes the whole work object.
+Cancel, abandon, and cleanup do not add states. `bf-harness cleanup
+<bf-wo>/<task>` is a task lifecycle command that removes only that task's
+harness-owned worktree and safely deletes the merged local task branch. It must
+not run before `complete` sets the task `State: Completed`.
+`bf-harness discard <bf-wo>` deletes the whole work object.
 
 ## discussion.md vs bf.md
 

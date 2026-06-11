@@ -69,15 +69,18 @@ function reasonText(r) {
   return (r.stderr || r.stdout || "unknown error").replace(/\s+/g, " ");
 }
 
-export async function cmdCleanup({ baseHome, woId, installDir, cwd = process.cwd() }) {
+export async function cmdCleanup({ baseHome, woId, taskId, installDir, cwd = process.cwd() }) {
   const bundle = await loadWo({ baseHome, woId, installDir });
   if (!bundle.bf) return { ok: false, error: "load failed", details: bundle.errors };
-  if (bundle.bf.frontmatter.State !== "Completed") {
-    return { ok: false, error: "cleanup requires bf.md State: Completed" };
-  }
 
-  const tasks = bundle.tasks.filter((t) => t.spec?.requiresWorktree);
-  if (tasks.length === 0) {
+  const task = bundle.tasks.find((t) => t.id === taskId);
+  if (!task || !task.spec) {
+    return { ok: false, error: `task spec not found: ${taskId}` };
+  }
+  if (task.spec.frontmatter.State !== "Completed") {
+    return { ok: false, error: "cleanup requires task State: Completed" };
+  }
+  if (!task.spec.requiresWorktree) {
     return {
       ok: true,
       removedWorktrees: [],
@@ -101,54 +104,52 @@ export async function cmdCleanup({ baseHome, woId, installDir, cwd = process.cwd
     skipped: [],
   };
 
-  for (const task of tasks) {
-    const expected = expectedTaskGit(primaryWorktree, woId, task.id);
-    const metadataCheck = metadataMatchesHarnessTask(task.spec.executionMetadata, expected);
-    if (!metadataCheck.ok) {
-      out.skipped.push({ taskId: task.id, reason: metadataCheck.reason });
-      continue;
-    }
+  const expected = expectedTaskGit(primaryWorktree, woId, task.id);
+  const metadataCheck = metadataMatchesHarnessTask(task.spec.executionMetadata, expected);
+  if (!metadataCheck.ok) {
+    out.skipped.push({ taskId: task.id, reason: metadataCheck.reason });
+    return out;
+  }
 
-    const registered = registeredWorktree(primaryWorktree, expected.worktree);
-    const pathExists = fs.existsSync(expected.worktree);
-    if (pathExists || registered) {
-      if (!registered) {
+  const registered = registeredWorktree(primaryWorktree, expected.worktree);
+  const pathExists = fs.existsSync(expected.worktree);
+  if (pathExists || registered) {
+    if (!registered) {
+      out.retainedWorktrees.push({
+        taskId: task.id,
+        worktree: expected.worktree,
+        reason: "path exists but is not a registered Git worktree",
+      });
+    } else if (registered.branch !== expected.branch) {
+      out.retainedWorktrees.push({
+        taskId: task.id,
+        worktree: expected.worktree,
+        reason: `registered branch is ${registered.branch || "detached HEAD"}`,
+      });
+    } else {
+      const removed = runGit(primaryWorktree, ["worktree", "remove", expected.worktree]);
+      if (removed.ok) {
+        out.removedWorktrees.push({ taskId: task.id, worktree: expected.worktree });
+      } else {
         out.retainedWorktrees.push({
           taskId: task.id,
           worktree: expected.worktree,
-          reason: "path exists but is not a registered Git worktree",
+          reason: reasonText(removed),
         });
-      } else if (registered.branch !== expected.branch) {
-        out.retainedWorktrees.push({
-          taskId: task.id,
-          worktree: expected.worktree,
-          reason: `registered branch is ${registered.branch || "detached HEAD"}`,
-        });
-      } else {
-        const removed = runGit(primaryWorktree, ["worktree", "remove", expected.worktree]);
-        if (removed.ok) {
-          out.removedWorktrees.push({ taskId: task.id, worktree: expected.worktree });
-        } else {
-          out.retainedWorktrees.push({
-            taskId: task.id,
-            worktree: expected.worktree,
-            reason: reasonText(removed),
-          });
-        }
       }
     }
+  }
 
-    if (localBranchExists(primaryWorktree, expected.branch)) {
-      const deleted = runGit(primaryWorktree, ["branch", "-d", expected.branch]);
-      if (deleted.ok) {
-        out.deletedBranches.push({ taskId: task.id, branch: expected.branch });
-      } else {
-        out.retainedBranches.push({
-          taskId: task.id,
-          branch: expected.branch,
-          reason: reasonText(deleted),
-        });
-      }
+  if (localBranchExists(primaryWorktree, expected.branch)) {
+    const deleted = runGit(primaryWorktree, ["branch", "-d", expected.branch]);
+    if (deleted.ok) {
+      out.deletedBranches.push({ taskId: task.id, branch: expected.branch });
+    } else {
+      out.retainedBranches.push({
+        taskId: task.id,
+        branch: expected.branch,
+        reason: reasonText(deleted),
+      });
     }
   }
 

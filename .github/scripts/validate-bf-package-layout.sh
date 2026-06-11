@@ -7,10 +7,23 @@ if [[ ! -f "$repo_root/package.json" ]]; then
   echo "package.json missing" >&2
   exit 1
 fi
-if ! jq -e '.files | index("packs/") != null' "$repo_root/package.json" >/dev/null; then
-  echo "package.json files must include packs/" >&2
+required_files=("bin/" "scripts/" "SKILL.md" "roles/" "packs/" "templates/" "references/")
+for entry in "${required_files[@]}"; do
+  if ! jq -e --arg entry "$entry" '.files | type == "array" and index($entry) != null' "$repo_root/package.json" >/dev/null; then
+    echo "package.json files must include $entry" >&2
+    exit 1
+  fi
+done
+if jq -e '.files | type == "array" and any(.[]; (sub("^\\./"; "")) as $entry | $entry == "docs" or ($entry | startswith("docs/")))' "$repo_root/package.json" >/dev/null; then
+  echo "package.json files must not include docs/" >&2
   exit 1
 fi
+for entry in "${required_files[@]}"; do
+  if [[ ! -e "$repo_root/$entry" ]]; then
+    echo "runtime package entry missing: $entry" >&2
+    exit 1
+  fi
+done
 
 packs_dir="$repo_root/packs"
 if [[ ! -d "$packs_dir" ]]; then

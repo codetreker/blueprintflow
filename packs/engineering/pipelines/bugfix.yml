@@ -12,7 +12,7 @@ instruction: |
   Review stages must remain independent from the actor whose work they review.
   When starting a role-bound actor, pass the role id and role instruction path, then require the actor to read its own role instruction before the stage instruction.
   Do not inline role instruction content; stop when the actor cannot read the role file.
-  Stop on Blocker or High review findings and send fixes to the same task driver or a new task driver before rerunning the affected stage.
+  Stop on Blocker or High review findings and report the finding and required fix scope to the coordinator. The coordinator assigns fixes to the original task driver when available or to another host-compatible task driver before the affected stage runs again.
   Stop before task verification if any external artifact or side effect lacks a terminal state, handoff owner, or explicit stop condition.
   Do not edit locked bf.md or task spec.md content after accept; only the harness may flip AC checkboxes, advance State, sync Updated, and write task execution metadata.
   The task driver produces closure evidence, but the coordinator owns the acceptance-readiness terminal-state closure decision before task-level BF acceptance review.
@@ -52,7 +52,7 @@ stages:
     output: artifacts/design-doc-sync.md
     instruction: |
       If the bug reveals design drift, do not choose whether code or docs win in this stage.
-      Record the drift and stop for user clarification as described in project-docs.md.
+      Record the drift and stop for user clarification as described in references/project-docs.md.
       Update confirmed project design docs only when the clarified path or locked task scope changes accepted behavior contracts.
       If no design-doc sync is required, write not-applicable evidence that explains why the fix did not change accepted design.
 

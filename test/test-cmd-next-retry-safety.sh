@@ -202,6 +202,34 @@ cmd_next_to_file "$PRIMARY" "$OUT2" &
 PID2=$!
 wait "$PID1" || true
 wait "$PID2" || true
+node -e "
+  const fs = require('fs');
+  const expectedBranch = process.argv[1];
+  const expectedWorktree = process.argv[2];
+  const files = process.argv.slice(3);
+  let okCount = 0;
+  for (const file of files) {
+    let parsed;
+    try {
+      parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
+    } catch (err) {
+      throw new Error(file + ' did not contain valid JSON: ' + err.message);
+    }
+    if (parsed.ok) {
+      okCount += 1;
+      const task = parsed.tasks?.[0];
+      if (task?.branch !== expectedBranch || task?.worktree !== expectedWorktree) {
+        throw new Error(file + ' returned unexpected metadata: ' + JSON.stringify(parsed));
+      }
+      continue;
+    }
+    const error = String(parsed.error || '');
+    if (!/(branch|worktree|metadata|git worktree add failed)/i.test(error)) {
+      throw new Error(file + ' returned an unsafe failure: ' + JSON.stringify(parsed));
+    }
+  }
+  if (okCount < 1) throw new Error('at least one concurrent next call must succeed');
+" "$EXPECTED_BRANCH" "$EXPECTED_WORKTREE" "$OUT1" "$OUT2" || fail "concurrent next outputs were not safe"
 assert_expected_metadata "concurrent next"
 COUNT=$(git -C "$PRIMARY" worktree list --porcelain | grep -c "^worktree $EXPECTED_WORKTREE$" || true)
 assert_eq "$COUNT" "1" "concurrent next worktree count"

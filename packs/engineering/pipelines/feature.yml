@@ -13,7 +13,7 @@ instruction: |
   Prefer separate leaf workers for stage work when isolation improves review quality or context focus and the host-runtime strategy allows nested delegation; review stages must remain independent from the actor whose work they review.
   When starting a role-bound actor, pass the role id and role instruction path, then require the actor to read its own role instruction before the stage instruction.
   Do not inline role instruction content; stop when the actor cannot read the role file.
-  Stop on any Blocker or High review finding; send fixes to the same task driver or a new task driver and rerun the affected review stage before continuing.
+  Stop on any Blocker or High review finding; report the finding and required fix scope to the coordinator. The coordinator assigns fixes to the original task driver when available or to another host-compatible task driver, then the affected review stage runs again.
   Do not edit locked bf.md or task spec.md content after accept; only the harness may flip AC checkboxes, advance State, sync Updated, and write task execution metadata.
 stages:
   - id: architecture-design

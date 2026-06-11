@@ -111,6 +111,36 @@ grep -q "^State: Tasking" "$BASE/wo-1/task-e/spec.md" || fail "batch did not cla
 grep -q "^State: Ready" "$BASE/wo-1/task-f/spec.md" || fail "batch claimed more than five tasks"
 cleanup
 
+# Already Tasking tasks are all returned for resume, even when there are more
+# than the Ready-claim batch size. Ready task claiming remains capped separately.
+setup_accepted
+for id in task-c task-d task-e task-f task-g; do
+  add_ready_task_like_a "$id"
+done
+perl -0pi -e 's/## Task List\n\n[\s\S]*$/## Task List\n\n- task-a\n- task-b\n- task-c\n- task-d\n- task-e\n- task-f\n- task-g\n/s' "$BASE/wo-1/bf.md"
+for id in task-a task-b task-c task-d task-e task-f; do
+  sed -i.bak 's/^State: Ready/State: Tasking/' "$BASE/wo-1/$id/spec.md"
+done
+sed -i.bak 's/^State: Accepted/State: Implementing/' "$BASE/wo-1/bf.md"
+STDOUT=$(node --input-type=module -e "
+  import('$REPO_ROOT/bin/lib/harness/cmd-next.mjs').then(async (m) => {
+    process.stdout.write(JSON.stringify(await m.cmdNext({
+      baseHome: '$BASE', woId: 'wo-1', installDir: '$REPO',
+    })));
+  });
+")
+assert_json_field "$STDOUT" .ok true
+assert_json_field "$STDOUT" .tasks.length 7
+assert_json_field "$STDOUT" .tasks.0.taskId "task-a"
+assert_json_field "$STDOUT" .tasks.1.taskId "task-b"
+assert_json_field "$STDOUT" .tasks.2.taskId "task-c"
+assert_json_field "$STDOUT" .tasks.3.taskId "task-d"
+assert_json_field "$STDOUT" .tasks.4.taskId "task-e"
+assert_json_field "$STDOUT" .tasks.5.taskId "task-f"
+assert_json_field "$STDOUT" .tasks.6.taskId "task-g"
+grep -q "^State: Tasking" "$BASE/wo-1/task-g/spec.md" || fail "Ready task after Tasking resume set was not claimed"
+cleanup
+
 # Already Tasking tasks stay eligible, and their presence must not suppress
 # independent Ready tasks from the same batch.
 setup_accepted
@@ -129,6 +159,26 @@ assert_json_field "$STDOUT" .tasks.length 2
 assert_json_field "$STDOUT" .tasks.0.taskId "task-a"
 assert_json_field "$STDOUT" .tasks.1.taskId "task-b"
 grep -q "^State: Tasking" "$BASE/wo-1/task-b/spec.md" || fail "Tasking task suppressed Ready task-b"
+cleanup
+
+# If an independent Ready task cannot be claimed because its pipeline is invalid,
+# existing Tasking tasks are still returned for coordinator resume.
+setup_accepted
+sed -i.bak 's/^- task-b: task-a/- task-b/' "$BASE/wo-1/bf.md"
+sed -i.bak 's/^State: Ready/State: Tasking/' "$BASE/wo-1/task-a/spec.md"
+sed -i.bak 's/^State: Accepted/State: Implementing/' "$BASE/wo-1/bf.md"
+sed -i.bak 's/^Pipeline: feature/Pipeline: missing-pipeline/' "$BASE/wo-1/task-b/spec.md"
+STDOUT=$(node --input-type=module -e "
+  import('$REPO_ROOT/bin/lib/harness/cmd-next.mjs').then(async (m) => {
+    process.stdout.write(JSON.stringify(await m.cmdNext({
+      baseHome: '$BASE', woId: 'wo-1', installDir: '$REPO',
+    })));
+  });
+")
+assert_json_field "$STDOUT" .ok true
+assert_json_field "$STDOUT" .tasks.length 1
+assert_json_field "$STDOUT" .tasks.0.taskId "task-a"
+grep -q "^State: Ready" "$BASE/wo-1/task-b/spec.md" || fail "invalid Ready pipeline task was claimed"
 cleanup
 
 # Wrong bf state -> reject

@@ -3,7 +3,12 @@ import { taskDir } from "./wo-paths.mjs";
 import { writeState, writeUpdated, formatTimestamp, writeTaskExecutionMetadata } from "./write-mutations.mjs";
 import { loadWo } from "./load-wo.mjs";
 import { buildPipelineRegistry, findPipeline } from "../shared/pipeline-registry.mjs";
-import { prepareTaskWorktree, validateTaskWorktree } from "./managed-git.mjs";
+import {
+  preflightTaskWorktree,
+  prepareTaskWorktree,
+  rollbackCreatedTaskWorktree,
+  validateTaskWorktree,
+} from "./managed-git.mjs";
 
 const MAX_NEXT_TASKS = 5;
 
@@ -24,13 +29,16 @@ export async function cmdNext({ baseHome, woId, installDir, now = new Date(), cw
     return t.deps.every((d) => stateOf(d) === "Completed");
   });
   const batch = [];
+  let readyClaims = 0;
   for (const task of eligible) {
-    if (batch.length >= MAX_NEXT_TASKS) break;
+    const taskState = task.spec.frontmatter.State;
+    if (taskState === "Ready" && readyClaims >= MAX_NEXT_TASKS) continue;
     const conflicts = batch.some((selected) => (
       task.deps.includes(selected.id) || selected.deps.includes(task.id)
     ));
     if (conflicts) continue;
     batch.push(task);
+    if (taskState === "Ready") readyClaims += 1;
   }
   if (batch.length === 0) return { ok: false, error: "no eligible task" };
 
@@ -40,50 +48,118 @@ export async function cmdNext({ baseHome, woId, installDir, now = new Date(), cw
     localPipelinesDir: bundle.localPipelinesDir,
   });
 
-  const plans = [];
-  for (const task of batch) {
+  const makePlan = (task) => {
     const pipeline = task.spec.frontmatter.Pipeline;
     const pipelineEntry = findPipeline(pipelineReg, bundle.bf.frontmatter.Pack, pipeline);
     if (!pipelineEntry) return { ok: false, error: `pipeline not found: ${pipeline}` };
-    plans.push({
+    return {
+      ok: true,
       task,
       pipeline,
       pipelineEntry,
       claim: task.spec.frontmatter.State === "Ready",
       executionMetadata: task.spec.executionMetadata || {},
-    });
-  }
+    };
+  };
 
   const ts = formatTimestamp(now);
+  const plansById = new Map();
+  let readyPlanError = null;
 
-  for (const plan of plans) {
-    const { task } = plan;
-    let executionMetadata = plan.executionMetadata;
-
-    if (plan.claim && task.spec.requiresWorktree) {
-      const setup = prepareTaskWorktree({
-        baseHome, cwd, woId, taskId: task.id, metadata: executionMetadata,
-      });
-      if (!setup.ok) return { ok: false, error: setup.error };
-      executionMetadata = {
-        branch: setup.branch,
-        worktree: setup.worktree,
-        pullRequest: null,
-      };
-    } else if (!plan.claim && task.spec.requiresWorktree) {
+  for (const task of batch.filter((t) => t.spec.frontmatter.State === "Tasking")) {
+    const made = makePlan(task);
+    if (!made.ok) return { ok: false, error: made.error };
+    const plan = made;
+    if (task.spec.requiresWorktree) {
       const setup = validateTaskWorktree({
-        baseHome, cwd, woId, taskId: task.id, metadata: executionMetadata,
+        baseHome, cwd, woId, taskId: task.id, metadata: plan.executionMetadata,
       });
       if (!setup.ok) return { ok: false, error: setup.error };
-      executionMetadata = {
-        ...executionMetadata,
+      plan.executionMetadata = {
+        ...plan.executionMetadata,
         branch: setup.branch,
         worktree: setup.worktree,
       };
     }
-
-    plan.executionMetadata = executionMetadata;
+    plansById.set(task.id, plan);
   }
+
+  const readyPlans = [];
+  for (const task of batch.filter((t) => t.spec.frontmatter.State === "Ready")) {
+    const made = makePlan(task);
+    if (!made.ok) {
+      readyPlanError = made.error;
+      break;
+    }
+    const plan = made;
+    if (task.spec.requiresWorktree) {
+      const setup = preflightTaskWorktree({
+        baseHome, cwd, woId, taskId: task.id, metadata: plan.executionMetadata,
+      });
+      if (!setup.ok) {
+        readyPlanError = setup.error;
+        break;
+      }
+      plan.preflightResult = setup;
+    }
+    readyPlans.push(plan);
+  }
+
+  if (readyPlanError) {
+    if (plansById.size === 0) return { ok: false, error: readyPlanError };
+  } else {
+    const createdPlans = [];
+    let prepareError = null;
+    let failedPreparePlan = null;
+    for (const plan of readyPlans) {
+      if (plan.task.spec.requiresWorktree) {
+        const setup = prepareTaskWorktree({
+          baseHome,
+          cwd,
+          woId,
+          taskId: plan.task.id,
+          metadata: plan.executionMetadata,
+          preflightResult: plan.preflightResult,
+        });
+        if (!setup.ok) {
+          prepareError = setup.error;
+          failedPreparePlan = plan;
+          break;
+        }
+        if (setup.created) createdPlans.push(plan);
+        plan.executionMetadata = {
+          branch: setup.branch,
+          worktree: setup.worktree,
+          pullRequest: null,
+        };
+      }
+    }
+
+    if (prepareError) {
+      const rollbackPlans = [];
+      if (failedPreparePlan?.task.spec.requiresWorktree) {
+        const rollback = rollbackCreatedTaskWorktree({
+          baseHome, cwd, woId, taskId: failedPreparePlan.task.id, removeRegistered: false,
+        });
+        if (!rollback.ok) {
+          return { ok: false, error: `${prepareError}; ${rollback.error}` };
+        }
+      }
+      rollbackPlans.push(...createdPlans.reverse());
+      for (const plan of rollbackPlans) {
+        const rollback = rollbackCreatedTaskWorktree({ baseHome, cwd, woId, taskId: plan.task.id });
+        if (!rollback.ok) {
+          return { ok: false, error: `${prepareError}; ${rollback.error}` };
+        }
+      }
+      if (plansById.size === 0) return { ok: false, error: prepareError };
+    } else {
+      for (const plan of readyPlans) plansById.set(plan.task.id, plan);
+    }
+  }
+
+  const plans = batch.map((task) => plansById.get(task.id)).filter(Boolean);
+  if (plans.length === 0) return { ok: false, error: readyPlanError || "no eligible task" };
 
   for (const plan of plans) {
     if (!plan.claim) continue;

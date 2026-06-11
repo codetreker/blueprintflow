@@ -9,7 +9,7 @@ setup() {
   cp -R "$FIXTURES/packs-engineering" "$REPO/packs/engineering"
   BASE=$(make_temp_home)
   mkdir -p "$BASE"
-  cp -R "$FIXTURES/clean-wo" "$BASE/clean-wo"
+  copy_fixture clean-wo "$BASE/works/clean-wo"
 }
 
 seed_mode_a_success() {
@@ -30,7 +30,7 @@ EOF
 cleanup() { rm -rf "$REPO" "$BASE"; }
 
 setup
-seed_mode_a_success "$BASE/clean-wo"
+seed_mode_a_success "$BASE/works/clean-wo"
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/cmd-accept.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdAccept({
@@ -44,10 +44,10 @@ assert_json_field "$STDOUT" .transitioned.bf.from "Draft"
 assert_json_field "$STDOUT" .transitioned.bf.to "Accepted"
 assert_json_field "$STDOUT" .transitioned.tasks.task-a.from "Draft"
 assert_json_field "$STDOUT" .transitioned.tasks.task-a.to "Ready"
-grep -q "^State: Accepted" "$BASE/clean-wo/bf.md" || fail "bf.md state not flipped"
-grep -q "^State: Ready" "$BASE/clean-wo/task-a/spec.md" || fail "task-a state not flipped"
-grep -q "^State: Ready" "$BASE/clean-wo/task-b/spec.md" || fail "task-b state not flipped"
-grep -q "^Updated: 2026-05-19 12:34" "$BASE/clean-wo/bf.md" || fail "bf.md Updated not set"
+grep -q "^State: Accepted" "$BASE/works/clean-wo/bf.md" || fail "bf.md state not flipped"
+grep -q "^State: Ready" "$BASE/works/clean-wo/task-a/spec.md" || fail "task-a state not flipped"
+grep -q "^State: Ready" "$BASE/works/clean-wo/task-b/spec.md" || fail "task-b state not flipped"
+grep -q "^Updated: 2026-05-19 12:34" "$BASE/works/clean-wo/bf.md" || fail "bf.md Updated not set"
 cleanup
 
 setup
@@ -60,11 +60,11 @@ STDOUT=$(node --input-type=module -e "
 ")
 assert_json_field "$STDOUT" .ok false
 assert_match "$STDOUT" "no Spec Review SUCCESS" "Spec Review gate"
-grep -q "^State: Draft" "$BASE/clean-wo/bf.md" || fail "bf.md unexpectedly modified"
+grep -q "^State: Draft" "$BASE/works/clean-wo/bf.md" || fail "bf.md unexpectedly modified"
 cleanup
 
 setup
-sed -i.bak 's/^State: Draft/State: Accepted/' "$BASE/clean-wo/bf.md"
+sed -i.bak 's/^State: Draft/State: Accepted/' "$BASE/works/clean-wo/bf.md"
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/cmd-accept.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdAccept({
@@ -77,8 +77,8 @@ assert_match "$STDOUT" "already accepted" "double accept rejected"
 cleanup
 
 setup
-seed_mode_a_success "$BASE/clean-wo"
-sed -i.bak 's/^Pack: engineering/Pack: nope/' "$BASE/clean-wo/bf.md"
+seed_mode_a_success "$BASE/works/clean-wo"
+sed -i.bak 's/^Pack: engineering/Pack: nope/' "$BASE/works/clean-wo/bf.md"
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/cmd-accept.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdAccept({
@@ -88,14 +88,14 @@ STDOUT=$(node --input-type=module -e "
 ")
 assert_json_field "$STDOUT" .ok false
 assert_match "$STDOUT" "lint failed" "lint gate"
-grep -q "^State: Draft" "$BASE/clean-wo/bf.md" || fail "bf.md unexpectedly modified"
+grep -q "^State: Draft" "$BASE/works/clean-wo/bf.md" || fail "bf.md unexpectedly modified"
 cleanup
 
 # CLI-level text output (OUT-4 + OUT-3 audit): bf-harness accept emits SUCCESS
 # on stdout line 1, with transition lines and an Updated: line. No trailing
 # whitespace on any line.
 setup
-seed_mode_a_success "$BASE/clean-wo"
+seed_mode_a_success "$BASE/works/clean-wo"
 export BF_HOME="$BASE"
 export BF_INSTALL_DIR="$REPO"
 run_bfh accept "clean-wo"
@@ -130,8 +130,8 @@ cleanup
 # validateWo errors. Round 2 dropped them; round 3 renders them with the
 # same `<code> at <ref>` / indented-message shape as format-lint.
 setup
-seed_mode_a_success "$BASE/clean-wo"
-sed -i.bak 's/^Pack: engineering/Pack: nope/' "$BASE/clean-wo/bf.md"
+seed_mode_a_success "$BASE/works/clean-wo"
+sed -i.bak 's/^Pack: engineering/Pack: nope/' "$BASE/works/clean-wo/bf.md"
 export BF_HOME="$BASE"
 export BF_INSTALL_DIR="$REPO"
 run_bfh accept "clean-wo"
@@ -146,11 +146,11 @@ cleanup
 
 # accept stale gate includes referenced local pipeline files
 setup
-sed -i.bak 's/^Pipeline: feature/Pipeline: api-migration/' "$BASE/clean-wo/task-a/spec.md"
-write_local_pipeline "$BASE/clean-wo/pipelines/api-migration.yml" "api-migration"
-seed_mode_a_success "$BASE/clean-wo"
+sed -i.bak 's/^Pipeline: feature/Pipeline: api-migration/' "$BASE/works/clean-wo/task-a/spec.md"
+write_local_pipeline "$BASE/works/clean-wo/pipelines/api-migration.yml" "api-migration"
+seed_mode_a_success "$BASE/works/clean-wo"
 sleep 1
-echo "# changed after review" >> "$BASE/clean-wo/pipelines/api-migration.yml"
+echo "# changed after review" >> "$BASE/works/clean-wo/pipelines/api-migration.yml"
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/cmd-accept.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdAccept({
@@ -165,10 +165,10 @@ cleanup
 
 # deleted referenced local pipeline blocks accept
 setup
-sed -i.bak 's/^Pipeline: feature/Pipeline: api-migration/' "$BASE/clean-wo/task-a/spec.md"
-write_local_pipeline "$BASE/clean-wo/pipelines/api-migration.yml" "api-migration"
-seed_mode_a_success "$BASE/clean-wo"
-rm "$BASE/clean-wo/pipelines/api-migration.yml"
+sed -i.bak 's/^Pipeline: feature/Pipeline: api-migration/' "$BASE/works/clean-wo/task-a/spec.md"
+write_local_pipeline "$BASE/works/clean-wo/pipelines/api-migration.yml" "api-migration"
+seed_mode_a_success "$BASE/works/clean-wo"
+rm "$BASE/works/clean-wo/pipelines/api-migration.yml"
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/harness/cmd-accept.mjs').then(async (m) => {
     process.stdout.write(JSON.stringify(await m.cmdAccept({

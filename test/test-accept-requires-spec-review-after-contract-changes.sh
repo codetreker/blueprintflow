@@ -9,7 +9,7 @@ setup() {
   cp -R "$FIXTURES/packs-engineering" "$REPO/packs/engineering"
   BASE=$(make_temp_home)
   mkdir -p "$BASE"
-  cp -R "$FIXTURES/clean-wo" "$BASE/clean-wo"
+  copy_fixture clean-wo "$BASE/works/clean-wo"
 }
 
 cleanup() { rm -rf "$REPO" "$BASE"; }
@@ -41,14 +41,14 @@ run_accept() {
 }
 
 setup
-seed_mode_a_success "$BASE/clean-wo"
-sed -i.bak '/^- \[ \] AC-1|quality-assurance:/a - [ ] AC-2|quality-assurance: Added after the successful spec review' "$BASE/clean-wo/task-a/spec.md"
-rm -f "$BASE/clean-wo/task-a/spec.md.bak"
-touch -d "2026-05-19 11:00" "$BASE/clean-wo/task-a/spec.md"
+seed_mode_a_success "$BASE/works/clean-wo"
+sed -i.bak '/^- \[ \] AC-1|quality-assurance:/a - [ ] AC-2|quality-assurance: Added after the successful spec review' "$BASE/works/clean-wo/task-a/spec.md"
+rm -f "$BASE/works/clean-wo/task-a/spec.md.bak"
+touch -d "2026-05-19 11:00" "$BASE/works/clean-wo/task-a/spec.md"
 run_accept
 assert_json_field "$STDOUT" .ok false
-grep -q "^State: Draft" "$BASE/clean-wo/bf.md" || fail "bf.md should remain Draft when contract changed after spec review"
-grep -q "^State: Draft" "$BASE/clean-wo/task-a/spec.md" || fail "task-a should remain Draft when contract changed after spec review"
+grep -q "^State: Draft" "$BASE/works/clean-wo/bf.md" || fail "bf.md should remain Draft when contract changed after spec review"
+grep -q "^State: Draft" "$BASE/works/clean-wo/task-a/spec.md" || fail "task-a should remain Draft when contract changed after spec review"
 cleanup
 
 pass

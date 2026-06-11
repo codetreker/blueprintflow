@@ -11,7 +11,7 @@ Not for: pure research write-ups, content production, incident response runbooks
 
 ## Domain Vocabulary
 
-- **bf-wo** — a single blueprint work object. In normal project work, new work objects live under the primary BF state home at `works/<bf-wo>`; legacy direct `<bf-wo>` directories remain readable.
+- **bf-wo** — a single blueprint work object under the primary BF state home at `works/<bf-wo>`.
 - **bf.md** — the blueprint contract; locked after `accept`.
 - **task spec.md** — per-task contract; locked after `accept`.
 - **AC (Acceptance Criterion)** — one checkbox on bf.md or a task spec; carries a stable id and a `capability` marker.

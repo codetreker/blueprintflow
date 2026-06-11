@@ -100,6 +100,7 @@ When legacy plugin files are touched, also run:
 - Write runtime instructions as direct commands.
 - Put durable rationale in `docs/`, not runtime files.
 - Use ASCII punctuation unless editing existing Chinese prose.
+- Do not insert line breaks in prompt or runtime-instruction prose merely because a line exceeds a target length such as 80 characters. Preserve semantic line breaks, table rows, code blocks, quoted text, and line breaks required by a file format.
 - Use `apply_patch` for manual edits.
 
 ## Anti-Patterns

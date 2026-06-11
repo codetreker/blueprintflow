@@ -59,13 +59,14 @@ Do not use BF for non-software work, casual conversation, simple one-command ans
 
 On every `$bf` or `/bf` turn, classify the request before loading deeper references:
 
-1. **Feedback issue** — if the user explicitly asks to prepare, file, or comment on BF GitHub issue feedback, read `references/feedback.md`.
-2. **Read-only / advisory** — if the user asks to explain, audit, inspect, compare, or discuss without asking for changes, do not create a work object. Load only the references needed to answer.
-3. **Resume existing work** — if the user says continue/resume or names a bf-wo, locate `.bf/works/<bf-wo>` first; legacy `.bf/<bf-wo>` remains readable. Read `bf.md`, `discussion.md`, task specs, and latest review or verify results, then route by state to spec authoring or execution.
-4. **New software change / brainstorm** — read `references/brainstorm.md` first.
+1. **Pending phase confirmation** — if the previous BF response asked for approval to enter the next phase, an affirmative reply means: immediately run the next legal BF action and continue to that phase; do not ask for another phase command. If the reply changes scope or objects, append it to `discussion.md` and do not advance.
+2. **Feedback issue** — if the user explicitly asks to prepare, file, or comment on BF GitHub issue feedback, read `references/feedback.md`.
+3. **Read-only / advisory** — if the user asks to explain, audit, inspect, compare, or discuss without asking for changes, do not create a work object. Load only the references needed to answer.
+4. **Resume existing work** — if the user says continue/resume or names a bf-wo, load `.bf/works/<bf-wo>`. Read `bf.md`, `discussion.md`, task specs, and latest review or verify results, then route by state to spec authoring or execution.
+5. **New software change / brainstorm** — read `references/brainstorm.md` first.
    Brainstorm owns pack selection, bootstrap, and the first accepted discussion entry.
    Do not create a work object or write `discussion.md` before following the brainstorm reference unless you are resuming existing work.
-5. **Spec / accept / execute request** — load the existing work object first. Then read `references/spec-authoring.md` or `references/execution.md` based on `bf.md` state. Do not skip unresolved brainstorm source coverage.
+6. **Spec / accept / execute request** — load the existing work object first. Then read `references/spec-authoring.md` or `references/execution.md` based on `bf.md` state. Do not skip unresolved brainstorm source coverage.
 
 If the route is ambiguous and the choice changes state, scope, or external side effects, ask the user before mutating BF state.
 
@@ -80,5 +81,5 @@ If the route is ambiguous and the choice changes state, scope, or external side 
 - `roles/` — Core roles (`architect`, `engineer`, `tester`, `security`, …). Each pack's `pack.md` declares which role plays which phase. Packs may add private roles under `packs/<id>/roles/`.
 - `packs/` — installed packs. Each `pack.md` has `When to Use` + the three phase guidances. Pack pipelines live under `packs/<id>/pipelines/*.yml` and are discoverable with `bf list-pipelines --pack <id>`. The engineering pack includes `feature`, `bugfix`, and review-only `code-deep-audit`.
 - `extensions/` (optional) — user-supplied roles and packs. Global extensions live at `~/.bf/extensions/`; project extensions live under the normal project BF state home at `.bf/extensions/`. Project beats global beats selected pack-private roles and Core roles; same id wins by precedence.
-- BF state — Git projects store BF state under the primary worktree `.bf`, even when commands run from linked worktrees. New work objects live under `.bf/works/<bf-wo>`; legacy `.bf/<bf-wo>` work objects remain readable. Non-Git directories fall back to `<cwd>/.bf`.
+- BF state — Git projects store BF state under the primary worktree `.bf`, even when commands run from linked worktrees. Work objects live under `.bf/works/<bf-wo>`. Non-Git directories fall back to `<cwd>/.bf`.
 - Run `bf --help` and `bf-harness --help` for the authoritative command reference.

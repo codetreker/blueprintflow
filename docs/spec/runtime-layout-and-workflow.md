@@ -25,9 +25,7 @@ design notes, or execution artifacts.
 
 ## Work Object Layout
 
-New BF work objects live under `<state-home>/works/<bf-wo>/`. Legacy direct
-`<state-home>/<bf-wo>/` work objects remain readable; if both layouts contain
-the same id, `works/<bf-wo>` wins.
+BF work objects live under `<state-home>/works/<bf-wo>/`.
 
 ```text
 <primary-worktree>/

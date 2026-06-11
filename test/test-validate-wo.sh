@@ -24,62 +24,62 @@ run_validate() {
   " "$1")
 }
 
-setup; cp -R "$FIXTURES/clean-wo" "$BASE/clean-wo"
+setup; copy_fixture clean-wo "$BASE/works/clean-wo"
 run_validate clean-wo
 assert_json_field "$STDOUT" .ok true
 cleanup
 
-setup; cp -R "$FIXTURES/missing-capability-wo" "$BASE/missing-cap-wo"
+setup; copy_fixture missing-capability-wo "$BASE/works/missing-cap-wo"
 run_validate missing-cap-wo
 assert_json_field "$STDOUT" .ok false
 assert_match "$STDOUT" "CAPABILITY_UNKNOWN" "missing cap"
 cleanup
 
 # task specs bind to an execution Pipeline, not a single doer Capability
-setup; cp -R "$FIXTURES/clean-wo" "$BASE/forbidden-task-capability-wo"
-sed -i.bak '/^Pipeline: feature$/a Capability: software-implementation' "$BASE/forbidden-task-capability-wo/task-a/spec.md"
+setup; copy_fixture clean-wo "$BASE/works/forbidden-task-capability-wo"
+sed -i.bak '/^Pipeline: feature$/a Capability: software-implementation' "$BASE/works/forbidden-task-capability-wo/task-a/spec.md"
 run_validate forbidden-task-capability-wo
 assert_json_field "$STDOUT" .ok false
 assert_match "$STDOUT" "TASK_CAPABILITY_FORBIDDEN" "task Capability rejected"
 cleanup
 
 # task Pipeline must exist in the task Pack's effective pipeline registry
-setup; cp -R "$FIXTURES/clean-wo" "$BASE/unknown-pipeline-wo"
-sed -i.bak 's/^Pipeline: feature/Pipeline: ghost/' "$BASE/unknown-pipeline-wo/task-a/spec.md"
+setup; copy_fixture clean-wo "$BASE/works/unknown-pipeline-wo"
+sed -i.bak 's/^Pipeline: feature/Pipeline: ghost/' "$BASE/works/unknown-pipeline-wo/task-a/spec.md"
 run_validate unknown-pipeline-wo
 assert_json_field "$STDOUT" .ok false
 assert_match "$STDOUT" "PIPELINE_NOT_FOUND" "unknown pipeline rejected"
 cleanup
 
 # task Pipeline can resolve to a bf-wo local pipeline
-setup; cp -R "$FIXTURES/clean-wo" "$BASE/local-pipeline-wo"
-sed -i.bak 's/^Pipeline: feature/Pipeline: api-migration/' "$BASE/local-pipeline-wo/task-a/spec.md"
-write_local_pipeline "$BASE/local-pipeline-wo/pipelines/api-migration.yml" "api-migration"
+setup; copy_fixture clean-wo "$BASE/works/local-pipeline-wo"
+sed -i.bak 's/^Pipeline: feature/Pipeline: api-migration/' "$BASE/works/local-pipeline-wo/task-a/spec.md"
+write_local_pipeline "$BASE/works/local-pipeline-wo/pipelines/api-migration.yml" "api-migration"
 run_validate local-pipeline-wo
 assert_json_field "$STDOUT" .ok true
 cleanup
 
 # local pipeline id must not collide with selected pack pipeline id
-setup; cp -R "$FIXTURES/clean-wo" "$BASE/local-pipeline-collision-wo"
-write_local_pipeline "$BASE/local-pipeline-collision-wo/pipelines/feature.yml" "feature"
+setup; copy_fixture clean-wo "$BASE/works/local-pipeline-collision-wo"
+write_local_pipeline "$BASE/works/local-pipeline-collision-wo/pipelines/feature.yml" "feature"
 run_validate local-pipeline-collision-wo
 assert_json_field "$STDOUT" .ok false
 assert_match "$STDOUT" "PIPELINE_LOCAL_COLLISION" "local/pack pipeline id collision rejected"
 cleanup
 
 # local pipelines must be referenced by at least one task
-setup; cp -R "$FIXTURES/clean-wo" "$BASE/unreferenced-local-pipeline-wo"
-write_local_pipeline "$BASE/unreferenced-local-pipeline-wo/pipelines/api-migration.yml" "api-migration"
+setup; copy_fixture clean-wo "$BASE/works/unreferenced-local-pipeline-wo"
+write_local_pipeline "$BASE/works/unreferenced-local-pipeline-wo/pipelines/api-migration.yml" "api-migration"
 run_validate unreferenced-local-pipeline-wo
 assert_json_field "$STDOUT" .ok false
 assert_match "$STDOUT" "PIPELINE_LOCAL_UNREFERENCED" "unreferenced local pipeline rejected"
 cleanup
 
 # local pipeline must have instruction and stages
-setup; cp -R "$FIXTURES/clean-wo" "$BASE/bad-local-pipeline-wo"
-sed -i.bak 's/^Pipeline: feature/Pipeline: api-migration/' "$BASE/bad-local-pipeline-wo/task-a/spec.md"
-mkdir -p "$BASE/bad-local-pipeline-wo/pipelines"
-cat > "$BASE/bad-local-pipeline-wo/pipelines/api-migration.yml" <<'EOF'
+setup; copy_fixture clean-wo "$BASE/works/bad-local-pipeline-wo"
+sed -i.bak 's/^Pipeline: feature/Pipeline: api-migration/' "$BASE/works/bad-local-pipeline-wo/task-a/spec.md"
+mkdir -p "$BASE/works/bad-local-pipeline-wo/pipelines"
+cat > "$BASE/works/bad-local-pipeline-wo/pipelines/api-migration.yml" <<'EOF'
 id: api-migration
 desc: Missing required local pipeline fields
 EOF
@@ -90,19 +90,19 @@ assert_match "$STDOUT" "PIPELINE_LOCAL_STAGES_EMPTY" "empty local pipeline stage
 cleanup
 
 # local pipeline stage capability must exist
-setup; cp -R "$FIXTURES/clean-wo" "$BASE/bad-local-capability-wo"
-sed -i.bak 's/^Pipeline: feature/Pipeline: api-migration/' "$BASE/bad-local-capability-wo/task-a/spec.md"
-write_local_pipeline "$BASE/bad-local-capability-wo/pipelines/api-migration.yml" "api-migration"
-sed -i.bak 's/capability: software-implementation/capability: ghost-capability/' "$BASE/bad-local-capability-wo/pipelines/api-migration.yml"
+setup; copy_fixture clean-wo "$BASE/works/bad-local-capability-wo"
+sed -i.bak 's/^Pipeline: feature/Pipeline: api-migration/' "$BASE/works/bad-local-capability-wo/task-a/spec.md"
+write_local_pipeline "$BASE/works/bad-local-capability-wo/pipelines/api-migration.yml" "api-migration"
+sed -i.bak 's/capability: software-implementation/capability: ghost-capability/' "$BASE/works/bad-local-capability-wo/pipelines/api-migration.yml"
 run_validate bad-local-capability-wo
 assert_json_field "$STDOUT" .ok false
 assert_match "$STDOUT" "PIPELINE_LOCAL_CAPABILITY_UNKNOWN" "unknown local stage capability rejected"
 cleanup
 
 # local pipeline filenames are linted even when the extension is wrong
-setup; cp -R "$FIXTURES/clean-wo" "$BASE/bad-local-filename-wo"
-mkdir -p "$BASE/bad-local-filename-wo/pipelines"
-cat > "$BASE/bad-local-filename-wo/pipelines/Bad.yaml" <<'EOF'
+setup; copy_fixture clean-wo "$BASE/works/bad-local-filename-wo"
+mkdir -p "$BASE/works/bad-local-filename-wo/pipelines"
+cat > "$BASE/works/bad-local-filename-wo/pipelines/Bad.yaml" <<'EOF'
 id: Bad
 desc: Invalid filename
 EOF
@@ -112,10 +112,10 @@ assert_match "$STDOUT" "PIPELINE_LOCAL_FILENAME_INVALID" "invalid local pipeline
 cleanup
 
 # local pipeline stage ids must be unique
-setup; cp -R "$FIXTURES/clean-wo" "$BASE/duplicate-stage-wo"
-sed -i.bak 's/^Pipeline: feature/Pipeline: api-migration/' "$BASE/duplicate-stage-wo/task-a/spec.md"
-write_local_pipeline "$BASE/duplicate-stage-wo/pipelines/api-migration.yml" "api-migration"
-cat >> "$BASE/duplicate-stage-wo/pipelines/api-migration.yml" <<'EOF'
+setup; copy_fixture clean-wo "$BASE/works/duplicate-stage-wo"
+sed -i.bak 's/^Pipeline: feature/Pipeline: api-migration/' "$BASE/works/duplicate-stage-wo/task-a/spec.md"
+write_local_pipeline "$BASE/works/duplicate-stage-wo/pipelines/api-migration.yml" "api-migration"
+cat >> "$BASE/works/duplicate-stage-wo/pipelines/api-migration.yml" <<'EOF'
   - id: implementation
     capability: software-implementation
     instruction: |
@@ -127,64 +127,64 @@ assert_match "$STDOUT" "PIPELINE_LOCAL_STAGE_ID_DUPLICATE" "duplicate local stag
 cleanup
 
 # task id 'pipelines' is reserved
-setup; cp -R "$FIXTURES/clean-wo" "$BASE/reserved-task-id-wo"
-sed -i.bak 's/^- task-a$/- pipelines/' "$BASE/reserved-task-id-wo/bf.md"
-mv "$BASE/reserved-task-id-wo/task-a" "$BASE/reserved-task-id-wo/pipelines"
+setup; copy_fixture clean-wo "$BASE/works/reserved-task-id-wo"
+sed -i.bak 's/^- task-a$/- pipelines/' "$BASE/works/reserved-task-id-wo/bf.md"
+mv "$BASE/works/reserved-task-id-wo/task-a" "$BASE/works/reserved-task-id-wo/pipelines"
 run_validate reserved-task-id-wo
 assert_json_field "$STDOUT" .ok false
 assert_match "$STDOUT" "TASK_ID_RESERVED" "reserved task id rejected"
 cleanup
 
 # dep cycle: 把 task-a 改成依赖 task-b（task-b 已经依赖 task-a）
-setup; cp -R "$FIXTURES/clean-wo" "$BASE/cycle-wo"
-sed -i.bak 's/^- task-a$/- task-a: task-b/' "$BASE/cycle-wo/bf.md"
+setup; copy_fixture clean-wo "$BASE/works/cycle-wo"
+sed -i.bak 's/^- task-a$/- task-a: task-b/' "$BASE/works/cycle-wo/bf.md"
 run_validate cycle-wo
 assert_match "$STDOUT" "DEP_CYCLE" "cycle detected"
 cleanup
 
 # task specs must carry an explicit Evidence section before lint can pass
-setup; cp -R "$FIXTURES/clean-wo" "$BASE/missing-evidence-section-wo"
-sed -i.bak '/^## Evidence$/,/^## Boundary$/d' "$BASE/missing-evidence-section-wo/task-a/spec.md"
+setup; copy_fixture clean-wo "$BASE/works/missing-evidence-section-wo"
+sed -i.bak '/^## Evidence$/,/^## Boundary$/d' "$BASE/works/missing-evidence-section-wo/task-a/spec.md"
 run_validate missing-evidence-section-wo
 assert_json_field "$STDOUT" .ok false
 assert_match "$STDOUT" "EVIDENCE_SECTION_MISSING" "missing Evidence section detected"
 cleanup
 
 # every task AC needs at least one Evidence entry in the explicit section
-setup; cp -R "$FIXTURES/clean-wo" "$BASE/missing-evidence-entry-wo"
-sed -i.bak '/^- EV-/d' "$BASE/missing-evidence-entry-wo/task-a/spec.md"
+setup; copy_fixture clean-wo "$BASE/works/missing-evidence-entry-wo"
+sed -i.bak '/^- EV-/d' "$BASE/works/missing-evidence-entry-wo/task-a/spec.md"
 run_validate missing-evidence-entry-wo
 assert_json_field "$STDOUT" .ok false
 assert_match "$STDOUT" "EVIDENCE_MISSING" "missing Evidence entry detected"
 cleanup
 
 # Evidence must reference an AC in the same task spec
-setup; cp -R "$FIXTURES/clean-wo" "$BASE/bad-evidence-ref-wo"
-sed -i.bak 's/^- EV-1|AC-1|review-note:/- EV-1|AC-99|review-note:/' "$BASE/bad-evidence-ref-wo/task-a/spec.md"
+setup; copy_fixture clean-wo "$BASE/works/bad-evidence-ref-wo"
+sed -i.bak 's/^- EV-1|AC-1|review-note:/- EV-1|AC-99|review-note:/' "$BASE/works/bad-evidence-ref-wo/task-a/spec.md"
 run_validate bad-evidence-ref-wo
 assert_json_field "$STDOUT" .ok false
 assert_match "$STDOUT" "EVIDENCE_AC_UNKNOWN" "unknown evidence AC detected"
 cleanup
 
 # Evidence ids are stable handles and must be unique within one task spec
-setup; cp -R "$FIXTURES/clean-wo" "$BASE/duplicate-evidence-id-wo"
-sed -i.bak '/^## Boundary$/i - EV-1|AC-1|review-note: duplicate id should fail lint' "$BASE/duplicate-evidence-id-wo/task-a/spec.md"
+setup; copy_fixture clean-wo "$BASE/works/duplicate-evidence-id-wo"
+sed -i.bak '/^## Boundary$/i - EV-1|AC-1|review-note: duplicate id should fail lint' "$BASE/works/duplicate-evidence-id-wo/task-a/spec.md"
 run_validate duplicate-evidence-id-wo
 assert_json_field "$STDOUT" .ok false
 assert_match "$STDOUT" "EVIDENCE_DUPLICATE_ID" "duplicate Evidence id detected"
 cleanup
 
 # Evidence kind is a linted vocabulary, not arbitrary prose
-setup; cp -R "$FIXTURES/clean-wo" "$BASE/unknown-evidence-kind-wo"
-sed -i.bak 's/^- EV-1|AC-1|review-note:/- EV-1|AC-1|memo:/' "$BASE/unknown-evidence-kind-wo/task-a/spec.md"
+setup; copy_fixture clean-wo "$BASE/works/unknown-evidence-kind-wo"
+sed -i.bak 's/^- EV-1|AC-1|review-note:/- EV-1|AC-1|memo:/' "$BASE/works/unknown-evidence-kind-wo/task-a/spec.md"
 run_validate unknown-evidence-kind-wo
 assert_json_field "$STDOUT" .ok false
 assert_match "$STDOUT" "EVIDENCE_KIND_UNKNOWN" "unknown Evidence kind detected"
 cleanup
 
 # Evidence text must state the required proof, not just reserve an id
-setup; cp -R "$FIXTURES/clean-wo" "$BASE/empty-evidence-text-wo"
-sed -i.bak 's#^- EV-1|AC-1|review-note:.*$#- EV-1|AC-1|command:   #' "$BASE/empty-evidence-text-wo/task-a/spec.md"
+setup; copy_fixture clean-wo "$BASE/works/empty-evidence-text-wo"
+sed -i.bak 's#^- EV-1|AC-1|review-note:.*$#- EV-1|AC-1|command:   #' "$BASE/works/empty-evidence-text-wo/task-a/spec.md"
 run_validate empty-evidence-text-wo
 assert_json_field "$STDOUT" .ok false
 assert_match "$STDOUT" "EVIDENCE_TEXT_EMPTY" "empty Evidence text detected"

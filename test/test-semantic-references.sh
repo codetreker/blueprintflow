@@ -23,6 +23,9 @@ assert_match "$SKILL_BODY" "read-only" "root skill should route read-only/adviso
 assert_match "$SKILL_BODY" "bootstrap" "root skill should route new work bootstrap"
 assert_match "$SKILL_BODY" "resume" "root skill should route existing work resume"
 assert_match "$SKILL_BODY" "feedback" "root skill should route feedback flow"
+assert_match "$SKILL_BODY" "pending phase confirmation" "root skill should route affirmative answers to pending BF phase confirmations"
+assert_match "$SKILL_BODY" "immediately run the next legal bf action and continue to that phase" "root skill should advance after phase approval"
+assert_match "$SKILL_BODY" "do not ask for another phase command" "root skill should not ask for duplicate phase commands after approval"
 assert_match "$SKILL_BODY" "explicit authorization" "root skill should treat BF trigger as actor authorization"
 assert_match "$SKILL_BODY" "host-compatible actor" "root skill should scope actor authorization to host-compatible BF actors"
 assert_match "$SKILL_BODY" "codex uses subagent actors for task drivers, leaf workers, and reviewers" "root skill should map Codex BF actors to subagents"
@@ -298,7 +301,7 @@ rm -f /tmp/bf-semantic-stale-repo-update.$$
 
 PKG_VERSION=$(node -e "process.stdout.write(JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8')).version)" "$REPO_ROOT/package.json")
 LOCK_VERSION=$(node -e "const p=JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8')); process.stdout.write(p.version + ' ' + p.packages[''].version)" "$REPO_ROOT/package-lock.json")
-assert_eq "$PKG_VERSION" "0.7.9" "package.json version should be bumped"
-assert_eq "$LOCK_VERSION" "0.7.9 0.7.9" "package-lock root versions should be bumped"
+assert_eq "$PKG_VERSION" "0.7.10" "package.json version should be bumped"
+assert_eq "$LOCK_VERSION" "0.7.10 0.7.10" "package-lock root versions should be bumped"
 
 pass

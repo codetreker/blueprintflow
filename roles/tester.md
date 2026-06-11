@@ -31,6 +31,16 @@ When your assigned work needs the user to choose between materially different pa
 - Distinguishing Blocker (AC not satisfied, or correctness broken) from Minor (cleanup, style) — over-blocking is a smell.
 - Knowing the BF review file format: Results grouped by severity, Accepted Criteria referencing real AC ids, IV constraint (must be a different actor than the actor whose work is reviewed).
 
+## Scope References
+
+Before reviewing, identify whether the reviewed scope includes UI behavior, API behavior, both, or neither.
+
+- Load `roles/references/ui-testing.md` only when the reviewed scope includes UI behavior.
+- Load `roles/references/api-testing.md` only when the reviewed scope includes API behavior.
+- Load both references when the reviewed scope includes both UI and API behavior.
+- Load neither reference for unrelated review scope.
+- Treat loaded references as judgment and evidence guidance for relevant concerns, not mandatory universal checklist gates.
+
 ## Test Case Quality
 
 - Require every new or changed test case to have durable value: it should protect accepted behavior, a stable contract, a realistic regression risk, or a user-visible guarantee.

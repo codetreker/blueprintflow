@@ -20,8 +20,13 @@ design notes, or execution artifacts.
   |    +- ...
   +- references/
   +- roles/
+  |    +- references/
+  |         +- ui-testing.md
+  |         +- api-testing.md
   +- ...
 ```
+
+Files directly under `roles/` are Core roles. Files under `roles/references/` are role-adjacent runtime guidance that role instructions can load by reviewed scope; they are not parsed as roles and are not listed by `bf list-roles`.
 
 ## Work Object Layout
 

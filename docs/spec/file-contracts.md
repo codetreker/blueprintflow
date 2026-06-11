@@ -91,6 +91,14 @@ are already accepted user-facing contract or required Evidence.
 - Role: declare a role identity and capability list.
 - Template: [`templates/role.md`](../../templates/role.md)
 - Capabilities are implicitly registered by role files and used by lint/review selection.
+- Role discovery scans direct Markdown files at those locations. Nested files under role-adjacent directories are outside the role registry.
+
+## Role Reference
+
+- Location: `roles/references/*.md`
+- Role: human-loadable runtime guidance for role instructions, such as tester references selected by reviewed scope.
+- Role references are not parsed as roles, do not declare capabilities, and do not appear in `bf list-roles`.
+- Runtime role files must include any required loading instructions; these docs describe the file contract but are not loaded by runtime actors.
 
 ## Pack
 

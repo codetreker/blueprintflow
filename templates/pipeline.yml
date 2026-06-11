@@ -6,10 +6,11 @@ instruction: |
   satisfies the task AC and Evidence requirements. List every external artifact
   or side effect the pipeline creates, then name the closure stage or handoff
   that moves each one to a terminal state. For any role-bound actor, pass the
-  role id and role instruction path, then require the actor to read that role
-  instruction before the stage instruction. Inline role instruction content only
-  when local file access is unavailable. Define the user-perspective done state
-  before the task may be considered complete.
+  role id and role instruction path, then require the actor to read its own role
+  instruction before the stage instruction. Do not inline role instruction
+  content; define a stop condition when the actor cannot read the role file.
+  Define the user-perspective done state before the task may be considered
+  complete.
 stages:
   - id: <stage-id>
     capability: <capability>

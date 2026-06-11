@@ -29,13 +29,16 @@ run the next legal BF command.
   returns that task block.
 - Do not inspect all task specs to choose work. The harness selects the task
   batch.
-- At task entry, a task driver reads only the spec and pipeline for its returned
-  task block.
+- At task entry, a task driver first reads `roles/task-driver.md`, then reads
+  only the spec and pipeline for its returned task block.
 - If the task has `Requires-Worktree: true`, work only in the returned or
   recorded `Worktree`.
 - Assign claimed task work and verification fixes to a host-compatible task
   driver. The coordinator does not do task leaf work unless the user explicitly
   overrides this gate.
+- When starting a task driver, leaf worker, or reviewer, pass the role
+  instruction path and require that actor to read its own role instruction
+  first. Do not read, summarize, or inline the role instruction for that actor.
 - Reviewers must be different actor instances from the actor whose work is
   reviewed.
 - If accepted scope, boundary, acceptance, or design intent is unclear, read
@@ -87,7 +90,9 @@ from `bf-harness next <bf-wo>` and the current BF context. Paste the complete
 task block returned by `bf-harness next`; do not summarize it.
 
 ```text
-You are the BF task driver for <bf-wo>/<task-id>.
+First, read your role instruction: `roles/task-driver.md`.
+
+You are task-driver, working on <bf-wo>/<task-id>.
 
 BF work object: <bf-wo>
 Task block:
@@ -96,18 +101,45 @@ Worktree: <worktree from the task block, or none>
 Resume context: <existing driver context, or new task>
 
 Instructions:
-1. Work only on this returned task.
+1. After reading `roles/task-driver.md`, work only on this returned task.
 2. If a Worktree is provided, run commands from that Worktree.
 3. Read this task's `spec.md` and selected pipeline.
-4. Read the required role instruction before following stage instructions.
-5. Follow the pipeline stages in order and produce every required Evidence
+4. Follow the pipeline stages in order and produce every required Evidence
    artifact.
-6. Do not edit locked `bf.md` or task `spec.md` fields.
-7. If blocked, stop and report the blocker, evidence already produced, and the
+5. Do not edit locked `bf.md` or task `spec.md` fields.
+6. If blocked, stop and report the blocker, evidence already produced, and the
    exact coordinator action needed.
-8. When complete, report changed files, evidence artifacts, validation output,
+7. When complete, report changed files, evidence artifacts, validation output,
    commit or branch, PR URL if any, retained risks, and whether task-local
    terminal-state closure evidence is ready.
+```
+
+## Role-Bound Worker Prompt Template
+
+Use this template when the coordinator or a task driver starts a role-bound
+worker or reviewer for a stage.
+
+```text
+First, read your role instruction: `roles/<role-id>.md`.
+
+You are <role-id>, working on <bf-wo>/<task-id> stage <stage-id>.
+
+Role instruction path: roles/<role-id>.md
+BF work object: <bf-wo>
+Task: <task-id>
+Stage: <stage-id>
+Stage instruction:
+<paste the stage instruction>
+Required output:
+<artifact path, review result path, or evidence expectation>
+Context:
+<task, artifact, diff, command, or review context needed for this stage>
+
+Instructions:
+1. After reading your role instruction, follow the stage instruction.
+2. Work only within the supplied task and stage context.
+3. Produce the required output or stop with a blocker.
+4. Report evidence, findings, changed files if any, and unresolved blockers.
 ```
 
 ## Final Acceptance

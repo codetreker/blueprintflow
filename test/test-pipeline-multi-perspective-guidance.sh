@@ -23,7 +23,8 @@ contains_all "$ROLE_BODY" "pipeline-designer role" \
   "stage instruction" \
   "stable mechanical gate" \
   "role instruction file" \
-  "read that file before"
+  "read its own role instruction before" \
+  "do not inline role instruction content"
 
 TEMPLATE_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/templates/pipeline.yml")
 contains_all "$TEMPLATE_BODY" "pipeline template" \
@@ -33,7 +34,8 @@ contains_all "$TEMPLATE_BODY" "pipeline template" \
   "qa perspective" \
   "role-bound actor" \
   "role instruction path" \
-  "read that role instruction before"
+  "read its own role instruction before" \
+  "do not inline role instruction content"
 
 TEMPLATE_JSON=$(node --input-type=module -e "
   import fs from 'node:fs';
@@ -76,7 +78,8 @@ assert_eq "$CODE_REVIEW_CAP" "quality-assurance" "code-review capability should 
 contains_all "$FEATURE_INSTRUCTION" "feature pipeline instruction" \
   "role-bound actor" \
   "role instruction path" \
-  "read that role instruction before"
+  "read its own role instruction before" \
+  "do not inline role instruction content"
 contains_all "$CODE_REVIEW_INSTRUCTION" "code-review instruction" \
   "multi-perspective review" \
   "implementation perspective" \

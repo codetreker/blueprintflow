@@ -16,10 +16,14 @@ instruction: |
   driver; in Codex, that actor is a Codex subagent. If task-driver
   capacity or tooling is unavailable, stop unless the user explicitly overrides
   the delegation rule. Review stages must remain independent from the actor
-  whose work they review. Stop on Blocker or High review findings and send
-  fixes to the same task driver or a new task driver before rerunning the
-  affected stage. Stop before task verification if any external artifact or
-  side effect lacks a terminal state, handoff owner, or explicit stop condition.
+  whose work they review. When starting a role-bound actor, pass the role id
+  and role instruction path, then require the actor to read its own role
+  instruction before the stage instruction. Do not inline role instruction
+  content; stop when the actor cannot read the role file. Stop on Blocker or
+  High review findings and send fixes to the same task driver or a new task
+  driver before rerunning the affected stage. Stop before task verification if
+  any external artifact or side effect lacks a terminal state, handoff owner, or
+  explicit stop condition.
   Do not edit locked bf.md or task spec.md content after accept; only the
   harness may flip AC checkboxes, advance State, sync Updated, and write task
   execution metadata. The task driver produces closure evidence, but the

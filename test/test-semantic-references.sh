@@ -55,7 +55,7 @@ assert_match "$EXECUTION_BODY" "phase gate" "execution has directive phase gate"
 assert_match "$EXECUTION_BODY" "select eligible task blocks" "execution lets the harness select work batches"
 assert_match "$EXECUTION_BODY" "do not inspect all task specs" "execution forbids task selection by spec inspection"
 assert_match "$EXECUTION_BODY" "do not read task specs or pipelines locally" "execution keeps task spec reads out of coordinator"
-assert_match "$EXECUTION_BODY" "at task entry, a task driver reads only" "execution delegates task entry reads to task driver"
+assert_match "$EXECUTION_BODY" "at task entry, a task driver first reads \`roles/task-driver.md\`" "execution makes task driver read its role first"
 assert_match "$EXECUTION_BODY" "spec and pipeline for its returned" "execution scopes task driver entry reads to returned task"
 assert_match "$EXECUTION_BODY" "discussion.md" "execution uses discussion only for ambiguity recovery"
 assert_not_match "$EXECUTION_BODY" "tell the task driver to read \`discussion.md\` only when" "execution should not duplicate role ambiguity handling in handoff"
@@ -69,11 +69,15 @@ assert_match "$EXECUTION_BODY" "task blocks" "execution treats next output as ta
 assert_match "$EXECUTION_BODY" "each returned task gets one task driver" "execution dispatches one task driver per returned task"
 assert_match "$EXECUTION_BODY" "## task driver prompt template" "execution provides a task driver prompt template"
 assert_match "$EXECUTION_BODY" "use this template when starting or resuming a task driver" "execution scopes the task driver prompt template"
-assert_match "$EXECUTION_BODY" "you are the bf task driver for" "task driver prompt identifies the task driver target"
+assert_match "$EXECUTION_BODY" "first, read your role instruction: \`roles/task-driver.md\`" "task driver prompt starts by reading task-driver role"
+assert_match "$EXECUTION_BODY" "you are task-driver, working on" "task driver prompt identifies the task driver target"
 assert_match "$EXECUTION_BODY" "paste the complete task block returned by \`bf-harness next\`" "task driver prompt passes through next output"
-assert_match "$EXECUTION_BODY" "read the required role instruction before following stage instructions" "task driver prompt requires role instructions"
 assert_match "$EXECUTION_BODY" "read this task's \`spec.md\` and selected pipeline" "task driver prompt requires own task spec and pipeline"
 assert_match "$EXECUTION_BODY" "report changed files, evidence artifacts" "task driver prompt requires completion handoff evidence"
+assert_match "$EXECUTION_BODY" "## role-bound worker prompt template" "execution provides a role-bound worker prompt template"
+assert_match "$EXECUTION_BODY" "use this template when the coordinator or a task driver starts" "worker prompt template is shared by coordinator and task driver"
+assert_match "$EXECUTION_BODY" "first, read your role instruction: \`roles/<role-id>.md\`" "worker prompt starts by reading own role"
+assert_match "$EXECUTION_BODY" "do not read, summarize, or inline the role instruction" "parent actors do not proxy child role prompts"
 assert_match "$EXECUTION_BODY" "until the task driver completes" "execution waits for task driver completion"
 assert_match "$EXECUTION_BODY" "terminate it lightly" "execution avoids killing task drivers prematurely"
 assert_match "$EXECUTION_BODY" "prefer dispatching fixes to the original" "execution prefers original task driver for verify fixes"
@@ -95,7 +99,7 @@ ENGINEERING_PACK_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/packs/engineeri
 assert_match "$ENGINEERING_PACK_BODY" "small enough that one host-compatible task driver can finish it" "engineering breakdown avoids engineer subagent task ownership"
 assert_not_match "$ENGINEERING_PACK_BODY" "pick doers" "engineering pack avoids stale doer vocabulary"
 
-for role in engineer architect tester pipeline-designer; do
+for role in engineer architect tester pipeline-designer task-driver; do
   ROLE_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/roles/$role.md")
   case "$role" in
     engineer)
@@ -109,6 +113,12 @@ for role in engineer architect tester pipeline-designer; do
       ;;
     pipeline-designer)
       assert_match "$ROLE_BODY" "you are the pipeline designer" "pipeline-designer role starts with direct identity framing"
+      ;;
+    task-driver)
+      assert_match "$ROLE_BODY" "you are the task driver" "task-driver role starts with direct identity framing"
+      assert_match "$ROLE_BODY" "capabilities:" "task-driver role has capabilities frontmatter"
+      assert_match "$ROLE_BODY" "task-driving" "task-driver role declares task-driving capability"
+      assert_match "$ROLE_BODY" "start every role-bound worker prompt with" "task-driver role starts workers with role-read instruction"
       ;;
   esac
   assert_match "$ROLE_BODY" "read \`discussion.md\` only when" "$role role handles discussion ambiguity recovery"

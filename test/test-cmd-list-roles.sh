@@ -25,13 +25,16 @@ assert_json_field "$STDOUT" .roles.2.id "tester"
 STDOUT=$(node --input-type=module -e "
   import('$REPO_ROOT/bin/lib/bf/cmd-list-roles.mjs').then(async (m) => {
     const r = await m.cmdListRoles({ cwd: '$REPO_ROOT' });
-    const role = r.roles.find((x) => x.id === 'pipeline-designer');
-    process.stdout.write(JSON.stringify({ ok: r.ok, role }));
+    const pipelineDesigner = r.roles.find((x) => x.id === 'pipeline-designer');
+    const taskDriver = r.roles.find((x) => x.id === 'task-driver');
+    process.stdout.write(JSON.stringify({ ok: r.ok, pipelineDesigner, taskDriver }));
   });
 ")
 assert_json_field "$STDOUT" .ok true
-assert_json_field "$STDOUT" .role.id "pipeline-designer"
-assert_json_field "$STDOUT" .role.capabilities '["pipeline-design","pipeline-review"]'
+assert_json_field "$STDOUT" .pipelineDesigner.id "pipeline-designer"
+assert_json_field "$STDOUT" .pipelineDesigner.capabilities '["pipeline-design","pipeline-review"]'
+assert_json_field "$STDOUT" .taskDriver.id "task-driver"
+assert_json_field "$STDOUT" .taskDriver.capabilities '["task-driving"]'
 
 # With pack（pack 覆盖 core engineer）
 STDOUT=$(node --input-type=module -e "

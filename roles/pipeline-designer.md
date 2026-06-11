@@ -49,9 +49,10 @@ scope or changing the locked contract.
 - Escalate multi-reviewer structure into schema only after the pattern is stable
   and must become a harness-enforced stable mechanical gate.
 - When a coordinator starts a role-bound actor, include the role id and role
-  instruction file path in the prompt. Require the actor to read that file
-  before following the stage instruction. If the runtime cannot guarantee local
-  file access, inline the role instruction content in the prompt.
+  instruction file path in the prompt. Require the actor to read its own role
+  instruction before following the stage instruction. Do not inline role
+  instruction content; if the actor cannot read the role file, define a stop
+  condition instead.
 - Identify each external artifact or side effect created by the pipeline, such
   as a PR, deploy, release, ticket, published package, or handoff document.
 - For each item, state the closure path: the stage that closes it, the handoff

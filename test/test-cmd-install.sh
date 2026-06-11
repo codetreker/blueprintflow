@@ -207,6 +207,7 @@ STDOUT=$(node --input-type=module -e "
 assert_json_field "$STDOUT" .ok true
 TARGET="$HOME_DIR/.codex/skills/bf"
 [ -f "$TARGET/roles/pipeline-designer.md" ] || fail "pipeline-designer role not copied"
+[ -f "$TARGET/roles/task-driver.md" ] || fail "task-driver role not copied"
 [ -f "$TARGET/references/brainstorm.md" ] || fail "brainstorm reference not copied"
 [ -f "$TARGET/references/spec-authoring.md" ] || fail "spec-authoring reference not copied"
 [ -f "$TARGET/references/execution.md" ] || fail "execution reference not copied"

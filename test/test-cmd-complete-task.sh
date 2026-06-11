@@ -243,12 +243,12 @@ assert_json_field "$STDOUT" .ok true
 grep -q "^State: Completed" "$BASE/works/wo-1/task-a/spec.md" || fail "merged PR did not complete task"
 rm -rf "$ROOT"
 
-# complete requires task target in Task 2
+# complete accepts a bare work-object target, then rejects incomplete work objects
 make_git_repo
 prepare_tasking_wo false
 run_complete_cli_target "wo-1"
-assert_eq "$RC" "2" "complete bare wo exit"
-assert_match "$STDERR" "complete requires <bf-wo>/<task>" "complete bare wo rejected"
+assert_eq "$RC" "1" "complete bare wo exit"
+assert_match "$STDOUT" "not all tasks completed" "incomplete bare wo rejected"
 rm -rf "$ROOT"
 
 # complete rejects extra CLI arguments before mutating state

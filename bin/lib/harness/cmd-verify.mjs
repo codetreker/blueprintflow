@@ -3,7 +3,7 @@ import { woDir, taskDir, roundDir, verifyResultFile } from "./wo-paths.mjs";
 import { findLatestRound, listResultFiles, collectFindings } from "./verify-round.mjs";
 import { parseReviewResult } from "./parse-review-result.mjs";
 import { writeVerifyResultMd } from "./write-verify-result.mjs";
-import { flipCheckbox, writeState, writeUpdated, formatTimestamp } from "./write-mutations.mjs";
+import { flipCheckbox, writeUpdated, formatTimestamp } from "./write-mutations.mjs";
 import { computeAcSignoff } from "./compute-ac-signoff.mjs";
 import { loadWo } from "./load-wo.mjs";
 
@@ -115,14 +115,13 @@ async function verifyModeC({ bundle, parsedResults }) {
   }
   let bfText = fs.readFileSync(bundle.bfPath, "utf8");
   for (const id of signoff.flipped) bfText = flipCheckbox(bfText, id);
-  bfText = writeState(bfText, "Completed", { kind: "bf" });
   bfText = writeUpdated(bfText, formatTimestamp());
   fs.writeFileSync(bundle.bfPath, bfText);
   return {
     status: "SUCCESS",
     perAc: signoff.perAc,
     flipped: signoff.flipped,
-    stateChanges: ["bf.md: Implementing -> Completed"],
+    stateChanges: [],
   };
 }
 

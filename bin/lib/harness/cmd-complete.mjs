@@ -28,6 +28,10 @@ function taskSpecChangedAfterVerify(task, verify) {
   return stat.mtimeMs > verify.mtimeMs ? [task.specPath] : [];
 }
 
+function filesChangedAfterVerify(files, verifyMtimeMs) {
+  return files.filter((file) => fs.statSync(file).mtimeMs > verifyMtimeMs);
+}
+
 function fail(error, details = []) {
   return { ok: false, error, details };
 }
@@ -70,9 +74,44 @@ async function completeTask({ baseHome, woId, taskId, installDir, now }) {
   };
 }
 
+async function completeWorkObject({ baseHome, woId, installDir, now }) {
+  const bundle = await loadWo({ baseHome, woId, installDir });
+  if (!bundle.bf) return fail("load failed", bundle.errors);
+  if (bundle.bf.frontmatter.State !== "Implementing") {
+    return fail(`complete requires bf.md State: Implementing, got ${bundle.bf.frontmatter.State}`);
+  }
+  const incomplete = bundle.tasks
+    .filter((t) => t.spec?.frontmatter.State !== "Completed")
+    .map((t) => t.id);
+  if (incomplete.length > 0) return fail(`not all tasks completed: ${incomplete.join(", ")}`);
+  const unchecked = bundle.bf.acceptanceCriteria.filter((ac) => !ac.checked).map((ac) => ac.id);
+  if (unchecked.length > 0) return fail(`unchecked AC: ${unchecked.join(", ")}`);
+  const verify = latestSuccessfulVerify(bundle.woPath, {
+    mode: VERIFY_MODES.FINAL_ACCEPTANCE,
+    scope: woId,
+  });
+  if (!verify) return fail("no latest Final Acceptance SUCCESS; run start-review + review + verify first");
+  const files = [bundle.bfPath, ...bundle.tasks.map((t) => t.specPath)];
+  const changed = filesChangedAfterVerify(files, verify.mtimeMs);
+  if (changed.length > 0) {
+    return fail("work object changed after latest Final Acceptance SUCCESS; run start-review + review + verify again", changed);
+  }
+
+  const ts = formatTimestamp(now);
+  let bfText = fs.readFileSync(bundle.bfPath, "utf8");
+  bfText = writeState(bfText, "Completed", { kind: "bf" });
+  bfText = writeUpdated(bfText, ts);
+  fs.writeFileSync(bundle.bfPath, bfText);
+  return {
+    ok: true,
+    scope: woId,
+    transitioned: { bf: { from: "Implementing", to: "Completed" }, timestamp: ts },
+  };
+}
+
 export async function cmdComplete({ baseHome, woId, taskId = null, installDir, now = new Date() }) {
-  if (!taskId) return fail("complete requires <bf-wo>/<task>");
-  return completeTask({ baseHome, woId, taskId, installDir, now });
+  if (taskId) return completeTask({ baseHome, woId, taskId, installDir, now });
+  return completeWorkObject({ baseHome, woId, installDir, now });
 }
 
 export function formatComplete(r) {

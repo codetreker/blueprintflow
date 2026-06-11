@@ -28,7 +28,7 @@ const USAGE = `Usage:
   bf-harness status <bf-wo>
   bf-harness attach-pr <bf-wo>/<task> <github-pr-url>
   bf-harness verify <bf-wo>[/<task>]
-  bf-harness complete <bf-wo>/<task>
+  bf-harness complete <bf-wo>[/<task>]
   bf-harness cleanup <bf-wo>/<task>
   bf-harness discard <bf-wo>
 
@@ -62,7 +62,7 @@ const ARITY = {
   status:         { wo: "required",  task: "forbidden" },
   "attach-pr":    { wo: "required",  task: "required" },
   cleanup:        { wo: "required",  task: "required" },
-  complete:       { wo: "required",  task: "required" },
+  complete:       { wo: "required",  task: "optional" },
   discard:        { wo: "required",  task: "forbidden" },
   "start-review": { wo: "required",  task: "optional" },
   verify:         { wo: "required",  task: "optional" },

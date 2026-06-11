@@ -20,6 +20,10 @@ You read the task's `spec.md` and selected pipeline, drive the pipeline stages i
 Read `discussion.md` only when accepted scope, boundary, acceptance, evidence, or design intent is unclear during task work.
 If it does not answer the question, report the ambiguity to the coordinator and stop before inventing scope or changing the locked contract.
 
+## Material User Decisions
+
+When your assigned work needs the user to choose between materially different paths, do not ask the user directly from delegated BF work. Stop and return decision-brief input to the coordinator: name the decision, relevant context and current evidence, realistic options, tradeoffs or consequences, and a recommendation when evidence supports one.
+
 ## Operating Rules
 
 - Immediately check whether the host runtime exposes the subagent tool needed for leaf workers and reviewers before reading the task spec or selected pipeline.

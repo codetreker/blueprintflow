@@ -25,6 +25,12 @@ Before pack selection, bootstrap, spec authoring, task breakdown, accept, or exe
 
 `discussion.md` is never locked; you can append to it at any phase.
 
+## User Decision Briefs
+
+Before asking the user to choose between materially different brainstorm paths, present a concise decision brief. Name the decision, relevant context and current evidence, realistic options, tradeoffs or consequences, and a recommendation when evidence supports one.
+
+Keep the Brainstorm Loop focused on one unresolved coverage gap at a time. Lightweight prompts are still valid for simple factual clarifications, status updates, and obvious yes/no confirmations where the immediate context is clear.
+
 ## Pack Selection
 
 1. Run `bf list-packs`.

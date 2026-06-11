@@ -27,6 +27,14 @@ Before any GitHub side effect, the agent shows:
 - the redacted draft;
 - the target action.
 
+When feedback handling asks the user to choose between materially different
+paths, such as reusing an existing issue, opening a new issue, proceeding
+without duplicate search, or abandoning a blocked filing, the agent presents a
+decision brief before asking for the choice. The brief includes the decision,
+current evidence, realistic options, tradeoffs or consequences, and a supported
+recommendation. Final confirmation may remain lightweight when the immediately
+preceding draft and target action already make the context obvious.
+
 ## Feedback Scope
 
 The unified feedback flow covers bugs, improvement suggestions, unclear

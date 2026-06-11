@@ -80,6 +80,15 @@ coordinator reruns task verify before merge and completion. `verify` may flip
 ACs, but `complete` performs terminal state transitions. Task drivers do not
 run `complete`, PR merge, or task cleanup.
 
+The coordinator owns user-facing material decision gates. Before asking the
+user to choose between materially different paths, the coordinator presents a
+decision brief with the decision, relevant context and current evidence,
+realistic options, tradeoffs or consequences, and a recommendation when evidence
+supports one. Task drivers, leaf workers, and reviewers do not ask the user
+directly during delegated work; they return decision-brief input to the
+coordinator. Simple factual clarifications, status updates, and obvious yes/no
+confirmations can remain lightweight when the context is clear.
+
 ## End-To-End Workflow
 
 1. Brainstorm.

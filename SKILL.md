@@ -49,6 +49,16 @@ Claude Code uses subagents for leaf workers and reviewers.
 
 This authorization is BF-scoped. It does not authorize unrelated background work, non-BF automation, or bypassing the recorded host-runtime strategy, Independent Verification, lifecycle/closure accounting, or user confirmation gates.
 
+## User Decision Briefs
+
+Before asking the user to choose between materially different paths, present a concise decision brief. Use decision briefs for material user decision gates across BF phases, actor routing, review or verification failures, design drift, PR or closure choices, and any other point where the user's choice changes scope, state, artifacts, external side effects, or future work.
+
+A decision brief must name the decision, summarize the relevant context and current evidence, list realistic options, explain tradeoffs or consequences, and give a recommendation when evidence supports one.
+
+Lightweight prompts are still allowed for simple factual clarifications, status updates, and obvious yes/no confirmations where the context is already clear.
+
+The coordinator owns user-facing decision briefs. Task drivers, leaf workers, and reviewers do not ask the user directly from delegated BF work; they stop and return decision-brief input to the coordinator, including the decision, relevant context and current evidence, realistic options, tradeoffs or consequences, and a recommendation when evidence supports one.
+
 ## When Not To Use
 
 Do not start or mutate a BF work object for read-only questions, explanations, audits, status checks, or advice unless the user asks to turn the result into implementation work. In read-only mode, answer from the current repo context and name any BF follow-up separately.

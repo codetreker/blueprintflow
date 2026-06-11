@@ -19,6 +19,14 @@ prose, placeholders, and comments are part of the runtime surface while their
 frontmatter keys, section headings, and parser-facing markers remain stable
 contracts.
 
+BF interactions require a concise decision brief before material user decision
+gates. The brief names the decision, relevant context and current evidence,
+realistic options, tradeoffs or consequences, and a recommendation when evidence
+supports one. Simple factual clarifications, status updates, and obvious
+yes/no confirmations may remain lightweight when the immediate context is
+clear. Runtime artifacts carry this rule directly; they do not rely on this
+design record for executable guidance.
+
 ## Project Design Authority
 
 For work inside a target project, BF treats confirmed project design docs as the

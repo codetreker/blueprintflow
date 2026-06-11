@@ -29,6 +29,8 @@ User approval to continue does not replace harness transitions. Continue means: 
 - If accepted scope, boundary, acceptance, or design intent is unclear, read `discussion.md`. If the answer is still missing, append the ambiguity and stop for clarification.
 - For project design-doc discovery, authority, or drift handling, follow `project-docs.md`.
 - If accepted design authority conflicts with implementation reality, record the drift and stop for clarification.
+- Before asking the user to choose between materially different execution, review, verification, PR, closure, or design-drift paths, present a concise decision brief. Name the decision, relevant context and current evidence, realistic options, tradeoffs or consequences, and a recommendation when evidence supports one. Lightweight prompts remain valid for simple factual clarifications, status updates, and obvious yes/no confirmations.
+- Task drivers, leaf workers, and reviewers do not ask the user directly from delegated BF work. When delegated work needs a material user decision, the actor stops and returns decision-brief input to the coordinator plus the exact coordinator action needed.
 - Do not edit locked `bf.md` or task `spec.md` fields. Only the harness changes state, AC checkboxes, timestamps, and task execution metadata.
 
 ## Task Loop
@@ -43,7 +45,7 @@ Repeat until no task remains:
 6. Wait for each newly started task driver to report its startup capability check before starting other returned task blocks.
 7. If a task driver reports missing subagent tool, enter task-driver proxy mode for that task. Defer other returned task blocks and serially perform the task-driver responsibilities for the proxied task before returning to `next`.
 8. Wait until each task driver reports completion. Give it enough time to finish and do not terminate it lightly.
-9. If the task driver reports a blocker, read the blocker and take the coordinator action it requested, or stop for user clarification.
+9. If the task driver reports a blocker, read the blocker and take the coordinator action it requested, or stop for user clarification. If the blocker includes decision-brief input to the coordinator, present the user-facing decision brief before asking the user to choose.
 10. Rerun `bf-harness verify <bf-wo>/<task>` after task-driver handoff.
 11. On FAIL, read the verify result and return it to the original task driver when available. Prefer the original task driver for task implementation, evidence, or AC fixes.
 12. Return to task-driver handoff and wait for completion before rerunning verify.

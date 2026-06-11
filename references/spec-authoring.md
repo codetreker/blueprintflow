@@ -11,6 +11,12 @@ Before role lookup, pipeline lookup, `bf.md` drafting, task spec drafting, local
 3. If any source material is missing, do not write `bf.md` or task specs. Return to [brainstorm.md](brainstorm.md), append the missing question, decision, or proposal to `discussion.md`, and continue only after the gap is resolved.
 4. Continue only when source coverage is complete and the user explicitly agreed to enter spec authoring.
 
+## User Decision Briefs
+
+Before asking the user to choose between materially different spec-authoring paths, present a concise decision brief. Name the decision, relevant context and current evidence, realistic options, tradeoffs or consequences, and a recommendation when evidence supports one.
+
+Use decision briefs for material user decision gates such as entering spec authoring, resolving contract gaps, choosing provider roles when the choice changes review coverage, handling design-doc authority conflicts, and deciding whether to accept the reviewed contract. Lightweight prompts remain valid for simple factual clarifications, status updates, and obvious yes/no confirmations where the context is already clear.
+
 ## Spec Granularity
 
 Write `bf.md` and task `spec.md` as a **scope contract**.

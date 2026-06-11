@@ -17,6 +17,12 @@ https://github.com/codetreker/blueprintflow/issues
 If the user did not explicitly ask for issue feedback, do not suggest filing an
 issue, do not collect feedback in the background, and do not submit anything.
 
+## User Decision Briefs
+
+Before asking the user to choose between materially different feedback paths, present a concise decision brief. Name the decision, relevant context and current evidence, realistic options, tradeoffs or consequences, and a recommendation when evidence supports one.
+
+Use the decision brief for material user decision gates such as choosing whether to reuse an existing issue or open a new issue, proceeding when duplicate search is unavailable, deciding whether a filing boundary blocks submission, or confirming a GitHub side effect after reviewing the redacted draft. Lightweight prompts remain valid for simple factual clarifications, status updates, and obvious yes/no confirmations where the context is already clear.
+
 ## Scope
 
 Use this flow for user-facing feedback about BF, including:

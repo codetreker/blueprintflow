@@ -70,13 +70,14 @@ Do not use BF for non-software work, casual conversation, simple one-command ans
 On every `$bf` or `/bf` turn, classify the request before loading deeper references:
 
 1. **Pending phase confirmation** — if the previous BF response asked for approval to enter the next phase, an affirmative reply means: immediately run the next legal BF action and continue to that phase; do not ask for another phase command. If the reply changes scope or objects, append it to `discussion.md` and do not advance.
-2. **Feedback issue** — if the user explicitly asks to prepare, file, or comment on BF GitHub issue feedback, read `references/feedback.md`.
-3. **Read-only / advisory** — if the user asks to explain, audit, inspect, compare, or discuss without asking for changes, do not create a work object. Load only the references needed to answer.
-4. **Resume existing work** — if the user says continue/resume or names a bf-wo, load `.bf/works/<bf-wo>`. Read `bf.md`, `discussion.md`, task specs, and latest review or verify results, then route by state to spec authoring or execution.
-5. **New software change / brainstorm** — read `references/brainstorm.md` first.
+2. **Automation run** — if the host invocation explicitly identifies an externally triggered automation run and provides an automation id or state path, read `references/automation.md`. Run only one bounded automation run. Ordinary $bf execution remains user-driven and is not automatic background work.
+3. **Feedback issue** — if the user explicitly asks to prepare, file, or comment on BF GitHub issue feedback, read `references/feedback.md`.
+4. **Read-only / advisory** — if the user asks to explain, audit, inspect, compare, or discuss without asking for changes, do not create a work object. Load only the references needed to answer.
+5. **Resume existing work** — if the user says continue/resume or names a bf-wo, load `.bf/works/<bf-wo>`. Read `bf.md`, `discussion.md`, task specs, and latest review or verify results, then route by state to spec authoring or execution.
+6. **New software change / brainstorm** — read `references/brainstorm.md` first.
    Brainstorm owns pack selection, bootstrap, and the first accepted discussion entry.
    Do not create a work object or write `discussion.md` before following the brainstorm reference unless you are resuming existing work.
-6. **Spec / accept / execute request** — load the existing work object first. Then read `references/spec-authoring.md` or `references/execution.md` based on `bf.md` state. Do not skip unresolved brainstorm source coverage.
+7. **Spec / accept / execute request** — load the existing work object first. Then read `references/spec-authoring.md` or `references/execution.md` based on `bf.md` state. Do not skip unresolved brainstorm source coverage.
 
 If the route is ambiguous and the choice changes state, scope, or external side effects, ask the user before mutating BF state.
 
@@ -86,6 +87,7 @@ If the route is ambiguous and the choice changes state, scope, or external side 
 - `references/project-docs.md` — discover project design docs, use them as design authority, and stop on design drift.
 - `references/spec-authoring.md` — author `bf.md` + per-task `spec.md`, lint, Spec Review loop, `accept`.
 - `references/execution.md` — `next -> do -> review/verify -> complete` loop, Task Verification and Final Acceptance.
+- `references/automation.md` — execute one externally triggered automation run from definition and cursor through run record, cursor update, no-op, or ordinary BF work-object handoff without turning ordinary `$bf` entry into background automation.
 - `references/feedback.md` — prepare user-requested GitHub issue feedback with duplicate checks, filing boundaries, redaction, and final user confirmation.
 - `templates/` — frozen file shapes (`bf.md`, `task-spec.md`, `discussion.md`, `review-result.md`, `role.md`, `pack.md`). Copy these when authoring; do not improvise.
 - `roles/` — Core roles (`architect`, `engineer`, `tester`, `security`, …). Each pack's `pack.md` declares which role plays which phase. Packs may add private roles under `packs/<id>/roles/`.

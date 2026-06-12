@@ -108,6 +108,7 @@ bf-level `verify` signs ACs, and bf-level `complete` marks the work object
 | Durable file contracts | [File contracts](spec/file-contracts.md) |
 | CLI and harness command behavior | [CLI and harness](spec/cli-and-harness.md) |
 | Pack, role, and pipeline model | [Packs and pipelines](spec/packs-and-pipelines.md) |
+| Externally triggered bounded automation runs | [Automation runs](spec/automation-runs.md) |
 | User-requested GitHub issue feedback | [Feedback mechanism](spec/feedback.md) |
 
 ## Module Summary
@@ -116,6 +117,7 @@ bf-level `verify` signs ACs, and bf-level `complete` marks the work object
 |---|---|---|
 | Runtime docs | Tell the orchestrating LLM how to run BF | `SKILL.md`, `references/`, `packs/`, `roles/`, `roles/references/`, `templates/` |
 | Project design docs | Discovered external design authority for target-project work | Confirmed project doc root, recorded in `.bf/works/<bf-wo>/discussion.md`; runtime anchor `references/project-docs.md` |
+| Automation runs | Externally triggered bounded BF runs that record cursor and run state before no-op or ordinary work-object handoff | `.bf/automations/<automation-id>/definition.md`, `.bf/automations/<automation-id>/cursor.json`, `.bf/automations/<automation-id>/runs/<timestamp>/run.md`; runtime anchor `references/automation.md` |
 | Repository maintenance authority | Blueprintflow maintenance rules | `AGENTS.md`, root BF runtime, accepted docs, validation scripts, and PR gate evidence |
 | `bf` CLI | Read-only metadata and install management | `list-packs`, `list-pipelines`, `list-roles`, `install`, `update`, `uninstall`, `version` |
 | `bf-harness` CLI | Work-object state, verification, and lifecycle loop | `list`, `status`, `lint`, `start-review`, `accept`, `next`, `attach-pr`, `verify`, `complete`, `cleanup`, `discard` |

@@ -29,6 +29,9 @@ If it does not answer the question, report the ambiguity to the coordinator and 
 
 ## When to Include
 
-- Brainstorm or spec phases when a UI-heavy goal needs interaction shape, user flow, or evidence expectations before implementation.
-- Implementation design or review stages when a task changes user-facing UI behavior, navigation, form behavior, state transitions, or workflow ergonomics.
-- Task Verification or Final Acceptance when an AC is tagged `interaction-design`.
+Use this as BF's central coordinator-consumable rule for the `interaction-design` capability.
+
+- Include `interaction-design` during brainstorm or spec phases when a UI-heavy goal needs interaction shape, user flow, or evidence expectations before implementation.
+- Include `interaction-design` during implementation design or review when a task changes user-facing UI behavior, navigation, form behavior, state transitions, layout reasonableness, or workflow ergonomics.
+- Require `interaction-design` signoff during Task Verification or Final Acceptance when an AC is tagged `interaction-design`.
+- Do not include `interaction-design` by default for API, CLI, backend-only behavior, invisible UI refactors, or small clear copy or style edits unless the accepted AC depends on interaction flow, UI state, layout, or UX judgment.

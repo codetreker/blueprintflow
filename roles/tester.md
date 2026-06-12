@@ -40,6 +40,7 @@ Before reviewing, identify whether the reviewed scope includes UI behavior, API 
 - Load both references when the reviewed scope includes both UI and API behavior.
 - Load neither reference for unrelated review scope.
 - Treat loaded references as judgment and evidence guidance for relevant concerns, not mandatory universal checklist gates.
+- Tester UI review references do not replace `interaction-design` capability signoff when an AC is tagged with that capability.
 
 ## Test Case Quality
 

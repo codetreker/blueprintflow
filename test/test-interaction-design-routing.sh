@@ -8,10 +8,21 @@ read_semantic_body() {
 
 ROLE_BODY=$(read_semantic_body "$REPO_ROOT/roles/interaction-designer.md")
 TESTER_BODY=$(read_semantic_body "$REPO_ROOT/roles/tester.md")
+PACK_BODY=$(read_semantic_body "$REPO_ROOT/packs/engineering/pack.md")
 SPEC_BODY=$(read_semantic_body "$REPO_ROOT/docs/spec.md")
 PACKS_PIPELINES_BODY=$(read_semantic_body "$REPO_ROOT/docs/spec/packs-and-pipelines.md")
 
-assert_match "$ROLE_BODY" "central coordinator-consumable rule" "interaction designer role should centralize routing guidance"
+assert_match "$PACK_BODY" "central coordinator-consumable rule" "engineering pack should centralize coordinator-facing interaction-design routing"
+assert_match "$PACK_BODY" "brainstorm or spec" "engineering pack should cover brainstorm/spec inclusion"
+assert_match "$PACK_BODY" "implementation design or review" "engineering pack should cover execution design/review inclusion"
+assert_match "$PACK_BODY" "task verification or final acceptance" "engineering pack should cover verification/final acceptance inclusion"
+assert_match "$PACK_BODY" "tagged \`interaction-design\`" "engineering pack should tie signoff to interaction-design AC tags"
+assert_match "$PACK_BODY" "api, cli, backend-only behavior" "engineering pack should name non-default API/CLI/backend cases"
+assert_match "$PACK_BODY" "invisible ui refactors" "engineering pack should name non-default invisible UI refactors"
+assert_match "$PACK_BODY" "small clear copy or style edits" "engineering pack should name non-default copy/style edits"
+assert_match "$PACK_BODY" "unless the accepted ac depends on interaction flow, ui state, layout, or ux judgment" "engineering pack should preserve the exception for UI interaction judgment"
+
+assert_match "$ROLE_BODY" "role-side inclusion guidance" "interaction designer role should keep role-side guidance after assignment"
 assert_match "$ROLE_BODY" "brainstorm or spec" "interaction designer role should cover brainstorm/spec inclusion"
 assert_match "$ROLE_BODY" "implementation design or review" "interaction designer role should cover execution design/review inclusion"
 assert_match "$ROLE_BODY" "task verification or final acceptance" "interaction designer role should cover verification/final acceptance inclusion"
@@ -23,12 +34,14 @@ assert_match "$ROLE_BODY" "unless the accepted ac depends on interaction flow, u
 
 assert_match "$TESTER_BODY" "do not replace \`interaction-design\` capability signoff" "tester role should keep UI reference guidance separate from interaction-design signoff"
 
+assert_match "$SPEC_BODY" "engineering pack gives the coordinator-facing routing rule" "top-level spec should record coordinator-facing pack routing"
 assert_match "$SPEC_BODY" "\`interaction-design\` capability" "top-level spec should record interaction-design routing"
 assert_match "$SPEC_BODY" "tagged \`interaction-design\`" "top-level spec should record tagged-AC signoff"
 assert_match "$SPEC_BODY" "tester ui review references" "top-level spec should distinguish tester UI references"
 assert_match "$SPEC_BODY" "do not replace \`interaction-design\` capability signoff" "top-level spec should keep tester QA distinct from interaction-design"
 
 assert_match "$PACKS_PIPELINES_BODY" "central coordinator-consumable rule" "packs and pipelines spec should record central routing guidance"
+assert_match "$PACKS_PIPELINES_BODY" "engineering pack carries" "packs and pipelines spec should place central routing in the engineering pack"
 assert_match "$PACKS_PIPELINES_BODY" "brainstorm/spec" "packs and pipelines spec should record brainstorm/spec inclusion"
 assert_match "$PACKS_PIPELINES_BODY" "implementation design or review" "packs and pipelines spec should record execution design/review inclusion"
 assert_match "$PACKS_PIPELINES_BODY" "task verification or final acceptance" "packs and pipelines spec should record verification/final acceptance inclusion"

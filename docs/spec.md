@@ -98,8 +98,9 @@ and then runs task cleanup. Final Acceptance follows the same boundary:
 bf-level `verify` signs ACs, and bf-level `complete` marks the work object
 `Completed`.
 
-BF routes the `interaction-design` capability through the Core interaction designer role guidance. Include the capability in brainstorm/spec when a UI-heavy goal needs interaction shape, user flow, or evidence expectations; include it in implementation design or review when task work changes user-facing UI behavior, navigation, form behavior, state transitions, layout, or workflow ergonomics; and require signoff in Task Verification or Final Acceptance when an AC is tagged `interaction-design`.
+The engineering pack gives the coordinator-facing routing rule for the `interaction-design` capability. Include the capability in brainstorm/spec when a UI-heavy goal needs interaction shape, user flow, or evidence expectations; include it in implementation design or review when task work changes user-facing UI behavior, navigation, form behavior, state transitions, layout, or workflow ergonomics; and require signoff in Task Verification or Final Acceptance when an AC is tagged `interaction-design`.
 API, CLI, backend-only behavior, invisible UI refactors, and small clear copy or style edits do not include it by default unless the accepted AC depends on interaction flow, UI state, layout, or UX judgment.
+The interaction designer role keeps role-side guidance for actors already assigned to interaction-design work.
 Tester UI review references guide QA evidence for UI behavior and do not replace `interaction-design` capability signoff.
 
 ## Reading Map

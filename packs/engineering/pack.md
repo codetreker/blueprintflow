@@ -46,6 +46,15 @@ Anti-patterns to avoid:
 - Goals that bundle two unrelated features (split into two bf-wo).
 - A Boundary section left empty — usually means scope was not actually discussed.
 
+## Interaction Design Routing
+
+Use this as BF's central coordinator-consumable rule for the `interaction-design` capability in the engineering pack.
+Include `interaction-design` during brainstorm or spec when a UI-heavy goal needs interaction shape, user flow, or evidence expectations before implementation.
+Include `interaction-design` during implementation design or review when a task changes user-facing UI behavior, navigation, form behavior, state transitions, layout reasonableness, or workflow ergonomics.
+Require `interaction-design` signoff during Task Verification or Final Acceptance when an AC is tagged `interaction-design`.
+Do not include `interaction-design` by default for API, CLI, backend-only behavior, invisible UI refactors, or small clear copy or style edits unless the accepted AC depends on interaction flow, UI state, layout, or UX judgment.
+Tester UI review references guide QA evidence for UI behavior and do not replace `interaction-design` capability signoff.
+
 ## Breakdown Guidance
 
 The architect decomposes the accepted Goal/Boundary into a task DAG. A good engineering task:

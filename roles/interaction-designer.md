@@ -29,7 +29,7 @@ If it does not answer the question, report the ambiguity to the coordinator and 
 
 ## When to Include
 
-Use this as BF's central coordinator-consumable rule for the `interaction-design` capability.
+Use this as role-side inclusion guidance after the coordinator selects the `interaction-design` capability.
 
 - Include `interaction-design` during brainstorm or spec phases when a UI-heavy goal needs interaction shape, user flow, or evidence expectations before implementation.
 - Include `interaction-design` during implementation design or review when a task changes user-facing UI behavior, navigation, form behavior, state transitions, layout reasonableness, or workflow ergonomics.

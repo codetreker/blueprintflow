@@ -86,8 +86,9 @@ gather implementation, architecture, and QA perspectives in the instruction.
 Schema-level reviewer arrays are deferred until a pattern is stable and needs a
 harness-enforced mechanical gate.
 
-The Core interaction designer role carries BF's central coordinator-consumable rule for the `interaction-design` capability instead of duplicating that rule in every pipeline. Include `interaction-design` in brainstorm/spec when a UI-heavy goal needs interaction shape, user flow, or evidence expectations; include it in implementation design or review when a task changes user-facing UI behavior, navigation, form behavior, state transitions, layout reasonableness, or workflow ergonomics; and require signoff in Task Verification or Final Acceptance when an AC is tagged `interaction-design`.
+The engineering pack carries BF's central coordinator-consumable rule for the `interaction-design` capability instead of duplicating that rule in every pipeline. Include `interaction-design` in brainstorm/spec when a UI-heavy goal needs interaction shape, user flow, or evidence expectations; include it in implementation design or review when a task changes user-facing UI behavior, navigation, form behavior, state transitions, layout reasonableness, or workflow ergonomics; and require signoff in Task Verification or Final Acceptance when an AC is tagged `interaction-design`.
 API, CLI, backend-only behavior, invisible UI refactors, and small clear copy or style edits do not include it by default unless the accepted AC depends on interaction flow, UI state, layout, or UX judgment.
+The interaction designer role keeps role-side guidance for actors already assigned to interaction-design work.
 Tester UI review references remain QA evidence guidance and do not replace `interaction-design` capability signoff.
 
 Built-in pack pipelines may include terminal-state closure stages. The built-in

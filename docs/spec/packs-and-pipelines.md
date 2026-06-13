@@ -113,8 +113,9 @@ worktree and safely delete its merged local branch.
 ## Built-In Engineering Pipelines
 
 The engineering pack ships separate pipelines for lightweight feature work,
-design-first feature work, reusable E2E verification setup, defect fixes, and
-review-only deep codebase audit work.
+design-first feature work, reusable project design-doc generation or
+maintenance, reusable E2E verification setup, defect fixes, and review-only
+deep codebase audit work.
 
 `feature-light.yml` is the lightweight feature pipeline for small, clear,
 low-risk feature tasks. It uses a compact `scope-plan` stage before
@@ -151,6 +152,34 @@ current contract must change. This is an instruction-level handoff, not a
 dynamic harness transition. If E2E is not applicable or cannot run in the
 current environment, the feature pipeline records explicit not-applicable or
 skipped evidence with the reason and substitute validation.
+
+`generate-docs.yml` is the built-in pipeline for tasks whose main deliverable is
+creating, filling, or restructuring qualified project design documentation. Its
+stage order is exactly `doc-root-discovery`, `system-inventory`,
+`documentation-plan`, `documentation-draft`,
+`documentation-consistency-review`, `validation`, and
+`terminal-state-closure`. The pipeline uses the existing project-doc discovery
+model: it confirms the target project's design-doc root and local convention
+instead of assuming a fixed documentation path or BF repository layout. It then
+inventories system boundaries, ownership, state authority, cross-module flows,
+validation boundaries, known gaps, and stable implementation anchors before
+planning and drafting docs.
+
+The reusable runtime standard
+`references/project-design-document-standard.md` defines what counts as a
+qualified project design doc, the required coverage, useful structures, stable
+anchors, anti-patterns, local convention handling, and review expectations.
+`generate-docs.yml` explicitly applies that standard during
+`documentation-plan`, `documentation-draft`, and
+`documentation-consistency-review`. Design drift remains a stop condition:
+the task driver records the mismatch and returns for clarification instead of
+choosing whether code or docs win.
+
+`generate-docs` does not replace the `feature` pipeline's `design-doc-sync`
+stage. Feature tasks continue to use `design-doc-sync` when accepted feature
+work changes project design authority as a side effect of implementing code.
+Use `generate-docs` when project design documentation is the task's primary
+deliverable.
 
 The security role owns the `security-review` stage after code review and before
 terminal-state closure. That stage stops on Blocker or High findings and records

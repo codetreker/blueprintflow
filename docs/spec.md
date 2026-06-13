@@ -45,6 +45,22 @@ accepted BF contract or an explicit out-of-band user command. If code and
 confirmed design docs disagree, BF records design drift and stops for
 clarification instead of choosing whether code or docs win.
 
+The built-in engineering `generate-docs` pipeline exists for tasks whose
+primary deliverable is creating, filling, or restructuring qualified project
+design docs. It uses the normal project-doc discovery model to confirm the
+target project's doc root and local convention, then inventories the system,
+plans qualified docs, drafts them, reviews consistency, validates the result,
+and records terminal-state closure. The reusable runtime standard at
+`references/project-design-document-standard.md` defines qualified project
+design docs, required coverage, stable anchors, anti-patterns, local convention
+handling, and review expectations for that pipeline and future docs-authoring
+work.
+
+`generate-docs` is distinct from the `feature` pipeline's `design-doc-sync`
+stage. Feature work still uses `design-doc-sync` when an accepted code or
+runtime change alters project design authority. `generate-docs` is selected
+when project design documentation itself is the task's main deliverable.
+
 BF does not define `.tasks/` as a runtime or draft-work directory. Draft
 discussion, contracts, task specs, review results, and execution artifacts are
 BF work-object state under `.bf/works/<bf-wo>/` in normal project work;
@@ -116,7 +132,7 @@ bf-level `verify` signs ACs, and bf-level `complete` marks the work object
 | Module | Role | Durable Interfaces |
 |---|---|---|
 | Runtime docs | Tell the orchestrating LLM how to run BF | `SKILL.md`, `references/`, `packs/`, `roles/`, `roles/references/`, `templates/` |
-| Project design docs | Discovered external design authority for target-project work | Confirmed project doc root, recorded in `.bf/works/<bf-wo>/discussion.md`; runtime anchor `references/project-docs.md` |
+| Project design docs | Discovered external design authority for target-project work | Confirmed project doc root, recorded in `.bf/works/<bf-wo>/discussion.md`; runtime anchors `references/project-docs.md` and `references/project-design-document-standard.md` |
 | Automation runs | Externally triggered bounded BF runs that record cursor and run state before no-op or ordinary work-object handoff | `.bf/automations/<automation-id>/definition.md`, `.bf/automations/<automation-id>/cursor.json`, `.bf/automations/<automation-id>/runs/<timestamp>/run.md`; runtime anchor `references/automation.md` |
 | Repository maintenance authority | Blueprintflow maintenance rules | `AGENTS.md`, root BF runtime, accepted docs, validation scripts, and PR gate evidence |
 | `bf` CLI | Read-only metadata and install management | `list-packs`, `list-pipelines`, `list-roles`, `install`, `update`, `uninstall`, `version` |

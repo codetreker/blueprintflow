@@ -1,0 +1,80 @@
+id: generate-docs
+desc: Generate or maintain qualified project design documentation
+instruction: |
+  Use this pipeline when the task's primary deliverable is creating, filling, or restructuring qualified project design documentation for a target project.
+  Run the stages in order: doc-root discovery, system inventory, documentation planning, documentation drafting, consistency review, validation, and terminal-state closure.
+  Use the confirmed target project documentation root and local project convention; do not force any fixed documentation path or BF-specific layout onto the target project.
+  Use references/project-design-document-standard.md as the project design-document standard during documentation planning, documentation drafting, and documentation consistency review.
+  Treat confirmed project design documents as the target project's design authority. If implementation evidence and confirmed design documents disagree, record design drift and stop instead of deciding whether code or documents win.
+  This pipeline is for docs-authoring tasks. Ordinary feature tasks continue to use feature design-doc-sync for accepted design changes that arise while implementing code.
+  Produce each stage output before starting the next stage. Stop on Blocker or High review findings and rerun the affected stage before continuing.
+stages:
+  - id: doc-root-discovery
+    capability: system-architecture
+    output: artifacts/doc-root-discovery.md
+    instruction: |
+      Confirm the target project's design-document root before planning or drafting.
+      Read existing work-object discussion.md first. If it already records a confirmed project doc root and later evidence does not conflict, reuse it.
+      Inspect project instructions, README files, repository structure, prompt or workflow files, and candidate documentation content for design-authority signals.
+      Record the confirmed project doc root, local project convention, inspected sources, and confidence level in artifacts/doc-root-discovery.md.
+      If there is one inferred candidate, multiple candidates, conflicting instructions, missing repository access, or no candidate root, stop with the exact decision or coordinator action needed.
+      Handoff the confirmed root and convention to system-inventory.
+
+  - id: system-inventory
+    capability: system-architecture
+    output: artifacts/system-inventory.md
+    instruction: |
+      Build a design-authoring inventory from the target project evidence, not a code directory index.
+      Identify system boundaries, module ownership, state authority, cross-module flows, validation boundaries, known gaps, and stable implementation anchors that project design docs must cover.
+      Include source paths or commands used as evidence and note uncertainty separately from accepted design facts.
+      Stop if the inventory exposes design drift between confirmed project docs and implementation evidence, or if required project access is missing.
+      Record inventory coverage, source evidence, excluded low-value directory listing, and handoff notes for documentation-plan in artifacts/system-inventory.md.
+
+  - id: documentation-plan
+    capability: system-architecture
+    output: artifacts/documentation-plan.md
+    instruction: |
+      Read references/project-design-document-standard.md and plan qualified project design docs for the confirmed project doc root and local project convention.
+      Use the system inventory to choose target docs, required sections, coverage gaps, stable anchors, and update order.
+      The plan must distinguish durable design authority from tutorials, generated API listings, encyclopedic notes, and temporary investigation notes.
+      Stop on unresolved design drift, unclear target docs, missing user confirmation required by the task contract, or scope that would expand beyond the locked task.
+      Record the selected target docs, planned coverage, open gaps, stop decisions, and handoff to documentation-draft in artifacts/documentation-plan.md.
+
+  - id: documentation-draft
+    capability: system-architecture
+    output: artifacts/documentation-draft.md
+    instruction: |
+      Draft or update the target project design documentation according to references/project-design-document-standard.md, the confirmed project doc root, and the local project convention.
+      Keep docs focused on design authority: boundaries, ownership, state, flows, validation, known gaps, and stable anchors.
+      Do not force any fixed documentation path, BF-specific structure, encyclopedia-style coverage, or code-directory listing.
+      Record changed files, source evidence used, stable anchors added or preserved, unresolved gaps, and handoff to documentation-consistency-review in artifacts/documentation-draft.md.
+      Stop if drafting reveals design drift, unsupported claims, missing source evidence, or a needed scope change.
+
+  - id: documentation-consistency-review
+    capability: design-review
+    output: artifacts/documentation-consistency-review.md
+    instruction: |
+      Independently review the drafted documentation against references/project-design-document-standard.md, the qualified design-doc standard, the confirmed project doc root, the local project convention, the system inventory, and the locked task spec.
+      Check that the docs cover required design authority without forcing a fixed path, BF-specific layout, encyclopedia coverage, or a code directory index.
+      Treat design drift, unsupported authority claims, missing stable anchors, unclear boundaries, and scope drift as Blocker or High findings.
+      Record findings, signoff, accepted gaps, and any required rework in artifacts/documentation-consistency-review.md.
+
+  - id: validation
+    capability: software-implementation
+    output: artifacts/validation.md
+    instruction: |
+      Run the task spec's required validation and any project-owned documentation or repository validation command that applies to the changed docs.
+      Record each command output, exit status, environment constraints, and inspected evidence in artifacts/validation.md.
+      If a validation path is not applicable, record not-applicable evidence with the reason. If a command cannot run in the current environment, record skipped evidence, the failure reason, and substitute validation.
+      Stop when required validation fails unless the locked task contract explicitly allows a documented handoff.
+      Handoff validation evidence to terminal-state-closure.
+
+  - id: terminal-state-closure
+    capability: quality-assurance
+    output: artifacts/terminal-state-closure.md
+    instruction: |
+      Produce task-local terminal-state closure evidence after consistency review and validation.
+      Inspect the task spec, changed documentation, stage artifacts, validation evidence, and any external artifacts or side effects created by the task.
+      List each external artifact or side effect, including PRs, tickets, release notes, published docs, or handoff documents.
+      Confirm each item has reached a terminal state, has a named handoff owner, or is blocked by an explicit stop condition so no dangling work is treated as complete.
+      Record any whole-work-object side effect that must be checked again at Final Acceptance in artifacts/terminal-state-closure.md.

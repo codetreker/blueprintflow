@@ -354,8 +354,15 @@ Cross-pack work must be split into multiple work objects.
 
 ## List Command Tolerance
 
+The pack, role, and pipeline registries share one uniform tolerance contract:
+invalid or mis-named development-time entries are skipped and reported as
+warnings, and one bad entry never aborts the list operation or the wider
+runtime.
+
 `bf list-packs` scans `packs/` and performs basic structure checks:
 
+- the directory entry is readable (a dangling symlink or an entry removed
+  mid-scan is skipped with a warning rather than throwing);
 - `pack.md` exists;
 - frontmatter is complete;
 - `Id` matches the directory name.
@@ -363,10 +370,18 @@ Cross-pack work must be split into multiple work objects.
 Invalid packs are skipped and reported as warnings. The command does not fail the
 whole list operation.
 
-`bf list-pipelines` scans `pipelines/*.yml` for the final effective pack
-registry. Pipelines with parse errors or mismatched ids are skipped with
-warnings. The list operation continues.
+`bf list-roles` scans each roles layer (core, pack, extension) and skips with a
+warning any role file whose parsed `Id` does not equal its filename basename
+(without `.md`). A mis-named or hostile role file therefore cannot register, cannot
+override a genuine same-`Id` role from a lower layer, and cannot enter the
+capability→role map. Because filenames are unique within a directory, enforcing
+`Id == filename` also prevents two files in one layer from claiming the same `Id`.
 
-Reason: pack authoring happens outside the BF runtime. BF only needs to expose
-usable packs and pipelines at runtime; warnings are enough for invalid
-development-time entries.
+`bf list-pipelines` scans `pipelines/*.yml` for the final effective pack
+registry. Pipelines with parse errors or whose `id` does not equal the filename
+basename are skipped with warnings. The list operation continues.
+
+Reason: pack, role, and pipeline authoring happens outside the BF runtime. BF only
+needs to expose usable, correctly-named definitions at runtime; warnings are enough
+for invalid development-time entries, and the `Id == filename` rule keeps the
+capability and precedence maps tamper-resistant.

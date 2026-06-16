@@ -12,9 +12,14 @@ function listMdFiles(dir) {
 function loadRolesFrom(dir, source, warnings) {
   const out = [];
   for (const file of listMdFiles(dir)) {
+    const idFromFile = path.basename(file).replace(/\.md$/, "");
     try {
       const text = fs.readFileSync(file, "utf8");
       const role = parseRole(text);
+      if (role.id !== idFromFile) {
+        warnings.push(`skip role ${file}: Id "${role.id}" != filename "${idFromFile}"`);
+        continue;
+      }
       out.push({ ...role, source, file });
     } catch (e) {
       warnings.push(`skip role ${file}: ${e.message}`);

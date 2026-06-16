@@ -6,7 +6,17 @@ function loadPacksFrom(packsDir, source, packs, warnings) {
   if (!packsDir || !fs.existsSync(packsDir)) return;
   for (const name of fs.readdirSync(packsDir)) {
     const dir = path.join(packsDir, name);
-    if (!fs.statSync(dir).isDirectory()) continue;
+    let isDir = false;
+    try {
+      // statSync follows symlinks; a dangling symlink or an entry removed
+      // between readdir and stat throws ENOENT. Skip-with-warning instead of
+      // letting one bad/racy entry abort the whole registry build.
+      isDir = fs.statSync(dir).isDirectory();
+    } catch (e) {
+      warnings.push(`skip pack ${name} (${source}): ${e.message}`);
+      continue;
+    }
+    if (!isDir) continue;
     const packMd = path.join(dir, "pack.md");
     if (!fs.existsSync(packMd)) {
       warnings.push(`skip pack ${name} (${source}): pack.md missing`);

@@ -191,4 +191,80 @@ parse "$INPUT"
 assert_json_field "$STDOUT" .parseError false "empty recognized severity subheadings are recognized structure"
 assert_json_field "$STDOUT" .acceptedIds '["AC-1"]' "clean canonical file must still honor acceptedIds"
 
+# --- Variation J (round-2 bypass): the four EMPTY canonical severity headings
+#     PLUS a sibling non-severity `### Summary` carrying a real blocker. The
+#     existential check passes (an empty `### Blocker` exists) and never scans the
+#     Summary. UNIVERSAL rule: any non-severity content under `## Results` is a
+#     parse error -> acceptedIds dropped. ---
+INPUT=$(cat <<'EOF'
+# Desc
+
+## Results
+
+### Blocker
+### High
+### Minor
+### Nit
+
+### Summary
+
+The change writes the password to the log in cleartext. Blocking.
+
+## Accepted Criteria
+
+- AC-1: signed despite the sibling Summary blocker
+EOF
+)
+parse "$INPUT"
+assert_json_field "$STDOUT" .parseError true "sibling non-severity subheading under Results must be a parse error"
+assert_json_field "$STDOUT" .acceptedIds '[]' "sibling non-severity subheading must drop acceptedIds"
+
+# --- Variation K: a recognized severity heading WITH a real finding AND a sibling
+#     non-severity `### Notes` subheading carrying content -> still fail closed
+#     (universal: the unrecognized sibling alone makes it a parse error). ---
+INPUT=$(cat <<'EOF'
+# Desc
+
+## Results
+
+### Blocker
+
+- src/auth.mjs:5 missing authz check
+
+### Notes
+
+Extra reviewer commentary that the parser must not silently accept.
+
+## Accepted Criteria
+
+- AC-1: signed
+EOF
+)
+parse "$INPUT"
+assert_json_field "$STDOUT" .parseError true "non-severity sibling alongside a real finding must still fail closed"
+assert_json_field "$STDOUT" .acceptedIds '[]' "non-severity sibling must drop acceptedIds even with a real finding"
+
+# --- Variation L: substantive prose directly under `## Results` outside any
+#     severity heading (with empty severity subheadings after) -> parse error. ---
+INPUT=$(cat <<'EOF'
+# Desc
+
+## Results
+
+Overall this looks fine to me, shipping it.
+
+### Blocker
+### High
+### Minor
+### Nit
+
+## Accepted Criteria
+
+- AC-1: signed despite the direct prose
+EOF
+)
+parse "$INPUT"
+assert_json_field "$STDOUT" .parseError true "substantive prose directly under Results must be a parse error"
+assert_json_field "$STDOUT" .acceptedIds '[]' "direct prose under Results must drop acceptedIds"
+
 pass

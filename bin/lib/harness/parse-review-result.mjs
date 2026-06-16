@@ -48,6 +48,10 @@ function collectFindingLines(body) {
   return out;
 }
 
+function hasNonWhitespace(body) {
+  return body.some((line) => line.trim() !== "");
+}
+
 export function parseReviewResult(text) {
   const sections = walkSections(text);
   let desc = "";
@@ -56,9 +60,20 @@ export function parseReviewResult(text) {
 
   let sawResults = false;
   let sawAcceptedCriteria = false;
-  let recognizedFindingStructure = false;
   let inResults = false;
   let resultsLevel = 0;
+
+  // UNIVERSAL default-reject: the `## Results` section is structurally valid only
+  // when it contains at least one recognized severity subheading
+  // (`### Blocker/High/Minor/Nit`, tolerant) and the ONLY content under it is such
+  // recognized severity subheadings, each followed by zero or more finding lines.
+  // Any other non-whitespace content under `## Results` — a non-severity
+  // subheading and its body (e.g. `### Summary`/`### Notes`), or substantive prose
+  // directly under `## Results` outside any severity heading — marks the Results
+  // section unrecognized, which fails closed. An entirely empty `## Results` (no
+  // severity subheadings at all) is also not a recognized structure.
+  let unrecognizedResultsContent = false;
+  let sawSeverityHeading = false;
 
   for (const s of sections) {
     const nameNorm = s.name.toLowerCase();
@@ -69,14 +84,9 @@ export function parseReviewResult(text) {
       sawResults = true;
       inResults = true;
       resultsLevel = s.level;
-      // Findings may be listed directly under `## Results` with no severity
-      // subheading; treat them as blocking (fail-closed) so they are never
-      // silently dropped.
-      const direct = collectFindingLines(s.body);
-      if (direct.length > 0) {
-        for (const f of direct) severities.blocker.push(f);
-        recognizedFindingStructure = true;
-      }
+      // Substantive prose directly under `## Results` (outside any severity
+      // heading) is not recognized structure -> fail closed.
+      if (hasNonWhitespace(s.body)) unrecognizedResultsContent = true;
     } else if (s.level === 2 && nameNorm === "accepted criteria") {
       sawAcceptedCriteria = true;
       inResults = false;
@@ -84,26 +94,38 @@ export function parseReviewResult(text) {
         const m = line.match(AC_ID_RE);
         if (m) acceptedIds.push(m[1]);
       }
-    } else if (inResults && s.level > resultsLevel && severityKey(s.name)) {
+    } else if (inResults && s.level > resultsLevel) {
       const key = severityKey(s.name);
-      const findings = collectFindingLines(s.body);
-      recognizedFindingStructure = true;
-      for (const f of findings) severities[key].push(f);
+      if (key) {
+        // Recognized severity subheading: collect its findings (may be empty).
+        sawSeverityHeading = true;
+        for (const f of collectFindingLines(s.body)) severities[key].push(f);
+      } else {
+        // Any non-severity subheading under `## Results` (and its body) is
+        // unrecognized content -> fail closed, regardless of whether a sibling
+        // severity heading is present.
+        unrecognizedResultsContent = true;
+      }
     } else if (s.level <= 2) {
       // Any other top-level/section-level heading ends the Results scope.
       inResults = false;
+    } else if (inResults) {
+      // A heading at or above the Results level under the Results scope is also
+      // unrecognized content.
+      unrecognizedResultsContent = true;
     }
   }
 
   // Fail closed: a review file that signs off acceptance criteria must carry a
-  // RECOGNIZED Results structure — a `## Results` section that contains at least
-  // one recognized severity subheading (`### Blocker/High/Minor/Nit`, tolerant of
-  // case and singular/plural, EMPTY subheadings count) OR at least one finding
-  // line directly under `## Results`. A missing `## Results`, or a `## Results`
-  // whose only content is unrecognized (e.g. `### Summary`, or a blocker buried in
-  // `# Desc` with an empty/unstructured Results), is a parse error: its
-  // acceptedIds must not be honored — verify must fail closed on it.
-  const parseError = sawAcceptedCriteria && (!sawResults || !recognizedFindingStructure);
+  // recognized `## Results` structure — present, with at least one recognized
+  // severity subheading, and no unrecognized content. Missing `## Results`, an
+  // empty `## Results` with no severity subheading, or any unrecognized content
+  // under it is a parse error: its acceptedIds must not be honored — verify fails
+  // closed on it (collectFindings turns parseError into a blocking finding). Any
+  // findings parsed from recognized severity headings are retained for
+  // diagnostics; they cannot make the file pass while parseError is set.
+  const parseError = sawAcceptedCriteria
+    && (!sawResults || unrecognizedResultsContent || !sawSeverityHeading);
   return {
     desc,
     severities,

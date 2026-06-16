@@ -139,4 +139,58 @@ assert_json_field "$STDOUT" .status "SUCCESS"
 grep -qE "^- \[x\] AC-1\|" "$BASE/works/wo-1/task-a/spec.md" || fail "clean canonical review must flip AC-1"
 cleanup
 
+# --- Case 6 (round-2 bypass, end-to-end): the four EMPTY canonical severity
+#     headings PLUS a sibling `### Summary` carrying a real blocker, signing AC-1.
+#     The existential check passed (an empty `### Blocker` is present) and never
+#     scanned the Summary -> SUCCESS + AC flip. Universal rule must FAIL closed. ---
+setup
+cat > "$ROUND_DIR/result_tester_1.md" <<'EOF'
+# Desc
+
+## Results
+
+### Blocker
+### High
+### Minor
+### Nit
+
+### Summary
+
+The change writes the password to the log in cleartext. Blocking.
+
+## Accepted Criteria
+
+- AC-1: signed despite the sibling Summary blocker
+EOF
+run_verify_b
+assert_json_field "$STDOUT" .status "FAIL"
+grep -qE "^- \[x\] AC-1\|" "$BASE/works/wo-1/task-a/spec.md" && fail "sibling Summary blocker must not flip AC-1"
+grep -qE "^- \[ \] AC-1\|" "$BASE/works/wo-1/task-a/spec.md" || fail "AC-1 must stay unchecked when Results carries an unscanned sibling subheading"
+cleanup
+
+# --- Case 7 (round-2): recognized severity heading WITH a real finding AND a
+#     sibling non-severity subheading carrying content -> still FAIL closed. ---
+setup
+cat > "$ROUND_DIR/result_tester_1.md" <<'EOF'
+# Desc
+
+## Results
+
+### Blocker
+
+- src/auth.mjs:5 missing authz check
+
+### Notes
+
+Extra reviewer commentary that must not be silently accepted.
+
+## Accepted Criteria
+
+- AC-1: signed
+EOF
+run_verify_b
+assert_json_field "$STDOUT" .status "FAIL"
+grep -qE "^- \[x\] AC-1\|" "$BASE/works/wo-1/task-a/spec.md" && fail "non-severity sibling alongside a real finding must not flip AC-1"
+cleanup
+
 pass

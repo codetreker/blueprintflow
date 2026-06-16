@@ -70,21 +70,21 @@ Host discovery snapshots are generated copies. Do not put extensions under `~/.c
 After install, two CLIs are on `$PATH`:
 
 - `bf` — read-only metadata + install management: `bf list-packs`, `bf list-pipelines [--pack <id>]`, `bf list-roles [--pack <id>]`, `bf install`, `bf update`, `bf uninstall`, `bf version`
-- `bf-harness` — work-object loop driver: `list`, `status`, `lint`, `start-review`, `accept`, `next`, `attach-pr`, `verify`, `cleanup`, `discard`
+- `bf-harness` — work-object loop driver: `list`, `status`, `lint`, `start-review`, `accept`, `next`, `attach-pr`, `verify`, `complete`, `cleanup`, `discard`
 
 Run either with `--help` for full usage.
 
 ## How it works (in 30 seconds)
 
 ```
-brainstorm  →  spec  ──accept──▶  execute  ──verify──▶  Completed
+brainstorm  →  spec  ──accept──▶  execute  ──verify──▶  complete  ──▶  Completed
                   ▲                    │
                   └──── lint / verify FAIL ───┘
 ```
 
 1. **Brainstorm** — drive a discussion with the user, pick a pack, write `discussion.md`.
 2. **Spec** — author `bf.md` + per-task `spec.md` in `Draft`, `lint`, run a Spec Review round, `verify`, then `accept`. Contract is locked.
-3. **Execute** — `next` returns eligible task blocks in task-list order. Each returned task has completed prerequisites, and no returned task depends on another returned task. For `Requires-Worktree: true` tasks in managed Git mode, it also creates or validates each task branch/worktree and returns that metadata. A host-compatible task driver follows each returned task's pipeline instructions; a **different** reviewer actor grades the final task AC. GitHub worktree tasks can record a PR with `attach-pr`, and verification checks that the recorded GitHub PR is merged. After a task verifies and, when it has a PR, that PR is merged, `cleanup` removes that task's harness-owned worktree and safely deletes its merged local task branch. Repeat. Before Final Acceptance, `status` reports the work-object state and task states so the coordinator does not inspect every task spec to decide readiness. Final Acceptance flips the bf.md AC and marks the work Completed.
+3. **Execute** — `next` returns eligible task blocks in task-list order. Each returned task has completed prerequisites, and no returned task depends on another returned task. For `Requires-Worktree: true` tasks in managed Git mode, it also creates or validates each task branch/worktree and returns that metadata. A host-compatible task driver follows each returned task's pipeline instructions; a **different** reviewer actor grades the final task AC. GitHub worktree tasks can record a PR with `attach-pr`. After a task verifies, `complete` transitions it to `Completed` and, when it has a recorded PR, checks that the PR is merged before allowing completion. Once a task completes and, when it has a PR, that PR is merged, `cleanup` removes that task's harness-owned worktree and safely deletes its merged local task branch. Repeat. Before Final Acceptance, `status` reports the work-object state and task states so the coordinator does not inspect every task spec to decide readiness. Final Acceptance runs work-object `verify` then `complete`, which flips the bf.md AC and marks the work Completed.
 
 ## State layout
 

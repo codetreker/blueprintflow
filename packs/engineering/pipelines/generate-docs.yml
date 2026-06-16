@@ -7,6 +7,8 @@ instruction: |
   Use references/project-design-document-standard.md as the project design-document standard during documentation planning, documentation drafting, and documentation consistency review.
   Treat confirmed project design documents as the target project's design authority. If implementation evidence and confirmed design documents disagree, record design drift and stop instead of deciding whether code or documents win.
   This pipeline is for docs-authoring tasks. Ordinary feature tasks continue to use feature design-doc-sync for accepted design changes that arise while implementing code.
+  When starting a role-bound actor, pass the role id and role instruction path, then require the actor to read its own role instruction before the stage instruction.
+  Do not inline role instruction content; stop when the actor cannot read the role file.
   Produce each stage output before starting the next stage. Stop on Blocker or High review findings and rerun the affected stage before continuing.
 stages:
   - id: doc-root-discovery

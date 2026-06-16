@@ -129,4 +129,66 @@ parse "$INPUT"
 assert_json_field "$STDOUT" .parseError true "missing Results section must be a parse error"
 assert_json_field "$STDOUT" .acceptedIds '[]' "unparseable Results must drop acceptedIds"
 
+# --- Variation G: `## Results` EXISTS but holds only a NON-severity subheading
+#     (`### Summary`) describing a real blocker -> fail CLOSED. The Results
+#     section has no recognized severity subheading and no direct findings, so it
+#     is unstructured: parseError set, acceptedIds dropped. ---
+INPUT=$(cat <<'EOF'
+# Desc
+
+## Results
+
+### Summary
+
+The implementation ships a hardcoded credential and must NOT be accepted.
+
+## Accepted Criteria
+
+- AC-1: signed despite the unstructured Results
+EOF
+)
+parse "$INPUT"
+assert_json_field "$STDOUT" .parseError true "Results with only a non-severity subheading must be a parse error"
+assert_json_field "$STDOUT" .acceptedIds '[]' "unstructured Results must drop acceptedIds"
+
+# --- Variation H: blocker described only in `# Desc`, with an EMPTY `## Results`
+#     that has no severity subheading and no findings -> fail CLOSED. ---
+INPUT=$(cat <<'EOF'
+# Desc
+
+Blocker: this change leaks a secret token in logs.
+
+## Results
+
+## Accepted Criteria
+
+- AC-1: signed despite the empty unstructured Results
+EOF
+)
+parse "$INPUT"
+assert_json_field "$STDOUT" .parseError true "empty unstructured Results must be a parse error"
+assert_json_field "$STDOUT" .acceptedIds '[]' "empty unstructured Results must drop acceptedIds"
+
+# --- Variation I (backward-compat guard): a CLEAN canonical file with the four
+#     EMPTY severity subheadings is recognized structure -> NOT a parse error,
+#     acceptedIds honored. ---
+INPUT=$(cat <<'EOF'
+# Desc
+
+## Results
+
+### Blocker
+### High
+### Minor
+### Nit
+
+## Accepted Criteria
+
+- AC-1: clean signoff
+EOF
+)
+parse "$INPUT"
+assert_json_field "$STDOUT" .parseError false "empty recognized severity subheadings are recognized structure"
+assert_json_field "$STDOUT" .acceptedIds '["AC-1"]' "clean canonical file must still honor acceptedIds"
+
 pass

@@ -95,11 +95,15 @@ export function parseReviewResult(text) {
     }
   }
 
-  // Fail closed: a review file that signs off acceptance criteria but carries no
-  // recognizable Results structure (no `## Results`, or a `## Results` with no
-  // severity subheading and no direct findings) is a parse error. Its
+  // Fail closed: a review file that signs off acceptance criteria must carry a
+  // RECOGNIZED Results structure — a `## Results` section that contains at least
+  // one recognized severity subheading (`### Blocker/High/Minor/Nit`, tolerant of
+  // case and singular/plural, EMPTY subheadings count) OR at least one finding
+  // line directly under `## Results`. A missing `## Results`, or a `## Results`
+  // whose only content is unrecognized (e.g. `### Summary`, or a blocker buried in
+  // `# Desc` with an empty/unstructured Results), is a parse error: its
   // acceptedIds must not be honored — verify must fail closed on it.
-  const parseError = sawAcceptedCriteria && !sawResults;
+  const parseError = sawAcceptedCriteria && (!sawResults || !recognizedFindingStructure);
   return {
     desc,
     severities,

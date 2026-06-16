@@ -73,4 +73,70 @@ grep -qE "^- \[x\] AC-1\|" "$BASE/works/wo-1/task-a/spec.md" && fail "unparseabl
 grep -qE "^- \[ \] AC-1\|" "$BASE/works/wo-1/task-a/spec.md" || fail "AC-1 must stay unchecked on fail-closed Results parse"
 cleanup
 
+# --- Case 3: `## Results` EXISTS but holds only a non-severity `### Summary`
+#     subheading describing a real blocker, and signs AC-1 -> fail CLOSED.
+#     This is the exact surviving false-signoff: today verify SUCCEEDs because
+#     the Results section parses to zero findings while acceptedIds are honored. ---
+setup
+cat > "$ROUND_DIR/result_tester_1.md" <<'EOF'
+# Desc
+
+## Results
+
+### Summary
+
+The implementation ships a hardcoded credential and must NOT be accepted.
+
+## Accepted Criteria
+
+- AC-1: signed despite the unstructured Results
+EOF
+run_verify_b
+assert_json_field "$STDOUT" .status "FAIL"
+grep -qE "^- \[x\] AC-1\|" "$BASE/works/wo-1/task-a/spec.md" && fail "Results-with-only-Summary must not flip AC-1"
+grep -qE "^- \[ \] AC-1\|" "$BASE/works/wo-1/task-a/spec.md" || fail "AC-1 must stay unchecked on unstructured Results"
+cleanup
+
+# --- Case 4: blocker described only in `# Desc` with an EMPTY `## Results`
+#     (no severity subheading, no findings), and signs AC-1 -> fail CLOSED. ---
+setup
+cat > "$ROUND_DIR/result_tester_1.md" <<'EOF'
+# Desc
+
+Blocker: this change leaks a secret token in logs.
+
+## Results
+
+## Accepted Criteria
+
+- AC-1: signed despite the empty unstructured Results
+EOF
+run_verify_b
+assert_json_field "$STDOUT" .status "FAIL"
+grep -qE "^- \[x\] AC-1\|" "$BASE/works/wo-1/task-a/spec.md" && fail "empty unstructured Results must not flip AC-1"
+grep -qE "^- \[ \] AC-1\|" "$BASE/works/wo-1/task-a/spec.md" || fail "AC-1 must stay unchecked on empty unstructured Results"
+cleanup
+
+# --- Case 5 (backward-compat): a CLEAN canonical review (four empty severity
+#     subheadings) signing AC-1 -> verify SUCCESS and AC-1 flips. ---
+setup
+cat > "$ROUND_DIR/result_tester_1.md" <<'EOF'
+# Desc
+
+## Results
+
+### Blocker
+### High
+### Minor
+### Nit
+
+## Accepted Criteria
+
+- AC-1: clean signoff
+EOF
+run_verify_b
+assert_json_field "$STDOUT" .status "SUCCESS"
+grep -qE "^- \[x\] AC-1\|" "$BASE/works/wo-1/task-a/spec.md" || fail "clean canonical review must flip AC-1"
+cleanup
+
 pass

@@ -259,8 +259,11 @@ Behavior:
   under a severity heading is a finding, and findings written directly under
   `## Results` are treated as blocking.
 - Fails closed on an unrecognized review result: a file that signs off acceptance
-  criteria but has no recognizable `## Results` section is a parse error — verify
-  fails and that file's accepted-criteria ids are not honored.
+  criteria but has no recognized `## Results` structure — either no `## Results`
+  section, or a `## Results` with no recognized severity subheading and no direct
+  finding line — is a parse error; verify fails and that file's accepted-criteria
+  ids are not honored. Empty recognized severity subheadings count as recognized
+  structure with no findings.
 - Any Blocker or High finding fails without mutation.
 - For each task AC, finds roles that provide the AC capability.
 - An AC is signed when at least one provider role review file accepts that AC id.

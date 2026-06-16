@@ -1,0 +1,107 @@
+id: e2e-verification
+desc: Run an existing E2E verification protocol against a system and produce a report-only verification report with adversarially-confirmed findings
+instruction: |
+  Use this pipeline when the task's primary deliverable is running end-to-end verification of an existing system whose reusable E2E protocol already exists, and producing a verification report.
+  This pipeline is report-only: it runs the existing E2E lifecycle and produces a verification report; it does not fix failures, does not change product code, and does not replace BF Task Verification or Final Acceptance.
+  A failing assertion is data to report as a finding with severity, not a reason to stop the pipeline. Confirmed-real failures are routed by the coordinator or user to a separate feature or bugfix task; this pipeline never enters a fix loop.
+  Run the eight stages in order: protocol-confirmation, verification-plan, environment-setup, verification-run, finding-adversarial-verification, environment-teardown, verification-report, terminal-state-closure.
+  Each stage must produce its named artifact before the next stage starts.
+  Read the task spec, bf.md Goal/Boundary, relevant discussion when the task contract is ambiguous, confirmed project design docs, and host-runtime strategy before the first stage.
+  This pipeline is frontend and browser-first but tool-agnostic: name the project's own browser E2E tool such as Playwright or the project's equivalent, and name rich evidence shapes such as screenshots, traces, video, and console and network logs. Do not hard-code project-specific commands, ports, credentials, services, or startup scripts into this runtime artifact; keep runtime guidance repository-owned.
+  Verification scope is selectable. Read the chosen scope from the task contract: either the full E2E suite or a named subset by feature, journey, tag, or path. The report states the coverage boundary explicitly so a narrow scoped pass is never mistaken for a whole-system pass.
+  Stop conditions are limited to inability to verify: the E2E protocol is missing or incomplete, the environment cannot reach a ready state, or cleanup fails. Assertion pass or fail does not stop the pipeline.
+  When the E2E protocol is missing or incomplete, stop and route to the built-in e2e-verification-setup pipeline through the coordinator and user; this pipeline does not build the protocol.
+  This pipeline has no internal code-review stage and no internal security-review stage. It changes no product code, so independent review remains BF Task Verification and Final Acceptance.
+  Independent Verification: finding-adversarial-verification uses multiple independent verifier actor instances, recommended three, each a distinct instance from the verification-run actor and from each other. If the task driver cannot spawn the independent verifiers, it hands that need back to the coordinator. The same tester role is fine; the same actor instance is not.
+  External artifacts and side effects this pipeline creates: a started test environment (closed by environment-teardown), the verification report and finding-verification artifacts (handed off by terminal-state-closure), and any external or shared-system residue such as staging resources, cloud resources, test accounts, seeded shared data, or CI artifacts (audited to terminal state by terminal-state-closure). environment-teardown is the action on the local test environment; terminal-state-closure is the audit of user-perspective side effects and a backstop for orphans teardown missed.
+  tester with the quality-assurance capability owns every stage for single-owner continuity; operational setup and teardown sub-steps may be delegated to a leaf worker.
+  When starting a role-bound actor, pass the role id and role instruction path, then require the actor to read its own role instruction before the stage instruction. Do not inline role instruction content; stop when the actor cannot read the role file.
+  The user-perspective done state: the planned scope ran against a ready environment, findings were adversarially verified into confirmed-real versus unconfirmed or flaky, the environment was cleaned up, the verification report with its explicit coverage boundary was produced and handed off, and all side effects reached a terminal state.
+  Do not edit locked bf.md or task spec.md content after accept; only the harness may flip checkboxes, advance State, sync Updated, and write task execution metadata.
+stages:
+  - id: protocol-confirmation
+    capability: quality-assurance
+    output: artifacts/e2e-protocol-confirmation.md
+    instruction: |
+      Confirm the target repository already has a runnable E2E protocol before any verification work.
+      Inspect project instructions such as AGENTS.md, docs, package scripts, E2E configs, Makefiles, docker compose files, CI workflows, and comparable local orchestration signals for a stable entrypoint, readiness check, verification command, and cleanup path.
+      Record whether the protocol is present, partial, or missing, and whether it is runnable in the current environment.
+      This stage does not build the protocol.
+      Stop and route to the e2e-verification-setup pipeline through the coordinator and user when the protocol is missing or incomplete; record the missing or incomplete signals as the handoff reason.
+      Handoff to verification-plan only after a runnable E2E protocol with entrypoint, readiness, verification, and cleanup paths is confirmed.
+
+  - id: verification-plan
+    capability: quality-assurance
+    output: artifacts/e2e-verification-plan.md
+    instruction: |
+      Plan the verification before running anything.
+      Read the chosen verification scope from the locked task contract: either the full E2E suite or a named subset by feature, journey, tag, or path. Record the exact chosen scope and map it to concrete end-to-end scenarios.
+      Make the plan frontend and browser-first: primary scenarios are user journeys and critical UI paths, while still supporting API and backend E2E where the contract requires it.
+      Record the system-under-test mapping, readiness criteria, the verification commands to run through the repository-owned protocol, the environment and data or fixtures, and the expected evidence shape such as Playwright or the project's equivalent output with screenshots, traces, video, and console and network logs.
+      Stop with a decision brief to the coordinator when the scope is unclear in the contract; do not guess the scope.
+      Handoff to environment-setup with the recorded scope, the mapped scenarios, and the readiness criteria.
+
+  - id: environment-setup
+    capability: quality-assurance
+    output: artifacts/e2e-environment-setup.md
+    instruction: |
+      Start the system-under-test environment using the repository-owned protocol and bring the frontend and backing services to a navigable ready state.
+      Wait until the readiness criteria from the plan are met and record readiness evidence.
+      This stage creates a running environment side effect that environment-teardown must later close.
+      Stop because the environment cannot be verified when it cannot reach the ready state; record the failure evidence.
+      Handoff to verification-run only after the environment reaches the ready state with recorded readiness evidence.
+
+  - id: verification-run
+    capability: quality-assurance
+    output: artifacts/e2e-verification-run.md
+    instruction: |
+      Run only the planned scope against the ready environment through the repository-owned protocol, using the project's own subset-selection mechanism for a named subset.
+      Run the end-to-end assertions with Playwright or the project's equivalent browser E2E tool and record rich evidence: per-scenario pass or fail, screenshots, traces, video, and console and network logs.
+      An assertion pass or fail does not stop the pipeline; record every failure as a candidate finding with severity Blocker, High, Medium, or Low for later adversarial verification.
+      Apply command safety: skip unsafe, destructive, too expensive, or out-of-scope commands and record skipped-command evidence with substitute evidence.
+      Handoff to finding-adversarial-verification with the candidate findings and their reproduction details while the environment is still ready.
+
+  - id: finding-adversarial-verification
+    capability: quality-assurance
+    output: artifacts/e2e-finding-verification.md
+    instruction: |
+      Adversarially verify each candidate finding from verification-run against the still-ready environment before teardown, because E2E failures are often flaky, timing, environment, or false-positive.
+      For each finding, spawn multiple independent adversarial verifier actor instances, recommended three, each a distinct instance from the verification-run actor and from each other; the same tester role is fine but the same actor instance is not.
+      Prompt each verifier to refute the finding: is this a genuine system defect, or is it flaky, timing, environment, or false-positive? Each verifier reproduces the specific scenario against the live environment.
+      Apply the decision rule: a finding is confirmed-real only if it reproduces and the majority of verifiers cannot refute it; otherwise it is unconfirmed or flaky and is recorded separately, not as a real problem. Default uncertainty to not real to avoid crying wolf.
+      Record per-finding verifier verdicts, reproduction evidence, and the confirmed-real set versus the unconfirmed or flaky set.
+      If the task driver cannot spawn the independent verifiers, hand that need back to the coordinator instead of self-confirming.
+      Handoff to environment-teardown with the confirmed-real set and the unconfirmed or flaky set after every candidate finding has been adversarially verified.
+
+  - id: environment-teardown
+    capability: quality-assurance
+    output: artifacts/e2e-environment-teardown.md
+    instruction: |
+      Tear down the test environment started in environment-setup: stop processes, free ports, and remove temporary data and fixtures.
+      Record cleanup evidence showing no dangling processes, ports, temporary data, or other local resources remain.
+      This stage is the action that closes the running environment side effect; it is distinct from the terminal-state-closure audit and does not produce the report.
+      Stop because the side effects are not verified clean when cleanup fails or local resources remain dangling.
+      Handoff to verification-report only after cleanup completes with recorded evidence.
+
+  - id: verification-report
+    capability: quality-assurance
+    output: artifacts/e2e-verification-report.md
+    instruction: |
+      Produce the deliverable verification report after teardown.
+      State the coverage boundary explicitly: the chosen scope, what was verified, and what was deliberately not covered, so a narrow scoped pass is never mistaken for a whole-system pass.
+      Record per-scenario and per-journey pass or fail with pointers to screenshots, traces, video, and console and network logs.
+      Distinguish confirmed-real problems that survived adversarial verification from unconfirmed or flaky observations that did not, so an unverified flake is never reported as a real defect.
+      Report confirmed-real findings as findings with severity Blocker, High, Medium, or Low, plus environment notes, the teardown result, and residual risk or not-covered areas.
+      Keep the report-only posture: confirmed-real findings are routed out to a separate feature or bugfix task by the coordinator or user, not fixed here.
+      Handoff to terminal-state-closure with the report and the confirmed-real versus unconfirmed or flaky split.
+
+  - id: terminal-state-closure
+    capability: quality-assurance
+    output: artifacts/terminal-state-closure.md
+    instruction: |
+      Produce task-local terminal-state closure evidence after the report. This is the audit of user-perspective side effects, not a second teardown, and it does not re-run teardown.
+      List every external artifact or side effect created by the task, such as where the verification report is handed off, any external or shared-system residue such as staging resources, cloud resources, test accounts, seeded shared data, or CI artifacts, and any orphan that teardown missed.
+      Confirm each external artifact or side effect has reached its terminal state, has an explicit handoff owner, or is blocked by an explicit stop condition before user-perspective completion.
+      Act as a backstop for orphans environment-teardown missed and record any whole-work-object side effect that must be checked again at Final Acceptance.
+      Do not clean BF-owned task worktrees or task branches in this stage; the coordinator runs bf-harness cleanup after bf-harness complete succeeds.
+      Handoff to task-level BF acceptance review and readiness verification only after the report is handed off and every side effect is terminal, handed off, or explicitly blocked.

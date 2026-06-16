@@ -114,8 +114,8 @@ worktree and safely delete its merged local branch.
 
 The engineering pack ships separate pipelines for lightweight feature work,
 design-first feature work, reusable project design-doc generation or
-maintenance, reusable E2E verification setup, defect fixes, and review-only
-deep codebase audit work.
+maintenance, reusable E2E verification setup, report-only E2E verification runs,
+defect fixes, and review-only deep codebase audit work.
 
 `feature-light.yml` is the lightweight feature pipeline for small, clear,
 low-risk feature tasks. It uses a compact `scope-plan` stage before
@@ -205,6 +205,46 @@ such as `AGENTS.md`, then runs independent code, security, and closure review.
 The setup guidance prefers one stable command or script that owns the local E2E
 lifecycle and cleans up processes, ports, temporary data, and other resources.
 Failure to clean up is a stop condition.
+
+`e2e-verification.yml` is the built-in pipeline whose primary deliverable is
+running an existing E2E verification protocol against a system and producing a
+verification report. Its stage order is exactly `protocol-confirmation`,
+`verification-plan`, `environment-setup`, `verification-run`,
+`finding-adversarial-verification`, `environment-teardown`,
+`verification-report`, and `terminal-state-closure`. It is report-only: it runs
+the existing E2E lifecycle and reports findings; it does not build the protocol,
+does not change product code, has no internal `code-review` or `security-review`
+stage, and does not replace BF Task Verification or Final Acceptance. A failing
+assertion is data to report as a finding with severity, not a pipeline stop. The
+pipeline stops only on inability to verify: the protocol is missing or
+incomplete, the environment cannot reach a ready state, or cleanup fails. When
+the protocol is missing, the pipeline stops and routes to `e2e-verification-setup`
+through the coordinator and user instead of guessing commands. The pipeline is
+frontend and browser-first but tool-agnostic: it names Playwright or the
+project's equivalent browser E2E tool and rich evidence such as screenshots,
+traces, video, and console and network logs, without hard-coding project
+commands. Verification scope is selectable from the task contract — the full E2E
+suite or a named subset by feature, journey, tag, or path — and the report states
+the coverage boundary explicitly so a narrow scoped pass is never mistaken for a
+whole-system pass. `finding-adversarial-verification` runs before teardown so
+multiple independent verifier actor instances, recommended three, can reproduce
+each candidate finding against the still-ready environment and try to refute it; a
+finding is confirmed-real only when it reproduces and the majority of verifiers
+cannot refute it, and the report distinguishes confirmed-real problems from
+unconfirmed or flaky observations. `environment-teardown` is the action that
+cleans the local test environment, while `terminal-state-closure` audits
+user-perspective side effects such as report handoff and external or shared-system
+residue. The single `tester` (`quality-assurance`) owner runs all eight stages.
+
+`e2e-verification` complements the two existing E2E mechanisms rather than
+replacing them. `e2e-verification-setup` *builds* the reusable protocol for a
+repository that has none and is the stop-and-route target when
+`e2e-verification` finds no runnable protocol. `feature.yml`'s
+`e2e-protocol-discovery` stage *runs* E2E inside a feature task as evidence for
+that feature. `e2e-verification` is the standalone, report-only pipeline whose
+own deliverable is *running* E2E verification of an existing system as a task in
+its own right; confirmed-real findings are routed by the coordinator or user to a
+separate `feature` or `bugfix` task, never fixed inside `e2e-verification`.
 
 Built-in runtime artifacts remain self-contained. Pipeline files include the
 instructions task drivers need at execution time and must not depend on this

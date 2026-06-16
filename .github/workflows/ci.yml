@@ -43,12 +43,40 @@ jobs:
         run: .github/scripts/validate-skills.sh
 
       - name: Validate release version bump
-        if: github.event_name == 'pull_request'
-        run: .github/scripts/validate-release-version.sh "origin/${{ github.base_ref }}"
+        if: github.event_name == 'pull_request' || github.event_name == 'push'
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+          PUSH_BEFORE: ${{ github.event.before }}
+        run: |
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            base="origin/${BASE_REF}"
+          else
+            base="$PUSH_BEFORE"
+            if [[ -z "$base" || "$base" =~ ^0+$ ]]; then
+              echo "✓ Push base is all-zeros/empty (branch creation / first push) — bootstrap, skipping release version gate."
+              exit 0
+            fi
+          fi
+          .github/scripts/validate-release-version.sh "$base"
 
       - name: Validate @codetreker/bf version bump
-        if: github.event_name == 'pull_request'
-        run: .github/scripts/validate-bf-version.sh "origin/${{ github.base_ref }}"
+        if: github.event_name == 'pull_request' || github.event_name == 'push'
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+          PUSH_BEFORE: ${{ github.event.before }}
+        run: |
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            base="origin/${BASE_REF}"
+          else
+            base="$PUSH_BEFORE"
+            if [[ -z "$base" || "$base" =~ ^0+$ ]]; then
+              echo "✓ Push base is all-zeros/empty (branch creation / first push) — bootstrap, skipping @codetreker/bf version gate."
+              exit 0
+            fi
+          fi
+          .github/scripts/validate-bf-version.sh "$base"
 
       - name: Check whitespace
         run: |

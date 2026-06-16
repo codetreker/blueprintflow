@@ -8,14 +8,37 @@ the specific contract file paths under review.
 Group findings by severity. Any Blocker or High finding makes verify fail.
 Minor and Nit findings do not block.
 
+Recognized structure (the harness fails CLOSED on anything it cannot recognize):
+
+- Keep the `## Results` section. Under it, use a severity subheading for each
+  group: `### Blocker`, `### High`, `### Minor`, `### Nit`. Severity headings are
+  matched case-insensitively, accept the singular or plural spelling
+  (`### Blocker` or `### Blockers`), and may use any heading depth below
+  `## Results` (`###`, `####`, ...).
+- Under a severity heading, EVERY non-empty content line counts as one finding,
+  whether it is a `- ` bullet or plain prose. Do not write commentary under
+  `### Blocker` / `### High` unless you intend it to block.
+- When there are NO findings for a severity, leave that heading EMPTY. An empty
+  `### Blocker` / `### High` section means "no blocking findings"; any non-empty
+  content under it is treated as a blocking finding and fails verify.
+- Findings written directly under `## Results` with no severity subheading are
+  treated as blocking findings (fail closed), so they are never silently dropped.
+
+Fail-closed rule: a review-result file that lists `## Accepted Criteria` but has
+no recognizable `## Results` section is treated as a parse error. The harness
+makes verify FAIL and does NOT honor that file's accepted-criteria ids for
+sign-off. Always include the `## Results` section, even when it is all-empty.
+
 ### Blocker
 
 Blocking issues. Any item here makes verify fail. Include a specific file:line
-and description for each finding.
+and description for each finding. Leave this section EMPTY when there are no
+blocking findings.
 
 ### High
 
-High-severity issues. Any item here makes verify fail.
+High-severity issues. Any item here makes verify fail. Leave this section EMPTY
+when there are no high-severity findings.
 
 ### Minor
 

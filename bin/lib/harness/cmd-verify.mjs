@@ -84,13 +84,22 @@ function checkRoundFreshness(parsedResults, bundle) {
     const stat = fs.statSync(r.file);
     if (stat.mtimeMs < earliestMtimeMs) earliestMtimeMs = stat.mtimeMs;
   }
+  // Fail closed: every Completed task must carry a parseable `Updated`. A missing
+  // or unparseable value is a stale/invalid error — never treat an empty set of
+  // parseable completion timestamps as "fresh".
   let latestCompletedMs = -Infinity;
+  let sawCompleted = false;
   for (const t of bundle.tasks) {
     if (t.spec?.frontmatter.State !== "Completed") continue;
-    const epoch = tsToEpoch(t.spec.frontmatter.Updated);
-    if (!Number.isNaN(epoch) && epoch > latestCompletedMs) latestCompletedMs = epoch;
+    sawCompleted = true;
+    const updated = t.spec.frontmatter.Updated;
+    const epoch = tsToEpoch(updated);
+    if (Number.isNaN(epoch)) {
+      return [`invalid round freshness: Completed task ${t.id} has a missing or unparseable Updated (${updated || "<empty>"}); run start-review for bf-level review`];
+    }
+    if (epoch > latestCompletedMs) latestCompletedMs = epoch;
   }
-  if (latestCompletedMs > 0 && earliestMtimeMs < latestCompletedMs) {
+  if (sawCompleted && earliestMtimeMs < latestCompletedMs) {
     return ["stale round: round files predate latest task completion; run start-review for bf-level review"];
   }
   return [];

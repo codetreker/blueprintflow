@@ -36,7 +36,7 @@ function fail(error, details = []) {
   return { ok: false, error, details };
 }
 
-async function completeTask({ baseHome, woId, taskId, installDir, now }) {
+async function completeTask({ baseHome, woId, taskId, installDir, now, cwd }) {
   const bundle = await loadWo({ baseHome, woId, installDir });
   if (!bundle.bf) return fail("load failed", bundle.errors);
   if (!["Accepted", "Implementing"].includes(bundle.bf.frontmatter.State)) {
@@ -59,7 +59,7 @@ async function completeTask({ baseHome, woId, taskId, installDir, now }) {
   if (changed.length > 0) {
     return fail("task changed after latest Task Verification SUCCESS; run start-review + review + verify again", changed);
   }
-  const prGate = checkGitHubPrMergedGate(task);
+  const prGate = checkGitHubPrMergedGate(task, { baseHome, cwd, woId, taskId });
   if (!prGate.ok) return fail(prGate.error);
 
   const ts = formatTimestamp(now);
@@ -109,8 +109,8 @@ async function completeWorkObject({ baseHome, woId, installDir, now }) {
   };
 }
 
-export async function cmdComplete({ baseHome, woId, taskId = null, installDir, now = new Date() }) {
-  if (taskId) return completeTask({ baseHome, woId, taskId, installDir, now });
+export async function cmdComplete({ baseHome, woId, taskId = null, installDir, now = new Date(), cwd = process.cwd() }) {
+  if (taskId) return completeTask({ baseHome, woId, taskId, installDir, now, cwd });
   return completeWorkObject({ baseHome, woId, installDir, now });
 }
 

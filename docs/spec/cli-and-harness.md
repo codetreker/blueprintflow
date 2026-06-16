@@ -213,11 +213,13 @@ Behavior:
 
 - Requires task state `Tasking`.
 - Requires `Requires-Worktree: true`.
-- Requires existing `Branch` and `Worktree` metadata.
-- Requires the task worktree `origin` remote and the PR URL to refer to the
-  same GitHub repository.
-- When GitHub PR metadata is available, requires the PR head branch to match
-  the recorded task branch.
+- Recomputes the harness-owned worktree (`<primary-worktree>/.worktrees/works/<bf-wo>/<task>`)
+  and branch (`bf/<bf-wo>/<task>`) and requires the recorded `Branch` and
+  `Worktree` metadata to match them; rejects missing or non-harness-owned values.
+- Requires the harness-owned task worktree `origin` remote and the PR URL to
+  refer to the same GitHub repository.
+- Requires the PR head branch to equal the harness-owned task branch
+  unconditionally; a merged-but-unrelated PR is rejected.
 - Writes task-level `Pull-Request` metadata and synchronizes `Updated`.
 
 ### `verify <bf-wo>` / `verify <bf-wo>/<task>`
@@ -251,6 +253,14 @@ Behavior:
 
 - Reads the latest `<work-object>/<task>/runs/reviews/round_N/`.
 - Parses `## Results` and `## Accepted Criteria`.
+- Severity detection is tolerant: severity headings (`### Blocker`/`### High`/
+  `### Minor`/`### Nit`) match case-insensitively, accept the singular or plural
+  spelling, and any heading depth below `## Results`; every non-empty content line
+  under a severity heading is a finding, and findings written directly under
+  `## Results` are treated as blocking.
+- Fails closed on an unrecognized review result: a file that signs off acceptance
+  criteria but has no recognizable `## Results` section is a parse error — verify
+  fails and that file's accepted-criteria ids are not honored.
 - Any Blocker or High finding fails without mutation.
 - For each task AC, finds roles that provide the AC capability.
 - An AC is signed when at least one provider role review file accepts that AC id.
@@ -273,6 +283,9 @@ Behavior:
 
 - Reads the latest bf-level review round created after task completion.
 - Applies task verification-style block and sign-off logic to bf.md ACs.
+- Fails closed on a stale or invalid round: a round whose files predate the
+  latest task completion is stale, and a Completed task whose `Updated` is
+  missing or unparseable is treated as a stale/invalid error rather than "fresh".
 - On success, flips bf.md ACs to `[x]`.
 - Synchronizes `Updated:` when ACs flip.
 - Writes `verify-result.md` to the active bf-level review round.
@@ -352,7 +365,10 @@ Task scope applies when:
 - all task ACs are checked;
 - latest task `verify-result.md` is `SUCCESS`, `Mode: Task Verification`, and matches the task scope;
 - the task spec has not changed after that verify result;
-- for GitHub worktree tasks, the recorded same-repository PR is merged.
+- for GitHub worktree tasks, the recorded same-repository PR is merged and its
+  head branch equals the recomputed harness-owned task branch; the worktree and
+  branch metadata must match the harness-owned values (mismatched or missing
+  metadata, or a merged-but-unrelated PR, is rejected).
 
 Task success moves the task from `Tasking` to `Completed` and synchronizes `Updated`.
 

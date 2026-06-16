@@ -1,8 +1,10 @@
 import fs from "node:fs";
+import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { loadWo } from "./load-wo.mjs";
 import { writeTaskExecutionMetadata, writeUpdated, formatTimestamp } from "./write-mutations.mjs";
 import { parseGitHubPrUrl, parseGitHubRemoteUrl, readGitHubPr } from "./github-pr.mjs";
+import { validateTaskWorktree } from "./managed-git.mjs";
 
 function runGit(cwd, args) {
   const r = spawnSync("git", args, { cwd, encoding: "utf8" });
@@ -32,7 +34,16 @@ export async function cmdAttachPr({ baseHome, woId, taskId, prUrl, installDir, n
     return { ok: false, error: "attach-pr requires task Branch and Worktree metadata" };
   }
 
-  const remote = runGit(metadata.worktree, ["remote", "get-url", "origin"]);
+  // Fail closed: pin the worktree/branch to the recomputed harness-owned values
+  // rather than trusting the verbatim spec metadata. validateTaskWorktree rejects
+  // a missing Branch/Worktree and any hand-edited value that is not harness-owned.
+  const cwd = path.dirname(baseHome);
+  const validated = validateTaskWorktree({ baseHome, cwd, woId, taskId, metadata });
+  if (!validated.ok) return { ok: false, error: validated.error };
+  const branch = validated.branch;
+  const worktree = validated.worktree;
+
+  const remote = runGit(worktree, ["remote", "get-url", "origin"]);
   if (!remote.ok) return { ok: false, error: "attach-pr requires an origin remote on the task worktree" };
   const remoteRepo = parseGitHubRemoteUrl(remote.stdout);
   if (!remoteRepo) return { ok: false, error: "attach-pr requires a GitHub origin remote" };
@@ -43,11 +54,14 @@ export async function cmdAttachPr({ baseHome, woId, taskId, prUrl, installDir, n
     };
   }
 
+  // Assert the PR head branch equals the harness-owned branch unconditionally,
+  // so a merged-but-unrelated PR cannot be attached.
   const lookup = readGitHubPr(parsedPr.url);
-  if (lookup.ok && lookup.pr.headRefName && lookup.pr.headRefName !== metadata.branch) {
+  if (!lookup.ok) return { ok: false, error: lookup.error };
+  if (lookup.pr.headRefName !== branch) {
     return {
       ok: false,
-      error: `attach-pr branch mismatch: expected ${metadata.branch}, found ${lookup.pr.headRefName}`,
+      error: `attach-pr branch mismatch: expected ${branch}, found ${lookup.pr.headRefName || "<none>"}`,
     };
   }
 

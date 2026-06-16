@@ -23,7 +23,10 @@ prepare_implementing_wo() {
   sed -i.bak 's/^Id: clean-wo/Id: wo-1/' "$BASE/works/wo-1/bf.md"
   sed -i.bak 's/^State: Draft/State: Implementing/' "$BASE/works/wo-1/bf.md"
   sed -i.bak 's/^State: Draft/State: Completed/' "$BASE/works/wo-1/task-a/spec.md"
-  sed -i.bak 's/^- \[ \] AC-1/^- [x] AC-1/' "$BASE/works/wo-1/task-a/spec.md"
+  sed -i.bak 's/^- \[ \] AC-1/- [x] AC-1/' "$BASE/works/wo-1/task-a/spec.md"
+  # Guard against a future literal-caret reintroduction: the AC line must be genuinely checked.
+  grep -q '^- \[x\] AC-1|' "$BASE/works/wo-1/task-a/spec.md" \
+    || fail "prepare_implementing_wo did not produce a checked '- [x] AC-1|' line (caret typo?)"
   sed -i.bak 's/^State: Draft/State: Ready/' "$BASE/works/wo-1/task-b/spec.md"
   sed -i.bak 's/^Requires-Worktree: .*/Requires-Worktree: true/' "$BASE/works/wo-1/task-a/spec.md"
   git -C "$PRIMARY" branch "$TASK_BRANCH" HEAD >/dev/null 2>&1 || fail "task branch failed"

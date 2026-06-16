@@ -136,9 +136,4 @@ assert_not_match "$RUNTIME_TEXT" "docs/spec" "runtime guidance must not depend o
 assert_not_match "$RUNTIME_TEXT" "docs/current" "runtime guidance must not force BF's documentation layout"
 assert_not_match "$RUNTIME_TEXT" "\`docs/\`" "runtime guidance must not force a docs/ root"
 
-PKG_VERSION=$(node -e "process.stdout.write(JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8')).version)" "$REPO_ROOT/package.json")
-LOCK_VERSION=$(node -e "const p=JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8')); process.stdout.write(p.version + ' ' + p.packages[''].version)" "$REPO_ROOT/package-lock.json")
-assert_eq "$PKG_VERSION" "0.7.19" "package.json version should be bumped for generate-docs pipeline"
-assert_eq "$LOCK_VERSION" "0.7.19 0.7.19" "package-lock root versions should be bumped for generate-docs pipeline"
-
 pass

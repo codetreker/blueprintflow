@@ -68,7 +68,11 @@ write_success_verify() {
 }
 
 check_ac() {
-  sed -i.bak 's/^- \[ \] AC-1/^- [x] AC-1/' "$BASE/works/wo-1/task-a/spec.md"
+  sed -i.bak 's/^- \[ \] AC-1/- [x] AC-1/' "$BASE/works/wo-1/task-a/spec.md"
+  # Guard against a future literal-caret reintroduction: the spec must now contain a
+  # genuinely-checked AC line (not a no-op that leaves an empty parsed AC list).
+  grep -q '^- \[x\] AC-1|' "$BASE/works/wo-1/task-a/spec.md" \
+    || fail "check_ac did not produce a checked '- [x] AC-1|' line (caret typo?)"
 }
 
 mark_task_spec_after_verify() {

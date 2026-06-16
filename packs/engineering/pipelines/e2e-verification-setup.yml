@@ -8,6 +8,8 @@ instruction: |
   Do not add dependencies, scripts, orchestration, persistent project instructions, credentials, services, or broader setup scope before the user-confirmation stage records explicit confirmation.
   Keep runtime guidance repository-owned. Do not encode project-specific commands, ports, credentials, services, or startup scripts into BF reusable runtime artifacts.
   Review stages must remain independent from the actor whose work they review.
+  When starting a role-bound actor, pass the role id and role instruction path, then require the actor to read its own role instruction before the stage instruction.
+  Do not inline role instruction content; stop when the actor cannot read the role file.
   Stop on any Blocker or High review finding and rerun the affected review stage after fixes.
   Do not edit locked bf.md or task spec.md content after accept; only the harness may flip checkboxes, advance State, sync Updated, and write task execution metadata.
 stages:

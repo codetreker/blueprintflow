@@ -13,6 +13,8 @@ instruction: |
   Severity guidance: use Blocker for findings that prevent accepting the audit contract or show immediate unsafe state; High for likely correctness, security, release, or data-loss risk that should stop acceptance; Medium for material maintainability, coverage, or reliability gaps that need scheduled follow-up; Low for localized cleanup or hardening observations.
   The findings triage stage must separate accepted findings from non-findings, duplicates, deferred scope, and evidence gaps.
   Stop on Blocker or High review findings.
+  When starting a role-bound actor, pass the role id and role instruction path, then require the actor to read its own role instruction before the stage instruction.
+  Do not inline role instruction content; stop when the actor cannot read the role file.
 stages:
   - id: repository-inventory
     capability: quality-assurance
@@ -132,4 +134,4 @@ stages:
       Produce terminal-state closure evidence for the audit task.
       List every external artifact or side effect created by the audit, such as a report, issue list, PR, release note, ticket, or handoff document.
       Confirm each item has reached its terminal state, has an explicit handoff owner, or is blocked by an explicit stop condition.
-      Do not clean BF-owned task worktrees or task branches in this stage; the coordinator runs bf-harness cleanup after Final Acceptance.
+      Do not clean BF-owned task worktrees or task branches in this stage; the coordinator runs bf-harness cleanup after bf-harness complete succeeds.

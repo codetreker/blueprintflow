@@ -41,6 +41,32 @@ write_pr() {
   sed -i.bak "s#^Pull-Request:.*#Pull-Request: $url#" "$BASE/works/wo-1/task-a/spec.md"
 }
 
+# Satisfy the Task Verification artifact-presence gate: write a non-empty
+# artifact for every stage of task-a's resolved pipeline that declares an
+# `output:`. Derived from the live pipeline registry so it tracks feature.yml.
+seed_stage_artifacts() {
+  local outputs
+  outputs=$(node --input-type=module -e "
+    import('$REPO_ROOT/bin/lib/harness/load-wo.mjs').then(async (lw) => {
+      const reg = await import('$REPO_ROOT/bin/lib/shared/pipeline-registry.mjs');
+      const b = await lw.loadWo({ baseHome: '$BASE', woId: 'wo-1', installDir: '$REPO_ROOT' });
+      const pack = b.bf.frontmatter.Pack;
+      const pid = b.tasks.find(t => t.id === 'task-a').spec.frontmatter.Pipeline;
+      const r = reg.buildPipelineRegistry({ packReg: b.packReg, pack, localPipelinesDir: b.localPipelinesDir });
+      const p = reg.findPipeline(r, pack, pid);
+      for (const s of (p?.stages || [])) {
+        if (typeof s.output === 'string' && s.output.trim()) process.stdout.write(s.output.trim() + '\n');
+      }
+    });
+  ")
+  local taskdir="$BASE/works/wo-1/task-a"
+  while IFS= read -r out; do
+    [ -z "$out" ] && continue
+    mkdir -p "$taskdir/$(dirname "$out")"
+    printf 'stage artifact evidence for %s\n' "$out" > "$taskdir/$out"
+  done <<< "$outputs"
+}
+
 write_signed_review() {
   local dir="$1"
   mkdir -p "$dir"
@@ -182,6 +208,7 @@ prepare_tasking_wo true
 make_fake_gh
 write_pr "$PR_URL"
 write_signed_review "$BASE/works/wo-1/task-a/runs/reviews/round_1"
+seed_stage_artifacts
 GH_FAKE_MODE=unmerged run_verify_b
 assert_json_field "$STDOUT" .status "SUCCESS"
 grep -qE "^- \[x\] AC-1\|" "$BASE/works/wo-1/task-a/spec.md" || fail "verify should flip signed AC"
@@ -195,6 +222,7 @@ git -C "$PRIMARY" remote set-url origin "$ROOT/origin.git" >/dev/null 2>&1
 prepare_tasking_wo true
 make_fake_gh
 write_signed_review "$BASE/works/wo-1/task-a/runs/reviews/round_1"
+seed_stage_artifacts
 run_verify_b
 assert_json_field "$STDOUT" .status "SUCCESS"
 grep -q "^State: Tasking" "$BASE/works/wo-1/task-a/spec.md" || fail "verify should leave task Tasking"
@@ -204,6 +232,7 @@ make_git_repo
 prepare_tasking_wo false
 make_fake_gh
 write_signed_review "$BASE/works/wo-1/task-a/runs/reviews/round_1"
+seed_stage_artifacts
 run_verify_b
 assert_json_field "$STDOUT" .status "SUCCESS"
 grep -q "^State: Tasking" "$BASE/works/wo-1/task-a/spec.md" || fail "verify should leave task Tasking"

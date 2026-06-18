@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import path from "node:path";
 import { woDir, taskDir, roundDir, verifyResultFile } from "./wo-paths.mjs";
 import { findLatestRound, listResultFiles, collectFindings } from "./verify-round.mjs";
 import { parseReviewResult } from "./parse-review-result.mjs";
@@ -6,6 +7,7 @@ import { writeVerifyResultMd } from "./write-verify-result.mjs";
 import { flipCheckbox, writeUpdated, formatTimestamp } from "./write-mutations.mjs";
 import { computeAcSignoff } from "./compute-ac-signoff.mjs";
 import { loadWo } from "./load-wo.mjs";
+import { buildPipelineRegistry, findPipeline } from "../shared/pipeline-registry.mjs";
 
 export const VERIFY_MODES = {
   SPEC_REVIEW: "Spec Review",
@@ -34,8 +36,56 @@ async function verifyModeA({ parsedResults }) {
   return { status, issues };
 }
 
+// Task Verification artifact-presence gate (fail-closed).
+//
+// Loads the task's selected pipeline, enumerates the stages that declare a
+// non-empty `output:` field, and asserts each declared artifact exists and is
+// non-empty (trimmed length > 0) under the task directory. Presence and
+// non-emptiness only — no content inspection.
+//
+// Returns a list of "blocker" strings naming each offending artifact (missing,
+// empty, or — fail closed — an unresolvable pipeline). An empty list means the
+// gate passed. A pipeline with zero `output:` stages passes vacuously.
+function checkStageArtifacts({ bundle, baseHome, woId, task }) {
+  const pipelineId = task.spec?.frontmatter?.Pipeline;
+  const pack = bundle.bf?.frontmatter?.Pack;
+  if (!pipelineId || !pack) {
+    return [`artifact gate: cannot resolve pipeline for ${woId}/${task.id} (Pipeline="${pipelineId || "<empty>"}", Pack="${pack || "<empty>"}")`];
+  }
+  const reg = buildPipelineRegistry({
+    packReg: bundle.packReg,
+    pack,
+    localPipelinesDir: bundle.localPipelinesDir,
+  });
+  if (reg.error) {
+    return [`artifact gate: ${reg.error} (cannot resolve pipeline for ${woId}/${task.id})`];
+  }
+  const pipeline = findPipeline(reg, pack, pipelineId);
+  if (!pipeline) {
+    return [`artifact gate: pipeline not found: ${pack}/${pipelineId} (cannot verify declared stage artifacts for ${woId}/${task.id})`];
+  }
+  const dir = taskDir(baseHome, woId, task.id);
+  const offending = [];
+  for (const stage of pipeline.stages || []) {
+    const output = typeof stage?.output === "string" ? stage.output.trim() : "";
+    if (output.length === 0) continue; // stages without an output: are not gated
+    const artifactPath = path.join(dir, output);
+    let content = null;
+    try {
+      content = fs.readFileSync(artifactPath, "utf8");
+    } catch {
+      offending.push(`missing artifact for stage ${stage.id || "<unnamed>"}: ${output}`);
+      continue;
+    }
+    if (content.trim().length === 0) {
+      offending.push(`empty artifact for stage ${stage.id || "<unnamed>"}: ${output}`);
+    }
+  }
+  return offending;
+}
+
 // Task Verification. OR semantics — ≥1 provider signed each AC → signed.
-async function verifyModeB({ bundle, parsedResults, taskId }) {
+async function verifyModeB({ bundle, parsedResults, taskId, baseHome, woId }) {
   const issues = collectFindings(parsedResults);
   if (issues.blocker.length > 0 || issues.high.length > 0) {
     return { status: "FAIL", issues };
@@ -43,6 +93,12 @@ async function verifyModeB({ bundle, parsedResults, taskId }) {
   const task = bundle.tasks.find(t => t.id === taskId);
   if (!task || !task.spec) {
     return { status: "FAIL", issues: { blocker: [`task spec not found: ${taskId}`], high: [] } };
+  }
+  // Fail-closed artifact-presence gate. Runs BEFORE computeAcSignoff so a FAIL
+  // returns before any spec mutation (no checkbox flip / Updated write).
+  const artifactBlockers = checkStageArtifacts({ bundle, baseHome, woId, task });
+  if (artifactBlockers.length > 0) {
+    return { status: "FAIL", issues: { blocker: artifactBlockers, high: [] } };
   }
   const signoff = computeAcSignoff({
     acList: task.spec.acceptanceCriteria,
@@ -169,7 +225,7 @@ export async function cmdVerify({ baseHome, woId, taskId = null, installDir, now
     return { ok: false, error: "malformed review result(s)", details: parseErrors };
   }
 
-  const ctx = { bundle, scopeDir, round, roundPath, parsedResults, taskId };
+  const ctx = { bundle, scopeDir, round, roundPath, parsedResults, taskId, baseHome, woId };
   let r;
   if (mode === VERIFY_MODES.SPEC_REVIEW) r = await verifyModeA(ctx);
   else if (mode === VERIFY_MODES.TASK_VERIFICATION) r = await verifyModeB(ctx);

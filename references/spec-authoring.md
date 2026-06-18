@@ -75,7 +75,7 @@ This traceability does not belong in the contract text. bf.md must not cite or q
 
 ## Mutation whitelist after accept
 
-Once `accept` runs, the LLM no longer edits `State`, AC checkboxes, `Updated`, or task execution metadata in `bf.md` / `spec.md`. Only the harness writes those. The LLM continues to write `discussion.md`, review results, and code.
+After accept, you MUST NEVER edit State, AC checkboxes, Updated, or task execution metadata (Branch/Worktree/Pull-Request) in `bf.md` / `spec.md` directly — only the harness writes those. You continue to write `discussion.md`, review results, and code. If a locked field looks wrong, STOP and route the change through the harness command or the coordinator; do not hand-edit it, even to fix an obvious error.
 
 ## Authoring rules
 

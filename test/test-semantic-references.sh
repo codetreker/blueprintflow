@@ -129,7 +129,7 @@ assert_not_match "$EXECUTION_TASK_LOOP" "if \`next\` returns task blocks, do not
 assert_match "$EXECUTION_TASK_LOOP" "on fail" "task loop handles verify failures"
 assert_match "$EXECUTION_TASK_LOOP" "verify result" "task loop reads verify failure results"
 assert_match "$EXECUTION_TASK_LOOP" "original task driver" "task loop returns verify failures to the original task driver"
-assert_match "$EXECUTION_TASK_LOOP" "when available" "task loop tolerates missing original task driver"
+assert_match "$EXECUTION_TASK_LOOP" "if that instance is no longer running, start a new task driver" "task loop names a fallback when the original task driver is gone"
 assert_match "$EXECUTION_TASK_LOOP" "wait for completion" "task loop waits for task-driver completion before retry"
 assert_match "$EXECUTION_TASK_LOOP" "before rerunning verify" "task loop verifies only after the next handoff"
 assert_not_match "$EXECUTION_TASK_LOOP" "require a fresh review round with fresh independent reviewers after fixes" "task loop should not instruct invisible task-driver internals"
@@ -158,7 +158,7 @@ assert_not_match "$EXECUTION_BODY" "use this template when the coordinator or a 
 assert_match "$EXECUTION_BODY" "do not read, summarize, or inline the role instruction" "parent actors do not proxy child role prompts"
 assert_match "$EXECUTION_BODY" "until each task driver reports completion" "execution waits for task driver completion"
 assert_match "$EXECUTION_BODY" "terminate it lightly" "execution avoids killing task drivers prematurely"
-assert_match "$EXECUTION_BODY" "prefer the original task driver" "execution prefers original task driver for verify fixes"
+assert_match "$EXECUTION_BODY" "return it to the original task driver" "execution returns verify fixes to the original task driver"
 assert_match "$EXECUTION_BODY" "fresh independent reviewers" "execution requires fresh reviewers after fixes"
 assert_match "$EXECUTION_BODY" "if \`next\` returns no eligible task, enter final acceptance" "execution enters Final Acceptance when next is empty"
 assert_match "$EXECUTION_BODY" "start final acceptance by running \`bf-harness status <bf-wo>\`" "Final Acceptance starts with status"
@@ -213,12 +213,12 @@ ENGINEERING_PACK_BODY=$(tr '[:upper:]' '[:lower:]' < "$REPO_ROOT/packs/engineeri
 assert_match "$ENGINEERING_PACK_BODY" "small enough that one host-compatible task driver can finish it" "engineering breakdown avoids engineer subagent task ownership"
 assert_not_match "$ENGINEERING_PACK_BODY" "pick doers" "engineering pack avoids stale doer vocabulary"
 
-TASK_DRIVER_OPERATING_RULES=$(awk '/^## Operating Rules/{flag=1;next}/^## /{flag=0}flag' "$REPO_ROOT/roles/task-driver.md" | tr '[:upper:]' '[:lower:]')
-assert_match "$TASK_DRIVER_OPERATING_RULES" "immediately check" "task-driver startup checks runtime capability immediately"
-assert_match "$TASK_DRIVER_OPERATING_RULES" "subagent tool" "task-driver startup checks for subagent tool availability"
-assert_match "$TASK_DRIVER_OPERATING_RULES" "missing subagent tool" "task-driver reports missing subagent tool distinctly"
-assert_match "$TASK_DRIVER_OPERATING_RULES" "coordinator proxy" "task-driver hands task-driver work to coordinator proxy when subagent tool is missing"
-assert_match "$TASK_DRIVER_OPERATING_RULES" "before reading the task spec" "task-driver performs subagent capability check before task work"
+TASK_DRIVER_STARTUP_CHECK=$(awk '/^## Startup Capability Check/{flag=1;next}/^## /{flag=0}flag' "$REPO_ROOT/roles/task-driver.md" | tr '[:upper:]' '[:lower:]')
+assert_match "$TASK_DRIVER_STARTUP_CHECK" "first action" "task-driver startup capability check is the first action"
+assert_match "$TASK_DRIVER_STARTUP_CHECK" "subagent tool" "task-driver startup checks for subagent tool availability"
+assert_match "$TASK_DRIVER_STARTUP_CHECK" "missing subagent tool" "task-driver reports missing subagent tool distinctly"
+assert_match "$TASK_DRIVER_STARTUP_CHECK" "coordinator proxy" "task-driver hands task-driver work to coordinator proxy when subagent tool is missing"
+assert_match "$TASK_DRIVER_STARTUP_CHECK" "before reading the task spec" "task-driver performs subagent capability check before task work"
 
 TASK_DRIVER_REVIEW_RULE=$(awk '
   /^- Run or coordinate task review and readiness verification/ { flag=1 }

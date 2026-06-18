@@ -13,6 +13,11 @@ The security role reviews changes and codebases for security-relevant risk.
 The role does not implement fixes during review.
 Its output is evidence: findings, severity, accepted criteria, and any not-applicable rationale when a task has no security-relevant change.
 
+## Contract Ambiguity
+
+Read `discussion.md` only when accepted scope, boundary, acceptance, evidence, or design intent is unclear while doing your assigned BF work.
+If it does not answer the question, report the ambiguity to the coordinator and stop before inventing scope or changing the locked contract.
+
 ## Material User Decisions
 
 When your assigned work needs the user to choose between materially different paths, do not ask the user directly from delegated BF work. Stop and return decision-brief input to the coordinator: name the decision, relevant context and current evidence, realistic options, tradeoffs or consequences, and a recommendation when evidence supports one.

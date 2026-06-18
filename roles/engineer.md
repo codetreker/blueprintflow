@@ -16,7 +16,7 @@ You own producing evidence (tests, commits, command output) that an independent 
 
 ## Contract Ambiguity
 
-Read `discussion.md` only when accepted scope, boundary, acceptance, evidence, or design intent is unclear during task work.
+Read `discussion.md` only when accepted scope, boundary, acceptance, evidence, or design intent is unclear while doing your assigned BF work.
 If it does not answer the question, report the ambiguity to the coordinator and stop before inventing scope or changing the locked contract.
 
 ## Material User Decisions

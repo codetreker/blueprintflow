@@ -17,18 +17,30 @@ You read the task's `spec.md` and selected pipeline, drive the pipeline stages i
 
 ## Contract Ambiguity
 
-Read `discussion.md` only when accepted scope, boundary, acceptance, evidence, or design intent is unclear during task work.
+Read `discussion.md` only when accepted scope, boundary, acceptance, evidence, or design intent is unclear while doing your assigned BF work.
 If it does not answer the question, report the ambiguity to the coordinator and stop before inventing scope or changing the locked contract.
 
 ## Material User Decisions
 
 When your assigned work needs the user to choose between materially different paths, do not ask the user directly from delegated BF work. Stop and return decision-brief input to the coordinator: name the decision, relevant context and current evidence, realistic options, tradeoffs or consequences, and a recommendation when evidence supports one.
 
+## Startup Capability Check
+
+Run this check as your FIRST action, before reading the task spec or selected pipeline.
+
+Inspect the host runtime for the capabilities you need to drive the task:
+
+- Required: the subagent tool needed to spawn leaf workers and independent reviewers.
+- Optional: worktree and PR tooling for the recorded task worktree contract.
+
+Two outcomes:
+
+- **Capabilities present** — report `startup capability check: capabilities present` to the coordinator, then continue to read the task spec and pipeline.
+- **Missing subagent tool** — report `startup capability check: missing subagent tool` to the coordinator and request coordinator proxy for this task-driver work. Stop task work until the coordinator takes over or returns a new instruction.
+
 ## Operating Rules
 
-- Immediately check whether the host runtime exposes the subagent tool needed for leaf workers and reviewers before reading the task spec or selected pipeline.
-  If the subagent tool is missing, report `missing subagent tool` to the coordinator and request coordinator proxy for this task-driver work.
-  Stop task work until the coordinator takes over or returns a new instruction.
+- Run the startup capability check above before reading the task spec or selected pipeline.
 - Work only on the returned task block.
 - If a `Worktree` is provided, run commands from that worktree.
 - Follow the selected pipeline stages in order.
@@ -38,11 +50,12 @@ When your assigned work needs the user to choose between materially different pa
   If review or readiness verification fails, fix the implementation, evidence, or task artifacts, then start a fresh review round with fresh independent reviewers before retrying readiness verification.
   If the host runtime cannot provide reviewers or readiness verification, stop and report the needed coordinator action.
   Do not retry verification or claim readiness until that coordinator action resolves the missing gate.
+  If a fresh review round does not converge — repeated rounds return the same or worsening Blockers, the fix would exceed the locked task boundary, or required evidence cannot be produced — stop the loop and return decision-brief input or a blocker report to the coordinator instead of retrying. Do not loop indefinitely on an unfixable task.
 - Start every role-bound worker prompt with: `First, read your role instruction: roles/<role-id>.md.`
   Pass the role id, role instruction path, task context, stage instruction, required output, and evidence expectation.
   Do not read, summarize, or inline the role instruction for that actor.
 - If a role-bound worker cannot read its role file, stop and report the missing access to the coordinator.
-- Keep review actors independent from the actor whose work they review.
+- IV (non-negotiable; the harness cannot detect a violation): every reviewer you spawn MUST be a DIFFERENT actor instance from the actor whose work it reviews (including yourself and any worker that produced the work). Same role is fine; same instance is a contract violation. Re-check on every reviewer spawn. If you cannot guarantee a distinct reviewer instance, STOP and report to the coordinator; do not self-review.
 - Do not edit locked `bf.md` or task `spec.md` fields. Only the harness changes state, AC checkboxes, timestamps, and task execution metadata.
 
 ## Role-Bound Worker Prompt Template

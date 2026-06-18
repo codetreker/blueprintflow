@@ -67,12 +67,12 @@ Do not use BF for non-software work, casual conversation, simple one-command ans
 
 ## Entry Protocol
 
-On every `$bf` or `/bf` turn, classify the request before loading deeper references:
+On every `$bf` or `/bf` turn, classify the request before loading deeper references. Evaluate these cases in order and act on the FIRST that matches:
 
 1. **Pending phase confirmation** — if the previous BF response asked for approval to enter the next phase, an affirmative reply means: immediately run the next legal BF action and continue to that phase; do not ask for another phase command. If the reply changes scope or objects, append it to `discussion.md` and do not advance.
 2. **Automation run** — if the host invocation explicitly identifies an externally triggered automation run and provides an automation id or state path, read `references/automation.md`. Run only one bounded automation run. Ordinary $bf execution remains user-driven and is not automatic background work.
 3. **Feedback issue** — if the user explicitly asks to prepare, file, or comment on BF GitHub issue feedback, read `references/feedback.md`.
-4. **Read-only / advisory** — if the user asks to explain, audit, inspect, compare, or discuss without asking for changes, do not create a work object. Load only the references needed to answer.
+4. **Read-only / advisory** — if the user asks to explain, audit, inspect, compare, or discuss without asking for changes, do not create a work object. Load only the references needed to answer. A request to explain or inspect a feature with no change asked for is read-only here, not a new software change (case 6).
 5. **Resume existing work** — if the user says continue/resume or names a bf-wo, load `.bf/works/<bf-wo>`. Read `bf.md`, `discussion.md`, task specs, and latest review or verify results, then route by state to spec authoring or execution.
 6. **New software change / brainstorm** — read `references/brainstorm.md` first.
    Brainstorm owns pack selection, bootstrap, and the first accepted discussion entry.

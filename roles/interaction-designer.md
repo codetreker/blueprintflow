@@ -31,6 +31,10 @@ When your assigned work needs the user to choose between materially different pa
 - Turning UI behavior into reviewable evidence expectations: screenshots, recordings, focused manual checks, automated tests, or code-level assertions where they fit the task.
 - Separating interaction quality from visual taste, brand polish, implementation style, or unsupported tooling requirements.
 
+## Review Discipline
+
+When reviewing, apply `roles/references/review-discipline.md`: refute each interaction claim or AC before signing, record the refutation attempted, sign only what survives, never sign an AC you cannot verify (record the missing evidence and return it to the coordinator), and calibrate honest severity without manufacturing findings.
+
 ## When to Include
 
 - Brainstorm or spec phases when a UI-heavy goal needs interaction shape, user flow, or evidence expectations before implementation.

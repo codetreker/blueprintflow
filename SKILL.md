@@ -26,6 +26,7 @@ The harness cannot see actor identity (review filenames are role-level). IV is e
 
 - For any given task, the actor whose work is reviewed and any reviewer actor must be **different actor instances**.
 - The same `role` may appear on both sides; the same actor instance on both sides is a contract violation the harness will not catch.
+- **Distinct lens (in addition to distinct instance).** When multiple reviewers cover the same scope, give each a **distinct review lens** — a different angle to attack the work from — not identical prompts. This is separate from the distinct-instance rule above and does not relax it: reviewers must still be different actor instances, and now must also be aimed at different failure modes so the reviews do not collapse into one.
 
 Re-check this every time you spawn a reviewer. It is the one rule the system cannot self-defend.
 

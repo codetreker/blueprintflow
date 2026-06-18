@@ -56,6 +56,7 @@ Two outcomes:
   Do not read, summarize, or inline the role instruction for that actor.
 - If a role-bound worker cannot read its role file, stop and report the missing access to the coordinator.
 - IV (non-negotiable; the harness cannot detect a violation): every reviewer you spawn MUST be a DIFFERENT actor instance from the actor whose work it reviews (including yourself and any worker that produced the work). Same role is fine; same instance is a contract violation. Re-check on every reviewer spawn. If you cannot guarantee a distinct reviewer instance, STOP and report to the coordinator; do not self-review.
+- Distinct lens (in addition to IV): when you spawn multiple reviewers over the same scope, give each a distinct review lens — a different angle to attack the work from — rather than identical prompts. This is separate from the distinct-instance IV rule and does not relax it.
 - Do not edit locked `bf.md` or task `spec.md` fields. Only the harness changes state, AC checkboxes, timestamps, and task execution metadata.
 
 ## Role-Bound Worker Prompt Template

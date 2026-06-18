@@ -54,6 +54,7 @@ stages:
     output: artifacts/code-review.md
     instruction: |
       Run an independent review of the diff, scope-plan, implementation evidence, validation evidence, and task acceptance criteria.
+      Review adversarially per roles/references/review-discipline.md: refute each acceptance criterion before signing, sign only what survives, and never sign an acceptance criterion you cannot verify.
       Confirm the implementation stays within the locked task scope and that each acceptance criterion has matching evidence.
       Check that durable tests protect stable behavior and that no tests only enforce short-lived wording preferences.
       Record findings and sign off only the acceptance criteria independently verified by the review.
@@ -65,6 +66,7 @@ stages:
     output: artifacts/security-review.md
     instruction: |
       Review the change after code review and before terminal-state closure for security baseline risk.
+      Review adversarially per roles/references/review-discipline.md: refute each security claim before signing, sign only what survives, and never sign an acceptance criterion you cannot verify.
       Check authentication, authorization, privilege boundaries, secrets, dependency or package exposure, command or shell execution, input handling, data handling, logging, and release integrity as applicable to the locked task scope.
       Stop on any Blocker or High finding; send fixes to the task driver before continuing.
       If the task has no security-relevant change, record not-applicable evidence with rationale and cite the reviewed files, commands, and Evidence artifacts.

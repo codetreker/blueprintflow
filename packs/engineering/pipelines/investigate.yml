@@ -1,0 +1,102 @@
+id: investigate
+desc: Run a report-only multi-agent investigation of a research question and produce an adversarially-reviewed research report with a single best recommended approach
+instruction: |
+  Use this pipeline when the task's primary deliverable is investigating a research question and producing a research report with a recommended approach, not implementing a change.
+  This pipeline is report-only: it investigates, challenges, synthesizes, and reports; it does not implement product code, does not fix anything, and does not replace BF Task Verification or Final Acceptance.
+  A confirmed recommendation is a research output, not a code change: the coordinator or user routes a confirmed recommended approach to a separate feature or bugfix task; this pipeline never enters an implementation or fix loop.
+  Run the seven stages in order: scope-confirmation, investigation-plan, parallel-investigation, adversarial-challenge, synthesis-report, independent-review, terminal-state-closure.
+  Run the stages in order; produce every named output artifact before the next stage starts.
+  Read the task spec, bf.md Goal/Boundary, relevant discussion when the task contract is ambiguous, confirmed project design docs, and host-runtime strategy before the first stage.
+  This pipeline is evidence-first and source-grounded but tool-agnostic: name the project's own investigation surfaces such as the codebase, repository history, documentation, issue trackers, and external references, and require every finding to be grounded in a cited source rather than asserted. Do not hard-code project-specific commands, paths, services, or credentials into this runtime artifact; keep runtime guidance repository-owned.
+  Investigation depth and breadth are selectable. Read the chosen depth and breadth from the task contract, and the research report states its coverage boundary explicitly so a narrow scoped investigation is never mistaken for an exhaustive answer.
+  Stop conditions are limited to inability to investigate or to confirm: the research question is ambiguous or under-scoped, required evidence cannot be produced, or the independent review does not converge. A surviving disagreement between findings is data to report, not a reason to abandon the pipeline.
+  This pipeline has no internal code-review stage and no internal security-review stage. It changes no product code, so independent review here reviews the research report, and final code-facing review remains BF Task Verification and Final Acceptance.
+  Independent Verification: parallel-investigation, adversarial-challenge, and independent-review each use multiple independent actor instances, recommended three, each a distinct instance from each other and from every prior-stage actor whose work it builds on or reviews. The same architect role is fine; the same actor instance is not. If the task driver cannot spawn the independent instances, it hands that need back to the coordinator instead of self-confirming or self-reviewing.
+  Decision rule, applied in adversarial-challenge and independent-review: a finding or a recommendation is confirmed only if it survives an honest refutation attempt; default uncertainty to not-confirmed so an unverified claim is never reported as established fact.
+  architect owns every stage for single-owner continuity: the system-architecture capability owns the produce, investigate, and synthesize stages, and the design-review capability owns the challenge, review, and closure stages. Fan-out worker and reviewer instances may be delegated as distinct actor instances under the same role.
+  When starting a role-bound actor, pass the role id and role instruction path, then require the actor to read its own role instruction before the stage instruction. Do not inline role instruction content; stop when the actor cannot read the role file.
+  The user-perspective done state: the research question and the decision it informs were confirmed, the investigation ran across multiple independent angles, findings were adversarially challenged into confirmed versus not-confirmed, a single best recommended approach with trade-offs and rejected alternatives was synthesized and survived an independent multi-instance review, the research report with its explicit coverage boundary and confidence was produced, and every external artifact or side effect reached a terminal state with a handoff owner or stop condition.
+  Do not edit locked bf.md or task spec.md content after accept; only the harness may flip checkboxes, advance State, sync Updated, and write task execution metadata.
+stages:
+  - id: scope-confirmation
+    capability: system-architecture
+    output: artifacts/investigation-scope.md
+    instruction: |
+      Confirm the research question before any investigation work.
+      Read the task contract and record the precise research question, the decision it informs, the scope and boundary of what is in and out of the investigation, the selectable depth and breadth, the done-criteria that say when the question is answered well enough, and the deliverable shape of the research report.
+      State the coverage boundary you are committing to so a narrow scoped investigation is never later mistaken for an exhaustive answer.
+      Stop and return to the coordinator when the research question is ambiguous or under-scoped: record exactly what is unclear and the decision-brief input needed to resolve it, and do not guess the scope.
+      Handoff to investigation-plan only after the question, the decision it informs, the scope and boundary, the depth and breadth, the done-criteria, and the deliverable shape are confirmed.
+
+  - id: investigation-plan
+    capability: system-architecture
+    output: artifacts/investigation-plan.md
+    instruction: |
+      Plan the investigation before investigating anything.
+      Decompose the confirmed research question into N distinct, independent investigation angles or sub-questions, each a diverse lens on the question rather than a restatement of the same angle.
+      For each angle, record the sub-question, the lens it represents, the sources and surfaces it must consult such as the codebase, repository history, documentation, issue trackers, and external references, and the specific grounded evidence that angle must produce.
+      Keep the angles independent so they can be investigated by distinct actor instances in parallel without sharing conclusions.
+      Stop with a decision brief to the coordinator when the question cannot be decomposed into independent angles within the confirmed scope; do not collapse it into a single unverified opinion.
+      Handoff to parallel-investigation with the enumerated angles, their lenses, their sources, and their required evidence.
+
+  - id: parallel-investigation
+    capability: system-architecture
+    output: artifacts/investigation-findings.md
+    instruction: |
+      Investigate the planned angles in parallel across multiple independent actor instances.
+      Spawn multiple independent investigator actor instances, recommended three or more, one per angle, each a distinct instance from each other; the same architect role is fine but the same actor instance is not.
+      Give each investigator one angle and its lens from the plan, and require it to produce grounded, sourced evidence for that angle: every finding cited to a specific source such as a file and location, a commit, a document, an issue, or an external reference, never asserted without grounding.
+      Keep the instances independent: each investigates its own angle without borrowing another instance's conclusion, so the angles stay diverse and the evidence stays separable.
+      If the task driver cannot spawn the independent investigator instances, hand that need back to the coordinator instead of investigating every angle from one viewpoint.
+      Record per-angle findings with their citations and any angle that could not be grounded, and consolidate them into the findings artifact.
+      Handoff to adversarial-challenge with the per-angle findings and their sources.
+
+  - id: adversarial-challenge
+    capability: design-review
+    output: artifacts/challenge-review.md
+    instruction: |
+      Adversarially challenge each finding before it is allowed into the report, because an unrefuted finding is an unverified one.
+      Apply roles/references/review-discipline.md: refute each finding before signing it, record the refutation attempted, and sign only what survives.
+      Spawn multiple distinct challenger actor instances, recommended three or more, each a distinct instance from each other and distinct from the investigators whose findings they challenge; the same architect role is fine but the same actor instance is not.
+      Prompt each challenger to refute its assigned findings: is the cited source actually load-bearing, is the claim overstated, does another finding contradict it, is there a gap the finding silently assumes away? Surface gaps, contradictions, and overstatements explicitly.
+      Apply the decision rule: a finding is confirmed only if it survives the refutation attempt; default uncertainty to not-confirmed so an observation that could not be confirmed is recorded as not-confirmed, not promoted to established fact.
+      If the task driver cannot spawn the independent challenger instances, hand that need back to the coordinator instead of self-confirming the findings.
+      Record per-finding challenger verdicts, the surviving confirmed set, the not-confirmed set, and the surfaced gaps and contradictions.
+      Handoff to synthesis-report with the confirmed set, the not-confirmed set, and the open gaps after every finding has been challenged.
+
+  - id: synthesis-report
+    capability: system-architecture
+    output: artifacts/research-report.md
+    instruction: |
+      Synthesize the surviving evidence into the research report after the challenge stage.
+      Reconcile the confirmed findings into a single best recommended approach: state the recommendation, its trade-offs, the rejected alternatives and the specific reason each was rejected, the supporting evidence with its citations, the confidence level, and the open questions that remain unresolved.
+      State the coverage boundary explicitly: the chosen depth and breadth, what was investigated, and what was deliberately not covered, so the report's confidence is read against its scope.
+      Use only findings that survived the adversarial challenge as confirmed support; carry not-confirmed observations as open questions or noted uncertainty, never as established support for the recommendation.
+      Keep the report-only posture: the report recommends an approach and does not implement it; a confirmed recommendation is routed by the coordinator or user to a separate feature or bugfix task.
+      Handoff to independent-review with the research report and the confirmed-versus-not-confirmed split that backs it.
+
+  - id: independent-review
+    capability: design-review
+    output: artifacts/independent-review.md
+    instruction: |
+      Independently review the research report; this review must pass before closure.
+      Apply roles/references/review-discipline.md: refute each claim and the recommendation before signing, record the refutation attempted, sign only what survives, and never sign what you cannot verify.
+      Spawn multiple independent reviewer actor instances, recommended three or more, each a distinct instance from each other and from every prior-stage actor including the investigators, the challengers, and the synthesizer; the same architect role is fine but the same actor instance is not.
+      Give each reviewer a distinct lens on the report rather than identical prompts: for example, is the recommendation actually supported by the cited evidence, are the rejected alternatives rejected for defensible reasons, and are the stated confidence and coverage boundary honest given the evidence.
+      Apply the decision rule: the recommendation and each supporting claim are confirmed only if they survive refutation; default uncertainty to not-confirmed.
+      Stop on a Blocker or High finding: loop back in a bounded way to synthesis-report to repair the report, or back to parallel-investigation when the gap is missing evidence rather than weak synthesis, then re-review with fresh independent reviewer instances. Escalate to the coordinator when the review does not converge across bounded rounds instead of looping indefinitely.
+      If the task driver cannot spawn the independent reviewer instances, hand that need back to the coordinator instead of self-reviewing the report.
+      Record per-reviewer verdicts, the lens each used, the refutations attempted, and the pass result that confirms the report is sound, evidence-backed, and report-only.
+      Handoff to terminal-state-closure only after the independent review passes with no open Blocker or High finding.
+
+  - id: terminal-state-closure
+    capability: design-review
+    output: artifacts/terminal-state-closure.md
+    instruction: |
+      Produce task-local terminal-state closure evidence after the review passes. This is the audit of user-perspective side effects, not a second review.
+      List every external artifact or side effect created by the task, such as the research report and its handoff destination, and any external or shared-system residue such as created tickets, comments, or other recorded outputs.
+      Treat a confirmed recommendation as a handoff, not as work done here: routing the confirmed recommended approach to a separate feature or bugfix task is the handoff, and this pipeline does not implement it. Record the handoff owner for that routing.
+      Confirm each external artifact or side effect has reached its terminal state, has an explicit handoff owner, or is blocked by an explicit stop condition before user-perspective completion.
+      Act as a backstop for any orphan side effect and record any whole-work-object side effect that must be checked again at Final Acceptance.
+      Do not clean BF-owned task worktrees or task branches in this stage; the coordinator runs bf-harness cleanup after bf-harness complete succeeds.
+      Handoff to task-level BF acceptance review and readiness verification only after the report is handed off and every side effect is terminal, handed off, or explicitly blocked.

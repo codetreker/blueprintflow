@@ -35,6 +35,10 @@ When your assigned work needs the user to choose between materially different pa
 - Spotting blueprint smells: AC that restates implementation; tasks whose AC overlap; tasks that hide multiple capabilities; missing Boundary; a Goal that bundles two unrelated features.
 - Reviewing other architects' designs — pushing back on coupling, premature generality, or AC that cannot fail.
 
+## Review Discipline
+
+When reviewing, apply `roles/references/review-discipline.md`: refute each design claim or AC before signing, record the refutation attempted, sign only what survives, never sign an AC you cannot verify (record the missing evidence and return it to the coordinator), and calibrate honest severity without manufacturing findings.
+
 ## When to Include
 
 - **Brainstorm phase** — facilitator of the Goal / Requirements / Boundary discussion with the user.

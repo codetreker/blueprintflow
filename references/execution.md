@@ -25,7 +25,7 @@ User approval to continue does not replace harness transitions. Continue means: 
 - If the task has `Requires-Worktree: true`, work only in the returned or recorded `Worktree`.
 - Assign claimed task work and verification fixes to a host-compatible task driver. The coordinator does not do task leaf work unless the user explicitly overrides this gate or task-driver proxy mode is active after a missing subagent tool report.
 - When starting a task driver, leaf worker, or reviewer, pass the role instruction path and require that actor to read its own role instruction first. Do not read, summarize, or inline the role instruction for that actor.
-- Reviewers must be different actor instances from the actor whose work is reviewed.
+- Reviewers must be different actor instances from the actor whose work is reviewed. When multiple reviewers cover the same scope, also give each a distinct review lens rather than identical prompts; the distinct-lens rule is in addition to the distinct-actor-instance rule, not a replacement for it.
 - If accepted scope, boundary, acceptance, or design intent is unclear, read `discussion.md`. If the answer is still missing, append the ambiguity and stop for clarification.
 - For project design-doc discovery, authority, or drift handling, follow `project-docs.md`.
 - If accepted design authority conflicts with implementation reality, record the drift and stop for clarification.
@@ -92,7 +92,7 @@ Start Final Acceptance by running `bf-harness status <bf-wo>`. Continue only whe
 
 1. Check whole-work-object terminal-state closure.
 2. Run `bf-harness start-review <bf-wo>`.
-3. Dispatch independent reviewers for the `bf.md` AC capabilities.
+3. Dispatch independent reviewers for the `bf.md` AC capabilities. When multiple reviewers cover the same scope, give each a distinct review lens rather than identical prompts, in addition to keeping them distinct actor instances.
 4. Run `bf-harness verify <bf-wo>`.
 5. On FAIL, read the verify result, fix through the appropriate task driver or coordinator-owned action, start a fresh review round with fresh independent reviewers, and verify again.
 6. On SUCCESS, run `bf-harness complete <bf-wo>`.

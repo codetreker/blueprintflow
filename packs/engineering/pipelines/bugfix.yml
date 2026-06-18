@@ -69,6 +69,7 @@ stages:
     output: artifacts/code-review.md
     instruction: |
       Review the fix, regression evidence, focused passing test, design-doc-sync evidence, validation evidence, and task AC from outside the implementation.
+      Review adversarially per roles/references/review-discipline.md: refute each AC before signing, sign off only what survives, and never sign an AC you cannot verify.
       Confirm each AC has matching evidence and no Blocker or High findings.
       Record findings and signoff in artifacts/code-review.md.
       Sign off only the AC ids that the review independently verifies.
@@ -78,6 +79,7 @@ stages:
     output: artifacts/security-review.md
     instruction: |
       Review the fix after code review and before terminal-state closure for security baseline risk.
+      Review adversarially per roles/references/review-discipline.md: refute each security claim before signing, sign off only what survives, and never sign an AC you cannot verify.
       Check authentication, authorization, privilege boundaries, secrets, dependency/package exposure, command or shell execution, input handling, data handling, logging, and release integrity as applicable to the locked task scope and regression.
       Stop on any Blocker or High finding; send fixes to the task driver before continuing.
       If the task has no security-relevant change, record not-applicable evidence with rationale and cite the reviewed files, commands, and Evidence artifacts.

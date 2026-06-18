@@ -41,6 +41,10 @@ Before reviewing, identify whether the reviewed scope includes UI behavior, API 
 - Load neither reference for unrelated review scope.
 - Treat loaded references as judgment and evidence guidance for relevant concerns, not mandatory universal checklist gates.
 
+## Review Discipline
+
+When reviewing, apply `roles/references/review-discipline.md`: refute each AC before signing, record the refutation attempted, sign only what survives, never sign an AC you cannot verify (record the missing evidence and return it to the coordinator), and calibrate honest severity without manufacturing findings.
+
 ## Test Case Quality
 
 - Require every new or changed test case to have durable value: it should protect accepted behavior, a stable contract, a realistic regression risk, or a user-visible guarantee.

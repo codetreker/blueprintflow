@@ -46,6 +46,17 @@ one.
 What this role can do, what kinds of problems it solves, and any specific
 preferences or methods it applies.
 
+## Review Discipline
+
+Include this section for any role that declares a review capability (such as
+design-review, quality-assurance, security-review, pipeline-review, or
+interaction-design). State that when reviewing, the role applies
+`roles/references/review-discipline.md`: refute each AC or finding before
+signing, record the refutation attempted, sign only what survives, never sign an
+AC it cannot verify (record the missing evidence and return it to the
+coordinator), and calibrate honest severity without manufacturing findings. Omit
+this section for roles that never review.
+
 ## When to Include
 
 When this role should be included. This can apply to brainstorm, spec, execute,

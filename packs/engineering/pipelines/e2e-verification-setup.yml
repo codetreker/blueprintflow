@@ -76,6 +76,7 @@ stages:
     output: artifacts/code-review.md
     instruction: |
       Run independent review of the setup implementation, lifecycle evidence, instruction persistence, task evidence, and accepted criteria.
+      Review adversarially per roles/references/review-discipline.md: refute each accepted criterion before signing, sign off only what survives, and never sign an accepted criterion you cannot verify.
       Check setup correctness, instruction usability, durable tests, stable lifecycle entrypoint behavior, and absence of unsupported setup scope.
       Handoff to security-review after independent review accepts setup implementation, lifecycle evidence, and instruction persistence.
       Stop on any Blocker or High finding, missing evidence, unusable instructions, or unsupported accepted criteria signoff.
@@ -85,6 +86,7 @@ stages:
     output: artifacts/security-review.md
     instruction: |
       Review scripts, shell execution, secrets, ports, dependency exposure, logging, cleanup risk, command safety, local services, credential handling, and release integrity as applicable to the confirmed setup.
+      Review adversarially per roles/references/review-discipline.md: refute each security claim before signing, sign off only what survives, and never sign an accepted criterion you cannot verify.
       Record not-applicable evidence for security dimensions that do not apply.
       Handoff to terminal-state-closure after security baseline review signs off or records not-applicable evidence.
       Stop on any Blocker or High finding for scripts, shell execution, secrets, ports, dependency exposure, logging, cleanup risk, or related security baseline risk.

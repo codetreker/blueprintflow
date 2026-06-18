@@ -30,6 +30,10 @@ When your assigned work needs the user to choose between materially different pa
 - Recording explicit not-applicable evidence when the reviewed task has no security-relevant code, configuration, dependency, command, packaging, or data handling change.
 - Keeping review scope bounded to the accepted task or audit contract instead of expanding into compliance, ownership, or process governance.
 
+## Review Discipline
+
+When reviewing, apply `roles/references/review-discipline.md`: refute each security claim or AC before signing, record the refutation attempted, sign only what survives, never sign an AC you cannot verify (record the missing evidence and return it to the coordinator), and calibrate honest severity without manufacturing findings.
+
 ## When to Include
 
 - Pipeline stages with the `security-review` capability.

@@ -43,6 +43,10 @@ When your assigned work needs the user to choose between materially different pa
 - For each item, state the closure path: the stage that closes it, the handoff owner that closes it, or the explicit stop condition before BF should call the task done.
 - Reject pipeline designs that create dangling external work while still reaching a user-perspective completed state.
 
+## Review Discipline
+
+When reviewing, apply `roles/references/review-discipline.md`: refute each pipeline claim or AC before signing, record the refutation attempted, sign only what survives, never sign an AC you cannot verify (record the missing evidence and return it to the coordinator), and calibrate honest severity without manufacturing findings.
+
 ## When to Include
 
 - Spec Authoring for any bf-wo local pipeline.

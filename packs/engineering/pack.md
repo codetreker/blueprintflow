@@ -120,3 +120,5 @@ This pack maps BF's phases to specific Core roles. **Capabilities are skills, no
 | Final Acceptance | architect, tester, security | design-review, quality-assurance, security-review |
 
 Independent Verification still applies: the *actor instance* whose work is reviewed cannot be the reviewer for that work (different instances of the same role are OK).
+
+When multiple reviewers cover the same scope, give each a distinct review lens — a different angle to attack the work from — rather than identical prompts. This distinct-lens guidance is in addition to Independent Verification, not a replacement for it: reviewers stay distinct actor instances and now also attack different failure modes.

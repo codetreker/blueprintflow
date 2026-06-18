@@ -83,7 +83,7 @@ Do not block only because repository investigation or implementation strategy re
 The coordinator assigns each claimed engineering task to a host-compatible task driver before implementation, refactor, test-fix, validation, or task-scoped docs work starts.
 Start the actor with `roles/task-driver.md`; the task driver reads that role file itself.
 If task-driver capacity or tooling is unavailable, stop instead of doing the leaf work in the coordinator unless the user explicitly overrides the delegation rule.
-Verification-fix work goes to the same task driver or a new task driver. Prefer the original task driver when available.
+Verification-fix work goes to the original task driver. If that instance is no longer running, start a new task driver for the same task block and pass it the prior evidence and the verify result; next-round reviewers must still be distinct instances per IV.
 The task driver runs task review and readiness verification when the host runtime supports it. After fixes, use a fresh review round with fresh independent reviewers.
 The coordinator reruns task `verify` before merge, `complete`, and task-scoped cleanup.
 

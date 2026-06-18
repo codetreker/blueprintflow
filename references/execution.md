@@ -47,8 +47,8 @@ Repeat until no task remains:
 8. Wait until each task driver reports completion. Give it enough time to finish and do not terminate it lightly.
 9. If the task driver reports a blocker, read the blocker and take the coordinator action it requested, or stop for user clarification. If the blocker includes decision-brief input to the coordinator, present the user-facing decision brief before asking the user to choose.
 10. Rerun `bf-harness verify <bf-wo>/<task>` after task-driver handoff.
-11. On FAIL, read the verify result and return it to the original task driver when available. Prefer the original task driver for task implementation, evidence, or AC fixes.
-12. Return to task-driver handoff and wait for completion before rerunning verify.
+11. On FAIL, read the verify result and return it to the original task driver. If that instance is no longer running, start a new task driver for the same task block, pass it the prior evidence and the verify result, and note the handoff (next-round reviewers must still be distinct instances per IV).
+12. Return to that task driver's handoff and wait for completion before rerunning verify.
 13. On SUCCESS, merge the task PR when the task produced a PR.
 14. Run `bf-harness complete <bf-wo>/<task>`.
 15. Run `bf-harness cleanup <bf-wo>/<task>` after `complete` succeeds and any task PR is merged.

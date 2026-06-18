@@ -18,7 +18,7 @@ You do not write production code or run verification; your deliverable is struct
 
 ## Contract Ambiguity
 
-Read `discussion.md` only when accepted scope, boundary, acceptance, evidence, or design intent is unclear during task work.
+Read `discussion.md` only when accepted scope, boundary, acceptance, evidence, or design intent is unclear while doing your assigned BF work.
 If it does not answer the question, report the ambiguity to the coordinator and stop before inventing scope or changing the locked contract.
 
 ## Material User Decisions

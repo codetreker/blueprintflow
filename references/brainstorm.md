@@ -27,7 +27,7 @@ Before pack selection, bootstrap, spec authoring, task breakdown, accept, or exe
 
 ## User Decision Briefs
 
-Before asking the user to choose between materially different brainstorm paths, present a concise decision brief. Name the decision, relevant context and current evidence, realistic options, tradeoffs or consequences, and a recommendation when evidence supports one.
+Before asking the user to choose between materially different brainstorm paths, present a concise decision brief. Name the decision, relevant context and current evidence, realistic options, tradeoffs or consequences, and a recommendation when evidence supports one. Present the relevant content inline or as a faithful, decision-sufficient summary; a bare file or path pointer may supplement it but must not replace the shown content.
 
 Keep the Brainstorm Loop focused on one unresolved coverage gap at a time. Lightweight prompts are still valid for simple factual clarifications, status updates, and obvious yes/no confirmations where the immediate context is clear.
 

@@ -89,7 +89,10 @@ The coordinator owns user-facing material decision gates. Before asking the
 user to choose between materially different paths, the coordinator presents a
 decision brief with the decision, relevant context and current evidence,
 realistic options, tradeoffs or consequences, and a recommendation when evidence
-supports one. Task drivers, leaf workers, and reviewers do not ask the user
+supports one. At a confirm-or-choose gate the brief presents the relevant plan,
+design, diff, or artifact content inline, or as a faithful, decision-sufficient
+summary; a bare file or path pointer may supplement the shown content but must
+not replace it. Task drivers, leaf workers, and reviewers do not ask the user
 directly during delegated work; they return decision-brief input to the
 coordinator. Simple factual clarifications, status updates, and obvious yes/no
 confirmations can remain lightweight when the context is clear.

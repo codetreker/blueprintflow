@@ -22,7 +22,10 @@ contracts.
 BF interactions require a concise decision brief before material user decision
 gates. The brief names the decision, relevant context and current evidence,
 realistic options, tradeoffs or consequences, and a recommendation when evidence
-supports one. Simple factual clarifications, status updates, and obvious
+supports one. At a confirm-or-choose gate the brief presents the relevant plan,
+design, diff, or artifact content inline, or as a faithful, decision-sufficient
+summary; a bare file or path pointer may supplement the shown content but must
+not replace it. Simple factual clarifications, status updates, and obvious
 yes/no confirmations may remain lightweight when the immediate context is
 clear. Runtime artifacts carry this rule directly; they do not rely on this
 design record for executable guidance.

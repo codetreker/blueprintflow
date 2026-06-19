@@ -49,7 +49,11 @@ Material user decisions are coordinator-owned interaction gates. Before asking
 the user to choose between materially different paths, the coordinator presents
 a decision brief covering the decision, relevant context and current evidence,
 realistic options, tradeoffs or consequences, and a recommendation when evidence
-supports one. Delegated actors return decision-brief input to the coordinator
+supports one. At any confirm-or-choose gate the brief presents the relevant
+plan, design, diff, or artifact content inline, or as a faithful,
+decision-sufficient summary of it; a bare file or path pointer may supplement
+the shown content but must not replace it, so the user can decide from what is
+shown. Delegated actors return decision-brief input to the coordinator
 instead of asking the user directly. This is an instruction-level rule; the
 harness does not parse or enforce prompt text.
 

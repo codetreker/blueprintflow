@@ -56,6 +56,8 @@ Before asking the user to choose between materially different paths, present a c
 
 A decision brief must name the decision, summarize the relevant context and current evidence, list realistic options, explain tradeoffs or consequences, and give a recommendation when evidence supports one.
 
+At any gate where the user is asked to confirm or choose, present the relevant plan, design, diff, or artifact content inline, or as a faithful, decision-sufficient summary of it. A bare file or path pointer ("written to X, go look") may supplement the shown content but must never replace it: the user must be able to decide from what is shown, without opening another file. This adds how a brief's content is presented at the gate; it does not change what a brief must contain.
+
 Lightweight prompts are still allowed for simple factual clarifications, status updates, and obvious yes/no confirmations where the context is already clear.
 
 The coordinator owns user-facing decision briefs. Task drivers, leaf workers, and reviewers do not ask the user directly from delegated BF work; they stop and return decision-brief input to the coordinator, including the decision, relevant context and current evidence, realistic options, tradeoffs or consequences, and a recommendation when evidence supports one.

@@ -32,8 +32,12 @@ paths, such as reusing an existing issue, opening a new issue, proceeding
 without duplicate search, or abandoning a blocked filing, the agent presents a
 decision brief before asking for the choice. The brief includes the decision,
 current evidence, realistic options, tradeoffs or consequences, and a supported
-recommendation. Final confirmation may remain lightweight when the immediately
-preceding draft and target action already make the context obvious.
+recommendation, and it presents the relevant content — such as the redacted
+draft, duplicate-search results, or target action — inline or as a faithful,
+decision-sufficient summary; a bare file or path pointer may supplement the
+shown content but must not replace it. Final confirmation may remain lightweight
+when the immediately preceding draft and target action already make the context
+obvious.
 
 ## Feedback Scope
 

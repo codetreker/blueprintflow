@@ -13,7 +13,7 @@ Before role lookup, pipeline lookup, `bf.md` drafting, task spec drafting, local
 
 ## User Decision Briefs
 
-Before asking the user to choose between materially different spec-authoring paths, present a concise decision brief. Name the decision, relevant context and current evidence, realistic options, tradeoffs or consequences, and a recommendation when evidence supports one.
+Before asking the user to choose between materially different spec-authoring paths, present a concise decision brief. Name the decision, relevant context and current evidence, realistic options, tradeoffs or consequences, and a recommendation when evidence supports one. Present the relevant plan, design, diff, or artifact content inline or as a faithful, decision-sufficient summary; a bare file or path pointer may supplement it but must not replace the shown content.
 
 Use decision briefs for material user decision gates such as entering spec authoring, resolving contract gaps, choosing provider roles when the choice changes review coverage, handling design-doc authority conflicts, and deciding whether to accept the reviewed contract. Lightweight prompts remain valid for simple factual clarifications, status updates, and obvious yes/no confirmations where the context is already clear.
 

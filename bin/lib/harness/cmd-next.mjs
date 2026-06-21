@@ -4,12 +4,18 @@ import { writeState, writeUpdated, formatTimestamp, writeTaskExecutionMetadata }
 import { loadWo } from "./load-wo.mjs";
 import { buildPipelineRegistry, findPipeline } from "../shared/pipeline-registry.mjs";
 import { prepareTaskWorktree, validateTaskWorktree } from "./managed-git.mjs";
+import { integrationError } from "./validate-wo.mjs";
 
 const MAX_NEXT_TASKS = 5;
 
 export async function cmdNext({ baseHome, woId, installDir, now = new Date(), cwd = process.cwd() }) {
   const bundle = await loadWo({ baseHome, woId, installDir });
   if (!bundle.bf) return { ok: false, error: "load failed", details: bundle.errors };
+  // Fail closed on a post-accept Integration flip / invalid mode (accept-lock).
+  // cmd-next reads/acts on the mode, so it enforces the lock directly — validateWo
+  // (lint/accept) is not on this command's path.
+  const integ = integrationError(bundle.bf);
+  if (integ) return { ok: false, error: `${integ.code}: ${integ.message}` };
   const bfState = bundle.bf.frontmatter.State;
   if (!["Accepted", "Implementing"].includes(bfState)) {
     return { ok: false, error: `wrong state: ${bfState}` };

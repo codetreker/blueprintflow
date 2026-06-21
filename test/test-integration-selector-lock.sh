@@ -172,4 +172,49 @@ assert_json_field "$STDOUT" .ok true
 assert_not_match "$STDOUT" "INTEGRATION_LOCKED" "legacy accepted Mode A WO is not locked"
 cleanup
 
+# cmd-next END-TO-END: a flipped accepted WO cannot be claimed. cmd-next calls
+# loadWo only (NOT validateWo), so it must enforce the lock directly via
+# integrationError — otherwise the lock is fail-OPEN at runtime.
+setup; copy_fixture clean-wo "$BASE/works/flip-next-cmd-wo"
+sed -i.bak '/^State: Draft$/a Integration: single-pr' "$BASE/works/flip-next-cmd-wo/bf.md"
+seed_mode_a_success "$BASE/works/flip-next-cmd-wo"
+node --input-type=module -e "
+  import('$REPO_ROOT/bin/lib/harness/cmd-accept.mjs').then((m) =>
+    m.cmdAccept({ baseHome: '$BASE', woId: 'flip-next-cmd-wo', installDir: '$REPO', now: new Date(2026, 4, 19, 12, 34) }));
+" >/dev/null
+sed -i.bak 's/^Integration: single-pr/Integration: per-task-pr/' "$BASE/works/flip-next-cmd-wo/bf.md"
+STDOUT=$(node --input-type=module -e "
+  import('$REPO_ROOT/bin/lib/harness/cmd-next.mjs').then(async (m) => {
+    process.stdout.write(JSON.stringify(await m.cmdNext({
+      baseHome: '$BASE', woId: 'flip-next-cmd-wo', installDir: '$REPO',
+      now: new Date(2026, 4, 19, 12, 34), cwd: '$REPO',
+    })));
+  });
+")
+assert_json_field "$STDOUT" .ok false
+assert_match "$STDOUT" "INTEGRATION_LOCKED" "cmd-next itself rejects a flipped accepted WO (runtime lock, not just lint)"
+cleanup
+
+# cmd-complete END-TO-END: a flipped accepted WO cannot complete. Same reason —
+# cmd-complete calls loadWo only and must enforce the lock directly.
+setup; copy_fixture clean-wo "$BASE/works/flip-complete-cmd-wo"
+sed -i.bak '/^State: Draft$/a Integration: single-pr' "$BASE/works/flip-complete-cmd-wo/bf.md"
+seed_mode_a_success "$BASE/works/flip-complete-cmd-wo"
+node --input-type=module -e "
+  import('$REPO_ROOT/bin/lib/harness/cmd-accept.mjs').then((m) =>
+    m.cmdAccept({ baseHome: '$BASE', woId: 'flip-complete-cmd-wo', installDir: '$REPO', now: new Date(2026, 4, 19, 12, 34) }));
+" >/dev/null
+sed -i.bak 's/^Integration: single-pr/Integration: per-task-pr/' "$BASE/works/flip-complete-cmd-wo/bf.md"
+STDOUT=$(node --input-type=module -e "
+  import('$REPO_ROOT/bin/lib/harness/cmd-complete.mjs').then(async (m) => {
+    process.stdout.write(JSON.stringify(await m.cmdComplete({
+      baseHome: '$BASE', woId: 'flip-complete-cmd-wo', installDir: '$REPO',
+      now: new Date(2026, 4, 19, 12, 34), cwd: '$REPO',
+    })));
+  });
+")
+assert_json_field "$STDOUT" .ok false
+assert_match "$STDOUT" "INTEGRATION_LOCKED" "cmd-complete itself rejects a flipped accepted WO (runtime lock, not just lint)"
+cleanup
+
 pass

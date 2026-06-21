@@ -30,41 +30,47 @@ function normalizeLock(raw) {
   return raw;
 }
 
-function validateIntegration(bf, bfPath, errors) {
-  const rawIntegration = bf.frontmatter.Integration;
-  const mode = effectiveIntegration(rawIntegration);
+// Returns the first integration selector/lock error for this WO, or null.
+// Exported so the runtime mode-reading commands (cmd-next, cmd-complete) enforce
+// the accept-lock everywhere the mode is acted on — not only at lint/accept,
+// which call validateWo. cmd-next/cmd-complete call loadWo only, so without this
+// the INTEGRATION_LOCKED gate would be fail-open at runtime.
+export function integrationError(bf) {
+  const mode = effectiveIntegration(bf.frontmatter.Integration);
   // selector validation: a present-but-unknown value fails closed
   if (typeof mode !== "string" || !VALID_INTEGRATION_MODES.has(mode)) {
-    errors.push({
+    return {
       code: "INTEGRATION_INVALID",
       message: `Integration "${Array.isArray(mode) ? "" : mode}" is not a known mode (expected one of ${[...VALID_INTEGRATION_MODES].join(", ")})`,
-      ref: bfPath,
-    });
-    return; // can't lock-check an unknown value; INTEGRATION_INVALID already fails lint
+    };
   }
   // accept-lock immutability: only binds once the WO has left Draft
-  if (bf.frontmatter.State === "Draft") return;
+  if (bf.frontmatter.State === "Draft") return null;
   const lock = normalizeLock(bf.frontmatter["Mode-Lock"]);
   if (lock === null) {
     // No anchor. Legacy pre-feature WOs are Mode A by definition; tolerate them.
     // But a non-Draft WO whose effective mode is NOT the Mode A default cannot
     // have been accept-locked by this harness => fail closed.
     if (mode !== INTEGRATION_MODES.PER_TASK_PR) {
-      errors.push({
+      return {
         code: "INTEGRATION_LOCKED",
         message: `Integration "${mode}" set after accept without a Mode-Lock anchor (state ${bf.frontmatter.State}); the harness owns this field`,
-        ref: bfPath,
-      });
+      };
     }
-    return;
+    return null;
   }
   if (lock !== mode) {
-    errors.push({
+    return {
       code: "INTEGRATION_LOCKED",
       message: `Integration "${mode}" was changed after accept; locked to "${lock}" (state ${bf.frontmatter.State})`,
-      ref: bfPath,
-    });
+    };
   }
+  return null;
+}
+
+function validateIntegration(bf, bfPath, errors) {
+  const e = integrationError(bf);
+  if (e) errors.push({ ...e, ref: bfPath });
 }
 
 const EVIDENCE_KINDS = new Set([

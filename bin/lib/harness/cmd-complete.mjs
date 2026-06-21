@@ -4,6 +4,7 @@ import { findLatestRound } from "./verify-round.mjs";
 import { parseFrontmatter } from "../shared/parse-frontmatter.mjs";
 import { writeState, writeUpdated, formatTimestamp } from "./write-mutations.mjs";
 import { loadWo } from "./load-wo.mjs";
+import { integrationError } from "./validate-wo.mjs";
 import { VERIFY_MODES } from "./cmd-verify.mjs";
 import { checkGitHubPrMergedGate } from "./github-pr-gate.mjs";
 
@@ -39,6 +40,10 @@ function fail(error, details = []) {
 async function completeTask({ baseHome, woId, taskId, installDir, now, cwd }) {
   const bundle = await loadWo({ baseHome, woId, installDir });
   if (!bundle.bf) return fail("load failed", bundle.errors);
+  // Fail closed on a post-accept Integration flip / invalid mode (accept-lock):
+  // cmd-complete acts on the mode but is not on validateWo's lint/accept path.
+  const integLock = integrationError(bundle.bf);
+  if (integLock) return fail(`${integLock.code}: ${integLock.message}`);
   if (!["Accepted", "Implementing"].includes(bundle.bf.frontmatter.State)) {
     return fail(`phase mismatch: cannot complete ${woId}/${taskId} when bf.md.State = ${bundle.bf.frontmatter.State}`);
   }
@@ -77,6 +82,10 @@ async function completeTask({ baseHome, woId, taskId, installDir, now, cwd }) {
 async function completeWorkObject({ baseHome, woId, installDir, now }) {
   const bundle = await loadWo({ baseHome, woId, installDir });
   if (!bundle.bf) return fail("load failed", bundle.errors);
+  // Fail closed on a post-accept Integration flip / invalid mode (accept-lock):
+  // cmd-complete acts on the mode but is not on validateWo's lint/accept path.
+  const integLock = integrationError(bundle.bf);
+  if (integLock) return fail(`${integLock.code}: ${integLock.message}`);
   if (bundle.bf.frontmatter.State !== "Implementing") {
     return fail(`complete requires bf.md State: Implementing, got ${bundle.bf.frontmatter.State}`);
   }

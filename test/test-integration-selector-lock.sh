@@ -1,0 +1,175 @@
+#!/usr/bin/env bash
+# Mode B P1: Integration selector validation (INTEGRATION_INVALID) + accept-lock
+# immutability (INTEGRATION_LOCKED). Both are surfaced through validateWo so
+# `bf-harness lint` and the cmd-accept/cmd-next/cmd-complete loadWo+validateWo
+# chain catch them fail-closed — not just a thrown runtime exception.
+#
+# 5.5 accept-lock mechanism (DECIDED): a harness-written `Mode-Lock:` frontmatter
+# anchor captured at accept (alongside the State flip). Once State != Draft, the
+# effective Integration mode MUST equal Mode-Lock or validation FAILs closed.
+set -u
+source "$(dirname "$0")/test-helpers.sh"
+
+setup() {
+  REPO=$(make_temp_home)
+  mkdir -p "$REPO/roles" "$REPO/packs"
+  cp -R "$FIXTURES/roles-core/." "$REPO/roles/"
+  cp -R "$FIXTURES/packs-engineering" "$REPO/packs/engineering"
+  BASE=$(make_temp_home)
+  mkdir -p "$BASE"
+}
+cleanup() { rm -rf "$REPO" "$BASE"; }
+
+seed_mode_a_success() {
+  local wo="$1"
+  local dir="$wo/runs/reviews/round_1"
+  mkdir -p "$dir"
+  cat > "$dir/verify-result.md" <<'EOF'
+---
+Result: SUCCESS
+Mode: Spec Review
+Scope: clean-wo
+Round: 1
+Timestamp: 2026-05-19 10:00
+---
+EOF
+}
+
+run_validate() {
+  STDOUT=$(node --input-type=module -e "
+    Promise.all([
+      import('$REPO_ROOT/bin/lib/harness/load-wo.mjs'),
+      import('$REPO_ROOT/bin/lib/harness/validate-wo.mjs'),
+    ]).then(async ([l, v]) => {
+      const bundle = await l.loadWo({ baseHome: '$BASE', woId: process.argv[1], installDir: '$REPO' });
+      process.stdout.write(JSON.stringify(v.validateWo(bundle)));
+    });
+  " "$1")
+}
+
+# --- INTEGRATION_INVALID (selector validation) -------------------------------
+
+# absent Integration is valid (Mode A) — existing fixtures stay green
+setup; copy_fixture clean-wo "$BASE/works/absent-integration-wo"
+run_validate absent-integration-wo
+assert_json_field "$STDOUT" .ok true
+assert_not_match "$STDOUT" "INTEGRATION_INVALID" "absent Integration must not trip selector lint"
+cleanup
+
+# explicit per-task-pr is valid
+setup; copy_fixture clean-wo "$BASE/works/per-task-pr-wo"
+sed -i.bak '/^State: Draft$/a Integration: per-task-pr' "$BASE/works/per-task-pr-wo/bf.md"
+run_validate per-task-pr-wo
+assert_json_field "$STDOUT" .ok true
+cleanup
+
+# explicit single-pr is valid
+setup; copy_fixture clean-wo "$BASE/works/single-pr-wo"
+sed -i.bak '/^State: Draft$/a Integration: single-pr' "$BASE/works/single-pr-wo/bf.md"
+run_validate single-pr-wo
+assert_json_field "$STDOUT" .ok true
+cleanup
+
+# unknown Integration value FAILs lint (fail-closed, caught by bf-harness lint)
+setup; copy_fixture clean-wo "$BASE/works/bad-integration-wo"
+sed -i.bak '/^State: Draft$/a Integration: merge-train' "$BASE/works/bad-integration-wo/bf.md"
+run_validate bad-integration-wo
+assert_json_field "$STDOUT" .ok false
+assert_match "$STDOUT" "INTEGRATION_INVALID" "unknown Integration value rejected by lint"
+assert_match "$STDOUT" "merge-train" "lint names the offending value"
+cleanup
+
+# --- INTEGRATION_LOCKED (accept-lock immutability) ---------------------------
+
+# accept on a single-pr WO writes the Mode-Lock anchor
+setup; copy_fixture clean-wo "$BASE/works/lock-write-wo"
+sed -i.bak '/^State: Draft$/a Integration: single-pr' "$BASE/works/lock-write-wo/bf.md"
+seed_mode_a_success "$BASE/works/lock-write-wo"
+STDOUT=$(node --input-type=module -e "
+  import('$REPO_ROOT/bin/lib/harness/cmd-accept.mjs').then(async (m) => {
+    process.stdout.write(JSON.stringify(await m.cmdAccept({
+      baseHome: '$BASE', woId: 'lock-write-wo', installDir: '$REPO',
+      now: new Date(2026, 4, 19, 12, 34),
+    })));
+  });
+")
+assert_json_field "$STDOUT" .ok true
+grep -q "^Mode-Lock: single-pr" "$BASE/works/lock-write-wo/bf.md" || fail "accept did not write Mode-Lock anchor"
+# the accepted (still-matching) WO validates clean
+run_validate lock-write-wo
+assert_json_field "$STDOUT" .ok true
+cleanup
+
+# accept on a Mode A (absent Integration) WO writes Mode-Lock: per-task-pr
+setup; copy_fixture clean-wo "$BASE/works/lock-mode-a-wo"
+seed_mode_a_success "$BASE/works/lock-mode-a-wo"
+STDOUT=$(node --input-type=module -e "
+  import('$REPO_ROOT/bin/lib/harness/cmd-accept.mjs').then(async (m) => {
+    process.stdout.write(JSON.stringify(await m.cmdAccept({
+      baseHome: '$BASE', woId: 'lock-mode-a-wo', installDir: '$REPO',
+      now: new Date(2026, 4, 19, 12, 34),
+    })));
+  });
+")
+assert_json_field "$STDOUT" .ok true
+grep -q "^Mode-Lock: per-task-pr" "$BASE/works/lock-mode-a-wo/bf.md" || fail "Mode A accept did not anchor per-task-pr"
+run_validate lock-mode-a-wo
+assert_json_field "$STDOUT" .ok true
+cleanup
+
+# post-accept flip: Integration hand-edited away from the Mode-Lock anchor => REJECTED
+setup; copy_fixture clean-wo "$BASE/works/flip-wo"
+sed -i.bak '/^State: Draft$/a Integration: single-pr' "$BASE/works/flip-wo/bf.md"
+seed_mode_a_success "$BASE/works/flip-wo"
+node --input-type=module -e "
+  import('$REPO_ROOT/bin/lib/harness/cmd-accept.mjs').then((m) =>
+    m.cmdAccept({ baseHome: '$BASE', woId: 'flip-wo', installDir: '$REPO', now: new Date(2026, 4, 19, 12, 34) }));
+" >/dev/null
+# the LLM hand-edits Integration after accept (Mode-Lock stays single-pr)
+sed -i.bak 's/^Integration: single-pr/Integration: per-task-pr/' "$BASE/works/flip-wo/bf.md"
+run_validate flip-wo
+assert_json_field "$STDOUT" .ok false
+assert_match "$STDOUT" "INTEGRATION_LOCKED" "post-accept Integration flip rejected"
+cleanup
+
+# post-accept flip detected even when the new value is itself a VALID mode
+# (so INTEGRATION_LOCKED — not INTEGRATION_INVALID — is what fires)
+setup; copy_fixture clean-wo "$BASE/works/flip-valid-wo"
+seed_mode_a_success "$BASE/works/flip-valid-wo"
+node --input-type=module -e "
+  import('$REPO_ROOT/bin/lib/harness/cmd-accept.mjs').then((m) =>
+    m.cmdAccept({ baseHome: '$BASE', woId: 'flip-valid-wo', installDir: '$REPO', now: new Date(2026, 4, 19, 12, 34) }));
+" >/dev/null
+# was anchored per-task-pr (Mode A); hand-edit to single-pr after accept
+sed -i.bak '/^State: Accepted$/a Integration: single-pr' "$BASE/works/flip-valid-wo/bf.md"
+run_validate flip-valid-wo
+assert_json_field "$STDOUT" .ok false
+assert_match "$STDOUT" "INTEGRATION_LOCKED" "post-accept add of a valid mode flip rejected"
+assert_not_match "$STDOUT" "INTEGRATION_INVALID" "flip to a valid mode is a lock violation, not invalid-value"
+cleanup
+
+# cmd-next (a mode-reading command) inherits the lock fail-closed via validateWo:
+# a flipped accepted WO cannot be claimed.
+setup; copy_fixture clean-wo "$BASE/works/flip-next-wo"
+sed -i.bak '/^State: Draft$/a Integration: single-pr' "$BASE/works/flip-next-wo/bf.md"
+seed_mode_a_success "$BASE/works/flip-next-wo"
+node --input-type=module -e "
+  import('$REPO_ROOT/bin/lib/harness/cmd-accept.mjs').then((m) =>
+    m.cmdAccept({ baseHome: '$BASE', woId: 'flip-next-wo', installDir: '$REPO', now: new Date(2026, 4, 19, 12, 34) }));
+" >/dev/null
+sed -i.bak 's/^Integration: single-pr/Integration: per-task-pr/' "$BASE/works/flip-next-wo/bf.md"
+run_validate flip-next-wo
+assert_json_field "$STDOUT" .ok false
+assert_match "$STDOUT" "INTEGRATION_LOCKED" "mode-reading path sees the lock violation"
+cleanup
+
+# legacy back-compat: a pre-feature accepted Mode A WO (no Integration, no
+# Mode-Lock) is NOT a lock violation.
+setup; copy_fixture clean-wo "$BASE/works/legacy-accepted-wo"
+sed -i.bak 's/^State: Draft/State: Accepted/' "$BASE/works/legacy-accepted-wo/bf.md"
+run_validate legacy-accepted-wo
+assert_json_field "$STDOUT" .ok true
+assert_not_match "$STDOUT" "INTEGRATION_LOCKED" "legacy accepted Mode A WO is not locked"
+cleanup
+
+pass

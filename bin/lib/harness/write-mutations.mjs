@@ -75,6 +75,32 @@ export function writeUpdated(text, timestamp) {
   return lines.join("\n");
 }
 
+// Mode B accept-lock anchor (5.5). At accept the harness stamps the effective
+// integration mode into a `Mode-Lock:` bf.md frontmatter field. validate-wo then
+// rejects (INTEGRATION_LOCKED) any post-accept Integration value that diverges
+// from this anchor. Like writeState/writeUpdated this is a whitelisted mutation:
+// the LLM never writes Mode-Lock; only the harness does, atomically with accept.
+export function writeModeLock(text, mode) {
+  if (typeof mode !== "string" || mode === "") {
+    throw new Error("writeModeLock requires a non-empty mode string");
+  }
+  const lines = text.split("\n");
+  if (lines[0] !== "---") throw new Error("no frontmatter");
+  let end = -1;
+  for (let i = 1; i < lines.length; i++) {
+    if (lines[i] === "---") { end = i; break; }
+  }
+  if (end === -1) throw new Error("unterminated frontmatter");
+  for (let i = 1; i < end; i++) {
+    if (/^Mode-Lock\s*:/.test(lines[i])) {
+      lines[i] = `Mode-Lock: ${mode}`;
+      return lines.join("\n");
+    }
+  }
+  lines.splice(end, 0, `Mode-Lock: ${mode}`);
+  return lines.join("\n");
+}
+
 export function writeTaskExecutionMetadata(text, metadata = {}) {
   const lines = text.split("\n");
   if (lines[0] !== "---") throw new Error("no frontmatter");

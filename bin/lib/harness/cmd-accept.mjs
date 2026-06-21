@@ -1,9 +1,10 @@
 import fs from "node:fs";
 import { roundDir, runsReviewsDir, verifyResultFile } from "./wo-paths.mjs";
-import { writeState, writeUpdated, formatTimestamp } from "./write-mutations.mjs";
+import { writeState, writeUpdated, writeModeLock, formatTimestamp } from "./write-mutations.mjs";
 import { parseFrontmatter } from "../shared/parse-frontmatter.mjs";
 import { loadWo } from "./load-wo.mjs";
 import { validateWo } from "./validate-wo.mjs";
+import { woIntegrationMode } from "./integration-mode.mjs";
 import { VERIFY_MODES } from "./cmd-verify.mjs";
 
 function latestRound(woPath) {
@@ -76,8 +77,14 @@ export async function cmdAccept({ baseHome, woId, installDir, now = new Date() }
   }
 
   const ts = formatTimestamp(now);
+  // Mode B 5.5 accept-lock: stamp the effective integration mode into the
+  // harness-owned Mode-Lock anchor, atomically with the State flip. validateWo
+  // then rejects (INTEGRATION_LOCKED) any post-accept Integration value that
+  // diverges from this anchor. Mode is valid here — validateWo passed above.
+  const acceptedMode = woIntegrationMode(bundle.bf);
   let bfText = fs.readFileSync(bundle.bfPath, "utf8");
   bfText = writeState(bfText, "Accepted", { kind: "bf" });
+  bfText = writeModeLock(bfText, acceptedMode);
   bfText = writeUpdated(bfText, ts);
   fs.writeFileSync(bundle.bfPath, bfText);
 

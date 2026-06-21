@@ -136,3 +136,35 @@ export function writeTaskExecutionMetadata(text, metadata = {}) {
   }
   return lines.join("\n");
 }
+
+// WO-level Pull-Request writer for Mode B (single-pr). The shared WO PR URL lives
+// in bf.md frontmatter (§1.4) — written ONCE, idempotent on the same URL, and
+// FAIL-CLOSED on an attempt to overwrite a different non-empty URL (so an attach
+// cannot silently re-point the WO PR). Like the other writers this is a
+// whitelisted mutation; the LLM never writes Pull-Request, only the harness does.
+export function writeWoPullRequest(text, url) {
+  if (typeof url !== "string" || url.trim() === "") {
+    throw new Error("writeWoPullRequest requires a non-empty URL");
+  }
+  const value = url.trim();
+  const lines = text.split("\n");
+  if (lines[0] !== "---") throw new Error("no frontmatter");
+  let end = -1;
+  for (let i = 1; i < lines.length; i++) {
+    if (lines[i] === "---") { end = i; break; }
+  }
+  if (end === -1) throw new Error("unterminated frontmatter");
+  for (let i = 1; i < end; i++) {
+    const m = lines[i].match(/^Pull-Request\s*:\s*(.*)$/);
+    if (m) {
+      const existing = m[1].trim();
+      if (existing !== "" && existing !== value) {
+        throw new Error(`Pull-Request already set to a different URL: ${existing}`);
+      }
+      lines[i] = `Pull-Request: ${value}`;
+      return lines.join("\n");
+    }
+  }
+  lines.splice(end, 0, `Pull-Request: ${value}`);
+  return lines.join("\n");
+}

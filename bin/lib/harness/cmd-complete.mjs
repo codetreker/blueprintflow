@@ -7,6 +7,8 @@ import { loadWo } from "./load-wo.mjs";
 import { integrationError } from "./validate-wo.mjs";
 import { VERIFY_MODES } from "./cmd-verify.mjs";
 import { checkGitHubPrMergedGate } from "./github-pr-gate.mjs";
+import { checkTaskCommitPresenceGate } from "./commit-presence-gate.mjs";
+import { woIntegrationMode, isSinglePrMode } from "./integration-mode.mjs";
 
 function latestSuccessfulVerify(scopeDir, { mode, scope }) {
   const round = findLatestRound(scopeDir);
@@ -64,8 +66,21 @@ async function completeTask({ baseHome, woId, taskId, installDir, now, cwd }) {
   if (changed.length > 0) {
     return fail("task changed after latest Task Verification SUCCESS; run start-review + review + verify again", changed);
   }
-  const prGate = checkGitHubPrMergedGate(task, { baseHome, cwd, woId, taskId });
-  if (!prGate.ok) return fail(prGate.error);
+  // Task-done gate dispatches on the WO integration mode (after the unchanged
+  // AC/verify/spec-unchanged checks above). integrationError already validated the
+  // selector + accept-lock, so woIntegrationMode never throws here.
+  // - per-task-pr (Mode A): the unchanged per-task merged-PR gate.
+  // - single-pr   (Mode B): the conjunctive commit-presence gate on bf/<wo>.
+  if (isSinglePrMode(woIntegrationMode(bundle.bf))) {
+    // The commit-presence gate reads the WO-level Pull-Request off the loaded
+    // bf.md (harness-owned, re-validated against origin + the live PR).
+    const taskForGate = { ...task, __bf: bundle.bf };
+    const presenceGate = checkTaskCommitPresenceGate(taskForGate, { baseHome, cwd, woId, taskId });
+    if (!presenceGate.ok) return fail(presenceGate.error);
+  } else {
+    const prGate = checkGitHubPrMergedGate(task, { baseHome, cwd, woId, taskId });
+    if (!prGate.ok) return fail(prGate.error);
+  }
 
   const ts = formatTimestamp(now);
   let specText = fs.readFileSync(task.specPath, "utf8");
@@ -79,7 +94,7 @@ async function completeTask({ baseHome, woId, taskId, installDir, now, cwd }) {
   };
 }
 
-async function completeWorkObject({ baseHome, woId, installDir, now }) {
+async function completeWorkObject({ baseHome, woId, installDir, now, cwd }) {
   const bundle = await loadWo({ baseHome, woId, installDir });
   if (!bundle.bf) return fail("load failed", bundle.errors);
   // Fail closed on a post-accept Integration flip / invalid mode (accept-lock):
@@ -106,11 +121,29 @@ async function completeWorkObject({ baseHome, woId, installDir, now }) {
     return fail("work object changed after latest Final Acceptance SUCCESS; run start-review + review + verify again", changed);
   }
 
-  // P3 TODO(single-pr): WO-final merged-PR gate before Implementing->Completed.
-  // For Integration: single-pr, parameterize checkGitHubPrMergedGate with
-  // branchMode:"wo" (recompute branch === bf/<woId>, assert pr.merged === true +
-  // headRefName === bf/<woId> + repo-slug match) and fail closed here. NO-OP in P0:
-  // no caller resolves single-pr yet, so Mode A (per-task-pr) is byte-identical.
+  // WO-final merged-PR gate. For Integration: single-pr ONLY, the WO PR is the
+  // external merge proof (there are no per-task PRs). We reuse the SAME
+  // checkGitHubPrMergedGate via branchMode:"wo" — it recomputes branch === bf/<wo>
+  // and asserts pr.merged === true + headRefName === bf/<wo> + repo-slug match —
+  // BEFORE the Implementing->Completed write. per-task-pr completeWorkObject is
+  // unchanged (no WO PR gate; per-task merges already gated each task at complete).
+  // The gate runs against any Requires-Worktree:true task as the recompute carrier
+  // (all single-pr worktree tasks share bf/<wo>, so any one validates it); if no
+  // task requires a worktree, the WO has no managed branch and the gate is moot.
+  if (isSinglePrMode(woIntegrationMode(bundle.bf))) {
+    const carrier = bundle.tasks.find((t) => t.spec?.requiresWorktree);
+    if (carrier) {
+      const woGate = checkGitHubPrMergedGate(carrier, {
+        baseHome,
+        cwd,
+        woId,
+        taskId: carrier.id,
+        branchMode: "wo",
+        bf: bundle.bf,
+      });
+      if (!woGate.ok) return fail(woGate.error);
+    }
+  }
 
   const ts = formatTimestamp(now);
   let bfText = fs.readFileSync(bundle.bfPath, "utf8");
@@ -126,7 +159,7 @@ async function completeWorkObject({ baseHome, woId, installDir, now }) {
 
 export async function cmdComplete({ baseHome, woId, taskId = null, installDir, now = new Date(), cwd = process.cwd() }) {
   if (taskId) return completeTask({ baseHome, woId, taskId, installDir, now, cwd });
-  return completeWorkObject({ baseHome, woId, installDir, now });
+  return completeWorkObject({ baseHome, woId, installDir, now, cwd });
 }
 
 export function formatComplete(r) {

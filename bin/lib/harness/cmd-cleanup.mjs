@@ -3,6 +3,8 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { loadWo } from "./load-wo.mjs";
 import { resolveManagedGit, expectedTaskGit } from "./managed-git.mjs";
+import { integrationError } from "./validate-wo.mjs";
+import { woIntegrationMode, isSinglePrMode } from "./integration-mode.mjs";
 
 function runGit(cwd, args) {
   const r = spawnSync("git", args, { cwd, encoding: "utf8" });
@@ -65,6 +67,12 @@ function reasonText(r) {
 export async function cmdCleanup({ baseHome, woId, taskId, installDir, cwd = process.cwd() }) {
   const bundle = await loadWo({ baseHome, woId, installDir });
   if (!bundle.bf) return { ok: false, error: "load failed", details: bundle.errors };
+  // Fail closed on a post-accept Integration flip / invalid mode (accept-lock):
+  // cmd-cleanup acts on the mode (whether to destroy per-task git) but is not on
+  // validateWo's lint/accept path.
+  const integLock = integrationError(bundle.bf);
+  if (integLock) return { ok: false, error: `${integLock.code}: ${integLock.message}` };
+  const singlePr = isSinglePrMode(woIntegrationMode(bundle.bf));
 
   const task = bundle.tasks.find((t) => t.id === taskId);
   if (!task || !task.spec) {
@@ -80,6 +88,31 @@ export async function cmdCleanup({ baseHome, woId, taskId, installDir, cwd = pro
       deletedBranches: [],
       retainedWorktrees: [],
       retainedBranches: [],
+      skipped: [],
+    };
+  }
+
+  // single-pr (Mode B): per-task cleanup is a NO-OP. The shared worktree+branch
+  // bf/<wo>+_shared are retained until WO completion (WO-scope cleanup is P4) —
+  // removing them per task would destroy other tasks' in-flight commits on the
+  // shared branch. We retain (not remove) and report it so the operator sees why.
+  if (singlePr) {
+    const managed = resolveManagedGit({ baseHome, cwd });
+    if (!managed.ok) return managed;
+    return {
+      ok: true,
+      removedWorktrees: [],
+      deletedBranches: [],
+      retainedWorktrees: [{
+        taskId: task.id,
+        worktree: task.spec.executionMetadata?.worktree || "",
+        reason: "single-pr shared worktree retained until WO completion",
+      }],
+      retainedBranches: [{
+        taskId: task.id,
+        branch: task.spec.executionMetadata?.branch || "",
+        reason: "single-pr shared branch retained until WO completion",
+      }],
       skipped: [],
     };
   }

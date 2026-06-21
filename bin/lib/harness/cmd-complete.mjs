@@ -97,6 +97,12 @@ async function completeWorkObject({ baseHome, woId, installDir, now }) {
     return fail("work object changed after latest Final Acceptance SUCCESS; run start-review + review + verify again", changed);
   }
 
+  // P3 TODO(single-pr): WO-final merged-PR gate before Implementing->Completed.
+  // For Integration: single-pr, parameterize checkGitHubPrMergedGate with
+  // branchMode:"wo" (recompute branch === bf/<woId>, assert pr.merged === true +
+  // headRefName === bf/<woId> + repo-slug match) and fail closed here. NO-OP in P0:
+  // no caller resolves single-pr yet, so Mode A (per-task-pr) is byte-identical.
+
   const ts = formatTimestamp(now);
   let bfText = fs.readFileSync(bundle.bfPath, "utf8");
   bfText = writeState(bfText, "Completed", { kind: "bf" });

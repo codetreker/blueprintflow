@@ -16,10 +16,22 @@ function samePath(a, b) {
   return path.resolve(a) === path.resolve(b);
 }
 
-function expectedTaskGit(primaryWorktree, woId, taskId) {
+// Per-task git tuple (Mode A). Single source of truth for the per-task
+// branch/worktree layout; resolveModeGit('per-task-pr', ...) reuses this so the
+// two cannot drift. Exported for the mode resolver and cmd-cleanup re-use.
+export function expectedTaskGit(primaryWorktree, woId, taskId) {
   return {
     branch: `bf/${woId}/${taskId}`,
     worktree: path.join(primaryWorktree, ".worktrees", "works", woId, taskId),
+  };
+}
+
+// WO-scoped shared git tuple (Mode B / single-pr). DEFINED for P3 wiring;
+// NO P0 caller resolves this yet. Marker is `_shared` (decided in §1.1).
+export function expectedWoGit(primaryWorktree, woId) {
+  return {
+    branch: `bf/${woId}`,
+    worktree: path.join(primaryWorktree, ".worktrees", "works", woId, "_shared"),
   };
 }
 

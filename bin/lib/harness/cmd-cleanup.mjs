@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { loadWo } from "./load-wo.mjs";
-import { resolveManagedGit } from "./managed-git.mjs";
+import { resolveManagedGit, expectedTaskGit } from "./managed-git.mjs";
 
 function runGit(cwd, args) {
   const r = spawnSync("git", args, { cwd, encoding: "utf8" });
@@ -15,13 +15,6 @@ function runGit(cwd, args) {
 
 function samePath(a, b) {
   return path.resolve(a) === path.resolve(b);
-}
-
-function expectedTaskGit(primaryWorktree, woId, taskId) {
-  return {
-    branch: `bf/${woId}/${taskId}`,
-    worktree: path.join(primaryWorktree, ".worktrees", "works", woId, taskId),
-  };
 }
 
 function localBranchExists(primaryWorktree, branch) {

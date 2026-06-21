@@ -16,7 +16,7 @@ import { cmdAttachPr, formatAttachPr } from "./lib/harness/cmd-attach-pr.mjs";
 import { cmdVerify, formatVerifyResult, formatVerifySetupError } from "./lib/harness/cmd-verify.mjs";
 import { cmdComplete, formatComplete } from "./lib/harness/cmd-complete.mjs";
 import { cmdDiscard, formatDiscard } from "./lib/harness/cmd-discard.mjs";
-import { cmdCleanup, formatCleanup } from "./lib/harness/cmd-cleanup.mjs";
+import { cmdCleanup, cmdWoCleanup, formatCleanup } from "./lib/harness/cmd-cleanup.mjs";
 import { resolveDefaultStateHome } from "./lib/shared/state-home.mjs";
 
 const USAGE = `Usage:
@@ -29,7 +29,7 @@ const USAGE = `Usage:
   bf-harness attach-pr <bf-wo>/<task> <github-pr-url>
   bf-harness verify <bf-wo>[/<task>]
   bf-harness complete <bf-wo>[/<task>]
-  bf-harness cleanup <bf-wo>/<task>
+  bf-harness cleanup <bf-wo>[/<task>]
   bf-harness discard <bf-wo>
 
 State directory: Git primary worktree .bf, else <cwd>/.bf.`;
@@ -61,7 +61,7 @@ const ARITY = {
   next:           { wo: "required",  task: "forbidden" },
   status:         { wo: "required",  task: "forbidden" },
   "attach-pr":    { wo: "required",  task: "required" },
-  cleanup:        { wo: "required",  task: "required" },
+  cleanup:        { wo: "required",  task: "optional" },
   complete:       { wo: "required",  task: "optional" },
   discard:        { wo: "required",  task: "forbidden" },
   "start-review": { wo: "required",  task: "optional" },
@@ -135,7 +135,11 @@ async function main() {
       r = await cmdAttachPr({ baseHome, woId: t.woId, taskId: t.taskId, prUrl: extraArgs[0], installDir });
       text = formatAttachPr(r); break;
     case "cleanup":
-      r = await cmdCleanup({ baseHome, woId: t.woId, taskId: t.taskId, installDir });
+      // Task scope (cleanup <bf-wo>/<task>) is the unchanged Mode A/per-task
+      // path; WO scope (cleanup <bf-wo>) is the single-pr WO-final cleanup.
+      r = t.taskId
+        ? await cmdCleanup({ baseHome, woId: t.woId, taskId: t.taskId, installDir })
+        : await cmdWoCleanup({ baseHome, woId: t.woId, installDir });
       text = formatCleanup(r); break;
     case "complete":
       if (extraArgs.length !== 0) fail(`complete takes no extra arguments\n${USAGE}`, 2);

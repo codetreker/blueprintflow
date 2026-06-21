@@ -19,7 +19,7 @@ frontmatter field notes:
 - Pack: Must match the owning `bf.md` Pack.
 - Desc: One-sentence description that lets the task driver quickly understand the task.
 - Requires-Worktree: Strictly use `true` or `false`. In a Git project, use `true` for tasks that modify repository code or docs; use `false` for planning, review-only, or non-repository tasks.
-- Branch / Worktree / Pull-Request: Harness-owned execution metadata. Keep these empty in Draft/Ready specs. The LLM does not edit them directly.
+- Branch / Worktree / Pull-Request: Harness-owned execution metadata. Keep these empty in Draft/Ready specs. The LLM does not edit them directly. Under the work object's `Integration: single-pr` mode these are WO-shared: every task records the same shared branch `bf/<bf-wo>` and shared worktree, and the `Pull-Request` is the one WO-level PR (recorded in bf.md, not per task).
 -->
 
 # Task

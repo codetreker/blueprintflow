@@ -3,9 +3,23 @@ Id: <readable work-object id; match the bf-wo directory name, kebab-case recomme
 Desc: <one sentence describing what this work should accomplish>
 Pack: <pack id; must appear in bf list-packs output>
 State: Draft|Accepted|Implementing|Completed
+# Integration: per-task-pr|single-pr
 Creation: <yyyy-mm-dd hh:MM>
 Updated: <yyyy-mm-dd hh:MM>
 ---
+
+<!--
+frontmatter field notes:
+
+- Id / Desc / Pack / State: required.
+- Integration: Optional. Selects how tasks reach the trunk. Omit (or `per-task-pr`)
+  for the default — one branch/worktree/PR per task. Set `single-pr` to collect all
+  tasks as commits on one shared branch into ONE work-object PR; pick it by task
+  coupling, not size. Spec-authored, then accept-locked: bf-harness writes a
+  harness-owned `Mode-Lock:` anchor at accept and rejects any later change of the
+  effective mode. The LLM never writes `Mode-Lock` directly.
+- Creation / Updated: timestamps; `Updated` is harness-synchronized after accept.
+-->
 
 # Goal
 

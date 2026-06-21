@@ -55,6 +55,12 @@ Repeat until no task remains:
 16. Report retained task worktrees or branches. Do not force-delete them.
 17. Return to step 1.
 
+Steps 13, 15, and 16 above are the default `per-task-pr` (Mode A) flow. Under `Integration: single-pr` (Mode B) the task loop differs:
+
+- There is NO per-task PR to merge at step 13: every task is a commit on the shared branch `bf/<bf-wo>`, collected into the ONE WO-level PR. The task driver commits its work to the shared branch with a `BF-Task: <bf-wo>/<task>` trailer and pushes; the harness rejects `complete <bf-wo>/<task>` unless a trailered, pushed, non-empty, non-reverted commit for that task exists on `bf/<bf-wo>`.
+- There is NO per-task worktree cleanup at steps 15-16: the shared worktree and branch are retained until WO scope (`cleanup <bf-wo>/<task>` is a no-op that reports the retention). Cleaning per task would discard other tasks' in-flight commits on the shared branch.
+- The single WO PR merges ONCE at Final Acceptance, and the shared worktree is cleaned at WO scope after the work object completes.
+
 ## Task Driver Prompt Template
 
 Use this template when starting or resuming a task driver. Replace placeholders from `bf-harness next <bf-wo>` and the current BF context. Paste the complete task block returned by `bf-harness next`; do not summarize it.
@@ -97,6 +103,11 @@ Start Final Acceptance by running `bf-harness status <bf-wo>`. Continue only whe
 5. On FAIL, read the verify result, fix through the appropriate task driver or coordinator-owned action, start a fresh review round with fresh independent reviewers, and verify again.
 6. On SUCCESS, run `bf-harness complete <bf-wo>`.
 7. Report completion. Do not defer task worktree cleanup to Final Acceptance.
+
+Under `Integration: single-pr` (Mode B), Final Acceptance also merges and cleans at WO scope:
+
+- Merge the ONE WO-level PR (`bf/<bf-wo>`) before `complete <bf-wo>`. The harness rejects `complete <bf-wo>` for a single-pr work object until that WO PR is merged onto the harness-owned `bf/<bf-wo>` head.
+- After `complete <bf-wo>` succeeds and the WO PR is merged, run `bf-harness cleanup <bf-wo>` to remove the shared worktree and delete `bf/<bf-wo>`. This WO-scope cleanup runs only at WO completion, not per task.
 
 ## Pipeline promotion suggestions
 

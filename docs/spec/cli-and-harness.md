@@ -153,6 +153,8 @@ Checks:
 - AC capability registry: every `{capability}` marker must be declared by at least one role.
 - Task pipeline registry: each task has `Pipeline`; task frontmatter does not have `Capability`; the selected pipeline exists in the bf-wo local pipeline registry or selected pack.
 - Task worktree contract: each task has `Requires-Worktree: true|false`.
+- Integration mode: `Integration`, when present, is `per-task-pr` or `single-pr`;
+  once the WO has left `Draft` it must equal the harness-written `Mode-Lock` anchor.
 - BF-WO local pipelines: local pipeline files are valid YAML, have matching filename/id, do not collide with selected pack pipeline ids, have instruction and stages, use known stage capabilities, and are referenced by at least one task.
 - Task evidence: `## Evidence` exists; each task AC has evidence; evidence ids are unique; evidence AC refs exist; kind is valid; requirement text is non-empty.
 - State is valid for the phase.
@@ -198,6 +200,14 @@ Behavior:
   fetches `origin`, creates branch `bf/<bf-wo>/<task-id>` from `origin/HEAD`,
   creates worktree `<primary-worktree>/.worktrees/works/<bf-wo>/<task-id>`,
   records `Branch` and `Worktree`, and returns both values.
+- For `Integration: single-pr` work objects, worktree-required tasks instead
+  share one branch `bf/<bf-wo>` and one worktree
+  `<primary-worktree>/.worktrees/works/<bf-wo>/_shared`, created once on the first
+  worktree-task claim (under an O_EXCL create lock) and reused by every later
+  claim. Because they share that branch/worktree, single-pr worktree-required
+  tasks are claimed serially (effective batch of one); `Requires-Worktree: false`
+  tasks keep full parallelism. Reuse requires the shared worktree to be clean;
+  the harness never resets or cleans it (that would discard prior tasks' commits).
 - Retry safety requires any existing branch, worktree, and task metadata to
   match exactly. Conflicts fail before contract mutation and do not clean up
   user files.
@@ -221,6 +231,10 @@ Behavior:
 - Requires the PR head branch to equal the harness-owned task branch
   unconditionally; a merged-but-unrelated PR is rejected.
 - Writes task-level `Pull-Request` metadata and synchronizes `Updated`.
+- For `Integration: single-pr`, recomputes the shared branch `bf/<bf-wo>` instead,
+  requires the PR head to equal it, and writes the PR URL ONCE to the WO-level
+  `Pull-Request` in bf.md (not the per-task spec). It is idempotent on the same
+  URL and fails closed on a different URL (the WO PR cannot be re-pointed).
 
 ### `verify <bf-wo>` / `verify <bf-wo>/<task>`
 
@@ -375,6 +389,13 @@ Task scope applies when:
   branch metadata must match the harness-owned values (mismatched or missing
   metadata, or a merged-but-unrelated PR, is rejected).
 
+For `Integration: single-pr` work objects the task-done PR gate is replaced by a
+commit-presence gate: there is no per-task PR, so completion requires a commit
+carrying the recomputed `BF-Task: <bf-wo>/<task>` trailer (never read from spec)
+that is reachable on both local and `origin/bf/<bf-wo>` (committed and pushed),
+has a non-empty diff, and is not reverted, while the WO-level PR is present and
+still OPEN (a premature WO-PR merge at task-done is itself rejected).
+
 Task success moves the task from `Tasking` to `Completed` and synchronizes `Updated`.
 
 Work-object scope applies when:
@@ -385,20 +406,26 @@ Work-object scope applies when:
 - latest work-object `verify-result.md` is `SUCCESS`, `Mode: Final Acceptance`, and matches the work-object scope;
 - `bf.md` and task specs have not changed after that verify result.
 
+For `Integration: single-pr`, work-object completion additionally requires the
+WO-level PR (bf.md `Pull-Request`) to be merged with head branch `bf/<bf-wo>` in
+the same repository, recomputed from the shared branch rather than trusted from
+spec text. This is the single-pr external merge proof (there are no per-task PRs);
+if no task requires a worktree the WO has no managed branch and the gate is moot.
+
 Work-object success moves `bf.md` from `Implementing` to `Completed` and synchronizes `Updated`.
 
-### `cleanup <bf-wo>/<task>`
+### `cleanup <bf-wo>` / `cleanup <bf-wo>/<task>`
 
-Cleans one completed task's harness-owned Git worktree.
+Cleans harness-owned Git worktrees. Task scope (`<bf-wo>/<task>`) is the default
+per-task cleanup; work-object scope (`<bf-wo>`) is the `single-pr` WO-final cleanup.
 
-Applies when:
+Task scope (`cleanup <bf-wo>/<task>`) applies when:
 
 - scope is `<bf-wo>/<task>`;
 - task `spec.md` state is `Completed`.
 
 Behavior:
 
-- Refuses work-object scope; cleanup is task-scoped.
 - Refuses to run before task `State: Completed`.
 - For `Requires-Worktree: false`, returns success with no cleanup action.
 - For `Requires-Worktree: true`, requires managed Git mode and the
@@ -411,8 +438,29 @@ Behavior:
   longer checked out.
 - Retains and reports dirty worktrees, unregistered path conflicts, checked-out
   branches, and unmerged branches instead of forcing deletion.
+- For `Integration: single-pr`, per-task cleanup is a NO-OP: it retains the shared
+  branch/worktree (other tasks' in-flight commits live there) and reports the
+  retention.
 - Does not delete `.bf` work-object state. Use `discard` only when intentionally
   abandoning or removing local BF state.
+
+Work-object scope (`cleanup <bf-wo>`) applies only to `Integration: single-pr` and
+when:
+
+- scope is `<bf-wo>`;
+- `bf.md.State` is `Completed`;
+- the WO-level PR is merged (head branch `bf/<bf-wo>`, same repository).
+
+Behavior:
+
+- Refuses a non-`single-pr` work object (per-task-pr cleanup is task-scoped).
+- Refuses before `bf.md.State: Completed` and before the WO PR is merged,
+  recomputing the shared branch/worktree and re-reading the live PR rather than
+  trusting spec text; retains the shared resources on refusal.
+- Removes the shared worktree `<primary-worktree>/.worktrees/works/<bf-wo>/_shared`
+  with `git worktree remove` and deletes the shared branch `bf/<bf-wo>` with
+  `git branch -d`, retaining anything Git cannot delete safely.
+- Is a success no-op when no task requires a worktree (no managed shared git).
 
 Output includes one line per cleanup action, such as:
 

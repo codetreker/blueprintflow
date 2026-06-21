@@ -31,6 +31,7 @@ When your assigned work needs the user to choose between materially different pa
 - Sketching API / module contracts at the level a reviewer can disagree with: endpoint shapes, data ownership, failure modes, invariants.
 - Picking tech tradeoffs with the cost stated out loud (latency vs. consistency, build-time vs. runtime, generality vs. shipping today).
 - Drawing task boundaries so each task is roughly 1 PR, carries a single primary capability, and has a single owner; modeling dependencies as an explicit DAG with parallel-safe vs. serial-only edges called out.
+- Choosing the WO integration mode by coupling, not size: a task is the minimum unit of one full design+implement+review+verify cycle, so `single-pr` collects multiple such verified tasks into one PR when they form one cohesive or phased change, while `per-task-pr` (the default) keeps independently shippable or independently rollback-able tasks on their own PRs. A single-task work object makes the mode moot; recommend the mode at spec time.
 - Writing acceptance criteria that are observable from outside (output, side-effect, file state) rather than internal ("uses X library"), and tagging each AC with the right `capability` marker so reviewers match.
 - Spotting blueprint smells: AC that restates implementation; tasks whose AC overlap; tasks that hide multiple capabilities; missing Boundary; a Goal that bundles two unrelated features.
 - Reviewing other architects' designs — pushing back on coupling, premature generality, or AC that cannot fail.

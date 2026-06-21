@@ -63,6 +63,15 @@ The architect decomposes the accepted Goal/Boundary into a task DAG. A good engi
 - Defines a scope contract, not implementation design.
   Lock what the task must accomplish, who owns it, what it hands off, and how it will be accepted; leave exact file paths, command flags, internal API shapes, and implementation sequence to the selected pipeline's design stages unless the user already made those details part of the accepted contract.
 
+### Integration mode (per-task-pr vs single-pr)
+
+A task is the minimum unit of one full independent design+implement+review+verify cycle. The WO `Integration:` mode decides how those verified tasks reach the trunk:
+
+- `per-task-pr` (default) — each task ships on its own branch/worktree/PR, reviewed and merged independently.
+- `single-pr` (opt-in) — multiple verified tasks are collected as commits on one shared branch `bf/<bf-wo>` and reviewed as ONE WO-level PR.
+
+Choose `single-pr` when the tasks form one cohesive or phased change that should be reviewed and merged as a single PR; choose `per-task-pr` when the tasks are independently shippable or independently rollback-able. The selection axis is **coupling, not size**: a large but independently mergeable set stays `per-task-pr`; a small but tightly-coupled set may want `single-pr`. A single-task work object makes the mode moot — recommend the mode at spec time, when the task decomposition is known, and leave `Integration:` absent (default `per-task-pr`) unless the coupling argues for `single-pr`.
+
 Typical patterns:
 
 - **Small feature**: use `feature-light` when a compact pre-implementation scope plan can name why the task fits the lightweight path, the intended change scope, the validation approach, and the conditions that would escalate to the full `feature` pipeline.

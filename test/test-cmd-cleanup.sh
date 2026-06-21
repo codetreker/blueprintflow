@@ -56,12 +56,14 @@ run_cleanup_cli() {
   rm -f /tmp/bf-cleanup-stderr.$$
 }
 
-# Cleanup is task-scoped; work-object scope is not a cleanup target.
+# WO-scope cleanup (cleanup <bf-wo>) is single-pr only. A Mode A (per-task-pr)
+# work object refuses it fail-closed and never touches the per-task worktree or
+# branch. Per-task cleanup stays task-scoped (cleanup <bf-wo>/<task>).
 make_git_repo
 prepare_implementing_wo
 run_cleanup_cli wo-1
-assert_eq "$RC" "2" "cleanup wo-scope CLI exit"
-assert_match "$STDERR" "cleanup requires <bf-wo>/<task>" "cleanup requires task target"
+assert_eq "$RC" "1" "Mode A wo-scope cleanup CLI exit"
+assert_match "$STDOUT" "applies only to Integration: single-pr" "Mode A wo-scope cleanup refused"
 [ -d "$TASK_WORKTREE" ] || fail "wo-scope cleanup removed worktree"
 git -C "$PRIMARY" show-ref --verify "refs/heads/$TASK_BRANCH" >/dev/null 2>&1 || fail "wo-scope cleanup removed branch"
 rm -rf "$ROOT"

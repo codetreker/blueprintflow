@@ -587,6 +587,7 @@ Id: wo-1
 Desc: t
 Pack: engineering
 State: Implementing
+Mode-Lock: per-task-pr
 Creation: 2026-05-19 10:00
 Updated: 2026-05-19 10:00
 ---

@@ -163,13 +163,46 @@ assert_json_field "$STDOUT" .ok false
 assert_match "$STDOUT" "INTEGRATION_LOCKED" "mode-reading path sees the lock violation"
 cleanup
 
-# legacy back-compat: a pre-feature accepted Mode A WO (no Integration, no
-# Mode-Lock) is NOT a lock violation.
+# HARDENED (was legacy back-compat): a pre-feature accepted Mode A WO with no
+# Integration AND no Mode-Lock anchor is now a LOCK VIOLATION. The missing
+# harness-owned anchor was the silent single-pr->Mode-A downgrade bypass, so a
+# non-Draft WO without it must FAIL closed rather than resolve to per-task-pr.
 setup; copy_fixture clean-wo "$BASE/works/legacy-accepted-wo"
 sed -i.bak 's/^State: Draft/State: Accepted/' "$BASE/works/legacy-accepted-wo/bf.md"
 run_validate legacy-accepted-wo
+assert_json_field "$STDOUT" .ok false
+assert_match "$STDOUT" "INTEGRATION_LOCKED" "non-Draft WO missing Mode-Lock anchor is a lock violation"
+cleanup
+
+# migration: the same pre-feature WO validates clean once the one-time
+# `Mode-Lock: per-task-pr` anchor line is added to bf.md frontmatter (this is how
+# a WO accepted before Mode B v0.8.0 migrates forward).
+setup; copy_fixture clean-wo "$BASE/works/legacy-migrated-wo"
+sed -i.bak 's/^State: Draft/State: Accepted/' "$BASE/works/legacy-migrated-wo/bf.md"
+sed -i.bak '/^State: Accepted$/a Mode-Lock: per-task-pr' "$BASE/works/legacy-migrated-wo/bf.md"
+run_validate legacy-migrated-wo
 assert_json_field "$STDOUT" .ok true
-assert_not_match "$STDOUT" "INTEGRATION_LOCKED" "legacy accepted Mode A WO is not locked"
+assert_not_match "$STDOUT" "INTEGRATION_LOCKED" "migrated WO with per-task-pr anchor validates clean"
+cleanup
+
+# regression (anchor-deletion bypass): a single-pr WO is accepted (harness writes
+# Mode-Lock: single-pr), then BOTH Integration AND Mode-Lock are hand-deleted to
+# masquerade as a plain Mode A WO. This silently downgraded single-pr -> Mode A
+# before the hardening; it must now FAIL closed with INTEGRATION_LOCKED.
+setup; copy_fixture clean-wo "$BASE/works/anchor-deleted-wo"
+sed -i.bak '/^State: Draft$/a Integration: single-pr' "$BASE/works/anchor-deleted-wo/bf.md"
+seed_mode_a_success "$BASE/works/anchor-deleted-wo"
+node --input-type=module -e "
+  import('$REPO_ROOT/bin/lib/harness/cmd-accept.mjs').then((m) =>
+    m.cmdAccept({ baseHome: '$BASE', woId: 'anchor-deleted-wo', installDir: '$REPO', now: new Date(2026, 4, 19, 12, 34) }));
+" >/dev/null
+grep -q "^Mode-Lock: single-pr" "$BASE/works/anchor-deleted-wo/bf.md" || fail "accept did not write Mode-Lock anchor"
+# hand-delete BOTH the Integration selector and the Mode-Lock anchor
+sed -i.bak '/^Integration: single-pr$/d' "$BASE/works/anchor-deleted-wo/bf.md"
+sed -i.bak '/^Mode-Lock: single-pr$/d' "$BASE/works/anchor-deleted-wo/bf.md"
+run_validate anchor-deleted-wo
+assert_json_field "$STDOUT" .ok false
+assert_match "$STDOUT" "INTEGRATION_LOCKED" "deleting both Integration and Mode-Lock no longer silently downgrades to Mode A"
 cleanup
 
 # cmd-next END-TO-END: a flipped accepted WO cannot be claimed. cmd-next calls

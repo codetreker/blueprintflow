@@ -31,6 +31,7 @@ prepare_ready_wo() {
   copy_fixture clean-wo "$BASE/works/wo-1"
   sed -i.bak 's/^Id: clean-wo/Id: wo-1/' "$BASE/works/wo-1/bf.md"
   sed -i.bak 's/^State: Draft/State: Accepted/' "$BASE/works/wo-1/bf.md"
+  sed -i.bak '/^State: Accepted$/a Mode-Lock: per-task-pr' "$BASE/works/wo-1/bf.md"
   sed -i.bak 's/^State: Draft/State: Ready/' "$BASE/works/wo-1/task-a/spec.md"
   sed -i.bak 's/^State: Draft/State: Ready/' "$BASE/works/wo-1/task-b/spec.md"
   sed -i.bak 's/^Requires-Worktree: .*/Requires-Worktree: true/' "$BASE/works/wo-1/task-a/spec.md"

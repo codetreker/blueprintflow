@@ -48,16 +48,16 @@ export function integrationError(bf) {
   if (bf.frontmatter.State === "Draft") return null;
   const lock = normalizeLock(bf.frontmatter["Mode-Lock"]);
   if (lock === null) {
-    // No anchor. Legacy pre-feature WOs are Mode A by definition; tolerate them.
-    // But a non-Draft WO whose effective mode is NOT the Mode A default cannot
-    // have been accept-locked by this harness => fail closed.
-    if (mode !== INTEGRATION_MODES.PER_TASK_PR) {
-      return {
-        code: "INTEGRATION_LOCKED",
-        message: `Integration "${mode}" set after accept without a Mode-Lock anchor (state ${bf.frontmatter.State}); the harness owns this field`,
-      };
-    }
-    return null;
+    // A non-Draft WO has, by definition, passed accept — which always writes the
+    // harness-owned Mode-Lock anchor (for BOTH modes). A MISSING anchor therefore
+    // means one of: the anchor was hand-deleted (the silent single-pr->Mode-A
+    // downgrade bypass), or the WO was accepted before Mode B (v0.8.0) shipped.
+    // Either way, fail closed — do NOT silently treat it as Mode A, because that
+    // is exactly the bypass. Pre-feature WOs migrate with a one-time anchor line.
+    return {
+      code: "INTEGRATION_LOCKED",
+      message: `non-Draft work object (state ${bf.frontmatter.State}) is missing the harness-owned Mode-Lock anchor; the harness writes it at accept. A work object accepted before Mode B (v0.8.0) migrates with a one-time \`Mode-Lock: per-task-pr\` line in bf.md.`,
+    };
   }
   if (lock !== mode) {
     return {

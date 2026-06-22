@@ -254,7 +254,7 @@ export function prepareWoWorktree({ baseHome, cwd = process.cwd(), woId, metadat
     lockFd = fs.openSync(lockPath, "ax");
   } catch (err) {
     if (err && err.code === "EEXIST") {
-      return { ok: false, error: "WO shared worktree is being claimed by another process" };
+      return { ok: false, error: `WO shared worktree is being claimed by another process (lock: ${lockPath}). If no other claim is running, this is a stale lock — remove that file to recover.` };
     }
     return { ok: false, error: `failed to acquire WO create lock: ${err.message}` };
   }

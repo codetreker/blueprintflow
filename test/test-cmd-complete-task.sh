@@ -24,6 +24,7 @@ prepare_tasking_wo() {
   copy_fixture clean-wo "$BASE/works/wo-1"
   sed -i.bak 's/^Id: clean-wo/Id: wo-1/' "$BASE/works/wo-1/bf.md"
   sed -i.bak 's/^State: Draft/State: Implementing/' "$BASE/works/wo-1/bf.md"
+  sed -i.bak '/^State: Implementing$/a Mode-Lock: per-task-pr' "$BASE/works/wo-1/bf.md"
   sed -i.bak 's/^State: Draft/State: Tasking/' "$BASE/works/wo-1/task-a/spec.md"
   sed -i.bak 's/^State: Draft/State: Ready/' "$BASE/works/wo-1/task-b/spec.md"
   sed -i.bak "s/^Requires-Worktree: .*/Requires-Worktree: $requires/" "$BASE/works/wo-1/task-a/spec.md"

@@ -11,6 +11,7 @@ setup() {
   mkdir -p "$BASE"
   copy_fixture clean-wo "$BASE/works/wo-1"
   sed -i.bak 's/^State: Draft/State: Implementing/' "$BASE/works/wo-1/bf.md"
+  sed -i.bak '/^State: Implementing$/a Mode-Lock: per-task-pr' "$BASE/works/wo-1/bf.md"
   sed -i.bak 's/^- \[ \] AC-1/- [x] AC-1/' "$BASE/works/wo-1/bf.md"
   for t in task-a task-b; do
     sed -i.bak 's/^State: Draft/State: Completed/' "$BASE/works/wo-1/$t/spec.md"

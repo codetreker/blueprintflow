@@ -118,6 +118,7 @@ A skill prompt is executed by an actor that has only that text, not your reasoni
 - Default uncertainty to stop and escalate, not guess. Encode stop conditions.
 - Show, do not point: present the content the actor must act on inline; a file or path pointer may supplement but never replace it.
 - One source of truth: do not restate a rule across surfaces where the copies can drift.
+- Do not hard-wrap prompt prose to a column width (e.g. 80 characters). Keep one instruction on one line; break only on a semantic boundary, a table row, a code block, or a line break the file format requires.
 - Test by role immersion before shipping: read the prompt AS the actor that executes it, with only what it is given, and ask "would I act correctly, stall, or err?". Prefer independent reviewers each in a distinct actor seat; ground every fix in the actual mechanism, because reviewers propose wrong fixes too.
 
 The cut test for every sentence: does it change what the actor does? An imperative instruction keeps. A `why` that changes a judgment in an unlisted case keeps. Pure background is cut, or sunk to `docs/`.

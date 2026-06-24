@@ -1,6 +1,6 @@
 # test/test-helpers.sh — sourced by every test-*.sh
 # 提供：assert_eq / assert_match / assert_not_match / assert_json_field / make_temp_home /
-#       copy_fixture / run_bf / run_bfh / pass / fail
+#       copy_fixture / run_bf / run_bfh / pass / fail / require_cmd
 # 约定：失败 → echo 并 exit 1；成功 → 静默；最后调 pass 输出 "PASS"
 
 set -u
@@ -11,6 +11,12 @@ BFH="$REPO_ROOT/bin/bf-harness.mjs"
 FIXTURES="$REPO_ROOT/test/fixtures"
 
 fail() { echo "FAIL: $*" >&2; exit 1; }
+
+# Fail closed when a required external tool is missing. Guards written as
+# `if rg …; then fail; fi` pass vacuously when rg is absent (exit 127 makes the
+# `if` false and skips the fail), so a test that depends on rg must assert its
+# presence up front.
+require_cmd() { command -v "$1" >/dev/null 2>&1 || fail "required command not found: $1"; }
 
 pass() { echo "PASS"; exit 0; }
 

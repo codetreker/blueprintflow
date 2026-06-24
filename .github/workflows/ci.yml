@@ -23,6 +23,11 @@ jobs:
       - name: Install dependencies
         run: bash .github/scripts/with-isolated-bf-env.sh npm ci
 
+      - name: Install ripgrep
+        # The test suite's forbidden-token / Han-char guards use rg and now fail
+        # closed if it is absent (require_cmd rg), so install it explicitly.
+        run: sudo apt-get update && sudo apt-get install -y ripgrep
+
       - name: Run full tests
         run: bash .github/scripts/with-isolated-bf-env.sh npm test
 

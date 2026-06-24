@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -u
 source "$(dirname "$0")/test-helpers.sh"
+require_cmd rg  # fail closed if ripgrep is absent — the forbidden-token guards below would otherwise pass vacuously
 
 for file in brainstorm spec-authoring execution; do
   [ -f "$REPO_ROOT/references/$file.md" ] || fail "missing references/$file.md"

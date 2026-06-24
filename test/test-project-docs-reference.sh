@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -u
 source "$(dirname "$0")/test-helpers.sh"
+require_cmd rg  # fail closed if ripgrep is absent — the .tasks guard below would otherwise pass vacuously
 
 PROJECT_DOCS="$REPO_ROOT/references/project-docs.md"
 

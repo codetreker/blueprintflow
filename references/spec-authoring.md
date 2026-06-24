@@ -7,7 +7,7 @@ Goal: produce a locked `bf.md` + one `<task-id>/spec.md` per task, with every AC
 Before role lookup, pipeline lookup, `bf.md` drafting, task spec drafting, local pipeline drafting, lint, Spec Review, or `accept`:
 
 1. Read `discussion.md`.
-2. Report discussion source coverage for Goal, Requirement, Acceptance Criteria, Boundary, and Task List rationale.
+2. Report discussion source coverage for Goal, Requirement, Acceptance Criteria, Boundary, Task List rationale, and high-level design (the work's overall approach and each task's key approach).
 3. If any source material is missing, do not write `bf.md` or task specs. Return to [brainstorm.md](brainstorm.md), append the missing question, decision, or proposal to `discussion.md`, and continue only after the gap is resolved.
 4. Continue only when source coverage is complete and the user explicitly agreed to enter spec authoring.
 
@@ -36,12 +36,16 @@ or handoff chains, missing terminal-state expectations, vague boundaries,
 unobservable AC, missing Evidence, or task overlap. Spec Review does not block
 only because implementation investigation remains for execution design.
 
+## Design Discussion
+
+Both `bf.md` and each task `spec.md` carry a high-level `## Design` section so the contract is not all generic outcomes. It records the design *discussion*, not detailed implementation design: at the `bf.md` altitude, the work's overall solution shape and the cross-cutting decisions that justify the task breakdown; at the task `spec.md` altitude, the key approach that task takes and the task-level decisions a reviewer should see before execution. The fixed constraint is altitude, not length — keep it high-level orientation and leave exact files, interfaces, flags, and step-by-step sequence to the execution-stage design artifact; size each section to the task's actual scope and architectural weight, not a fixed length. Source it from `discussion.md` like the rest of the contract.
+
 ## Discussion Source Coverage
 
 Before authoring `bf.md`, verify that discussion.md contains source material for
-the concise contract: Goal, Requirement, Acceptance Criteria, Boundary, and Task
-List rationale. The source material may be direct user input or a confirmed or
-accepted assistant proposal.
+the concise contract: Goal, Requirement, Acceptance Criteria, Boundary, Task
+List rationale, and high-level design. The source material may be direct user
+input or a confirmed or accepted assistant proposal.
 
 If source material is missing, stop before task breakdown. Return to
 brainstorm, append the missing question, decision, or proposal to
@@ -55,8 +59,8 @@ This traceability does not belong in the contract text. bf.md must not cite or q
 2. `bf list-pipelines --pack <id>` — get the available task execution pipelines for this pack.
 3. Follow [project-docs.md](project-docs.md). If confirmed project design docs exist, treat them as design authority while drafting. If the work changes accepted system design, add design-doc update AC and Evidence to the relevant task specs.
 4. Confirm discussion source coverage before task breakdown. Do not author `bf.md` until the coverage check is satisfied.
-5. Author `bf.md` with `State: Draft` using `templates/bf.md`. Every AC must carry `{id}|{capability}`, and the capability must be declared in some role's `Capabilities:` list. Decide the optional `Integration` mode here (default `per-task-pr`; set `single-pr` only for a cohesive or phased change that should be reviewed as ONE PR **and** with at least one `Requires-Worktree: true` task — finalize the choice once the task specs in step 6 are drafted). The mode is **accept-locked** and cannot change later; record the rationale in `discussion.md`.
-6. Author each `<task>/spec.md` with `State: Draft` using `templates/task-spec.md`. Each task spec has exactly one `Pipeline`, a required `Requires-Worktree: true|false`, empty `Branch` / `Worktree` / `Pull-Request` metadata, AC lines with their own `{capability}` markers (review capability), and an explicit `Evidence` section that maps each task AC to one or more required evidence items. Keep the task spec at contract granularity; leave detailed design to the task pipeline.
+5. Author `bf.md` with `State: Draft` using `templates/bf.md`. Every AC must carry `{id}|{capability}`, and the capability must be declared in some role's `Capabilities:` list. Decide the optional `Integration` mode here (default `per-task-pr`; set `single-pr` only for a cohesive or phased change that should be reviewed as ONE PR **and** with at least one `Requires-Worktree: true` task — finalize the choice once the task specs in step 6 are drafted). The mode is **accept-locked** and cannot change later; record the rationale in `discussion.md`. Include the work-level `## Design` high-level design discussion.
+6. Author each `<task>/spec.md` with `State: Draft` using `templates/task-spec.md`. Each task spec has exactly one `Pipeline`, a required `Requires-Worktree: true|false`, empty `Branch` / `Worktree` / `Pull-Request` metadata, AC lines with their own `{capability}` markers (review capability), and an explicit `Evidence` section that maps each task AC to one or more required evidence items. Record the task's high-level approach in its `## Design` section. Keep the task spec at contract granularity; leave detailed design to the task pipeline.
 7. If no pack pipeline fits a task, create a bf-wo local pipeline under `<work-object>/pipelines/<id>.yml`. The local pipeline must be designed by a `pipeline-designer` actor. The designer must include terminal-state closure for every external artifact or side effect the pipeline creates, so the pipeline cannot reach user-perspective completion with dangling work. The parent orchestrator may only make mechanical path/format fixes; substantive stage, gate, capability, artifact, closure, handoff, or stop-condition changes go back to the designer.
 8. `bf-harness lint <bf-wo>` — fix every error and re-run until SUCCESS.
 9. Record the **host-runtime strategy** in `discussion.md` before Spec Review:

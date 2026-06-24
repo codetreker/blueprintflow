@@ -51,11 +51,14 @@ State what is explicitly out of scope for this work. This section keeps task
 breakdown focused and lets reviewers judge whether a task has crossed the
 accepted boundary.
 
+## Design
+
+High-level design discussion for the work as a whole — orientation, not detailed implementation design. State the overall solution shape and the key cross-cutting decisions that justify the task breakdown: the main approach, the major components or areas touched and how they fit together, and the significant alternatives weighed with the reason for the chosen direction. Length scales with the work — brief for a small change, fuller for a complex one; size it to the actual scope, not a fixed length. Stay at the altitude that explains *why these tasks*; leave exact files, interfaces, flags, and implementation sequence to each task's execution-stage design.
+
 ## Task List
 
-Task list. Order tasks by execution sequence. Put dependencies after a colon;
-separate multiple dependencies with commas.
+An ordered dependency index, not a place for descriptions. Order tasks by execution sequence; put dependencies after a colon, comma-separated. Each task's scope and design live in its `<task-id>/spec.md`, not here — keep ids self-descriptive enough to read order and topic at a glance.
 
 - task-id-1
 - task-id-2
-- task-id-3: task-id-1, task-id-2   // task-id-3 depends on both task-id-1 and task-id-2
+- task-id-3: task-id-1, task-id-2

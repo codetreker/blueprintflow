@@ -31,6 +31,10 @@ internal API shapes, migration strategy, and implementation sequence belong in
 execution-stage design artifacts unless they are already accepted user-facing
 contract details or required Evidence.
 
+## Design
+
+High-level design discussion for this task — orientation, not detailed implementation design. State the key approach this task takes: the chosen strategy or technique, the main components or touch-points it works in, and any task-level decision or trade-off a reviewer should see before execution. Length scales with the task — a few sentences for a small one, more for a complex one; match depth to actual complexity, not a fixed length. Keep the altitude high-level; exact files, interfaces, flags, and step-by-step sequence belong to the execution-stage design artifact.
+
 ## Requirements
 
 - Specific requirements this task must satisfy

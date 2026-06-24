@@ -72,9 +72,12 @@ defines them.
 
 BF requires discussion.md source coverage before `bf.md` authoring. The
 recorded discussion must contain source material for the future Goal,
-Requirement, Acceptance Criteria, Boundary, and Task List rationale. `bf.md`
-stays concise: it distills the recorded discussion into a contract without
-quoting or citing `discussion.md` by default.
+Requirement, Acceptance Criteria, Boundary, Task List rationale, and high-level
+design. `bf.md` and each task `spec.md` carry a high-level `## Design` section —
+the work's overall approach and each task's key approach — as design
+orientation, not detailed implementation design, which stays in the
+execution-stage design artifact. `bf.md` stays concise: it distills the recorded
+discussion into a contract without quoting or citing `discussion.md` by default.
 
 New BF work starts by bootstrapping `<state-home>/works/<bf-wo>/`: choose a
 readable id, create the directory, copy `templates/discussion.md`, and append

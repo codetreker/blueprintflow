@@ -2,9 +2,11 @@ import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { loadWo } from "./load-wo.mjs";
-import { writeTaskExecutionMetadata, writeUpdated, formatTimestamp } from "./write-mutations.mjs";
+import { writeTaskExecutionMetadata, writeWoPullRequest, writeUpdated, formatTimestamp } from "./write-mutations.mjs";
 import { parseGitHubPrUrl, parseGitHubRemoteUrl, readGitHubPr } from "./github-pr.mjs";
-import { validateTaskWorktree } from "./managed-git.mjs";
+import { validateTaskWorktree, validateWoWorktree } from "./managed-git.mjs";
+import { integrationError } from "./validate-wo.mjs";
+import { woIntegrationMode, isSinglePrMode } from "./integration-mode.mjs";
 
 function runGit(cwd, args) {
   const r = spawnSync("git", args, { cwd, encoding: "utf8" });
@@ -21,6 +23,11 @@ export async function cmdAttachPr({ baseHome, woId, taskId, prUrl, installDir, n
 
   const bundle = await loadWo({ baseHome, woId, installDir });
   if (!bundle.bf) return { ok: false, error: "load failed", details: bundle.errors };
+  // Fail closed on a post-accept Integration flip / invalid mode (accept-lock).
+  const integLock = integrationError(bundle.bf);
+  if (integLock) return { ok: false, error: `${integLock.code}: ${integLock.message}` };
+  const singlePr = isSinglePrMode(woIntegrationMode(bundle.bf));
+
   const task = bundle.tasks.find(t => t.id === taskId);
   if (!task?.spec) return { ok: false, error: `task spec not found: ${taskId}` };
   if (task.spec.frontmatter.State !== "Tasking") {
@@ -35,10 +42,13 @@ export async function cmdAttachPr({ baseHome, woId, taskId, prUrl, installDir, n
   }
 
   // Fail closed: pin the worktree/branch to the recomputed harness-owned values
-  // rather than trusting the verbatim spec metadata. validateTaskWorktree rejects
-  // a missing Branch/Worktree and any hand-edited value that is not harness-owned.
+  // rather than trusting the verbatim spec metadata. The mode selects the
+  // recomputation: per-task-pr asserts bf/<wo>/<task>; single-pr asserts the
+  // shared bf/<wo>. Either way a hand-edited / non-harness-owned value is rejected.
   const cwd = path.dirname(baseHome);
-  const validated = validateTaskWorktree({ baseHome, cwd, woId, taskId, metadata });
+  const validated = singlePr
+    ? validateWoWorktree({ baseHome, cwd, woId, metadata })
+    : validateTaskWorktree({ baseHome, cwd, woId, taskId, metadata });
   if (!validated.ok) return { ok: false, error: validated.error };
   const branch = validated.branch;
   const worktree = validated.worktree;
@@ -55,7 +65,8 @@ export async function cmdAttachPr({ baseHome, woId, taskId, prUrl, installDir, n
   }
 
   // Assert the PR head branch equals the harness-owned branch unconditionally,
-  // so a merged-but-unrelated PR cannot be attached.
+  // so a merged-but-unrelated PR cannot be attached. In single-pr this is the
+  // shared bf/<wo> head, NOT the per-task branch.
   const lookup = readGitHubPr(parsedPr.url);
   if (!lookup.ok) return { ok: false, error: lookup.error };
   if (lookup.pr.headRefName !== branch) {
@@ -63,6 +74,21 @@ export async function cmdAttachPr({ baseHome, woId, taskId, prUrl, installDir, n
       ok: false,
       error: `attach-pr branch mismatch: expected ${branch}, found ${lookup.pr.headRefName || "<none>"}`,
     };
+  }
+
+  if (singlePr) {
+    // Single-pr: the WO PR URL is written ONCE to bf.md WO-level frontmatter,
+    // idempotent on the same URL, fail-closed on a different URL (writeWoPullRequest
+    // throws). It is NOT written to the per-task spec.
+    let bfText = fs.readFileSync(bundle.bfPath, "utf8");
+    try {
+      bfText = writeWoPullRequest(bfText, parsedPr.url);
+    } catch (err) {
+      return { ok: false, error: `attach-pr cannot re-point the WO Pull-Request: ${err.message}` };
+    }
+    bfText = writeUpdated(bfText, formatTimestamp(now));
+    fs.writeFileSync(bundle.bfPath, bfText);
+    return { ok: true, taskId, pullRequest: parsedPr.url, scope: "wo" };
   }
 
   let text = fs.readFileSync(task.specPath, "utf8");

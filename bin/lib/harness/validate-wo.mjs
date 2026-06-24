@@ -2,6 +2,76 @@ import fs from "node:fs";
 import path from "node:path";
 import { parsePipeline } from "../shared/parse-pipeline.mjs";
 import { buildPipelineRegistry, findPipeline } from "../shared/pipeline-registry.mjs";
+import { INTEGRATION_MODES } from "./integration-mode.mjs";
+
+const VALID_INTEGRATION_MODES = new Set(Object.values(INTEGRATION_MODES));
+
+// Mode B (P1) selector validation + accept-lock immutability.
+// - INTEGRATION_INVALID: Integration present but not in {per-task-pr, single-pr}.
+//   Absent/empty Integration is valid (=> Mode A / per-task-pr default).
+// - INTEGRATION_LOCKED: once State != Draft, the effective Integration mode must
+//   equal the harness-written Mode-Lock anchor (captured at accept). A hand-edited
+//   post-accept Integration value diverges from the anchor => fail closed.
+//   Legacy pre-feature WOs (no Mode-Lock) resolve to per-task-pr; absent anchor is
+//   only honored when the effective mode is the Mode A default, so a post-accept
+//   add of `Integration: single-pr` with no matching anchor is still rejected.
+function effectiveIntegration(raw) {
+  // Mirror woIntegrationMode's coercion without throwing: absent, empty string,
+  // and the parse-frontmatter empty-value sentinel ([]) all mean the Mode A
+  // default. Any other value is returned verbatim for membership testing.
+  if (raw == null || raw === "") return INTEGRATION_MODES.PER_TASK_PR;
+  if (Array.isArray(raw) && raw.length === 0) return INTEGRATION_MODES.PER_TASK_PR;
+  return raw;
+}
+
+function normalizeLock(raw) {
+  if (raw == null || raw === "") return null;
+  if (Array.isArray(raw) && raw.length === 0) return null;
+  return raw;
+}
+
+// Returns the first integration selector/lock error for this WO, or null.
+// Exported so the runtime mode-reading commands (cmd-next, cmd-complete) enforce
+// the accept-lock everywhere the mode is acted on — not only at lint/accept,
+// which call validateWo. cmd-next/cmd-complete call loadWo only, so without this
+// the INTEGRATION_LOCKED gate would be fail-open at runtime.
+export function integrationError(bf) {
+  const mode = effectiveIntegration(bf.frontmatter.Integration);
+  // selector validation: a present-but-unknown value fails closed
+  if (typeof mode !== "string" || !VALID_INTEGRATION_MODES.has(mode)) {
+    return {
+      code: "INTEGRATION_INVALID",
+      message: `Integration "${Array.isArray(mode) ? "" : mode}" is not a known mode (expected one of ${[...VALID_INTEGRATION_MODES].join(", ")})`,
+    };
+  }
+  // accept-lock immutability: only binds once the WO has left Draft
+  if (bf.frontmatter.State === "Draft") return null;
+  const lock = normalizeLock(bf.frontmatter["Mode-Lock"]);
+  if (lock === null) {
+    // A non-Draft WO has, by definition, passed accept — which always writes the
+    // harness-owned Mode-Lock anchor (for BOTH modes). A MISSING anchor therefore
+    // means one of: the anchor was hand-deleted (the silent single-pr->Mode-A
+    // downgrade bypass), or the WO was accepted before Mode B (v0.8.0) shipped.
+    // Either way, fail closed — do NOT silently treat it as Mode A, because that
+    // is exactly the bypass. Pre-feature WOs migrate with a one-time anchor line.
+    return {
+      code: "INTEGRATION_LOCKED",
+      message: `non-Draft work object (state ${bf.frontmatter.State}) is missing the harness-owned Mode-Lock anchor; the harness writes it at accept. A work object accepted before Mode B (v0.8.0) migrates with a one-time \`Mode-Lock: per-task-pr\` line in bf.md.`,
+    };
+  }
+  if (lock !== mode) {
+    return {
+      code: "INTEGRATION_LOCKED",
+      message: `Integration "${mode}" was changed after accept; locked to "${lock}" (state ${bf.frontmatter.State})`,
+    };
+  }
+  return null;
+}
+
+function validateIntegration(bf, bfPath, errors) {
+  const e = integrationError(bf);
+  if (e) errors.push({ ...e, ref: bfPath });
+}
 
 const EVIDENCE_KINDS = new Set([
   "artifact",
@@ -97,6 +167,8 @@ export function validateWo(bundle) {
   const errors = [...bundle.errors];
   const { bf, bfPath, packReg, roleReg, tasks } = bundle;
   if (!bf) return { ok: false, errors };
+
+  validateIntegration(bf, bfPath, errors);
 
   if (!packReg.packs.has(bf.frontmatter.Pack)) {
     errors.push({

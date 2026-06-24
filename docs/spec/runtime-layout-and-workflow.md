@@ -159,6 +159,11 @@ confirmations can remain lightweight when the context is clear.
    - For `Requires-Worktree: true` tasks in managed Git mode, `next` also
      creates or validates branch `bf/<bf-wo>/<task-id>` and worktree
      `<primary-worktree>/.worktrees/works/<bf-wo>/<task-id>`.
+   - Under `Integration: single-pr`, worktree-required tasks instead share one
+     branch `bf/<bf-wo>` and one worktree
+     `<primary-worktree>/.worktrees/works/<bf-wo>/_shared`, are claimed serially,
+     and are committed with a `BF-Task: <bf-wo>/<task>` trailer rather than opened
+     as per-task PRs; the one WO-level PR is recorded in bf.md.
    - Each host-compatible task driver must be assigned before claimed task leaf
      work starts. In Codex, that actor is a Codex subagent. The task driver
      follows the pipeline instruction and stage instructions and hands evidence
@@ -197,6 +202,11 @@ confirmations can remain lightweight when the context is clear.
    - After task `complete` succeeds, run `bf-harness cleanup <bf-wo>/<task>`
      for that task. Retained dirty worktrees, unmerged branches, and path
      conflicts are reported, not force-deleted.
+   - Under `Integration: single-pr` there is no per-task PR to merge and no
+     per-task worktree cleanup: tasks are commits on the shared branch
+     `bf/<bf-wo>`, `complete <bf-wo>/<task>` gates on a trailered, pushed,
+     non-empty, non-reverted commit while the WO PR stays open, and
+     `cleanup <bf-wo>/<task>` is a no-op that retains the shared branch/worktree.
    - Before bf-level final acceptance, run `bf-harness status <bf-wo>`.
      Enter Final Acceptance only when status says all tasks are completed.
    - The coordinator runs `bf-harness start-review <bf-wo>`, dispatches
@@ -206,6 +216,10 @@ confirmations can remain lightweight when the context is clear.
      driver.
    - After Final Acceptance verify succeeds, the coordinator runs
      `bf-harness complete <bf-wo>`.
+   - Under `Integration: single-pr`, the coordinator merges the one WO-level PR
+     before `complete <bf-wo>` (which gates on that PR being merged onto
+     `bf/<bf-wo>`), then runs `bf-harness cleanup <bf-wo>` to remove the shared
+     worktree and delete `bf/<bf-wo>` at work-object completion.
    - After Final Acceptance, the orchestrator may make an advisory note when a
      bf-wo local pipeline appears reusable. This is advisory only.
    - Execution completion must not promote local pipelines, edit extension packs,

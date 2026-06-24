@@ -3,13 +3,24 @@ import { taskDir } from "./wo-paths.mjs";
 import { writeState, writeUpdated, formatTimestamp, writeTaskExecutionMetadata } from "./write-mutations.mjs";
 import { loadWo } from "./load-wo.mjs";
 import { buildPipelineRegistry, findPipeline } from "../shared/pipeline-registry.mjs";
-import { prepareTaskWorktree, validateTaskWorktree } from "./managed-git.mjs";
+import { prepareTaskWorktree, validateTaskWorktree, prepareWoWorktree, validateWoWorktree } from "./managed-git.mjs";
+import { integrationError } from "./validate-wo.mjs";
+import { woIntegrationMode, isSinglePrMode } from "./integration-mode.mjs";
 
 const MAX_NEXT_TASKS = 5;
 
 export async function cmdNext({ baseHome, woId, installDir, now = new Date(), cwd = process.cwd() }) {
   const bundle = await loadWo({ baseHome, woId, installDir });
   if (!bundle.bf) return { ok: false, error: "load failed", details: bundle.errors };
+  // Fail closed on a post-accept Integration flip / invalid mode (accept-lock).
+  // cmd-next reads/acts on the mode, so it enforces the lock directly — validateWo
+  // (lint/accept) is not on this command's path.
+  const integ = integrationError(bundle.bf);
+  if (integ) return { ok: false, error: `${integ.code}: ${integ.message}` };
+  // integrationError already validated the selector + accept-lock, so this never
+  // throws. single-pr drives serial worktree-task claiming + the shared worktree.
+  const mode = woIntegrationMode(bundle.bf);
+  const singlePr = isSinglePrMode(mode);
   const bfState = bundle.bf.frontmatter.State;
   if (!["Accepted", "Implementing"].includes(bfState)) {
     return { ok: false, error: `wrong state: ${bfState}` };
@@ -24,12 +35,22 @@ export async function cmdNext({ baseHome, woId, installDir, now = new Date(), cw
     return t.deps.every((d) => stateOf(d) === "Completed");
   });
   const batch = [];
+  // single-pr (Mode B): Requires-Worktree:true tasks execute SERIALLY (effective
+  // batch=1) because they share one branch+worktree bf/<wo>+_shared, so two
+  // concurrent claims would race the shared index (§1.2). Requires-Worktree:false
+  // tasks have no worktree and keep full MAX_NEXT_TASKS parallelism. Mode A
+  // (per-task-pr) is unaffected — wtClaimed stays 0-gated only when singlePr.
+  let wtClaimed = 0;
   for (const task of eligible) {
     if (batch.length >= MAX_NEXT_TASKS) break;
     const conflicts = batch.some((selected) => (
       task.deps.includes(selected.id) || selected.deps.includes(task.id)
     ));
     if (conflicts) continue;
+    if (singlePr && task.spec.requiresWorktree) {
+      if (wtClaimed >= 1) continue;
+      wtClaimed++;
+    }
     batch.push(task);
   }
   if (batch.length === 0) return { ok: false, error: "no eligible task" };
@@ -61,9 +82,9 @@ export async function cmdNext({ baseHome, woId, installDir, now = new Date(), cw
     let executionMetadata = plan.executionMetadata;
 
     if (plan.claim && task.spec.requiresWorktree) {
-      const setup = prepareTaskWorktree({
-        baseHome, cwd, woId, taskId: task.id, metadata: executionMetadata,
-      });
+      const setup = singlePr
+        ? prepareWoWorktree({ baseHome, cwd, woId, metadata: executionMetadata })
+        : prepareTaskWorktree({ baseHome, cwd, woId, taskId: task.id, metadata: executionMetadata });
       if (!setup.ok) return { ok: false, error: setup.error };
       executionMetadata = {
         branch: setup.branch,
@@ -71,9 +92,9 @@ export async function cmdNext({ baseHome, woId, installDir, now = new Date(), cw
         pullRequest: null,
       };
     } else if (!plan.claim && task.spec.requiresWorktree) {
-      const setup = validateTaskWorktree({
-        baseHome, cwd, woId, taskId: task.id, metadata: executionMetadata,
-      });
+      const setup = singlePr
+        ? validateWoWorktree({ baseHome, cwd, woId, metadata: executionMetadata })
+        : validateTaskWorktree({ baseHome, cwd, woId, taskId: task.id, metadata: executionMetadata });
       if (!setup.ok) return { ok: false, error: setup.error };
       executionMetadata = {
         ...executionMetadata,
@@ -113,6 +134,7 @@ export async function cmdNext({ baseHome, woId, installDir, now = new Date(), cw
       pipeline: plan.pipeline,
       pipelinePath: plan.pipelineEntry.file,
       pack: bundle.bf.frontmatter.Pack,
+      integration: mode,
     };
     if (executionMetadata.branch) result.branch = executionMetadata.branch;
     if (executionMetadata.worktree) result.worktree = executionMetadata.worktree;
@@ -135,6 +157,7 @@ export async function cmdNext({ baseHome, woId, installDir, now = new Date(), cw
  *   Pack: <pack>
  *   Spec: <abs-spec-path>
  *   Dir: <abs-task-dir>
+ *   Integration: <per-task-pr|single-pr>
  * Failure:
  *   <error message>
  *
@@ -171,6 +194,10 @@ export function formatNext(r) {
       `Spec: ${t.specPath}`,
       `Dir: ${t.taskDir}`,
     ];
+    // Integration mode is emitted on every block so the task driver knows from
+    // the block alone whether it is in Mode A (per-task-pr) or Mode B (single-pr)
+    // without having to read bf.md frontmatter itself.
+    if (t.integration) lines.push(`Integration: ${t.integration}`);
     if (t.branch) lines.push(`Branch: ${t.branch}`);
     if (t.worktree) lines.push(`Worktree: ${t.worktree}`);
     if (t.pullRequest) lines.push(`Pull-Request: ${t.pullRequest}`);

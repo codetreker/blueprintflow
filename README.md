@@ -86,6 +86,16 @@ brainstorm  →  spec  ──accept──▶  execute  ──verify──▶  co
 2. **Spec** — author `bf.md` + per-task `spec.md` in `Draft`, `lint`, run a Spec Review round, `verify`, then `accept`. Contract is locked.
 3. **Execute** — `next` returns eligible task blocks in task-list order. Each returned task has completed prerequisites, and no returned task depends on another returned task. For `Requires-Worktree: true` tasks in managed Git mode, it also creates or validates each task branch/worktree and returns that metadata. A host-compatible task driver follows each returned task's pipeline instructions; a **different** reviewer actor grades the final task AC. GitHub worktree tasks can record a PR with `attach-pr`. After a task verifies, `complete` transitions it to `Completed` and, when it has a recorded PR, checks that the PR is merged before allowing completion. Once a task completes and, when it has a PR, that PR is merged, `cleanup` removes that task's harness-owned worktree and safely deletes its merged local task branch. Repeat. Before Final Acceptance, `status` reports the work-object state and task states so the coordinator does not inspect every task spec to decide readiness. Final Acceptance runs work-object `verify` then `complete`, which flips the bf.md AC and marks the work Completed.
 
+## Integration modes (per-task-pr / single-pr)
+
+`bf.md` carries an optional `Integration:` field that selects how a work object's tasks reach the trunk. It is **opt-in**: omit it (or set `per-task-pr`) for the default.
+
+- **`per-task-pr` (default)** — one branch, worktree, and PR per task. Tasks run in parallel where the DAG allows; each PR is reviewed and merged independently, so a single task can be rolled back on its own.
+- **`single-pr` (opt-in)** — every task is a commit (carrying a `BF-Task: <bf-wo>/<task>` trailer) on one shared branch `bf/<bf-wo>` in one shared worktree, collected into a single work-object PR. `complete <bf-wo>/<task>` requires a trailered, pushed, non-empty, non-reverted commit; the WO PR merges once at Final Acceptance, and `cleanup <bf-wo>` removes the shared worktree and branch at WO completion. Pick `single-pr` by task **coupling, not size** — one cohesive or phased change reviewed as one PR.
+
+Mode selection is spec-time and **accept-locked**: `accept` writes a harness-owned `Mode-Lock` anchor and rejects any later change of the effective mode. The trade-off is parallelism: worktree-required `single-pr` tasks share one branch/worktree and therefore run **serially**, whereas `per-task-pr` tasks parallelize across independent worktrees.
+
+
 ## State layout
 
 BF stores work-in-progress state under a state home:
@@ -124,7 +134,11 @@ use harness-owned `Branch:`, `Worktree:`, and `Pull-Request:` fields; do not
 edit those fields by hand. `bf-harness cleanup <bf-wo>/<task>` runs only after
 that task reaches `State: Completed`; it removes only that task's harness-owned
 worktree and uses safe local branch deletion, retaining anything Git cannot
-delete safely.
+delete safely. Under `Integration: single-pr` the per-task `cleanup <bf-wo>/<task>`
+is a no-op (the shared branch/worktree are retained for other tasks); the shared
+worktree and `bf/<bf-wo>` branch are removed by the WO-scope `bf-harness cleanup
+<bf-wo>`, which runs only after the work object reaches `State: Completed` and the
+WO PR is merged.
 
 ## The Independent Verification rule
 

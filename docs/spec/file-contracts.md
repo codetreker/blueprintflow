@@ -32,6 +32,19 @@ are already accepted user-facing contract or required Evidence.
 - State values: `Draft`, `Accepted`, `Implementing`, `Completed`.
 - Acceptance Criteria lines must carry `{id}|{capability}` markers.
 - Each AC capability must be declared by some role.
+- `Integration` is an optional WO-level field selecting the integration mode:
+  `per-task-pr` (the default when absent or empty — one branch/worktree/PR per
+  task) or `single-pr` (one shared branch `bf/<bf-wo>` and one WO-level PR for all
+  tasks). Any other value is rejected (`INTEGRATION_INVALID`).
+- `Integration` is accept-locked. `accept` writes a harness-owned `Mode-Lock`
+  anchor equal to the effective mode, atomically with the `State` flip. Once the
+  WO leaves `Draft`, any effective `Integration` that diverges from the
+  `Mode-Lock` anchor — including a post-accept add of `Integration: single-pr`
+  with no anchor — is rejected (`INTEGRATION_LOCKED`). Legacy pre-feature WOs with
+  no anchor resolve to `per-task-pr`. The LLM never writes `Integration` after
+  accept or `Mode-Lock` at all.
+- Under `single-pr`, the WO-level `Pull-Request` field in bf.md frontmatter holds
+  the one work-object PR (head branch `bf/<bf-wo>`), written by `attach-pr`.
 - After accept, only the harness may mutate checkbox state, `State`, and `Updated`.
 
 ## discussion.md
@@ -54,7 +67,10 @@ are already accepted user-facing contract or required Evidence.
   Use `true` for tasks that change repository code or docs in a Git project.
 - `Branch`, `Worktree`, and `Pull-Request` are task execution metadata fields
   owned by the harness. They are empty in Draft/Ready specs and are populated
-  only by `next` and `attach-pr`.
+  only by `next` and `attach-pr`. Under the work object's `Integration: single-pr`
+  mode they are WO-shared: every worktree task records the same shared branch
+  `bf/<bf-wo>` and shared worktree `<primary-worktree>/.worktrees/works/<bf-wo>/_shared`,
+  and the work-object PR lives in bf.md, not the per-task spec.
 - Task frontmatter must not contain execution `Capability`.
 - Acceptance Criteria lines carry `{id}|{capability}` review markers.
 - `## Evidence` is required.

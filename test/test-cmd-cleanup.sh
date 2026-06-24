@@ -22,6 +22,7 @@ prepare_implementing_wo() {
   copy_fixture clean-wo "$BASE/works/wo-1"
   sed -i.bak 's/^Id: clean-wo/Id: wo-1/' "$BASE/works/wo-1/bf.md"
   sed -i.bak 's/^State: Draft/State: Implementing/' "$BASE/works/wo-1/bf.md"
+  sed -i.bak '/^State: Implementing$/a Mode-Lock: per-task-pr' "$BASE/works/wo-1/bf.md"
   sed -i.bak 's/^State: Draft/State: Completed/' "$BASE/works/wo-1/task-a/spec.md"
   sed -i.bak 's/^- \[ \] AC-1/- [x] AC-1/' "$BASE/works/wo-1/task-a/spec.md"
   # Guard against a future literal-caret reintroduction: the AC line must be genuinely checked.
@@ -56,12 +57,14 @@ run_cleanup_cli() {
   rm -f /tmp/bf-cleanup-stderr.$$
 }
 
-# Cleanup is task-scoped; work-object scope is not a cleanup target.
+# WO-scope cleanup (cleanup <bf-wo>) is single-pr only. A Mode A (per-task-pr)
+# work object refuses it fail-closed and never touches the per-task worktree or
+# branch. Per-task cleanup stays task-scoped (cleanup <bf-wo>/<task>).
 make_git_repo
 prepare_implementing_wo
 run_cleanup_cli wo-1
-assert_eq "$RC" "2" "cleanup wo-scope CLI exit"
-assert_match "$STDERR" "cleanup requires <bf-wo>/<task>" "cleanup requires task target"
+assert_eq "$RC" "1" "Mode A wo-scope cleanup CLI exit"
+assert_match "$STDOUT" "applies only to Integration: single-pr" "Mode A wo-scope cleanup refused"
 [ -d "$TASK_WORKTREE" ] || fail "wo-scope cleanup removed worktree"
 git -C "$PRIMARY" show-ref --verify "refs/heads/$TASK_BRANCH" >/dev/null 2>&1 || fail "wo-scope cleanup removed branch"
 rm -rf "$ROOT"
@@ -103,6 +106,34 @@ assert_match "$STDOUT" "Removed worktree: $TASK_WORKTREE" "cleanup removed unmer
 assert_match "$STDOUT" "Retained branch: $TASK_BRANCH" "cleanup retained unmerged branch"
 [ ! -e "$TASK_WORKTREE" ] || fail "cleanup left unmerged task worktree"
 git -C "$PRIMARY" show-ref --verify "refs/heads/$TASK_BRANCH" >/dev/null 2>&1 || fail "cleanup deleted unmerged branch"
+rm -rf "$ROOT"
+
+# Mode B (single-pr): per-task cleanup is a NO-OP. The shared worktree+branch
+# bf/<wo>+_shared MUST be RETAINED until WO completion (removing them per task
+# would destroy other tasks' in-flight commits on the shared branch). The CLI
+# reports the retention rather than removing anything.
+make_git_repo
+mkdir -p "$BASE/works"
+copy_fixture clean-wo "$BASE/works/wo-1"
+sed -i.bak 's/^Id: clean-wo/Id: wo-1/' "$BASE/works/wo-1/bf.md"
+sed -i.bak 's/^State: Draft/State: Implementing/' "$BASE/works/wo-1/bf.md"
+sed -i.bak '/^State: Implementing/a Integration: single-pr\nMode-Lock: single-pr' "$BASE/works/wo-1/bf.md"
+sed -i.bak 's/^State: Draft/State: Completed/' "$BASE/works/wo-1/task-a/spec.md"
+sed -i.bak 's/^- \[ \] AC-1/- [x] AC-1/' "$BASE/works/wo-1/task-a/spec.md"
+sed -i.bak 's/^State: Draft/State: Ready/' "$BASE/works/wo-1/task-b/spec.md"
+sed -i.bak 's/^Requires-Worktree: .*/Requires-Worktree: true/' "$BASE/works/wo-1/task-a/spec.md"
+SHARED_WT="$PRIMARY/.worktrees/works/wo-1/_shared"
+SHARED_BRANCH="bf/wo-1"
+git -C "$PRIMARY" branch "$SHARED_BRANCH" HEAD >/dev/null 2>&1 || fail "shared branch failed"
+mkdir -p "$(dirname "$SHARED_WT")"
+git -C "$PRIMARY" worktree add "$SHARED_WT" "$SHARED_BRANCH" >/dev/null 2>&1 || fail "shared worktree failed"
+sed -i.bak "s#^Branch:.*#Branch: $SHARED_BRANCH#" "$BASE/works/wo-1/task-a/spec.md"
+sed -i.bak "s#^Worktree:.*#Worktree: $SHARED_WT#" "$BASE/works/wo-1/task-a/spec.md"
+STDOUT=$(run_cleanup_json "$PRIMARY" task-a)
+assert_json_field "$STDOUT" .ok true "single-pr per-task cleanup succeeds as a no-op"
+assert_match "$STDOUT" "retained until WO completion" "single-pr cleanup retains shared resources"
+[ -e "$SHARED_WT" ] || fail "single-pr cleanup destroyed the shared worktree"
+git -C "$PRIMARY" show-ref --verify "refs/heads/$SHARED_BRANCH" >/dev/null 2>&1 || fail "single-pr cleanup deleted the shared branch"
 rm -rf "$ROOT"
 
 pass

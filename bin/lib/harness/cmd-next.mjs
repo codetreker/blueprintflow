@@ -134,6 +134,7 @@ export async function cmdNext({ baseHome, woId, installDir, now = new Date(), cw
       pipeline: plan.pipeline,
       pipelinePath: plan.pipelineEntry.file,
       pack: bundle.bf.frontmatter.Pack,
+      integration: mode,
     };
     if (executionMetadata.branch) result.branch = executionMetadata.branch;
     if (executionMetadata.worktree) result.worktree = executionMetadata.worktree;
@@ -156,6 +157,7 @@ export async function cmdNext({ baseHome, woId, installDir, now = new Date(), cw
  *   Pack: <pack>
  *   Spec: <abs-spec-path>
  *   Dir: <abs-task-dir>
+ *   Integration: <per-task-pr|single-pr>
  * Failure:
  *   <error message>
  *
@@ -192,6 +194,10 @@ export function formatNext(r) {
       `Spec: ${t.specPath}`,
       `Dir: ${t.taskDir}`,
     ];
+    // Integration mode is emitted on every block so the task driver knows from
+    // the block alone whether it is in Mode A (per-task-pr) or Mode B (single-pr)
+    // without having to read bf.md frontmatter itself.
+    if (t.integration) lines.push(`Integration: ${t.integration}`);
     if (t.branch) lines.push(`Branch: ${t.branch}`);
     if (t.worktree) lines.push(`Worktree: ${t.worktree}`);
     if (t.pullRequest) lines.push(`Pull-Request: ${t.pullRequest}`);

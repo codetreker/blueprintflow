@@ -45,7 +45,8 @@ Two outcomes:
 - If a `Worktree` is provided, run commands from that worktree.
 - Follow the selected pipeline stages in order.
   Produce every required Evidence artifact before claiming the task is ready for review.
-- Open and record the task PR when the task requires one.
+- The task block returned by `bf-harness next` includes an `Integration` field — `per-task-pr` (Mode A) or `single-pr` (Mode B) — that tells you which of the two PR rules below applies; you do not need to read `bf.md` frontmatter to determine the mode.
+- Under `Integration: per-task-pr` (Mode A), open and record the task PR when the task requires one.
 - Under `Integration: single-pr` (Mode B), do NOT open a per-task PR. Commit your task work to the shared WO branch `bf/<bf-wo>` (in the shared worktree the coordinator hands you) with the MANDATORY `BF-Task: <bf-wo>/<task>` commit trailer, then push. The harness rejects task completion unless a commit carrying that exact trailer exists on `bf/<bf-wo>`, is pushed to origin, has a non-empty diff, and is not reverted. The ONE WO-level PR is opened and recorded once for the whole work object (recorded with `bf-harness attach-pr` against `bf/<bf-wo>`); record it if the coordinator routes that to you, but never open additional per-task PRs. Note: the completion gate keys on the exact commit, so a task commit that is reverted — even if later re-applied by a revert-of-the-revert — is rejected fail-closed; recover by producing a fresh `BF-Task: <bf-wo>/<task>`-trailered commit rather than relying on reapply.
 - Run or coordinate task review and readiness verification when host runtime support allows it.
   If review or readiness verification fails, fix the implementation, evidence, or task artifacts, then start a fresh review round with fresh independent reviewers before retrying readiness verification.

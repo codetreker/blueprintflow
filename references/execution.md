@@ -58,6 +58,7 @@ Repeat until no task remains:
 Steps 13, 15, and 16 above are the default `per-task-pr` (Mode A) flow. Under `Integration: single-pr` (Mode B) the task loop differs:
 
 - There is NO per-task PR to merge at step 13: every task is a commit on the shared branch `bf/<bf-wo>`, collected into the ONE WO-level PR. The task driver commits its work to the shared branch with a `BF-Task: <bf-wo>/<task>` trailer and pushes; the harness rejects `complete <bf-wo>/<task>` unless a trailered, pushed, non-empty, non-reverted commit for that task exists on `bf/<bf-wo>`.
+- The ONE WO-level PR on `bf/<bf-wo>` must be open and recorded BEFORE the first task-level `complete <bf-wo>/<task>` — the commit-presence gate requires the WO PR to be present and OPEN (not yet merged). Ownership and timing: after the first worktree task driver pushes its trailered commit to `bf/<bf-wo>`, the coordinator opens the single WO PR on `bf/<bf-wo>` and records it with `bf-harness attach-pr <bf-wo>/<task> <pr-url>` (pass any `Requires-Worktree: true` task id of this work object; the PR head must be `bf/<bf-wo>`). Do not open per-task PRs and do not open a second WO PR. The WO PR stays OPEN through every task completion and merges only at Final Acceptance.
 - There is NO per-task worktree cleanup at steps 15-16: the shared worktree and branch are retained until WO scope (`cleanup <bf-wo>/<task>` is a no-op that reports the retention). Cleaning per task would discard other tasks' in-flight commits on the shared branch.
 - The single WO PR merges ONCE at Final Acceptance, and the shared worktree is cleaned at WO scope after the work object completes.
 
@@ -77,7 +78,7 @@ Worktree: <worktree from the task block, or none>
 Resume context: <existing driver context, or new task>
 
 Instructions:
-1. After reading `roles/task-driver.md`, work only on this returned task.
+1. After reading `roles/task-driver.md`, work only on this returned task. The task block's `Integration` field states the work-object mode: `per-task-pr` (Mode A — open/record a per-task PR) or `single-pr` (Mode B — commit to the shared WO branch `bf/<bf-wo>` with the `BF-Task: <bf-wo>/<task>` trailer; do not open a per-task PR).
 2. If a Worktree is provided, run commands from that Worktree.
 3. Run the startup capability check from `roles/task-driver.md` before reading the task spec or selected pipeline.
 4. If the startup check reports missing subagent tool, stop and request coordinator proxy.

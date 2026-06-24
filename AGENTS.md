@@ -103,6 +103,25 @@ When legacy plugin files are touched, also run:
 - Do not insert line breaks in prompt or runtime-instruction prose merely because a line exceeds a target length such as 80 characters. Preserve semantic line breaks, table rows, code blocks, quoted text, and line breaks required by a file format.
 - Use `apply_patch` for manual edits.
 
+## Writing Skill Prompts
+
+A skill prompt is executed by an actor that has only that text, not your reasoning. Write so the actor, reading only this, acts correctly.
+
+- Teach HOW, not WHY. Every sentence must change what the actor does. Cut anything that only explains.
+- Keep a `why` only when it lets the actor generalize to a case you did not list, or stops the actor rationalizing away a fail-closed rule. One clause, not a paragraph.
+- Sink design rationale, history, and justification into `docs/` or code comments, never the actor's instruction path.
+- State the sequence and the owner, not just the end state. Name who does what, in what order, and what must hold before each gate. Passive voice hides the owner.
+- Give the exact form: the command, flag, field, or trailer syntax. An instruction the actor cannot run verbatim is a latent failure.
+- Carry the condition on any instruction that is only true in one mode or context. A rule stated unconditionally that is wrong in another mode is a contradiction bug.
+- Surface the discriminator the actor needs inline. Do not make it infer state from a place you never told it to read.
+- Give the recovery path: name the failure the actor will hit and how to recover. An unannounced fail-closed gate reads as a bug.
+- Default uncertainty to stop and escalate, not guess. Encode stop conditions.
+- Show, do not point: present the content the actor must act on inline; a file or path pointer may supplement but never replace it.
+- One source of truth: do not restate a rule across surfaces where the copies can drift.
+- Test by role immersion before shipping: read the prompt AS the actor that executes it, with only what it is given, and ask "would I act correctly, stall, or err?". Prefer independent reviewers each in a distinct actor seat; ground every fix in the actual mechanism, because reviewers propose wrong fixes too.
+
+The cut test for every sentence: does it change what the actor does? An imperative instruction keeps. A `why` that changes a judgment in an unlisted case keeps. Pure background is cut, or sunk to `docs/`.
+
 ## Anti-Patterns
 
 - "This is small enough to code directly." --> No. Record the design, get approval, then enter TDD.

@@ -16,7 +16,7 @@ frontmatter field notes:
   for the default — one branch/worktree/PR per task. Set `single-pr` to collect all
   tasks as commits on one shared branch into ONE work-object PR; pick it by task
   coupling, not size, and only when at least one task is `Requires-Worktree: true`.
-  Decide at task-decomposition time (see `references/spec-authoring.md`). Spec-authored,
+  Decide at task-decomposition time. Spec-authored,
   then accept-locked: bf-harness writes a harness-owned `Mode-Lock:` anchor at accept
   and rejects any later change of the effective mode. The LLM never writes `Mode-Lock`.
 - Creation / Updated: timestamps; `Updated` is harness-synchronized after accept.
